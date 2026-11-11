@@ -1,7 +1,8 @@
 # Bối cảnh đợt chuyển nhà — đọc trước khi làm
 
-Soạn 11/11/2026 ở phiên MacBook Pro, để phiên Mac Studio nhận tiếp mà không cần ghi nhớ của máy kia. Kế hoạch đầy đủ:
-`KE-HOACH.md`. Tệp này chỉ giữ thứ kế hoạch không nói: ai đã quyết gì, luật làm việc của đợt, và các bẫy đã dẫm.
+Soạn 11/11/2026, để bất kỳ phiên hay máy nào mở kho này cũng nhận tiếp được mà không cần ghi nhớ riêng của máy đã soạn.
+Đang ở đâu và máy nào đang giữ: `TRANG-THAI.md` (tệp sống). Kế hoạch đầy đủ: `KE-HOACH.md`. Tệp này chỉ giữ thứ hai tệp
+kia không nói: ai đã quyết gì, luật làm việc của đợt, và các bẫy đã dẫm.
 
 ## Kho này là gì
 
@@ -9,8 +10,10 @@ Soạn 11/11/2026 ở phiên MacBook Pro, để phiên Mac Studio nhận tiếp 
   (không mang các thẻ lưu trữ cục bộ `luu-tru/*`, `backup/*`).
 - Nhánh **`main`** = bản sao nguyên vẹn nhánh chính kho cũ. Không ai sửa tay vào đây trước ngày cắt sang; chỉ cập nhật
   bằng cách lấy nhánh chính kho cũ (remote `kit-cu`) rồi đẩy sang.
-- Nhánh **`chuyen-nha`** = `main` + thư mục `migration/` (kế hoạch, bối cảnh, công cụ chuyển nhà, đo thử). Đây là chỗ duy
-  nhất được sửa tay cho tới ngày cắt.
+- Nhánh **`chuyen-nha`** = `main` + thư mục `migration/` (kế hoạch, bối cảnh, công cụ chuyển nhà, đo thử) + một tệp chỉ
+  đường `.claude/rules/chuyen-nha.md` để phiên mới tự biết phải đọc gì. Đây là chỗ duy nhất được sửa tay cho tới ngày cắt.
+- Nhánh mặc định trên GitHub vẫn là `main`: ai chỉ `git clone` sẽ đứng ở `main` và KHÔNG thấy `migration/` — phải
+  `git switch chuyen-nha` (lệnh ở `MO-PHIEN.md` đã gồm bước này).
 - Kho đang **riêng tư**; chạy kiểm tự động (GitHub Actions) **đang tắt** để lần nhập lịch sử không kích một lượt khoảng
   60 phút. Bật lại khi vòng B1 cần lượt kiểm trên GitHub.
 
@@ -22,12 +25,16 @@ Soạn 11/11/2026 ở phiên MacBook Pro, để phiên Mac Studio nhận tiếp 
 4. Phương thức: **kho mới**, kho cũ chạy bình thường tới ngày cắt rồi đóng băng ở 2.38.x; không cần giữ tên cũ làm bí danh.
 5. **Kho mới mang trọn lịch sử** kho cũ — lý do ở `KE-HOACH.md` mục 13 (79 % ca đỏ thêm khi bỏ lịch sử là ca dựng lại bản
    cũ từ mã commit hay thẻ cũ).
-6. **Giữ Mac Studio** làm máy chạy đợt; không dùng phiên Cloud (phiên Cloud không nạp plugin của kit — `KE-HOACH.md` mục 10).
-7. Nhịp: nền dựng ở MacBook Pro → đẩy lên GitHub → **Mac Studio kéo về và làm chính** từ đây.
+6. **Không dùng phiên Cloud** cho đợt này (phiên Cloud không nạp plugin của kit — `KE-HOACH.md` mục 10); chạy trên máy của
+   chủ kho.
+7. **Máy làm đợt chuyển nhà: MacBook Pro** (chủ kho đổi cuối ngày 11/11; trước đó trong cùng ngày định giao Mac Studio).
+   Kho được soạn để máy nào cũng nhận tiếp được — đổi máy theo luật giữ ở `TRANG-THAI.md`.
+8. Việc sửa kit CŨ (các vòng của `acceptance-gate-kit`, gồm vòng A1) từ 01/11 làm ở Mac Studio. Lời 11/11 chỉ giao đợt
+   chuyển nhà cho MacBook Pro — máy chạy A1 chưa được gọi tên.
 
 ## Chủ kho CHƯA quyết (đừng tự quyết)
 
-- Gọi tên vòng A1 (`luot-kiem-nhe`, kho cũ) và mở dãy B.
+- Gọi tên vòng A1 (`luot-kiem-nhe`, kho cũ) kèm máy chạy nó, và mở dãy B.
 - Ngoại lệ luật chiều rộng (b) cho B1 + B2, và **hạn dừng** của đợt (đề xuất 21 ngày từ khi B1 mở).
 - Chốt hẳn tên `delivery-loop` và bảng tên.
 - Ngày cắt sang (chữ ký mốc 3.0).
@@ -67,7 +74,10 @@ Soạn 11/11/2026 ở phiên MacBook Pro, để phiên Mac Studio nhận tiếp 
 - Bỏ lịch sử: bộ kiểm plugin 16 → 3 phút (phần lớn giờ là dựng lại bản cũ).
 - PR mở → gộp trung vị 3,6 giờ.
 
-## Những gì máy kia (MacBook Pro) còn giữ mà kho này không có
+## Những gì KHÔNG nằm trong kho này
 
-- Ba bản sao và nhật ký đầy đủ của đo thử B0 (thư mục tạm của phiên; chỉ kết quả tóm và hai kịch bản ở `migration/b0/`).
-- Ghi nhớ dự án của phiên MacBook Pro — nội dung cần thiết đã chép vào tệp này.
+- Ba bản sao và nhật ký đầy đủ của đo thử B0 nằm ở thư mục tạm của phiên đã đo, sẽ mất. Trong kho chỉ có kết quả tóm và
+  ba kịch bản ở `migration/b0/` — đủ để dựng lại phép đo (`dung-ban-sao.sh`).
+- Ghi nhớ dự án của các phiên Claude gắn theo đường dẫn thư mục trên từng máy, không theo kho. Thứ cần thiết đã chép vào
+  tệp này và `TRANG-THAI.md`; đừng trông vào ghi nhớ để biết trạng thái đợt.
+- Số đo về hai kho tiêu thụ lấy trên bản đang có ở MacBook Pro ngày 11/11, có thể cũ hơn nhánh chính của họ.

@@ -1,9 +1,11 @@
 # Nháp đề xuất — dọn nhà kit thành `delivery-loop`
 
 > **Trạng thái:** kế hoạch đã chốt với chủ kho ngày 11/11/2026 (phương thức kho mới mang lịch sử, bảng tên tạm, bốn dãy
-> việc ở mục 12–13). Soạn ở phiên MacBook Pro; Mac Studio tiếp tục. Các mục 1–11 giữ nguyên lịch sử suy nghĩ — chỗ nào bị
-> mục sau thay thế thì mục sau thắng (đặc biệt mục 4 bị mục 12 thay, mục 11 bị mục 13 sửa). Bối cảnh và luật làm việc:
-> `BOI-CANH.md`.
+> việc ở mục 12–13). Các mục 1–11 giữ nguyên lịch sử suy nghĩ — chỗ nào bị mục sau thay thế thì mục sau thắng (đặc biệt
+> mục 4 bị mục 12 thay, mục 11 bị mục 13 sửa). Đang ở đâu: `TRANG-THAI.md`. Bối cảnh và luật làm việc: `BOI-CANH.md`.
+>
+> **Về tên máy trong tệp này:** các mục 10–13 viết lúc định giao Mac Studio. Với đợt chuyển nhà (dãy B, dãy R), đọc «Mac
+> Studio» là «máy đang giữ» ghi ở `TRANG-THAI.md`. Riêng dãy A là vòng của kho CŨ — máy chạy nó chưa được chủ kho gọi tên.
 >
 > Kho này đang RIÊNG TƯ. Tệp này có số đo về hai kho tiêu thụ — rà ẩn danh trước ngày kho chuyển công khai.
 
