@@ -29,17 +29,17 @@ kia không nói: ai đã quyết gì, luật làm việc của đợt, và các 
    chủ kho.
 7. **Máy làm đợt chuyển nhà: MacBook Pro** (chủ kho đổi cuối ngày 11/11; trước đó trong cùng ngày định giao Mac Studio).
    Kho được soạn để máy nào cũng nhận tiếp được — đổi máy theo luật giữ ở `TRANG-THAI.md`.
-8. Việc sửa kit CŨ (các vòng của `acceptance-gate-kit`, gồm vòng A1) từ 01/11 làm ở Mac Studio. Lời 11/11 chỉ giao đợt
-   chuyển nhà cho MacBook Pro — máy chạy A1 chưa được gọi tên.
+8. Việc sửa kit CŨ (các vòng của `acceptance-gate-kit`) từ 01/11 làm ở Mac Studio. **Riêng vòng A1 `luot-kiem-nhe`: chủ kho
+   gọi tên và giao MacBook Pro chạy (11/11).** Các vòng kit khác vẫn ở Mac Studio.
+9. Khuôn «kho plugin» của Repo Standards (dãy R) đã xong và phát hành ở `repo-setup` 0.5.0 (11/11).
 
 ## Chủ kho CHƯA quyết (đừng tự quyết)
 
-- Gọi tên vòng A1 (`luot-kiem-nhe`, kho cũ) kèm máy chạy nó, và mở dãy B.
+- Mở dãy B (vòng B1 `kich-ban-chuyen-nha`).
 - Ngoại lệ luật chiều rộng (b) cho B1 + B2, và **hạn dừng** của đợt (đề xuất 21 ngày từ khi B1 mở).
 - Chốt hẳn tên `delivery-loop` và bảng tên.
 - Ngày cắt sang (chữ ký mốc 3.0).
 - Vòng riêng cho hai tệp máy vẽ (`PRODUCT-MAP.md`, `LO-TRINH.html`) — hai hạt giống 16/10 và 30/10 ở kho cũ.
-- Hồ sơ chuẩn «kho plugin» bên Repo Standards (dãy R) — làm ở kho `repo-standards`, máy nào cũng được.
 
 ## Luật làm việc của đợt
 
