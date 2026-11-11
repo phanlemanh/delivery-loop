@@ -40,7 +40,15 @@ lệch nhau, mô tả plugin quá dài, thiếu lệnh nâng phiên bản, lư�
 `tools/plugin_lint.py`, `.claude/skills/review-change/SKILL.md`), trộn dòng vào 2, bỏ qua 6, để nguyên 4 tệp trùng; từ
 điển miền, wiki và tệp mẫu biến môi trường báo «không áp» kèm lý do.
 
-Dòng lệnh kịch bản chuyển nhà (B1) sẽ gọi, khi nhánh trên đã gộp:
+Tiếp nhận GHI THẬT trên một bản sao của kit (11/11, MacBook Pro, bản sao ở thư mục tạm, kit tại `9ff2e4f7`, công cụ tại bản
+0.5.0): chạy sạch · thêm 6 đường dẫn (`.claude/skills/`, `.editorconfig`, `.nvmrc`, `.repo-setup.json`, `Makefile`,
+`tools/`) · trộn dòng vào 2 tệp đã có (`.gitattributes`, `.gitignore`) · không ghi đè, không xoá tệp nào · `doctor` 9/20 →
+14/20 mục chấm. Bộ kiểm tệp khai plugin vừa thêm (`tools/plugin_lint.py`) báo 4 lỗi trên kit — đây là việc của kịch bản
+chuyển nhà: sáu plugin lệch phiên bản (`diagram-design` 2.7.1, năm cái còn lại 2.38.1) · plugin lõi lấy cả kho làm nguồn ·
+mô tả của plugin lõi dài 84 582 ký tự và của `feature-loop` 34 579 ký tự (trần 1 024; hai con số này do bộ kiểm in, chưa
+ai đối chiếu tay).
+
+Dòng lệnh kịch bản chuyển nhà (B1) sẽ gọi:
 
 ```bash
 python3 <repo-standards>/plugins/repo-setup/scripts/apply.py --target <cây kho mới> --preset claude-plugin --level starter --adopt --var project_name=delivery-loop --var description="<mô tả>" --var owner=phanlemanh
