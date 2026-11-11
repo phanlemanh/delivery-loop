@@ -25,19 +25,31 @@ chủ kho.
 
 ## Đang dở
 
-| Việc | Ở đâu | Từ |
+| Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| R1 — khuôn «kho plugin» cho plugin `repo-setup` | kho `repo-standards`, nhánh riêng `plugin-marketplace-preset` (cây làm việc riêng trên MacBook Pro) | 11/11/2026, chủ kho bảo «làm khuôn trước» |
+| R1 — khuôn «kho plugin» cho plugin `repo-setup` | kho `repo-standards`, nhánh `claude/plugin-marketplace-preset-7a7427` @ `0fa5473` (6 commit trên `main`), cây làm việc riêng trên MacBook Pro | Mã xong và đã kiểm lại (xem dưới), nhưng **chưa đẩy lên GitHub, chưa gộp, chưa nâng phiên bản** — chỉ có trên MacBook Pro. Chủ kho quyết đẩy + gộp. |
 
-R1 xong khi: `bash tests/run.sh` của `repo-standards` xanh, có điểm `doctor` trước → sau cho `repo-standards` và cho kit, và
-có đúng dòng lệnh `apply.py` mà kịch bản chuyển nhà sẽ gọi. Chưa gộp, chưa phát hành — chủ kho quyết.
+Kiểm lại độc lập 11/11 (MacBook Pro): `bash tests/run.sh` xanh (45 nhóm, 0 lỗi) · bộ dò nhận kit là `claude-plugin` · điểm
+`doctor` của kit 44 → 50 (thước mới bỏ các mục của ứng dụng và bắt đúng năm lỗi thật: nguồn plugin là cả kho, phiên bản
+lệch nhau, mô tả plugin quá dài, thiếu lệnh nâng phiên bản, lượt kiểm chưa kiểm tệp khai plugin) · `repo-standards` tự chấm
+67 · tiếp nhận kit ở chế độ thử không ghi: thêm 6 tệp (`.editorconfig`, `.nvmrc`, `Makefile`, `tools/bump_version.py`,
+`tools/plugin_lint.py`, `.claude/skills/review-change/SKILL.md`), trộn dòng vào 2, bỏ qua 6, để nguyên 4 tệp trùng; từ
+điển miền, wiki và tệp mẫu biến môi trường báo «không áp» kèm lý do.
+
+Dòng lệnh kịch bản chuyển nhà (B1) sẽ gọi, khi nhánh trên đã gộp:
+
+```bash
+python3 <repo-standards>/plugins/repo-setup/scripts/apply.py --target <cây kho mới> --preset claude-plugin --level starter --adopt --var project_name=delivery-loop --var description="<mô tả>" --var owner=phanlemanh
+```
+
+B1 cần quyết: có nhận tệp `.claude/skills/review-change/SKILL.md` không (kit đã có đường xét duyệt riêng).
 
 ## Kế — theo thứ tự phụ thuộc
 
 | # | Việc | Ở kho nào | Mở khi |
 |---|---|---|---|
 | 1 | Bật quét bí mật + chặn đẩy bí mật, bật tự xoá nhánh sau gộp | kho CŨ, cài đặt GitHub | chủ kho bảo (đổi cài đặt kho) |
-| 2 | R1 — khuôn «kho plugin» cho plugin `repo-setup` (dựng/tiếp nhận) + hồ sơ chấm cho `/repo-setup:doctor`. Phạm vi đề xuất: `KE-HOACH.md` mục 14 | `repo-standards` | chủ kho bảo làm; không cần cổng của kit |
+| 2 | R1 — đẩy và gộp nhánh khuôn «kho plugin» (mã đã xong, xem «Đang dở») | `repo-standards` | chủ kho bảo đẩy + gộp |
 | 3 | A1 `luot-kiem-nhe` — chia mảnh lượt kiểm tự động, bộ chạy tự kiểm phiên bản Node → mốc 2.39 | kho CŨ | chủ kho gọi tên vòng VÀ nói máy nào chạy (việc sửa kit cũ từ 01/11 ở Mac Studio; lời 11/11 chỉ giao đợt chuyển nhà) |
 | 4 | B1 `kich-ban-chuyen-nha` — kịch bản sinh commit dọn nhà lên trên nhánh chính kho cũ | kho này, `migration/` | xong việc 2 và mốc 2.39 · chủ kho gọi tên · chủ kho cho ngoại lệ luật chiều rộng (b) + đặt hạn dừng · chốt hẳn bảng tên |
 | 5 | B2 `bo-kiem-xanh-o-kho-moi` | kho này | sau B1 (B1 đo lớp đỏ do đổi bố cục) |
@@ -69,5 +81,5 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
-| 11/11/2026 | MacBook Pro | Mở R1 ở kho `repo-standards` (phiên riêng). |
+| 11/11/2026 | MacBook Pro | Mở R1 ở kho `repo-standards` (phiên riêng); mã xong tại `0fa5473`, đã kiểm lại độc lập, chưa đẩy. |
 | 11/11/2026 | MacBook Pro | Dựng nền: kế hoạch, đo thử B0, tạo kho, đẩy lịch sử, viết bàn giao. Chủ kho ban đầu định giao Mac Studio, cuối ngày đổi: MacBook Pro làm tiếp. Thử kéo kho về chỗ trống: nhánh, thẻ, tệp bàn giao và lệnh cập nhật `main` đều chạy. |
