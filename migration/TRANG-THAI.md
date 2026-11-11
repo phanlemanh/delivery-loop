@@ -21,6 +21,7 @@ chủ kho.
 | `main` = nhánh chính kho cũ tại `9ff2e4f7`, đủ 30 thẻ chính thức | `git rev-parse origin/main kit-cu/main` |
 | Nhánh `chuyen-nha` có thư mục `migration/` và tệp chỉ đường `.claude/rules/chuyen-nha.md` | nhánh này |
 | Thử kéo kho về chỗ trống và làm theo `MO-PHIEN.md` | 11/11, MacBook Pro — xem cuối tệp |
+| Thử plugin `repo-setup` trên kho này (không ghi): chưa có khuôn cho kho plugin, khuôn gần nhất thêm sai loại tệp | `KE-HOACH.md` mục 14 |
 
 ## Đang dở
 
@@ -31,7 +32,7 @@ Không có việc máy nào đang chạy.
 | # | Việc | Ở kho nào | Mở khi |
 |---|---|---|---|
 | 1 | Bật quét bí mật + chặn đẩy bí mật, bật tự xoá nhánh sau gộp | kho CŨ, cài đặt GitHub | chủ kho bảo (đổi cài đặt kho) |
-| 2 | R1 — hồ sơ chuẩn «kho plugin» cho `/repo-setup:doctor` + khuôn dựng kho plugin | `repo-standards` | chủ kho bảo làm; không cần cổng của kit |
+| 2 | R1 — khuôn «kho plugin» cho plugin `repo-setup` (dựng/tiếp nhận) + hồ sơ chấm cho `/repo-setup:doctor`. Phạm vi đề xuất: `KE-HOACH.md` mục 14 | `repo-standards` | chủ kho bảo làm; không cần cổng của kit |
 | 3 | A1 `luot-kiem-nhe` — chia mảnh lượt kiểm tự động, bộ chạy tự kiểm phiên bản Node → mốc 2.39 | kho CŨ | chủ kho gọi tên vòng VÀ nói máy nào chạy (việc sửa kit cũ từ 01/11 ở Mac Studio; lời 11/11 chỉ giao đợt chuyển nhà) |
 | 4 | B1 `kich-ban-chuyen-nha` — kịch bản sinh commit dọn nhà lên trên nhánh chính kho cũ | kho này, `migration/` | xong việc 2 và mốc 2.39 · chủ kho gọi tên · chủ kho cho ngoại lệ luật chiều rộng (b) + đặt hạn dừng · chốt hẳn bảng tên |
 | 5 | B2 `bo-kiem-xanh-o-kho-moi` | kho này | sau B1 (B1 đo lớp đỏ do đổi bố cục) |

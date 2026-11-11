@@ -343,3 +343,32 @@ cũ (`scripts lib skills`) rồi so với cây hiện tại theo đường dẫn
 - *Mục 12, B2:* phạm vi thu về 86 ca do thiếu hồ sơ và sổ, cộng lớp đỏ do đổi bố cục mà B1 đo — ước giờ máy sẽ thu hẹp sau
   B1, không còn 4–14 giờ.
 - *Việc của người:* tạo kho `delivery-loop` rồi đẩy trọn lịch sử và thẻ kho cũ sang (lệnh soạn sẵn ở B1), thay cho kho trống.
+
+## 14. Dùng plugin `repo-setup` của Repo Standards để dựng kho này? (chủ kho hỏi 11/11 — đã thử không ghi)
+
+Chủ kho gọi `/repo-setup:new` với ý «dựng bằng plugin mới chuẩn từ đầu». Đã chạy bước dò và một lượt thử không ghi trên
+bản kéo về ở thư mục tạm (plugin `repo-setup` tại `repo-standards@94efb84`):
+
+- **Lệnh `new` không áp cho kho này:** nó dành cho thư mục trống; kho đã có mã nên plugin tự chuyển sang lệnh `adopt`
+  (tiếp nhận kho đã có).
+- **Plugin chưa có khuôn cho kho plugin.** Bộ dò không nhận ra loại kho (`suggested_preset: null`); năm khuôn hiện có đều
+  là ứng dụng (TypeScript trên Node, API TypeScript, React, Python, FastAPI); hai kiểu kiến trúc là khối liền chia mô-đun
+  và API. Không chạy riêng được phần lõi chung (`_core`).
+- **Thử khuôn gần nhất (`ts-node`, chế độ tiếp nhận, mức một người):** plugin sẽ thêm 32 tệp, trộn dòng vào 2 tệp, bỏ qua
+  5, để nguyên 4 tệp trùng (`CLAUDE.md`, `README.md`, `LICENSE`, `.claude/settings.json`).
+  - *Hợp với kit:* `.editorconfig`, `.nvmrc`, `Makefile` (phải viết lại đích cho bộ kiểm của kit), dòng thêm vào
+    `.gitignore` và `.gitattributes`.
+  - *Không hợp:* `package.json`, `tsconfig*.json`, `eslint.config.js`, `.prettierrc.json` ở gốc kho (biến kit thành một
+    gói TypeScript, trong khi mã kit không phụ thuộc gói ngoài); thư mục `ontology/` và `wiki/` cùng năm skill wiki trong
+    `.claude/skills/` và bốn công cụ Python (trùng vai với `CONTEXT.md`, ADR và plugin tri thức của kit); `.env.example`.
+- **Kết luận:** ý của chủ kho đúng, và nó chính là dãy R đã có trong mục 12 — phải làm khuôn «kho plugin» bên Repo
+  Standards TRƯỚC, rồi mới áp vào kho này. Áp khuôn hiện có sẽ thêm khoảng hai phần ba số tệp sai loại.
+- **Cách áp khi đã có khuôn:** `apply.py` là đường duy nhất plugin tạo tệp, chạy lại được và không ghi đè — nên nó thành
+  MỘT BƯỚC của kịch bản chuyển nhà (B1), không làm tay trên nhánh `chuyen-nha`.
+
+**Phạm vi R1 rút từ lượt thử** (đề xuất, chủ kho duyệt khi mở R1): một khuôn mới cho loại kho «chợ plugin Claude Code» gồm
+bố cục `plugins/<tên>/` + tệp khai chợ, lệnh nâng phiên bản một chạm, lượt kiểm tự động có bước kiểm tệp khai plugin, tệp
+ghim Node, `Makefile` với các đích chung, README song ngữ; lớp từ điển miền và wiki ở trạng thái «không áp» cho loại kho
+này; và một hồ sơ chấm riêng cho `/repo-setup:doctor` (phiên bản các plugin khớp nhau, mô tả plugin ngắn, nguồn plugin
+không phải cả kho, dung lượng bản cài). Chính kho Repo Standards là kho đầu tiên chấm bằng hồ sơ đó; `delivery-loop` là kho
+thứ hai.
