@@ -60,6 +60,14 @@ chuyển nhà: sáu plugin lệch phiên bản (`diagram-design` 2.7.1, năm cá
 mô tả của plugin lõi dài 84 582 ký tự và của `feature-loop` 34 579 ký tự (trần 1 024; hai con số này do bộ kiểm in, chưa
 ai đối chiếu tay).
 
+**Vì sao chưa áp khuôn thẳng lên cây kho này (đo 11/11 trên bản sao đã tiếp nhận):** khuôn 0.5.0 giả định bố cục SAU khi
+dọn nhà. Trên cây hiện tại của kit: lệnh gom `make check` gọi `tests/run.sh` — tệp mẫu bị bỏ qua ở chế độ tiếp nhận, kit
+không có tệp ấy nên lệnh hỏng ngay; `make validate` duyệt `plugins/*/` trong khi năm plugin của kit đang nằm ở gốc kho nên
+nó không kiểm plugin nào; lượt kiểm của khuôn bị bỏ qua vì kit đã có `gate.yml`. Phần chạy được ngay: bộ kiểm tệp khai
+plugin, lệnh nâng phiên bản, `.editorconfig`, `.nvmrc` (khuôn ghi `22`, khớp lượt kiểm tự động của kit). Bản đồ sản phẩm của
+kit không đỏ vì các tệp mới. Việc cho B1: áp khuôn SAU bước đổi bố cục, rồi nối `make test` vào bộ chạy kiểm thật của kit.
+Việc cho Repo Standards (chưa mở): ở chế độ tiếp nhận, `Makefile` trỏ `make test` vào một tệp mẫu mà chính nó đã bỏ qua.
+
 Dòng lệnh kịch bản chuyển nhà (B1) sẽ gọi:
 
 ```bash
