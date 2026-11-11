@@ -18,7 +18,7 @@ chủ kho.
 | Kế hoạch chốt với chủ kho (phương thức, tên tạm, bốn dãy việc) | `KE-HOACH.md` mục 3, 12, 13 |
 | Đo thử B0 — bỏ lịch sử, hồ sơ, sổ làm việc thì bao nhiêu ca kiểm đỏ | `KE-HOACH.md` mục 13 · `b0/ket-qua/` |
 | Kho `phanlemanh/delivery-loop` tạo trên GitHub, riêng tư, chạy kiểm tự động (Actions) tắt | `gh repo view phanlemanh/delivery-loop` |
-| `main` = nhánh chính kho cũ (lần cập nhật gần nhất 11/11: `6e5f4020`), đủ 30 thẻ chính thức | `git rev-parse origin/main kit-cu/main` |
+| `main` = nhánh chính kho cũ (lần cập nhật gần nhất 11/11: `11dfcd7f`), đủ 30 thẻ chính thức | `git rev-parse origin/main kit-cu/main` |
 | Nhánh `chuyen-nha` có thư mục `migration/` và tệp chỉ đường `.claude/rules/chuyen-nha.md` | nhánh này |
 | Thử kéo kho về chỗ trống và làm theo `MO-PHIEN.md` | 11/11, MacBook Pro — xem cuối tệp |
 | Thử plugin `repo-setup` trên kho này (không ghi): chưa có khuôn cho kho plugin, khuôn gần nhất thêm sai loại tệp | `KE-HOACH.md` mục 14 |
@@ -28,7 +28,7 @@ chủ kho.
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| A1 `luot-kiem-nhe` (T2) — lượt kiểm tự động chạy mảnh song song, bộ chạy tự so phiên bản Node, số đo từng ca | kho CŨ `acceptance-gate-kit`, phiên riêng trên MacBook Pro, cây làm việc riêng cắt từ nhánh chính `6e5f4020` | Chủ kho gọi tên vòng và máy 11/11 («MacBook Pro»). Vòng mới mở, chưa qua Cổng Đáng. Ba cổng của vòng vẫn là của chủ kho, ngân sách ≤3 lượt gọi. Trạng thái sống của vòng nằm ở hồ sơ `_acceptance/luot-kiem-nhe/` của kho cũ, không ở tệp này. |
+| A1 `luot-kiem-nhe` (T2) — lượt kiểm tự động chạy mảnh song song, bộ chạy tự so phiên bản Node, số đo từng ca | kho CŨ `acceptance-gate-kit`, phiên riêng trên MacBook Pro, cây làm việc riêng cắt từ nhánh chính `6e5f4020` | Chủ kho gọi tên vòng và máy 11/11 («MacBook Pro»). Đọc lúc cuối ngày 11/11: hợp đồng ở trạng thái `verified`, lượt chấm 1 PASS, gói bằng chứng đã commit trên cây làm việc; PR nháp #499 ở kho cũ (26 tệp, +1 925/−35), 16 việc kiểm xanh, việc `gate` đỏ đúng một vi phạm «chưa có báo cáo bằng chứng» đo trên đầu nhánh đã đẩy `773098c7` — trước khi gói bằng chứng lên. **Còn lại: Cổng Bằng chứng (chủ kho ký trong phiên của vòng), rồi gộp.** Ngân sách ≤3 lượt gọi. Trạng thái sống của vòng nằm ở hồ sơ `_acceptance/luot-kiem-nhe/` của kho cũ, không ở tệp này. |
 | — | — | R1 đã xong 11/11, xem «Đã xong» và các ghi chú dưới đây (giữ lại vì B1 cần). |
 
 R1 đã phát hành: `repo-setup` **0.5.0**, thẻ `repo-setup-v0.5.0` = `4dc53e0` trên nhánh chính `repo-standards` (PR
@@ -113,6 +113,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 11/11/2026 | MacBook Pro | A1: vòng qua hai cổng đầu, lượt chấm 1 PASS, PR nháp #499 ở kho cũ; chờ Cổng Bằng chứng. Kho cũ gộp #498 → cập nhật `main` kho này tới `11dfcd7f`. |
 | 11/11/2026 | MacBook Pro | Chủ kho hỏi vì sao chưa áp khuôn 0.5.0 lên kho này; thử trên bản sao rồi chủ kho chọn «Trong kịch bản B1» — áp sau bước đổi bố cục, không áp tay trước. |
 | 11/11/2026 | MacBook Pro | Chủ kho gọi tên vòng A1 `luot-kiem-nhe` và giao MacBook Pro chạy. Cập nhật `main` kho này theo kho cũ tới `6e5f4020`. Mở phiên riêng ở kho cũ cho vòng. |
 | 11/11/2026 | MacBook Pro | R1: chủ kho bảo «Phát hành 0.5.0» → PR #7 nâng phiên bản, xanh, gộp tại `4dc53e0`, cắt thẻ `repo-setup-v0.5.0`, tạo bản phát hành. Thử tiếp nhận ghi thật trên bản sao kit: chạy sạch. R1 đóng. |
