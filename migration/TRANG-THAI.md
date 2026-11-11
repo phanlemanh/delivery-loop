@@ -22,12 +22,23 @@ chủ kho.
 | Nhánh `chuyen-nha` có thư mục `migration/` và tệp chỉ đường `.claude/rules/chuyen-nha.md` | nhánh này |
 | Thử kéo kho về chỗ trống và làm theo `MO-PHIEN.md` | 11/11, MacBook Pro — xem cuối tệp |
 | Thử plugin `repo-setup` trên kho này (không ghi): chưa có khuôn cho kho plugin, khuôn gần nhất thêm sai loại tệp | `KE-HOACH.md` mục 14 |
+| R1 — khuôn «kho plugin» cho plugin `repo-setup`, phát hành ở bản 0.5.0 | `gh release view repo-setup-v0.5.0 --repo phanlemanh/repo-standards` · ghi chú ở «Đang dở» |
 
 ## Đang dở
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| R1 — khuôn «kho plugin» cho plugin `repo-setup` | kho `repo-standards`, nhánh chính @ `81f164c` (PR [#6](https://github.com/phanlemanh/repo-standards/pull/6) gộp 11/11 theo lời chủ kho, đầu nhánh `b2f67ea`) | Mã đã ở nhánh chính — B1 gọi thẳng `apply.py` từ một bản kéo về của `repo-standards` nên **đã dùng được**. Còn thiếu: **nâng phiên bản + phát hành** bản `repo-setup` kế, cần cho ai dùng plugin đã cài (lệnh `/repo-setup:*`), không chặn B1. Lượt kiểm tự động của PR xanh đủ bốn việc trước khi gộp; chưa ai xét duyệt mã từng dòng; lượt kiểm trên nhánh chính sau gộp chưa đọc. |
+| — | — | Không có việc dở. R1 đã xong 11/11, xem «Đã xong» và các ghi chú dưới đây (giữ lại vì B1 cần). |
+
+R1 đã phát hành: `repo-setup` **0.5.0**, thẻ `repo-setup-v0.5.0` = `4dc53e0` trên nhánh chính `repo-standards` (PR
+[#6](https://github.com/phanlemanh/repo-standards/pull/6) khuôn, PR [#7](https://github.com/phanlemanh/repo-standards/pull/7)
+nâng phiên bản; cả hai xanh đủ bốn việc kiểm trước khi gộp, nhánh chính sau PR #6 cũng xanh). Chưa ai xét duyệt mã từng
+dòng. Chưa chạy: lượt phát hành của mức `team` trên GitHub, các skill dựng kho trong một phiên thật trên kho plugin.
+
+**Bẫy trên MacBook Pro:** chợ `repo-standards` của máy này trỏ thẳng vào thư mục `~/dev/repo-standards`, mà thư mục ấy đang
+đứng ở nhánh `feat/design-layer` (sau nhánh chính 13 commit, chưa có khuôn mới, còn ghi 0.4.0). Vì thế các lệnh
+`/repo-setup:*` trên máy này CHƯA có khuôn «kho plugin» cho tới khi thư mục ấy về nhánh chính hoặc nhánh kia gộp nhánh
+chính vào. B1 đừng gọi công cụ từ thư mục ấy — dùng một bản kéo về riêng tại thẻ `repo-setup-v0.5.0`.
 
 Mã commit của nhánh đã đổi so với lần ghi trước (`0fa5473`): trước khi đẩy lên kho công khai, tên kho riêng tư dùng làm tên
 mẫu trong bộ kiểm được gỡ khỏi cả tệp lẫn lịch sử nhánh, rồi nhánh gộp thêm hai commit mới của nhánh chính. Kiểm lại tại
@@ -61,17 +72,17 @@ B1 cần quyết: có nhận tệp `.claude/skills/review-change/SKILL.md` khôn
 | # | Việc | Ở kho nào | Mở khi |
 |---|---|---|---|
 | 1 | Bật quét bí mật + chặn đẩy bí mật, bật tự xoá nhánh sau gộp | kho CŨ, cài đặt GitHub | chủ kho bảo (đổi cài đặt kho) |
-| 2 | R1 — phát hành bản `repo-setup` kế có khuôn «kho plugin» (mã đã gộp, xem «Đang dở») | `repo-standards` | chủ kho bảo phát hành — không chặn việc 4 |
+| 2 | ~~R1 — khuôn «kho plugin»~~ — xong 11/11, bản 0.5.0 | `repo-standards` | — |
 | 3 | A1 `luot-kiem-nhe` — chia mảnh lượt kiểm tự động, bộ chạy tự kiểm phiên bản Node → mốc 2.39 | kho CŨ | chủ kho gọi tên vòng VÀ nói máy nào chạy (việc sửa kit cũ từ 01/11 ở Mac Studio; lời 11/11 chỉ giao đợt chuyển nhà) |
-| 4 | B1 `kich-ban-chuyen-nha` — kịch bản sinh commit dọn nhà lên trên nhánh chính kho cũ | kho này, `migration/` | mốc 2.39 (khuôn đã ở nhánh chính `repo-standards` từ 11/11) · chủ kho gọi tên · chủ kho cho ngoại lệ luật chiều rộng (b) + đặt hạn dừng · chốt hẳn bảng tên |
+| 4 | B1 `kich-ban-chuyen-nha` — kịch bản sinh commit dọn nhà lên trên nhánh chính kho cũ | kho này, `migration/` | mốc 2.39 (khuôn đã phát hành ở `repo-setup` 0.5.0 từ 11/11) · chủ kho gọi tên · chủ kho cho ngoại lệ luật chiều rộng (b) + đặt hạn dừng · chốt hẳn bảng tên |
 | 5 | B2 `bo-kiem-xanh-o-kho-moi` | kho này | sau B1 (B1 đo lớp đỏ do đổi bố cục) |
 | 6 | B3 cắt sang — mốc 3.0, Quỹ hàng nhận trước | kho này + kho tiêu thụ | chữ ký của chủ kho |
 
-Việc 2 và 3 độc lập, chạy song song được. Chi tiết, thước đo và ước giờ máy: `KE-HOACH.md` mục 12.
+Việc 2 đã xong; việc đang chặn B1 là việc 3 (mốc 2.39 của kho cũ) và các quyết định ở mục dưới. Chi tiết, thước đo và ước giờ máy: `KE-HOACH.md` mục 12.
 
 ## Chờ chủ kho (chưa ai được tự quyết)
 
-1. Bảo làm việc nào trước trong các việc 1–3.
+1. Bảo làm việc 1 (cài đặt kho cũ) hay chưa.
 2. Gọi tên vòng A1 và máy chạy nó.
 3. Ngoại lệ luật chiều rộng (b) cho B1 + B2, và hạn dừng của đợt (đề xuất 21 ngày từ khi B1 mở).
 4. Chốt hẳn tên `delivery-loop` và bảng tên ở `KE-HOACH.md` mục 3.
@@ -93,6 +104,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 11/11/2026 | MacBook Pro | R1: chủ kho bảo «Phát hành 0.5.0» → PR #7 nâng phiên bản, xanh, gộp tại `4dc53e0`, cắt thẻ `repo-setup-v0.5.0`, tạo bản phát hành. Thử tiếp nhận ghi thật trên bản sao kit: chạy sạch. R1 đóng. |
 | 11/11/2026 | MacBook Pro | R1: lượt kiểm tự động của PR #6 xanh đủ bốn việc; chủ kho bảo «Gộp PR» → gộp vào nhánh chính `repo-standards` tại `81f164c`. Chưa phát hành. |
 | 11/11/2026 | MacBook Pro | R1: chủ kho bảo «Đẩy và mở PR» → gỡ tên kho riêng tư khỏi bộ kiểm, đuổi kịp nhánh chính, đẩy, mở PR #6 ở `repo-standards` tại `b2f67ea`. Chưa gộp. |
 | 11/11/2026 | MacBook Pro | Mở R1 ở kho `repo-standards` (phiên riêng); mã xong tại `0fa5473`, đã kiểm lại độc lập, chưa đẩy. |
