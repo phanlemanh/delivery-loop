@@ -25,7 +25,12 @@ chủ kho.
 
 ## Đang dở
 
-Không có việc máy nào đang chạy.
+| Việc | Ở đâu | Từ |
+|---|---|---|
+| R1 — khuôn «kho plugin» cho plugin `repo-setup` | kho `repo-standards`, nhánh riêng `plugin-marketplace-preset` (cây làm việc riêng trên MacBook Pro) | 11/11/2026, chủ kho bảo «làm khuôn trước» |
+
+R1 xong khi: `bash tests/run.sh` của `repo-standards` xanh, có điểm `doctor` trước → sau cho `repo-standards` và cho kit, và
+có đúng dòng lệnh `apply.py` mà kịch bản chuyển nhà sẽ gọi. Chưa gộp, chưa phát hành — chủ kho quyết.
 
 ## Kế — theo thứ tự phụ thuộc
 
@@ -64,4 +69,5 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 11/11/2026 | MacBook Pro | Mở R1 ở kho `repo-standards` (phiên riêng). |
 | 11/11/2026 | MacBook Pro | Dựng nền: kế hoạch, đo thử B0, tạo kho, đẩy lịch sử, viết bàn giao. Chủ kho ban đầu định giao Mac Studio, cuối ngày đổi: MacBook Pro làm tiếp. Thử kéo kho về chỗ trống: nhánh, thẻ, tệp bàn giao và lệnh cập nhật `main` đều chạy. |
