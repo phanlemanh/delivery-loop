@@ -28,7 +28,7 @@ chủ kho.
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| A1 `luot-kiem-nhe` (T2) — lượt kiểm tự động chạy mảnh song song, bộ chạy tự so phiên bản Node, số đo từng ca | kho CŨ `acceptance-gate-kit`, phiên riêng trên MacBook Pro, cây làm việc riêng cắt từ nhánh chính `6e5f4020` | Chủ kho gọi tên vòng và máy 11/11 («MacBook Pro»). Đọc lúc cuối ngày 11/11: hợp đồng ở trạng thái `verified`, lượt chấm 1 PASS, gói bằng chứng đã commit trên cây làm việc; PR nháp #499 ở kho cũ (26 tệp, +1 925/−35), 16 việc kiểm xanh, việc `gate` đỏ đúng một vi phạm «chưa có báo cáo bằng chứng» đo trên đầu nhánh đã đẩy `773098c7` — trước khi gói bằng chứng lên. **Còn lại: Cổng Bằng chứng (chủ kho ký trong phiên của vòng), rồi gộp.** Ngân sách ≤3 lượt gọi. Trạng thái sống của vòng nằm ở hồ sơ `_acceptance/luot-kiem-nhe/` của kho cũ, không ở tệp này. |
+| A1 `luot-kiem-nhe` (T2) — lượt kiểm tự động chạy mảnh song song, bộ chạy tự so phiên bản Node, số đo từng ca | kho CŨ `acceptance-gate-kit`, phiên riêng trên MacBook Pro, cây làm việc riêng cắt từ nhánh chính `6e5f4020` | Chủ kho gọi tên vòng và máy 11/11 («MacBook Pro»). Đọc tối 11/11: **chủ kho đã ký Cổng Bằng chứng** (hợp đồng `signed-off`, commit chữ ký `cbee02f7` đã đẩy); PR #499 ở kho cũ đã rời dạng nháp, CHƯA gộp. Phiên của vòng đang chạy làn ghim lại cho hai hồ sơ hoá cũ sau chữ ký (nó ước 1–1,5 giờ); việc `gate` đỏ tới khi bản ghim lên. **Còn lại: bản ghim, lượt kiểm tự động xanh, gộp.** Ngân sách ≤3 lượt gọi. Trạng thái sống của vòng nằm ở hồ sơ `_acceptance/luot-kiem-nhe/` của kho cũ, không ở tệp này. |
 | — | — | R1 đã xong 11/11, xem «Đã xong» và các ghi chú dưới đây (giữ lại vì B1 cần). |
 
 R1 đã phát hành: `repo-setup` **0.5.0**, thẻ `repo-setup-v0.5.0` = `4dc53e0` trên nhánh chính `repo-standards` (PR
@@ -113,6 +113,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 11/11/2026 | MacBook Pro | A1: chủ kho ký Cổng Bằng chứng (`cbee02f7`), PR #499 rời dạng nháp; đang ghim lại hai hồ sơ, chưa gộp. |
 | 11/11/2026 | MacBook Pro | A1: vòng qua hai cổng đầu, lượt chấm 1 PASS, PR nháp #499 ở kho cũ; chờ Cổng Bằng chứng. Kho cũ gộp #498 → cập nhật `main` kho này tới `11dfcd7f`. |
 | 11/11/2026 | MacBook Pro | Chủ kho hỏi vì sao chưa áp khuôn 0.5.0 lên kho này; thử trên bản sao rồi chủ kho chọn «Trong kịch bản B1» — áp sau bước đổi bố cục, không áp tay trước. |
 | 11/11/2026 | MacBook Pro | Chủ kho gọi tên vòng A1 `luot-kiem-nhe` và giao MacBook Pro chạy. Cập nhật `main` kho này theo kho cũ tới `6e5f4020`. Mở phiên riêng ở kho cũ cho vòng. |
