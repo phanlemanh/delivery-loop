@@ -27,7 +27,7 @@ chủ kho.
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| R1 — khuôn «kho plugin» cho plugin `repo-setup` | kho `repo-standards`, PR [#6](https://github.com/phanlemanh/repo-standards/pull/6), nhánh `claude/plugin-marketplace-preset-7a7427` @ `b2f67ea` (đã gộp nhánh chính mới nhất vào nhánh) | Đã đẩy và mở PR 11/11 theo lời chủ kho. **Chưa gộp, chưa nâng phiên bản, chưa phát hành.** Lượt kiểm tự động của PR (bốn việc, có bộ kiểm đầy đủ) lúc ghi dòng này còn đang xếp hàng — đọc kết quả ở PR. Chủ kho quyết gộp + phát hành. |
+| R1 — khuôn «kho plugin» cho plugin `repo-setup` | kho `repo-standards`, PR [#6](https://github.com/phanlemanh/repo-standards/pull/6), nhánh `claude/plugin-marketplace-preset-7a7427` @ `b2f67ea` (đã gộp nhánh chính mới nhất vào nhánh) | Đã đẩy và mở PR 11/11 theo lời chủ kho. **Chưa gộp, chưa nâng phiên bản, chưa phát hành.** Lượt kiểm tự động của PR xanh đủ bốn việc tại `b2f67ea` (bộ kiểm nhanh trên Linux và macOS, bộ kiểm đầy đủ, kiểm tệp khai plugin); GitHub báo gộp sạch. Chưa có ai xét duyệt mã từng dòng. Chủ kho quyết gộp + phát hành. |
 
 Mã commit của nhánh đã đổi so với lần ghi trước (`0fa5473`): trước khi đẩy lên kho công khai, tên kho riêng tư dùng làm tên
 mẫu trong bộ kiểm được gỡ khỏi cả tệp lẫn lịch sử nhánh, rồi nhánh gộp thêm hai commit mới của nhánh chính. Kiểm lại tại
@@ -53,7 +53,7 @@ B1 cần quyết: có nhận tệp `.claude/skills/review-change/SKILL.md` khôn
 | # | Việc | Ở kho nào | Mở khi |
 |---|---|---|---|
 | 1 | Bật quét bí mật + chặn đẩy bí mật, bật tự xoá nhánh sau gộp | kho CŨ, cài đặt GitHub | chủ kho bảo (đổi cài đặt kho) |
-| 2 | R1 — gộp PR #6 khuôn «kho plugin» rồi phát hành bản `repo-setup` kế (xem «Đang dở») | `repo-standards` | lượt kiểm tự động của PR xanh · chủ kho bảo gộp + phát hành |
+| 2 | R1 — gộp PR #6 khuôn «kho plugin» rồi phát hành bản `repo-setup` kế (xem «Đang dở») | `repo-standards` | chủ kho bảo gộp + phát hành (lượt kiểm tự động đã xanh 11/11) |
 | 3 | A1 `luot-kiem-nhe` — chia mảnh lượt kiểm tự động, bộ chạy tự kiểm phiên bản Node → mốc 2.39 | kho CŨ | chủ kho gọi tên vòng VÀ nói máy nào chạy (việc sửa kit cũ từ 01/11 ở Mac Studio; lời 11/11 chỉ giao đợt chuyển nhà) |
 | 4 | B1 `kich-ban-chuyen-nha` — kịch bản sinh commit dọn nhà lên trên nhánh chính kho cũ | kho này, `migration/` | xong việc 2 và mốc 2.39 · chủ kho gọi tên · chủ kho cho ngoại lệ luật chiều rộng (b) + đặt hạn dừng · chốt hẳn bảng tên |
 | 5 | B2 `bo-kiem-xanh-o-kho-moi` | kho này | sau B1 (B1 đo lớp đỏ do đổi bố cục) |
