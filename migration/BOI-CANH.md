@@ -32,6 +32,8 @@ kia không nói: ai đã quyết gì, luật làm việc của đợt, và các 
 8. Việc sửa kit CŨ (các vòng của `acceptance-gate-kit`) từ 01/11 làm ở Mac Studio. **Riêng vòng A1 `luot-kiem-nhe`: chủ kho
    gọi tên và giao MacBook Pro chạy (11/11).** Các vòng kit khác vẫn ở Mac Studio.
 9. Khuôn «kho plugin» của Repo Standards (dãy R) đã xong và phát hành ở `repo-setup` 0.5.0 (11/11).
+10. **Khuôn áp TRONG kịch bản chuyển nhà (B1), sau bước đổi bố cục — không áp tay lên cây kho này trước đó** (chủ kho chọn
+    11/11, «Trong kịch bản B1»). Lý do và số đo: `TRANG-THAI.md`, đoạn «Vì sao chưa áp khuôn thẳng lên cây kho này».
 
 ## Chủ kho CHƯA quyết (đừng tự quyết)
 

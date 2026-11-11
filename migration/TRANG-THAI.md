@@ -113,6 +113,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 11/11/2026 | MacBook Pro | Chủ kho hỏi vì sao chưa áp khuôn 0.5.0 lên kho này; thử trên bản sao rồi chủ kho chọn «Trong kịch bản B1» — áp sau bước đổi bố cục, không áp tay trước. |
 | 11/11/2026 | MacBook Pro | Chủ kho gọi tên vòng A1 `luot-kiem-nhe` và giao MacBook Pro chạy. Cập nhật `main` kho này theo kho cũ tới `6e5f4020`. Mở phiên riêng ở kho cũ cho vòng. |
 | 11/11/2026 | MacBook Pro | R1: chủ kho bảo «Phát hành 0.5.0» → PR #7 nâng phiên bản, xanh, gộp tại `4dc53e0`, cắt thẻ `repo-setup-v0.5.0`, tạo bản phát hành. Thử tiếp nhận ghi thật trên bản sao kit: chạy sạch. R1 đóng. |
 | 11/11/2026 | MacBook Pro | R1: lượt kiểm tự động của PR #6 xanh đủ bốn việc; chủ kho bảo «Gộp PR» → gộp vào nhánh chính `repo-standards` tại `81f164c`. Chưa phát hành. |
