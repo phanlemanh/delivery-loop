@@ -7,8 +7,9 @@ Tệp duy nhất phải sửa mỗi khi đổi máy hoặc xong một việc. Ai
 
 **MacBook Pro** — từ 11/11/2026, chủ kho giao («MacBook Pro làm tiếp»).
 
-**Chưa nhả (12/11).** MacBook Pro không còn việc dở ở đợt này và không có gì chỉ nằm trên máy, nhưng chủ kho mới nói sẽ
-chuyển phần dọn nhà (dãy B) sang Mac Studio chứ chưa bảo đổi. Khi chủ kho bảo, MacBook Pro tạo commit nhả theo luật dưới.
+**ĐÃ NHẢ 12/11 — chờ Mac Studio nhận.** Chủ kho bảo «Nhả cho Mac Studio». MacBook Pro đã đẩy hết và tạo commit nhả;
+không còn gì chỉ nằm trên máy ấy. Mac Studio nhận theo Bước 2 của `MO-PHIEN.md` (kiểm dòng nhả, rồi sửa dòng trên thành
+«Mac Studio» + ngày). Lúc nhả: `main` = nhánh chính kho cũ `909dffd8`, lượt chạy trọn đầu tiên trên đó sau A1 đã xanh.
 
 Luật giữ: mỗi lúc chỉ MỘT máy sửa nhánh `chuyen-nha`. **Máy đang giữ, trước khi rời:** đẩy hết, rồi tạo một commit có thông
 điệp bắt đầu bằng «migration: <tên máy> nhả» và không sửa gì sau đó. **Máy nhận:** (1) kéo nhánh về, (2) kiểm
@@ -142,6 +143,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 12/11/2026 | MacBook Pro | **Nhả.** Chủ kho bảo «Nhả cho Mac Studio». Đã đẩy hết; `main` khớp kho cũ `909dffd8`. Máy nhận kế: Mac Studio. |
 | 12/11/2026 | MacBook Pro | Tra soát kho cũ: dựng ba kịch bản sinh sổ ở `tra-soat/` cùng 13 ca kiểm hai chiều (mỗi ca đã phá thử cho đỏ); đo trên kit `909dffd8`, Quỹ hàng `eedec225`, crm `74a29a68`. Đầu vào B1 ở `BOI-CANH.md` trỏ sang sổ. |
 | 12/11/2026 | MacBook Pro | A1 gộp vào nhánh chính kho cũ (`909dffd8`, PR #499); cập nhật `main` kho này theo. Chủ kho bảo kiểm lại bộ bàn giao để Mac Studio nhận phần dọn nhà: kéo sạch, làm theo `MO-PHIEN.md`, cho một phiên trắng đọc thử, sửa các chỗ đã cũ, thêm đầu vào cho B1 vào `BOI-CANH.md`. |
 | 11/11/2026 | MacBook Pro | A1: chủ kho ký Cổng Bằng chứng (`cbee02f7`), PR #499 rời dạng nháp; đang ghim lại hai hồ sơ, chưa gộp. |
@@ -171,7 +173,7 @@ chưa đổi thì nó không làm gì.
 
 **Chưa chạy:** hai bộ kiểm lớn (script, plugin — khoảng một giờ) trên nhánh `chuyen-nha` · trọn kịch bản đo B0 từ bản trong
 kho (mới thử bước dựng) · bất cứ điều gì trên chính Mac Studio (bản Node, nguồn chợ plugin, bản kéo kho tiêu thụ) · tệp chỉ
-đường có tự nạp trên máy khác không · lượt chạy trọn đầu tiên trên nhánh chính kho cũ sau A1 còn đang chạy lúc ghi.
+đường có tự nạp trên máy khác không · lượt chạy trọn đầu tiên trên nhánh chính kho cũ sau A1 — sau đó đã xanh (đọc lúc nhả 12/11).
 
 **Cài đặt kho trên GitHub:** kho mới đang khác kho cũ ở ba điểm (cho gộp dồn, không khoá nhánh chính, chạy kiểm tắt) —
 bảng ở `BOI-CANH.md`. Lưu ý: lệnh cập nhật `main` đẩy thẳng lên `main`, nên khoá nhánh chính trước ngày cắt sẽ làm nó hỏng —
