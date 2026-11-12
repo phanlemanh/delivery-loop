@@ -7,8 +7,13 @@ Tệp duy nhất phải sửa mỗi khi đổi máy hoặc xong một việc. Ai
 
 **MacBook Pro** — từ 11/11/2026, chủ kho giao («MacBook Pro làm tiếp»).
 
-Luật giữ: mỗi lúc chỉ MỘT máy sửa nhánh `chuyen-nha`. Máy khác muốn làm tiếp thì (1) kéo nhánh về, (2) sửa dòng trên thành
-tên máy mình + ngày, commit, đẩy, (3) rồi mới làm. Thấy dòng trên không phải máy mình mà chủ kho chưa bảo đổi → dừng, hỏi
+**Chưa nhả (12/11).** MacBook Pro không còn việc dở ở đợt này và không có gì chỉ nằm trên máy, nhưng chủ kho mới nói sẽ
+chuyển phần dọn nhà (dãy B) sang Mac Studio chứ chưa bảo đổi. Khi chủ kho bảo, MacBook Pro tạo commit nhả theo luật dưới.
+
+Luật giữ: mỗi lúc chỉ MỘT máy sửa nhánh `chuyen-nha`. **Máy đang giữ, trước khi rời:** đẩy hết, rồi tạo một commit có thông
+điệp bắt đầu bằng «migration: <tên máy> nhả» và không sửa gì sau đó. **Máy nhận:** (1) kéo nhánh về, (2) kiểm
+`git log -1 --format=%s origin/chuyen-nha` đúng là dòng nhả ấy — không phải thì dừng, hỏi chủ kho, (3) sửa dòng trên thành
+tên máy mình + ngày, commit, đẩy, (4) rồi mới làm. Thấy dòng trên không phải máy mình mà chủ kho chưa bảo đổi → dừng, hỏi
 chủ kho.
 
 ## Đã xong
@@ -18,30 +23,44 @@ chủ kho.
 | Kế hoạch chốt với chủ kho (phương thức, tên tạm, bốn dãy việc) | `KE-HOACH.md` mục 3, 12, 13 |
 | Đo thử B0 — bỏ lịch sử, hồ sơ, sổ làm việc thì bao nhiêu ca kiểm đỏ | `KE-HOACH.md` mục 13 · `b0/ket-qua/` |
 | Kho `phanlemanh/delivery-loop` tạo trên GitHub, riêng tư, chạy kiểm tự động (Actions) tắt | `gh repo view phanlemanh/delivery-loop` |
-| `main` = nhánh chính kho cũ (lần cập nhật gần nhất 11/11: `11dfcd7f`), đủ 30 thẻ chính thức | `git rev-parse origin/main kit-cu/main` |
+| `main` = nhánh chính kho cũ (lần cập nhật gần nhất 12/11: `909dffd8`), đủ 30 thẻ chính thức | `git rev-parse origin/main kit-cu/main` |
 | Nhánh `chuyen-nha` có thư mục `migration/` và tệp chỉ đường `.claude/rules/chuyen-nha.md` | nhánh này |
 | Thử kéo kho về chỗ trống và làm theo `MO-PHIEN.md` | 11/11, MacBook Pro — xem cuối tệp |
 | Thử plugin `repo-setup` trên kho này (không ghi): chưa có khuôn cho kho plugin, khuôn gần nhất thêm sai loại tệp | `KE-HOACH.md` mục 14 |
-| R1 — khuôn «kho plugin» cho plugin `repo-setup`, phát hành ở bản 0.5.0 | `gh release view repo-setup-v0.5.0 --repo phanlemanh/repo-standards` · ghi chú ở «Đang dở» |
+| R1 — khuôn «kho plugin» cho plugin `repo-setup`, phát hành ở bản 0.5.0 | `gh release view repo-setup-v0.5.0 --repo phanlemanh/repo-standards` · ghi chú ở «Ghi chú giữ cho B1» |
+| A1 `luot-kiem-nhe` — lượt kiểm của PR chạy 13 mảnh song song, nhánh chính vẫn chạy trọn; bộ chạy tự so bản Node với `.nvmrc`; có bảng thời gian từng ca. Chủ kho ký hai cổng, gộp 12/11 tại `909dffd8` | `gh pr view 499 --repo phanlemanh/acceptance-gate-kit` · hồ sơ `_acceptance/luot-kiem-nhe/` trên `main` |
+| Kiểm lại bộ bàn giao trên một bản kéo sạch (12/11) — xem «Kiểm bàn giao 12/11» cuối tệp | mục đó |
 
 ## Đang dở
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| A1 `luot-kiem-nhe` (T2) — lượt kiểm tự động chạy mảnh song song, bộ chạy tự so phiên bản Node, số đo từng ca | kho CŨ `acceptance-gate-kit`, phiên riêng trên MacBook Pro, cây làm việc riêng cắt từ nhánh chính `6e5f4020` | Chủ kho gọi tên vòng và máy 11/11 («MacBook Pro»). Đọc tối 11/11: **chủ kho đã ký Cổng Bằng chứng** (hợp đồng `signed-off`, commit chữ ký `cbee02f7` đã đẩy); PR #499 ở kho cũ đã rời dạng nháp, CHƯA gộp. Phiên của vòng đang chạy làn ghim lại cho hai hồ sơ hoá cũ sau chữ ký (nó ước 1–1,5 giờ); việc `gate` đỏ tới khi bản ghim lên. **Còn lại: bản ghim, lượt kiểm tự động xanh, gộp.** Ngân sách ≤3 lượt gọi. Trạng thái sống của vòng nằm ở hồ sơ `_acceptance/luot-kiem-nhe/` của kho cũ, không ở tệp này. |
-| — | — | R1 đã xong 11/11, xem «Đã xong» và các ghi chú dưới đây (giữ lại vì B1 cần). |
+| — | — | Không có việc nào đang dở ở kho này. Việc kế là mốc 2.39 của kho cũ (bảng «Kế»). |
+
+## Ghi chú giữ cho B1
+
+**Điều A1 để lại mà B1 phải biết (đo 12/11 trên `909dffd8`):** kho cũ nay có `.nvmrc` ghi `24`; bốn bộ chạy kiểm tự so và
+**thoát mã 3 ngay khi bản Node của máy lệch số chính** — kiểm trước bằng `bash tests/bo-chay.sh node`. Lượt kiểm của PR là 13
+việc song song (phiên A1 báo 6,5–6,9 phút, trước đó 57–67); đẩy lên nhánh chính vẫn chạy trọn một việc như cũ. Giới hạn
+phiên A1 đã ghi vào hạt giống: bước cài `zsh` nay chạy ở 8 mảnh nên một lần máy kiểm mất mạng làm đỏ oan cả 8.
 
 R1 đã phát hành: `repo-setup` **0.5.0**, thẻ `repo-setup-v0.5.0` = `4dc53e0` trên nhánh chính `repo-standards` (PR
 [#6](https://github.com/phanlemanh/repo-standards/pull/6) khuôn, PR [#7](https://github.com/phanlemanh/repo-standards/pull/7)
 nâng phiên bản; cả hai xanh đủ bốn việc kiểm trước khi gộp, nhánh chính sau PR #6 cũng xanh). Chưa ai xét duyệt mã từng
 dòng. Chưa chạy: lượt phát hành của mức `team` trên GitHub, các skill dựng kho trong một phiên thật trên kho plugin.
 
-**Bẫy trên MacBook Pro:** chợ `repo-standards` của máy này trỏ thẳng vào thư mục `~/dev/repo-standards`, mà thư mục ấy đang
-đứng ở nhánh `feat/design-layer` (sau nhánh chính 13 commit, chưa có khuôn mới, còn ghi 0.4.0). Vì thế các lệnh
-`/repo-setup:*` trên máy này CHƯA có khuôn «kho plugin» cho tới khi thư mục ấy về nhánh chính hoặc nhánh kia gộp nhánh
-chính vào. B1 đừng gọi công cụ từ thư mục ấy — dùng một bản kéo về riêng tại thẻ `repo-setup-v0.5.0`.
+**Gọi công cụ khuôn từ đâu (đo lại 12/11):** nhánh chính `repo-standards` đã đi tiếp sau thẻ 0.5.0 (gộp thêm lớp thiết
+kế tại `1f405a9`, số phiên bản vẫn ghi 0.5.0). Vì thế «bản 0.5.0» và «nhánh chính» không còn là một — B1 gọi công cụ từ một
+bản kéo riêng tại ĐÚNG thẻ, không từ thư mục làm việc `repo-standards` của máy nào:
 
-Mã commit của nhánh đã đổi so với lần ghi trước (`0fa5473`): trước khi đẩy lên kho công khai, tên kho riêng tư dùng làm tên
+```bash
+git clone --depth 1 --branch repo-setup-v0.5.0 https://github.com/phanlemanh/repo-standards.git <chỗ tạm>/rs
+```
+
+Bẫy ghi 11/11 về thư mục `~/dev/repo-standards` của MacBook Pro đứng ở nhánh cũ đã hết: thư mục ấy nay ở nhánh chính.
+Công cụ cần `python3` 3.11 trở lên.
+
+(Đoạn này và đoạn kế nói về kho `repo-standards`, không phải kit.) Mã commit của nhánh đã đổi so với lần ghi trước (`0fa5473`): trước khi đẩy lên kho công khai, tên kho riêng tư dùng làm tên
 mẫu trong bộ kiểm được gỡ khỏi cả tệp lẫn lịch sử nhánh, rồi nhánh gộp thêm hai commit mới của nhánh chính. Kiểm lại tại
 `b2f67ea`: `bash tests/run.sh` xanh (46 nhóm, 0 lỗi).
 
@@ -55,16 +74,18 @@ lệch nhau, mô tả plugin quá dài, thiếu lệnh nâng phiên bản, lư�
 Tiếp nhận GHI THẬT trên một bản sao của kit (11/11, MacBook Pro, bản sao ở thư mục tạm, kit tại `9ff2e4f7`, công cụ tại bản
 0.5.0): chạy sạch · thêm 6 đường dẫn (`.claude/skills/`, `.editorconfig`, `.nvmrc`, `.repo-setup.json`, `Makefile`,
 `tools/`) · trộn dòng vào 2 tệp đã có (`.gitattributes`, `.gitignore`) · không ghi đè, không xoá tệp nào · `doctor` 9/20 →
-14/20 mục chấm. Bộ kiểm tệp khai plugin vừa thêm (`tools/plugin_lint.py`) báo 4 lỗi trên kit — đây là việc của kịch bản
-chuyển nhà: sáu plugin lệch phiên bản (`diagram-design` 2.7.1, năm cái còn lại 2.38.1) · plugin lõi lấy cả kho làm nguồn ·
-mô tả của plugin lõi dài 84 582 ký tự và của `feature-loop` 34 579 ký tự (trần 1 024; hai con số này do bộ kiểm in, chưa
-ai đối chiếu tay).
+14/20 mục chấm. Bộ kiểm tệp khai plugin vừa thêm (`tools/plugin_lint.py`) báo 4 lỗi trên kit. Hai lỗi đầu là việc của kịch bản
+chuyển nhà; hai lỗi mô tả dài là việc của mốc 2.39 ở kho cũ (`KE-HOACH.md` mục 12), kịch bản chỉ kiểm chúng đã hết: sáu plugin lệch phiên bản (`diagram-design` 2.7.1, năm cái còn lại 2.38.1) · plugin lõi lấy cả kho làm nguồn ·
+mô tả của plugin lõi dài 84 582 ký tự và của `feature-loop` 34 579 ký tự (trần 1 024; 12/11 đo thẳng hai tệp
+khai plugin trên `909dffd8`: đúng hai con số ấy).
 
 **Vì sao chưa áp khuôn thẳng lên cây kho này (đo 11/11 trên bản sao đã tiếp nhận):** khuôn 0.5.0 giả định bố cục SAU khi
 dọn nhà. Trên cây hiện tại của kit: lệnh gom `make check` gọi `tests/run.sh` — tệp mẫu bị bỏ qua ở chế độ tiếp nhận, kit
 không có tệp ấy nên lệnh hỏng ngay; `make validate` duyệt `plugins/*/` trong khi năm plugin của kit đang nằm ở gốc kho nên
 nó không kiểm plugin nào; lượt kiểm của khuôn bị bỏ qua vì kit đã có `gate.yml`. Phần chạy được ngay: bộ kiểm tệp khai
-plugin, lệnh nâng phiên bản, `.editorconfig`, `.nvmrc` (khuôn ghi `22`, khớp lượt kiểm tự động của kit). Bản đồ sản phẩm của
+plugin, lệnh nâng phiên bản, `.editorconfig`, `.nvmrc` (lúc đo khuôn ghi `22`; từ 12/11 kho cũ đã có `.nvmrc`
+ghi `24` nên khuôn để nguyên tệp ấy — thử không ghi 12/11 trên bản kéo sạch: khuôn báo giữ nguyên 5 tệp trùng
+`.claude/settings.json`, `.nvmrc`, `CLAUDE.md`, `LICENSE`, `README.md`). Bản đồ sản phẩm của
 kit không đỏ vì các tệp mới. Việc cho B1: áp khuôn SAU bước đổi bố cục, rồi nối `make test` vào bộ chạy kiểm thật của kit.
 Việc cho Repo Standards (chưa mở): ở chế độ tiếp nhận, `Makefile` trỏ `make test` vào một tệp mẫu mà chính nó đã bỏ qua.
 
@@ -74,6 +95,9 @@ Dòng lệnh kịch bản chuyển nhà (B1) sẽ gọi:
 python3 <repo-standards>/plugins/repo-setup/scripts/apply.py --target <cây kho mới> --preset claude-plugin --level starter --adopt --var project_name=delivery-loop --var description="<mô tả>" --var owner=phanlemanh
 ```
 
+Giá trị cho chỗ trống: `<repo-standards>` = bản kéo tại thẻ ở đoạn «Gọi công cụ khuôn từ đâu»; `<mô tả>` = một câu mô tả kho,
+B1 soạn và chủ kho thấy ở Cổng Phạm vi.
+
 B1 cần quyết: có nhận tệp `.claude/skills/review-change/SKILL.md` không (kit đã có đường xét duyệt riêng).
 
 ## Kế — theo thứ tự phụ thuộc
@@ -82,21 +106,25 @@ B1 cần quyết: có nhận tệp `.claude/skills/review-change/SKILL.md` khôn
 |---|---|---|---|
 | 1 | Bật quét bí mật + chặn đẩy bí mật, bật tự xoá nhánh sau gộp | kho CŨ, cài đặt GitHub | chủ kho bảo (đổi cài đặt kho) |
 | 2 | ~~R1 — khuôn «kho plugin»~~ — xong 11/11, bản 0.5.0 | `repo-standards` | — |
-| 3 | A1 `luot-kiem-nhe` — chia mảnh lượt kiểm tự động, bộ chạy tự kiểm phiên bản Node → mốc 2.39 | kho CŨ | ĐANG CHẠY trên MacBook Pro từ 11/11 (chủ kho gọi tên) — xem «Đang dở». Các vòng kit khác vẫn ở Mac Studio: hai máy cùng sửa kho cũ, A1 chỉ chạm lượt kiểm tự động và hai bộ chạy kiểm |
-| 4 | B1 `kich-ban-chuyen-nha` — kịch bản sinh commit dọn nhà lên trên nhánh chính kho cũ | kho này, `migration/` | mốc 2.39 (khuôn đã phát hành ở `repo-setup` 0.5.0 từ 11/11) · chủ kho gọi tên · chủ kho cho ngoại lệ luật chiều rộng (b) + đặt hạn dừng · chốt hẳn bảng tên |
+| 3 | ~~A1 `luot-kiem-nhe`~~ — xong 12/11, gộp tại `909dffd8` | kho CŨ | — |
+| 3b | **Mốc 2.39** (làn V): ba việc chỉ-bớt + cắt số + một kho tiêu thụ cài. Đo 12/11 cả ba CHƯA làm: mô tả trong tệp khai plugin lõi còn 84 582 ký tự và `feature-loop` 34 579 · hai tệp thừa `scripts/rel-cua-so.sh`, `lib/eval-yaml.js` còn (xoá phải kèm: `tests/plugins/run-tests.sh` nhắc tệp sau, `CHANGELOG.md` nhắc tệp trước như công cụ đối chiếu lúc cắt mốc) · `.env` chưa vào danh sách bỏ qua. Chưa có hồ sơ mốc | kho CŨ, làm ở Mac Studio (việc kit ở Mac Studio) | chủ kho gọi tên mốc và kho nhận |
+| 4 | B1 `kich-ban-chuyen-nha` — kịch bản sinh commit dọn nhà lên trên nhánh chính kho cũ. Đầu vào và các câu còn mở: `BOI-CANH.md`, hai mục «Đầu vào cho B1» | kho này, `migration/` | **hai điều kiện:** mốc 2.39 đã có một kho tiêu thụ cài (việc 3b) · chủ kho gọi đích danh tên vòng (`kich-ban-chuyen-nha` hoặc «B1»; câu giao máy KHÔNG phải gọi tên vòng). Ngoại lệ luật chiều rộng (b), hạn dừng và bảng tên KHÔNG phải điều kiện mở — chủ kho quyết chúng tại Cổng Phạm vi của chính B1 (`KE-HOACH.md` mục 12) |
 | 5 | B2 `bo-kiem-xanh-o-kho-moi` | kho này | sau B1 (B1 đo lớp đỏ do đổi bố cục) |
 | 6 | B3 cắt sang — mốc 3.0, Quỹ hàng nhận trước | kho này + kho tiêu thụ | chữ ký của chủ kho |
 
-Việc 2 đã xong; việc đang chặn B1 là việc 3 (mốc 2.39 của kho cũ) và các quyết định ở mục dưới. Chi tiết, thước đo và ước giờ máy: `KE-HOACH.md` mục 12.
+Việc 2 và 3 đã xong; việc đang chặn B1 là việc 3b (mốc 2.39 của kho cũ, một kho tiêu thụ đã cài) và các quyết định ở mục dưới. Chi tiết, thước đo và ước giờ máy: `KE-HOACH.md` mục 12.
 
 ## Chờ chủ kho (chưa ai được tự quyết)
 
 1. Bảo làm việc 1 (cài đặt kho cũ) hay chưa.
 2. ~~Gọi tên vòng A1 và máy chạy nó~~ — xong 11/11: MacBook Pro.
-3. Ngoại lệ luật chiều rộng (b) cho B1 + B2, và hạn dừng của đợt (đề xuất 21 ngày từ khi B1 mở).
-4. Chốt hẳn tên `delivery-loop` và bảng tên ở `KE-HOACH.md` mục 3.
+3. Ngoại lệ luật chiều rộng (b) cho B1 + B2, và hạn dừng của đợt (đề xuất 21 ngày từ khi B1 mở) — quyết tại Cổng Phạm vi của B1.
+4. Chốt hẳn tên `delivery-loop` và bảng tên ở `KE-HOACH.md` mục 3 — quyết tại Cổng Phạm vi của B1.
 5. Ngày cắt sang.
 6. Vòng riêng cho hai tệp máy vẽ — hai hạt giống 16/10 và 30/10.
+7. Gọi tên mốc 2.39 và kho tiêu thụ nhận nó (việc 3b) — đây là thứ đang chặn B1.
+8. Bảo máy nào giữ đợt từ nay (chủ kho nói 12/11 sẽ chuyển sang Mac Studio; chưa bảo đổi).
+9. Cài đặt của kho này trên GitHub trước ngày cắt — xem «Kiểm bàn giao 12/11», mục cài đặt.
 
 ## Việc lặp lại: cập nhật `main` khi kho cũ đi thêm
 
@@ -113,6 +141,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 12/11/2026 | MacBook Pro | A1 gộp vào nhánh chính kho cũ (`909dffd8`, PR #499); cập nhật `main` kho này theo. Chủ kho bảo kiểm lại bộ bàn giao để Mac Studio nhận phần dọn nhà: kéo sạch, làm theo `MO-PHIEN.md`, cho một phiên trắng đọc thử, sửa các chỗ đã cũ, thêm đầu vào cho B1 vào `BOI-CANH.md`. |
 | 11/11/2026 | MacBook Pro | A1: chủ kho ký Cổng Bằng chứng (`cbee02f7`), PR #499 rời dạng nháp; đang ghim lại hai hồ sơ, chưa gộp. |
 | 11/11/2026 | MacBook Pro | A1: vòng qua hai cổng đầu, lượt chấm 1 PASS, PR nháp #499 ở kho cũ; chờ Cổng Bằng chứng. Kho cũ gộp #498 → cập nhật `main` kho này tới `11dfcd7f`. |
 | 11/11/2026 | MacBook Pro | Chủ kho hỏi vì sao chưa áp khuôn 0.5.0 lên kho này; thử trên bản sao rồi chủ kho chọn «Trong kịch bản B1» — áp sau bước đổi bố cục, không áp tay trước. |
@@ -122,3 +151,26 @@ chưa đổi thì nó không làm gì.
 | 11/11/2026 | MacBook Pro | R1: chủ kho bảo «Đẩy và mở PR» → gỡ tên kho riêng tư khỏi bộ kiểm, đuổi kịp nhánh chính, đẩy, mở PR #6 ở `repo-standards` tại `b2f67ea`. Chưa gộp. |
 | 11/11/2026 | MacBook Pro | Mở R1 ở kho `repo-standards` (phiên riêng); mã xong tại `0fa5473`, đã kiểm lại độc lập, chưa đẩy. |
 | 11/11/2026 | MacBook Pro | Dựng nền: kế hoạch, đo thử B0, tạo kho, đẩy lịch sử, viết bàn giao. Chủ kho ban đầu định giao Mac Studio, cuối ngày đổi: MacBook Pro làm tiếp. Thử kéo kho về chỗ trống: nhánh, thẻ, tệp bàn giao và lệnh cập nhật `main` đều chạy. |
+
+## Kiểm bàn giao 12/11 (MacBook Pro)
+
+Đã chạy thật, trên một thư mục trống, bản `chuyen-nha` `4c0f368c`:
+
+| Việc | Kết quả |
+|---|---|
+| Lệnh kéo kho của `MO-PHIEN.md` Bước 1 | chạy; 30 thẻ, 5 768 commit, `main` của hai kho cùng `909dffd8` |
+| Lệnh cập nhật `main` chạy lại khi kho cũ không đổi | không làm gì, đúng như ghi |
+| Bộ tự so bản Node `bash tests/bo-chay.sh node` | «khớp» (máy Node 24.22, kho khai 24) |
+| Kịch bản đo `b0/dung-ban-sao.sh`, bước chạy bộ kiểm thay bằng bản giả | dựng đủ ba bản sao trong 44 giây (A 5 750 commit · B một commit, 5 723 tệp · C 1 875 tệp) |
+| Khuôn 0.5.0 kéo từ thẻ, thử không ghi lên bản kéo sạch | bộ dò nhận `claude-plugin`; cây không đổi tệp nào |
+| Bốn bộ kiểm nhanh của kit trên nhánh `chuyen-nha` (có thêm `migration/`) | bản đồ sản phẩm khớp · hooks 71/71 · workflows xanh · điều phối 667/667 |
+| Một phiên không biết gì đọc thử bộ bàn giao | 6 chỗ nặng, 8 vừa, 7 nhẹ — đã sửa ở commit này; phần không sửa được bằng chữ thành chín «câu còn mở» ở `BOI-CANH.md`; ba chỗ nhiễu nhẹ trong phần lịch sử của `KE-HOACH.md` để nguyên |
+| Thứ chỉ có trên MacBook Pro (ba kho) | không có commit nào GitHub chưa có |
+
+**Chưa chạy:** hai bộ kiểm lớn (script, plugin — khoảng một giờ) trên nhánh `chuyen-nha` · trọn kịch bản đo B0 từ bản trong
+kho (mới thử bước dựng) · bất cứ điều gì trên chính Mac Studio (bản Node, nguồn chợ plugin, bản kéo kho tiêu thụ) · tệp chỉ
+đường có tự nạp trên máy khác không · lượt chạy trọn đầu tiên trên nhánh chính kho cũ sau A1 còn đang chạy lúc ghi.
+
+**Cài đặt kho trên GitHub:** kho mới đang khác kho cũ ở ba điểm (cho gộp dồn, không khoá nhánh chính, chạy kiểm tắt) —
+bảng ở `BOI-CANH.md`. Lưu ý: lệnh cập nhật `main` đẩy thẳng lên `main`, nên khoá nhánh chính trước ngày cắt sẽ làm nó hỏng —
+đề xuất khoá vào ngày cắt.

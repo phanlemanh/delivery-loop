@@ -5,11 +5,11 @@
 > mục 4 bị mục 12 thay, mục 11 bị mục 13 sửa). Đang ở đâu: `TRANG-THAI.md`. Bối cảnh và luật làm việc: `BOI-CANH.md`.
 >
 > **Về tên máy trong tệp này:** các mục 10–13 viết lúc định giao Mac Studio. Với đợt chuyển nhà (dãy B, dãy R), đọc «Mac
-> Studio» là «máy đang giữ» ghi ở `TRANG-THAI.md`. Riêng dãy A là vòng của kho CŨ — máy chạy nó chưa được chủ kho gọi tên.
+> Studio» là «máy đang giữ» ghi ở `TRANG-THAI.md`. Riêng dãy A là vòng của kho CŨ: A1 chủ kho giao MacBook Pro 11/11, gộp 12/11; mốc 2.39 làm ở Mac Studio.
 >
 > Kho này đang RIÊNG TƯ. Tệp này có số đo về hai kho tiêu thụ — rà ẩn danh trước ngày kho chuyển công khai.
 
-Mọi số dưới đây đo ngày 11/11/2026 trên `origin/main` `be736814` (bản 2.38.1), trừ chỗ ghi khác.
+Mọi số dưới đây đo ngày 11/11/2026 trên nhánh chính kho CŨ `be736814` (bản 2.38.1), trừ chỗ ghi khác.
 
 ## 1. Chủ kho muốn gì
 
@@ -247,7 +247,7 @@ chưa tính** — chưa biết hàng chờ của Mac Studio. **Token chưa ướ
 
 | Vòng | Kết quả | Thước | Ước |
 |---|---|---|---|
-| A1 `luot-kiem-nhe` (T2) | Lượt kiểm tự động chạy mảnh song song, giữ một lượt chạy trọn trên nhánh chính; bộ chạy tự xưng và tự so phiên bản Node; có số đo từng ca kiểm | Lượt kiểm 58 phút → số đo thật; ca đỏ khi lệch Node, im khi khớp | 4–7 giờ máy |
+| A1 `luot-kiem-nhe` (T2) — **XONG 12/11**, PR #499, chạy ở MacBook Pro | Lượt kiểm tự động chạy mảnh song song, giữ một lượt chạy trọn trên nhánh chính; bộ chạy tự xưng và tự so phiên bản Node; có số đo từng ca kiểm | Lượt kiểm 58 phút → số đo thật; ca đỏ khi lệch Node, im khi khớp | 4–7 giờ máy |
 | Mốc 2.39 (làn V) | Mang thêm phần chỉ-bớt: mô tả plugin còn một hai câu, xoá 2 tệp thừa, thêm `.env` vào danh sách bỏ qua | Một kho tiêu thụ cài 2.39 | 1,5–2 giờ + kho nhận 1–2 giờ |
 
 `2.39: ~8–12 giờ máy · token chưa ước · bắt đầu khi Mac Studio rảnh khoá chấm`
@@ -303,7 +303,7 @@ A1: tối đa 3 · mốc 2.39: 1 · B1 (T3): tối đa 4 · B2: tối đa 3 mỗ
 Ba bản sao của `be736814`, chạy đúng sáu bước của việc «tests» trong lượt kiểm tự động, song song, mỗi bản một thư mục tạm
 riêng: **A** nguyên vẹn (đủ lịch sử, đối chứng) · **B** cùng nội dung, chỉ một commit · **C** như B, bỏ thêm 275 hồ sơ vòng
 và năm thư mục sổ làm việc (`docs/plans`, `superpowers`, `findings`, `handoff`, `research`). Máy: Node 24, tải nền 6–11.
-Kịch bản đo và nhật ký: thư mục `b0/` trong scratchpad của phiên (không vào kho).
+Kịch bản đo: `migration/b0/`. Nhật ký đầy đủ nằm ở thư mục tạm của phiên đã đo, không vào kho.
 
 | | A (đối chứng) | B (bỏ lịch sử) | C (bỏ thêm hồ sơ và sổ) |
 |---|---|---|---|
