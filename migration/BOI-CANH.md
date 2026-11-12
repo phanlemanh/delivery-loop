@@ -35,6 +35,9 @@ kia không nói: ai đã quyết gì, luật làm việc của đợt, và các 
 10. **Khuôn áp TRONG kịch bản chuyển nhà (B1), sau bước đổi bố cục — không áp tay lên cây kho này trước đó** (chủ kho chọn
     11/11, «Trong kịch bản B1»). Lý do và số đo: `TRANG-THAI.md`, đoạn «Vì sao chưa áp khuôn thẳng lên cây kho này».
 
+11. **Thước B1 có thêm ca chạy thử phiên thật** (chủ kho 12/11, «Thêm ca chạy thử phiên thật vào thước B1») — `KE-HOACH.md`
+    mục 12, đoạn dưới bảng dãy B; hiện thân `chay-thu-phien/`.
+
 ## Chủ kho CHƯA quyết (đừng tự quyết)
 
 - Gọi tên mốc 2.39 của kho cũ và kho tiêu thụ nhận nó — điều kiện mở B1.
@@ -107,7 +110,7 @@ việc của bước thiết kế B1, chủ kho thấy ở Cổng Đáng và C�
 5. **«Tệp sản phẩm» gồm những gì** — đề xuất: đúng lớp `san-pham` của sổ kiểm kê (614 tệp ngày 12/11) cộng các tệp `chua-ro`
    người xếp vào plugin; thước «mỗi tệp sản phẩm có đúng một chỗ» chấm trên tập đó.
 6. **«Chạy hai lần ra cùng một cây» so bằng gì** — đề xuất: hai lần chạy cho cùng mã cây `git rev-parse HEAD^{tree}`.
-7. **Bảng tên còn ba chỗ chưa phủ:** ba tác tử của `feature-loop` mang tên Việt (`cham-doc`, `cham-lenh`, `cham-ui`) · số
+7. **Bảng tên còn ba chỗ chưa phủ** (bảng tên máy đọc đã có ở `chay-thu-phien/bang-ten.json`, chép mục 3 — sửa ở đó khi chốt): ba tác tử của `feature-loop` mang tên Việt (`cham-doc`, `cham-lenh`, `cham-ui`) · số
    phiên bản của `diagram-design` (2.7.1, năm plugin kia 2.38.1 — lên chung 3.0 hay giữ số riêng) · hai tên skill
    `scope-slice`, `signal-intake` còn là tên tạm.
 8. **Việc tài liệu chưa gán vòng nào:** README song ngữ, tách phần sử liệu khỏi tệp luật, rà 206 hạt giống, tách nhật ký

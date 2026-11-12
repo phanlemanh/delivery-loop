@@ -35,6 +35,7 @@ chủ kho.
 | A1 `luot-kiem-nhe` — lượt kiểm của PR chạy 13 mảnh song song, nhánh chính vẫn chạy trọn; bộ chạy tự so bản Node với `.nvmrc`; có bảng thời gian từng ca. Chủ kho ký hai cổng, gộp 12/11 tại `909dffd8` | `gh pr view 499 --repo phanlemanh/acceptance-gate-kit` · hồ sơ `_acceptance/luot-kiem-nhe/` trên `main` |
 | Kiểm lại bộ bàn giao trên một bản kéo sạch (12/11) — xem «Kiểm bàn giao 12/11» cuối tệp | mục đó |
 | Tra soát kho cũ cho B1 (12/11, chủ kho bảo «Làm tra soát»): ba sổ máy sinh — kiểm kê tệp, chỗ hai kho tiêu thụ bám vào kit, tệp kiểm bám bố cục cũ | `tra-soat/README.md` · `node --test migration/tra-soat/*.test.mjs` 13 ca xanh |
+| Thước B1 có ca chạy thử phiên thật (12/11, chủ kho bảo «Thêm ca chạy thử phiên thật vào thước B1»): kịch bản đọc những gì một phiên thật nạp từ chợ của một cây, 0 token, ~13 giây; nền `909dffd8` = 6 plugin, 33 lệnh và skill, 3 tác tử | `KE-HOACH.md` mục 12 · `node --test migration/chay-thu-phien/chay-thu.test.mjs` 8 ca xanh, 4 biến thể tiêm lỗi đều đỏ đúng ca |
 
 ## Đang dở
 

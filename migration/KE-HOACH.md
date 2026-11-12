@@ -265,11 +265,32 @@ Không phải vòng của kit nên không tính vào luật chiều rộng (b). 
 | Vòng | Kết quả | Thước | Ước |
 |---|---|---|---|
 | B0 đo thử (không phải vòng) | Biết bao nhiêu ca kiểm đỏ khi thiếu hồ sơ, sổ làm việc và lịch sử của kho cũ | Số ca đỏ theo ba lớp, có bản đối chứng nguyên vẹn | 2–3 giờ máy, máy nào cũng chạy được |
-| B1 `kich-ban-chuyen-nha` (T3) | Một kịch bản lấy nhánh chính kho cũ → sinh cây kho mới: bố cục mới, tên mới theo mục 3, tài liệu sống, con trỏ sang kho cũ bằng đường dẫn đầy đủ | Chạy hai lần ra cùng một cây; mọi tệp sản phẩm của kho cũ có đúng một chỗ ở kho mới hoặc nằm trong danh sách bỏ có lý do | 7–10 giờ máy |
+| B1 `kich-ban-chuyen-nha` (T3) | Một kịch bản lấy nhánh chính kho cũ → sinh cây kho mới: bố cục mới, tên mới theo mục 3, tài liệu sống, con trỏ sang kho cũ bằng đường dẫn đầy đủ | Chạy hai lần ra cùng một cây; mọi tệp sản phẩm của kho cũ có đúng một chỗ ở kho mới hoặc nằm trong danh sách bỏ có lý do; **chạy thử phiên thật** (thêm 12/11, xem dưới bảng): phiên mở trên chợ của cây mới nạp đúng mọi plugin, lệnh, skill, tác tử của kho cũ sau khi đổi qua bảng tên — không mất, không thừa | 7–10 giờ máy |
 | B2 `bo-kiem-xanh-o-kho-moi` (T2, có thể tách hai) | Bộ kiểm xanh trên cây do kịch bản sinh: bản chụp đóng băng các hồ sơ bộ kiểm cần, xử các ca bám mã commit và lịch sử | Bộ kiểm xanh ở kho mới; cùng ca ấy vẫn xanh ở kho cũ | 4–14 giờ máy (rộng vì chưa có số B0) |
 | B3 cắt sang (mốc 3.0) | Phép vi phân phán quyết cũ so mới trên hồ sơ thật của hai kho tiêu thụ không đổi; một kho tiêu thụ chuyển sang chợ mới trên cây làm việc riêng rồi gộp; kho cũ đóng băng 2.38.x | 0 phán quyết đổi; một kho đã cài 3.0 | 4–6 giờ máy |
 
 `3.0: ~15–30 giờ máy · token chưa ước · bắt đầu sau 2.39 và R1`
+
+**Ca chạy thử phiên thật trong thước B1 (chủ kho thêm 12/11, «Thêm ca chạy thử phiên thật vào thước B1»).** Lý do: ba
+thước cũ đo cây (B1), bộ kiểm (B2) và bộ chặn gộp (B3); không thước nào đo một phiên Claude Code thật có nạp được plugin từ
+chợ mới không — chỗ gãy dễ xảy ra nhất khi đổi bố cục `plugins/<tên>/`, đổi tên chợ và đổi tên lệnh. Hiện thân:
+`migration/chay-thu-phien/` — ba lớp (tĩnh `claude plugin validate` · cài vào thư mục cấu hình tạm · nạp: đọc sự kiện
+`init` của `claude -p --output-format stream-json`), 0 token vì thư mục cấu hình tạm không có đăng nhập và phiên dừng sau
+`init`; khoảng 13 giây mỗi cây; cài đặt thật của máy không bị chạm. Thước:
+
+```bash
+node migration/chay-thu-phien/chay-thu.mjs --ref kit-cu/main --ra <tạm>/cu.json
+node migration/chay-thu-phien/chay-thu.mjs --cay <cây kịch bản sinh> --ra <tạm>/moi.json
+node migration/chay-thu-phien/chay-thu.mjs --so <tạm>/cu.json <tạm>/moi.json --bang-ten migration/chay-thu-phien/bang-ten.json
+```
+
+Lệnh thứ ba thoát 0 khi bốn nhóm (plugin · lệnh và skill · tác tử) không mất không thừa và mọi plugin của chợ mới qua lớp
+tĩnh và lớp cài. Số nền trên `909dffd8`: 6 plugin, 33 lệnh và skill, 3 tác tử. Bảng tên máy đọc: `bang-ten.json` (chép mục 3,
+TẠM CHỐT — B1 sửa tệp này khi chủ kho chốt bảng tên ở Cổng Phạm vi). Kiểm hai chiều: `chay-thu.test.mjs` 8 ca (đối chứng
+dương, tất định, bảng tên chỉ nhắc thứ đang có, hai ca độ nhạy, một ca độ đặc hiệu, logic bảng tên, môi trường kín); bốn
+biến thể tiêm lỗi, mỗi biến thể làm đỏ đúng ca nhắm tới (đo 12/11, Mac Studio). **Giới hạn đã khai:** không thấy móc (hook)
+có bắn đúng lúc không — phần đó vẫn do bộ kiểm hooks giữ; không chạy lệnh nào, chỉ thấy lệnh đã nạp. Ca này là CỘNG chủ kho
+đã duyệt đích danh, không cần duyệt lại ở Cổng Phạm vi của B1.
 
 Kịch bản chuyển nhà đặt ở kho mới, trong thư mục công cụ (không phải sản phẩm), để sửa nó không phải đi qua lượt kiểm 58
 phút của kho cũ và không bị chép sang kho tiêu thụ.
