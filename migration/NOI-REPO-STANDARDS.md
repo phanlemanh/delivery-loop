@@ -64,7 +64,8 @@ Sau B1, kỳ vọng còn trượt 0–1 mục (`plugin_versions` tuỳ quyết B
 ## Điều cần chủ kho quyết — đều ở Cổng Phạm vi B1, không thêm lượt gọi
 
 1. **Không chạy `/repo-setup:github` ở kho này** (va cứng với luật cấm gộp dồn) — khuyến nghị: ghi thành luật của đợt, và
-   nêu với Repo Standards rằng `github_setup.py` cần cho chọn kiểu gộp.
+   nêu với Repo Standards rằng `github_setup.py` cần cho chọn kiểu gộp. Việc ở kho Repo Standards: chủ kho chọn làm
+   **sau B1** (12/11, «Để sau B1») — `TRANG-THAI.md`, bảng «Kế», hàng 5b.
 2. Có nhận skill `review-change` không (R4) — khuyến nghị: không.
 3. Nội dung mục `## Language` trong `CLAUDE.md`.
 4. `plugin_versioning`: lockstep 3.0 cho cả sáu, hay independent (B10).
