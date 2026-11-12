@@ -62,6 +62,7 @@ kia không nói: ai đã quyết gì, luật làm việc của đợt, và các 
   từ một phép đếm luôn phải có đối chứng dương.
 - **`git grep -- . ':!_acceptance'` trả 0 sai** — tìm ra nguyên nhân 12/11: sau `:!` git đọc ký tự `_` là một cờ, báo lỗi
   «Unimplemented pathspec magic» và không tìm gì. Viết `':(exclude)_acceptance'`.
+- **zsh đọc `$R:h`, `$R:t`, `$R:r`… là phép cắt tên biến:** `git show $R:hooks/x` thành `kit-cuooks/x`. Viết `"${R}:hooks/x"`.
 - **`git merge-tree --write-tree` trên git cũ hơn 2.38** in lời hướng dẫn dùng lệnh rồi thoát khác 0 — không phải xung đột.
 - **Đếm chữ «miss» không phân hoa thường** khớp cả dòng tổng kết của bộ kiểm; đếm theo đầu dòng `^(MISS|FAIL|not ok)`.
 - **Theo dõi tiến trình bằng `pgrep -f`** phải dò đúng chuỗi lệnh thật (đã `cd` rồi gọi `bash chay.sh …` thì chuỗi không
@@ -71,40 +72,15 @@ kia không nói: ai đã quyết gì, luật làm việc của đợt, và các 
 - Ba bản sao đo thử chạy song song mỗi bản một `TMPDIR` riêng — không giẫm nhau (tám tệp kiểm nhắc `/tmp/…` chỉ là giá trị
   giả, không ghi ra đĩa).
 
-## Đầu vào cho B1 — chỗ đang bám tên cũ (đo 12/11)
+## Đầu vào cho B1 — sổ tra soát kho cũ (máy sinh, 12/11)
 
-Kho này riêng tư; đoạn dưới có tên tệp của hai kho tiêu thụ — rà lại trước ngày kho chuyển công khai.
+Ba sổ ở `tra-soat/`: kiểm kê từng tệp của kit (sản phẩm thật, chưa rõ, gọi chéo giữa plugin, con trỏ sẽ treo), chỗ hai kho
+tiêu thụ đang bám vào kit, và tệp kiểm bám bố cục cũ. Đọc `tra-soat/README.md` — mục «Đọc nhanh» có chín điều B1 phải biết;
+chạy lại kịch bản trước khi dùng số, vì kho cũ đổi mỗi ngày. Ba điều nặng nhất:
 
-**Trong kit** (nhánh chính `909dffd8`). Tên chợ `acceptance-gate-kit` xuất hiện ở 379 tệp: 207 hồ sơ vòng và 137 tài liệu là
-lịch sử, không viết lại; 19 tệp kiểm; còn lại 15 tệp sản phẩm mà kịch bản phải đổi:
-
-| Tệp | Số chỗ |
-|---|---|
-| `.claude-plugin/marketplace.json` | 1 |
-| `.claude/settings.json` | 6 |
-| `scripts/plugin-declare.mjs` (giữ hằng tên chợ `MARKETPLACE_NAME`) | 2 |
-| `feature-loop/scripts/repin-lane.mjs`, `feature-loop/scripts/resolve-plugin.mjs` | 1 + 1 |
-| `feature-loop/skills/feature-loop/SKILL.md`, `commands/acceptance-init.md` | 1 + 3 |
-| `skills/acceptance/references/tri-thuc-template.md` | 1 |
-| `GUIDE.md`, `QUICKSTART.md`, `README.md`, `dieu-phoi/README.md`, `road-map/README.md` | 12 + 2 + 2 + 3 + 1 |
-| `diagram-design/skills/diagram-design/LOCAL-PATCHES.md` | 1 |
-| `LO-TRINH.html` (tệp máy vẽ — vẽ lại, không sửa tay) | 12 |
-
-Ba tên plugin sẽ đổi được nhắc ở: `dieu-phoi` 64 tệp sản phẩm và 79 tệp kiểm · `road-map` 26 và 23 · `tri-thuc` 25 và 10
-(đếm theo tệp có chuỗi ấy, gồm cả đường dẫn thư mục — chưa tách chỗ nào là tên plugin, chỗ nào là chữ thường).
-
-Sáu tệp khai plugin: `.claude-plugin/plugin.json` (plugin lõi, nguồn là cả kho), và một tệp trong mỗi thư mục
-`feature-loop/`, `diagram-design/`, `dieu-phoi/`, `road-map/`, `tri-thuc/`. Năm plugin ghi 2.38.1, `diagram-design` ghi 2.7.1.
-
-**Ở hai kho tiêu thụ** (ngoài hồ sơ và tài liệu). Cả hai bật sáu plugin dạng `<tên>@acceptance-gate-kit` và khai chợ lấy từ
-GitHub `phanlemanh/acceptance-gate-kit` trong `.claude/settings.json` — đây là chỗ ngày cắt sang phải sửa.
-
-- Quỹ hàng (`onehub-quy-hang`, nhánh chính `eedec225`): 5 tệp — `.claude/settings.json`, `.github/workflows/ci.yml`,
-  `.github/workflows/ghim-lai-ban-that.yml`, `packages/ui-lint/tim-kit.mjs`, `LO-TRINH.html`.
-- crm (`crm-onehub`, nhánh `onehub` `74a29a68`, bản 03/11 — có thể cũ): 14 tệp — `.claude/settings.json`,
-  `.github/workflows/tin-hieu-gom.yml`, `CLAUDE.md`, `scripts/kiem-cheo/cau-hinh.mjs` và tệp kiểm của nó,
-  `scripts/resolve-plugin.mjs`, `skills/acceptance/references/tri-thuc-template.md`, và bảy tệp của màn lộ trình nhiều sản
-  phẩm (dữ liệu mẫu và ca kiểm nhắc tên kit như một sản phẩm).
+- Plugin lõi gọi thẳng vào thư mục plugin điều phối ở 7 chỗ — gãy chắc khi mỗi plugin vào thư mục riêng.
+- Quỹ hàng chạy kit trong lượt kiểm tự động bằng cách kéo cả kho kit rồi coi gốc kho là gốc plugin lõi — gãy sau dọn nhà.
+- crm giữ 37 tệp chép từ kit ở đúng đường dẫn của kit; nguồn chép đổi chỗ sau dọn nhà.
 
 **Phép so cũ với mới cho B3** (đã dùng 12/09 khi nâng kit cho kho tiêu thụ): chạy bộ chặn gộp trên CÙNG một cây bằng cả hai
 bản kit, `pre-merge-check.sh . --recheck-all --base <nhánh chính của kho>`, rồi so danh sách dòng bắt đầu bằng `VIOLATION`.
@@ -122,13 +98,14 @@ việc của bước thiết kế B1, chủ kho thấy ở Cổng Đáng và C�
    sơ nào ở kho cũ nhắc đợt này (đã tìm trong `docs/plans`).
 3. **Nhánh đích của commit dọn nhà.** `main` không sửa tay, `chuyen-nha` là `main` cộng công cụ. Kịch bản sinh commit lên
    nhánh nào ở kho này chưa có tên.
-4. **Bảng thư mục nguồn → đích.** Mới có nguyên tắc `plugins/<tên>/`. Nhánh chính kho cũ hôm nay có: năm plugin con mỗi
+4. **Bảng thư mục nguồn → đích.** Mới có nguyên tắc `plugins/<tên>/`; sổ kiểm kê (`tra-soat/`) đã cho biết tệp nào
+   thuộc plugin nào và 20 tệp chưa rõ cần xếp tay. Nhánh chính kho cũ hôm nay có: năm plugin con mỗi
    cái một thư mục ở gốc (`feature-loop/` 32 tệp, `diagram-design/` 217, `dieu-phoi/` 75, `road-map/` 7, `tri-thuc/` 4);
    plugin lõi là chính gốc kho, gồm `skills/` 48, `commands/` 8, `hooks/` 3, `scripts/` 49, `lib/` 17, `vendor/` 19,
    `evals/` 17; và các thư mục chưa ai xếp chỗ: `design-floor/` 136, `tests/` 1 146, `docs/` 885, `_acceptance/` 3 037,
    `.out-of-scope/` 7.
-5. **«Tệp sản phẩm» gồm những gì** — thước «mỗi tệp sản phẩm có đúng một chỗ ở kho mới hoặc nằm trong danh sách bỏ» cần
-   tập này.
+5. **«Tệp sản phẩm» gồm những gì** — đề xuất: đúng lớp `san-pham` của sổ kiểm kê (614 tệp ngày 12/11) cộng các tệp `chua-ro`
+   người xếp vào plugin; thước «mỗi tệp sản phẩm có đúng một chỗ» chấm trên tập đó.
 6. **«Chạy hai lần ra cùng một cây» so bằng gì** — đề xuất: hai lần chạy cho cùng mã cây `git rev-parse HEAD^{tree}`.
 7. **Bảng tên còn ba chỗ chưa phủ:** ba tác tử của `feature-loop` mang tên Việt (`cham-doc`, `cham-lenh`, `cham-ui`) · số
    phiên bản của `diagram-design` (2.7.1, năm plugin kia 2.38.1 — lên chung 3.0 hay giữ số riêng) · hai tên skill

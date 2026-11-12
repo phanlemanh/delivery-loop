@@ -8,6 +8,7 @@ Thư mục này chỉ sống ở nhánh `chuyen-nha` cho tới ngày cắt sang 
 | `MO-PHIEN.md` | Máy cần có gì, lệnh kéo kho, cách nhận giữ, lời mở phiên |
 | `BOI-CANH.md` | Quyết định đã có, luật của đợt, bẫy đã dẫm, thứ không nằm trong kho |
 | `KE-HOACH.md` | Kế hoạch đầy đủ — mục 3, 12, 13, 14 là bản đang hiệu lực |
+| `tra-soat/` | Ba sổ máy sinh cho B1: kiểm kê tệp của kit, chỗ hai kho tiêu thụ bám vào kit, tệp kiểm bám bố cục cũ — đọc `tra-soat/README.md` |
 | `b0/` | Đo thử B0: dựng ba bản sao (`dung-ban-sao.sh`), chạy bộ kiểm (`chay.sh`), tách ca đỏ (`tach.py`), kết quả tóm (`ket-qua/`) |
 
 Ngoài thư mục này, nhánh `chuyen-nha` chỉ thêm một tệp: `.claude/rules/chuyen-nha.md` (chỉ đường cho phiên mới).

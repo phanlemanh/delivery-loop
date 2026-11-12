@@ -1,0 +1,275 @@
+# máy sinh bởi migration/tra-soat/bo-kiem.mjs từ kit-cu/main @ 909dffd8 (2026-11-12) — đừng sửa tay
+tep	bo	so_duong_dan	plugin	lich_su	mau
+tests/design-eval/khong-do-duoc.test.mjs	design-eval	3	acceptance-gate	co	lib/design-detect.mjs scripts/design-gate.mjs vendor/impeccable/
+tests/design-eval/lib/dom-detect.mjs	design-eval	1	acceptance-gate		lib/design-detect.mjs
+tests/design-eval/mau-lab-chromium.mjs	design-eval	1	acceptance-gate	co	scripts/design-scan.js
+tests/design-eval/mau-lab-do.test.mjs	design-eval	4	acceptance-gate	co	lib/design-bundle.mjs scripts/build-design-scan.mjs scripts/design-gate.mjs scripts/design-scan.js
+tests/design-eval/mau-lab.test.mjs	design-eval	4	acceptance-gate		lib/design-bundle.mjs scripts/design-gate.mjs scripts/design-scan.js vendor/impeccable/engine/detect-antipatterns-browser.js
+tests/design-eval/README.md	design-eval	4	acceptance-gate		lib/design-detect.mjs scripts/design-gate.mjs skills/acceptance/references/design-ui-check.md vendor/impeccable/
+tests/design-eval/report/real-artifact-run-onehub.md	design-eval	1	acceptance-gate		scripts/design-gate.mjs
+tests/design-eval/run-tests.sh	design-eval	3	acceptance-gate		lib/design-detect.mjs scripts/build-design-scan.mjs scripts/design-gate.mjs
+tests/design-eval/score.mjs	design-eval	1	acceptance-gate		lib/design-detect.mjs
+tests/design-eval/tier-b-loi-doc.test.mjs	design-eval	4	acceptance-gate		lib/evidence-core.cjs scripts/design-scan.js skills/acceptance/references/design-ui-check.md skills/acceptance/references/evidence-report-template.md
+tests/design-eval/vi-phan-kho.mjs	design-eval	1	acceptance-gate		scripts/design-gate.mjs
+tests/design-floor/dong-bo.mjs	design-floor	1	acceptance-gate		design-floor/dist/ui.mjs
+tests/design-floor/eval.sh	design-floor	1	acceptance-gate		design-floor/HOP-DONG-NHAP.md
+tests/design-floor/hop-dong.mjs	design-floor	2	acceptance-gate		design-floor/HOP-DONG-NHAP.md design-floor/dist/ui.mjs
+tests/design-floor/kho-lon-nhanh-chinh.mjs	design-floor	1	acceptance-gate	co	scripts/
+tests/design-floor/lib/hop-dong.mjs	design-floor	2	acceptance-gate		design-floor/HOP-DONG-NHAP.md design-floor/upstream.lock.json
+tests/design-floor/lib/khoa.mjs	design-floor	1	acceptance-gate		scripts/design-floor-s1.mjs
+tests/design-floor/lib/upstream.mjs	design-floor	1	acceptance-gate	co	design-floor/vo/ui.ts
+tests/design-floor/moc-s0-s1.mjs	design-floor	5	acceptance-gate,feature-loop	co	design-floor/upstream.lock.json feature-loop/scripts/resolve-plugin.mjs feature-loop/skills/feature-loop/SKILL.md scripts/
+tests/design-floor/moc-s3-s4.mjs	design-floor	9	acceptance-gate,feature-loop	co	design-floor/HOP-DONG-NHAP.md design-floor/dist/ui.mjs feature-loop/scripts/repin-lane.mjs feature-loop/scripts/resolve-plugin.mjs
+tests/design-floor/package.json	design-floor	1	acceptance-gate		design-floor/dist/ui.mjs
+tests/design-floor/run-tests.sh	design-floor	2	acceptance-gate		design-floor/HOP-DONG-NHAP.md design-floor/LOCAL-PATCHES.md
+tests/design-floor/tu-thu.mjs	design-floor	5	acceptance-gate		design-floor/ design-floor/HOP-DONG-NHAP.md design-floor/patches/A-bo-cham-khong-but.patch design-floor/upstream.lock.json
+tests/dieu-phoi/danh-thuc-ma-phien.test.mjs	dieu-phoi	4	acceptance-gate,dieu-phoi	co	dieu-phoi/ dieu-phoi/commands/ hooks/hooks.json scripts/
+tests/dieu-phoi/doi-tai-khoan.test.mjs	dieu-phoi	6	acceptance-gate,dieu-phoi,feature-loop	co	commands/ dieu-phoi/ feature-loop/scripts/s4-args.mjs hooks/
+tests/dieu-phoi/dong-goi.test.mjs	dieu-phoi	14	acceptance-gate,dieu-phoi,feature-loop		.claude-plugin/marketplace.json .claude-plugin/plugin.json commands/acceptance-init.md dieu-phoi/
+tests/dieu-phoi/dp7-chieu-im.mjs	dieu-phoi	5	dieu-phoi,feature-loop	co	dieu-phoi/hooks/hooks.json feature-loop/scripts/ feature-loop/scripts/trong-dot.mjs feature-loop/skills/feature-loop/SKILL.md
+tests/dieu-phoi/dp8-crm-that.mjs	dieu-phoi	3	acceptance-gate,dieu-phoi	co	dieu-phoi/ dieu-phoi/scripts/dieu-phoi.mjs scripts/
+tests/dieu-phoi/fixtures/lenh-that-2026-10-11.jsonl	dieu-phoi	8	acceptance-gate,feature-loop		feature-loop/scripts/chup-ho-so-da-thong.mjs feature-loop/scripts/repin-lane.mjs feature-loop/skills/feature-loop/SKILL.md lib/evidence-core.cjs
+tests/dieu-phoi/fixtures/tin/ca-that.json	dieu-phoi	2	dieu-phoi		dieu-phoi/hooks/hooks.json dieu-phoi/scripts/tin.mjs
+tests/dieu-phoi/khung-dinh-vi.test.mjs	dieu-phoi	3	acceptance-gate,dieu-phoi	co	dieu-phoi/ hooks/hooks.json scripts/
+tests/dieu-phoi/khung.test.mjs	dieu-phoi	2	acceptance-gate,dieu-phoi	co	dieu-phoi/ scripts/
+tests/dieu-phoi/kiem-khung.mjs	dieu-phoi	4	acceptance-gate,dieu-phoi		dieu-phoi/ hooks/ hooks/hooks.json scripts/
+tests/dieu-phoi/kiem-mod.mjs	dieu-phoi	4	acceptance-gate,dieu-phoi		dieu-phoi/ hooks/ hooks/hooks.json scripts/
+tests/dieu-phoi/kiem-validate.mjs	dieu-phoi	2	acceptance-gate,dieu-phoi		dieu-phoi/ hooks/hooks.json
+tests/dieu-phoi/ky-den-gop-mutants.test.mjs	dieu-phoi	15	dieu-phoi,feature-loop		dieu-phoi/.claude-plugin/ dieu-phoi/scripts/ dieu-phoi/scripts/dem.mjs dieu-phoi/scripts/do-gop.mjs
+tests/dieu-phoi/lenh-cho-khoa-nhay-duong-dan.test.mjs	dieu-phoi	5	dieu-phoi		dieu-phoi/scripts/ dieu-phoi/scripts/dieu-phoi.mjs dieu-phoi/scripts/hook-chan-s4.mjs dieu-phoi/scripts/lich.mjs
+tests/dieu-phoi/lenh-dot-ghi-dung-hang.test.mjs	dieu-phoi	4	acceptance-gate,dieu-phoi	co	dieu-phoi/ dieu-phoi/README.md dieu-phoi/commands/tiep-tuc.md scripts/
+tests/dieu-phoi/loi/bang.test.mjs	dieu-phoi	1	dieu-phoi		dieu-phoi/scripts/bang.mjs
+tests/dieu-phoi/loi/bien.test.mjs	dieu-phoi	6	dieu-phoi		dieu-phoi/scripts/dot.mjs dieu-phoi/scripts/hook-chan-s4.mjs dieu-phoi/scripts/hook-nhip.mjs dieu-phoi/scripts/lich.mjs
+tests/dieu-phoi/loi/cli.test.mjs	dieu-phoi	3	dieu-phoi		dieu-phoi/scripts/dieu-phoi.mjs dieu-phoi/scripts/dot.mjs dieu-phoi/scripts/hook-chan-s4.mjs
+tests/dieu-phoi/loi/do-gop.test.mjs	dieu-phoi	3	dieu-phoi		dieu-phoi/scripts/dem.mjs dieu-phoi/scripts/do-gop.mjs dieu-phoi/scripts/phat-lich.mjs
+tests/dieu-phoi/loi/gia-han.test.mjs	dieu-phoi	2	dieu-phoi		dieu-phoi/scripts/phat-lich.mjs dieu-phoi/scripts/yeu-cau.mjs
+tests/dieu-phoi/loi/giu-nhip.test.mjs	dieu-phoi	3	dieu-phoi		dieu-phoi/scripts/cau-hinh.mjs dieu-phoi/scripts/giu-nhip.mjs dieu-phoi/scripts/phat-lich.mjs
+tests/dieu-phoi/loi/gop.test.mjs	dieu-phoi	1	dieu-phoi		dieu-phoi/scripts/gop.mjs
+tests/dieu-phoi/loi/hinh-dang.test.mjs	dieu-phoi	3	dieu-phoi		dieu-phoi/scripts/cau-hinh.mjs dieu-phoi/scripts/hinh-dang.mjs dieu-phoi/scripts/phat-lich.mjs
+tests/dieu-phoi/loi/hook-chan-s4.test.mjs	dieu-phoi	1	dieu-phoi		dieu-phoi/scripts/hook-chan-s4.mjs
+tests/dieu-phoi/loi/hook-nhip-cho-nguoi.test.mjs	dieu-phoi	2	dieu-phoi		dieu-phoi/scripts/hook-cho-nguoi.mjs dieu-phoi/scripts/hook-nhip.mjs
+tests/dieu-phoi/loi/lich.test.mjs	dieu-phoi	1	dieu-phoi		dieu-phoi/scripts/lich.mjs
+tests/dieu-phoi/loi/nen.test.mjs	dieu-phoi	2	dieu-phoi		dieu-phoi/scripts/dot.mjs dieu-phoi/scripts/glob.mjs
+tests/dieu-phoi/loi/phat-lich.test.mjs	dieu-phoi	1	dieu-phoi		dieu-phoi/scripts/phat-lich.mjs
+tests/dieu-phoi/loi/suc-khoe-chung.mjs	dieu-phoi	2	acceptance-gate,dieu-phoi	co	dieu-phoi/ scripts/
+tests/dieu-phoi/loi/suc-khoe-nhip.test.mjs	dieu-phoi	1	acceptance-gate		scripts/
+tests/dieu-phoi/loi/suc-khoe-song.mac.mjs	dieu-phoi	1	acceptance-gate		scripts/
+tests/dieu-phoi/loi/suc-khoe.test.mjs	dieu-phoi	1	acceptance-gate		scripts/
+tests/dieu-phoi/loi/tra-loi.test.mjs	dieu-phoi	2	dieu-phoi		dieu-phoi/scripts/hinh-dang.mjs dieu-phoi/scripts/phat-lich.mjs
+tests/dieu-phoi/loi/trung-tep.test.mjs	dieu-phoi	5	dieu-phoi		dieu-phoi/scripts/hang.mjs dieu-phoi/scripts/lich.mjs dieu-phoi/scripts/phat-lich.mjs dieu-phoi/scripts/trung-tep.mjs
+tests/dieu-phoi/loi/yeu-cau.test.mjs	dieu-phoi	1	dieu-phoi		dieu-phoi/scripts/yeu-cau.mjs
+tests/dieu-phoi/lop-mod.test.mjs	dieu-phoi	5	acceptance-gate,dieu-phoi,feature-loop	co	dieu-phoi/ feature-loop/scripts/ feature-loop/scripts/repin-lane.mjs hooks/hooks.json
+tests/dieu-phoi/mo-dot.test.mjs	dieu-phoi	14	acceptance-gate,dieu-phoi,feature-loop	co	commands/ commands/start.md dieu-phoi/ feature-loop/skills/
+tests/dieu-phoi/on-dinh-r2.test.mjs	dieu-phoi	4	acceptance-gate,dieu-phoi	co	dieu-phoi/ dieu-phoi/README.md hooks/hooks.json scripts/
+tests/dieu-phoi/sua-loi-dau-chu-dong-vao.test.mjs	dieu-phoi	5	acceptance-gate,dieu-phoi	co	dieu-phoi/ dieu-phoi/scripts/gop.mjs dieu-phoi/scripts/lich.mjs dieu-phoi/scripts/phat-lich.mjs
+tests/dieu-phoi/sua-truoc-dot-thu.test.mjs	dieu-phoi	8	acceptance-gate,dieu-phoi	co	dieu-phoi/ dieu-phoi/commands/mo-dot.md dieu-phoi/commands/tiep-tuc.md hooks/hooks.json
+tests/dieu-phoi/tiep-tuc.test.mjs	dieu-phoi	9	acceptance-gate,dieu-phoi,feature-loop	co	commands/ dieu-phoi/ dieu-phoi/scripts/mau/LUAT.md feature-loop/skills/
+tests/dieu-phoi/tin-kenh-that.mjs	dieu-phoi	3	dieu-phoi		dieu-phoi/scripts/tin-doc.mjs dieu-phoi/scripts/tin-kenh.mjs dieu-phoi/scripts/tin.mjs
+tests/dieu-phoi/tin-kho-thu.mjs	dieu-phoi	3	acceptance-gate,dieu-phoi		dieu-phoi/ hooks/hooks.json scripts/
+tests/dieu-phoi/tin-khong-mat-dau.test.mjs	dieu-phoi	2	acceptance-gate,dieu-phoi	co	dieu-phoi/ scripts/
+tests/dieu-phoi/tin.test.mjs	dieu-phoi	3	acceptance-gate,dieu-phoi	co	dieu-phoi/ dieu-phoi/hooks/hooks.json hooks/hooks.json
+tests/dieu-phoi/trong-dot.test.mjs	dieu-phoi	11	acceptance-gate,dieu-phoi,feature-loop	co	commands/ dieu-phoi/ dieu-phoi/scripts/ dieu-phoi/scripts/hook-chan-s4.mjs
+tests/dieu-phoi/vung-giao-viec.test.mjs	dieu-phoi	9	acceptance-gate,dieu-phoi,feature-loop		dieu-phoi/scripts/ dieu-phoi/scripts/goi-dot.mjs dieu-phoi/scripts/hang.mjs dieu-phoi/scripts/phat-lich.mjs
+tests/fixtures/ghi-boi/0710-agent-ae624896.jsonl	fixtures	2	feature-loop	co	feature-loop/scripts/carry-plan.mjs feature-loop/scripts/thuoc-vat.mjs
+tests/hooks/ruling-truoc-khi-xoa.test.mjs	hooks	2	acceptance-gate		hooks/hooks.json hooks/ruling-truoc-khi-xoa.js
+tests/hooks/run-tests.sh	hooks	1	acceptance-gate		hooks/acceptance-evidence-gate.js
+tests/plugins/asserts-da-go.txt	plugins	3	acceptance-gate,feature-loop		feature-loop/scripts/resolve-plugin.mjs feature-loop/workflows/ skills/design-pass/
+tests/plugins/bang-dieu-khien.test.mjs	plugins	8	acceptance-gate		commands/acceptance-card.md commands/acceptance-status.md commands/approve.md commands/signoff.md
+tests/plugins/design-pass-nac.test.mjs	plugins	7	acceptance-gate,feature-loop		commands/acceptance-init.md feature-loop/skills/feature-loop/SKILL.md lib/ scripts/
+tests/plugins/duong-do.test.mjs	plugins	5	acceptance-gate,feature-loop		feature-loop/skills/feature-loop/SKILL.md lib/md-section.cjs scripts/gate-card.js skills/acceptance/references/contract-template.md
+tests/plugins/fixtures/luu-kho-2026-09-08/delta-verify-repin/contract.md	plugins	1	acceptance-gate		scripts/pre-merge-check.sh
+tests/plugins/fixtures/luu-kho-2026-09-08/delta-verify-repin/evals.yaml	plugins	4	acceptance-gate,feature-loop	co	feature-loop/skills/feature-loop/SKILL.md feature-loop/workflows/acceptance-verify.js scripts/pre-merge-check.sh skills/acceptance/SKILL.md
+tests/plugins/fixtures/render-out-of-contract-block.sh	plugins	1	acceptance-gate		scripts/gate-card.js
+tests/plugins/fixtures/render-viec-cua-anh-cards.sh	plugins	1	acceptance-gate		scripts/gate-card.js
+tests/plugins/lan-may-classifier.test.mjs	plugins	6	acceptance-gate,feature-loop		commands/acceptance-init.md feature-loop/skills/feature-loop/SKILL.md feature-loop/workflows/acceptance-verify.js lib/evidence-core.cjs
+tests/plugins/lan-v.test.mjs	plugins	9	acceptance-gate,feature-loop		commands/acceptance-init.md feature-loop/workflows/acceptance-verify.js lib/ lib/md-section.cjs
+tests/plugins/lenh-bam-duoc.test.mjs	plugins	16	acceptance-gate,feature-loop	co	commands/acceptance-card.md commands/acceptance-init.md commands/acceptance-report.md commands/acceptance-status.md
+tests/plugins/lop-nhin-thay.test.mjs	plugins	15	acceptance-gate,feature-loop	co	commands/acceptance-init.md feature-loop/skills/feature-loop/SKILL.md lib/ lib/lop-nhin-thay.cjs
+tests/plugins/ntr-observed.test.mjs	plugins	3	acceptance-gate		commands/ commands/observed.md lib/workspace-record.cjs
+tests/plugins/plugin-declare.test.mjs	plugins	6	acceptance-gate,feature-loop		.claude-plugin/ .claude-plugin/marketplace.json commands/acceptance-init.md feature-loop/README.md
+tests/plugins/ra-co-ten.test.mjs	plugins	29	acceptance-gate,feature-loop	co	commands/acceptance-report.md commands/acceptance-status.md commands/approve.md commands/signoff.md
+tests/plugins/run-tests.sh	plugins	65	acceptance-gate,diagram-design,dieu-phoi,feature-loop,road-map,tri-thuc	co	.claude-plugin/marketplace.json .claude-plugin/plugin.json commands/acceptance-card.md commands/acceptance-init.md
+tests/plugins/ux-spec.test.mjs	plugins	2	acceptance-gate,feature-loop		feature-loop/skills/feature-loop/SKILL.md skills/acceptance/references/ux-spec-template.md
+tests/plugins/vao-co-o.test.mjs	plugins	5	acceptance-gate		commands/start.md lib/md-section.cjs scripts/product-map.mjs scripts/start-scan.mjs
+tests/scripts/additive-only.test.mjs	scripts	7	acceptance-gate	co	lib/ lib/evidence-core.cjs lib/lop-nhin-thay.cjs lib/md-section.cjs
+tests/scripts/anh-co-that-kho.mjs	scripts	3	acceptance-gate	co	lib/lop-nhin-thay.cjs scripts/anh-ho-so.cjs scripts/gate-card.js
+tests/scripts/ap-chinh-sach-lo-trinh-crm.mjs	scripts	2	acceptance-gate		scripts/lo-trinh.mjs scripts/product-map.mjs
+tests/scripts/ap-chinh-sach-lo-trinh.test.mjs	scripts	7	acceptance-gate,feature-loop,road-map	co	feature-loop/skills/feature-loop/SKILL.md road-map/commands/ road-map/commands/ghim.md road-map/commands/xem.md
+tests/scripts/ban-do-khuon-roi-nhom-hai-kho.mjs	scripts	2	acceptance-gate	co	scripts/ban-do-khuon.cjs scripts/design-floor-khuon.mjs
+tests/scripts/ban-do-khuon-roi-nhom.test.mjs	scripts	4	acceptance-gate,feature-loop	co	feature-loop/scripts/s4-args.mjs scripts/ban-do-khuon.cjs scripts/design-floor-khuon.mjs skills/acceptance/references/ban-do-khuon-template.md
+tests/scripts/bang-ngoai-n.test.mjs	scripts	6	acceptance-gate,feature-loop	co	commands/acceptance-card.md feature-loop/scripts/carry-plan.mjs feature-loop/workflows/acceptance-verify.js lib/out-of-contract.cjs
+tests/scripts/bo-giai-nhay.test.mjs	scripts	4	acceptance-gate,feature-loop	co	feature-loop/scripts/carry-plan.mjs feature-loop/scripts/s4-args.mjs lib/eval-yaml.cjs lib/evidence-core.cjs
+tests/scripts/bo-qua-dinh-nghia-phep-do.test.mjs	scripts	3	acceptance-gate,feature-loop		feature-loop/ feature-loop/scripts/repin-lane.mjs lib/workspace-record.cjs
+tests/scripts/can-cu-s1.ca.mjs	scripts	15	acceptance-gate,feature-loop	co	commands/approve.md feature-loop/scripts/ feature-loop/scripts/claim-scan.mjs feature-loop/scripts/resolve-plugin.mjs
+tests/scripts/cat-luot-vung.test.mjs	scripts	5	acceptance-gate,dieu-phoi		dieu-phoi/scripts/glob.mjs dieu-phoi/scripts/trung-tep.mjs scripts/cat-luot.mjs skills/acceptance/references/lo-trinh-template.json
+tests/scripts/cay-doi-trong-luot.test.mjs	scripts	9	acceptance-gate,feature-loop	co	feature-loop/scripts/lib/cay-doi.mjs feature-loop/scripts/s4-args.mjs feature-loop/scripts/thuoc-vat.mjs feature-loop/workflows/acceptance-verify.js
+tests/scripts/cham-lai-khong-tu-doi.test.mjs	scripts	3	acceptance-gate,feature-loop	co	feature-loop/scripts/carry-plan.mjs feature-loop/workflows/acceptance-verify.js lib/nhan-canh-gay.cjs
+tests/scripts/chep-tri-thuc-du.test.mjs	scripts	6	acceptance-gate		commands/acceptance-init.md scripts/cat-luot.mjs scripts/tri-thuc-khoa.cjs scripts/tri-thuc.mjs
+tests/scripts/chi-tep-vat-keo-xet-lai.test.mjs	scripts	2	acceptance-gate	co	lib/evidence-core.cjs scripts/pre-merge-check.sh
+tests/scripts/chup-ho-so-da-thong.test.mjs	scripts	4	acceptance-gate,feature-loop		feature-loop/scripts/chup-ho-so-da-thong.mjs feature-loop/scripts/repin-lane.mjs lib/evidence-core.cjs lib/workspace-record.cjs
+tests/scripts/ckdl-cham.test.mjs	scripts	3	acceptance-gate,feature-loop		feature-loop/scripts/s4-args.mjs feature-loop/workflows/acceptance-verify.js lib/nhan-canh-gay.cjs
+tests/scripts/ckdl-do.test.mjs	scripts	1	feature-loop		feature-loop/scripts/wf-usage.mjs
+tests/scripts/ckdl-the.test.mjs	scripts	4	acceptance-gate,feature-loop		feature-loop/skills/feature-loop/SKILL.md lib/ scripts/ scripts/gate-card.js
+tests/scripts/co-hop-dong.test.mjs	scripts	11	acceptance-gate,feature-loop		commands/approve.md feature-loop/skills/feature-loop/SKILL.md lib/workspace-record.cjs scripts/cat-luot.mjs
+tests/scripts/config-yaml-that.test.mjs	scripts	1	acceptance-gate		lib/evidence-core.cjs
+tests/scripts/cong-nguoi-doc-du-nguon.test.mjs	scripts	9	acceptance-gate		lib/ lib/ac-line.cjs lib/md-section.cjs scripts/
+tests/scripts/consumer-esm.test.mjs	scripts	12	acceptance-gate		commands/acceptance-init.md lib/ lib/design-detect.mjs lib/eval-yaml.cjs
+tests/scripts/core-untouched.test.mjs	scripts	1	acceptance-gate	co	scripts/recheck-evidence.cjs
+tests/scripts/cua-tin-hieu-giua-chien-dich.test.mjs	scripts	14	acceptance-gate,dieu-phoi,feature-loop,road-map	co	dieu-phoi/scripts/ dieu-phoi/scripts/cua-tin-hieu.mjs dieu-phoi/scripts/dieu-phoi.mjs dieu-phoi/scripts/mau/LUAT.md
+tests/scripts/cua-tin-hieu-goc-moi-worktree.test.mjs	scripts	8	acceptance-gate,dieu-phoi,road-map	co	dieu-phoi/scripts/cua-tin-hieu.mjs dieu-phoi/scripts/dot.mjs dieu-phoi/scripts/phat-lich.mjs road-map/commands/gui.md
+tests/scripts/cua-veto-sau-chu-ky.test.mjs	scripts	1	acceptance-gate		scripts/pre-merge-check.sh
+tests/scripts/dai-tom-tat-crm.mjs	scripts	2	acceptance-gate	co	scripts/lo-trinh.mjs scripts/product-map.mjs
+tests/scripts/dai-tom-tat-dem-dung.test.mjs	scripts	6	acceptance-gate,feature-loop		feature-loop/skills/ feature-loop/skills/feature-loop/SKILL.md scripts/evidence-page.js scripts/ho-so-tom-tat.cjs
+tests/scripts/dai-tom-tat-sau-kho.mjs	scripts	5	acceptance-gate	co	lib/md-section.cjs scripts/evidence-page.js scripts/ho-so-tom-tat.cjs scripts/lo-trinh.mjs
+tests/scripts/dai-tom-tat.test.mjs	scripts	5	acceptance-gate		commands/signoff.md scripts/evidence-page.js scripts/ho-so-tom-tat.cjs scripts/lo-trinh.mjs
+tests/scripts/danh-tinh.test.mjs	scripts	3	acceptance-gate		commands/approve.md commands/signoff.md skills/acceptance/references/human-facing-language.md
+tests/scripts/design-gate-che-do-chat.test.mjs	scripts	4	acceptance-gate		lib/ scripts/ scripts/design-gate.mjs vendor/
+tests/scripts/design-gate-khong-do-duoc.test.mjs	scripts	4	acceptance-gate	co	lib/ scripts/ scripts/design-gate.mjs vendor/
+tests/scripts/dinh-tuyen-theo-ma-muc.test.mjs	scripts	13	acceptance-gate,feature-loop	co	commands/signoff.md feature-loop/workflows/acceptance-verify.js lib/ lib/out-of-contract.cjs
+tests/scripts/doc-jsx-va-ban-do-hong.test.mjs	scripts	3	acceptance-gate,feature-loop	co	feature-loop/scripts/s4-args.mjs scripts/ban-do-khuon.cjs scripts/design-floor-khuon.mjs
+tests/scripts/duong-nen-fixture.mjs	scripts	8	acceptance-gate,feature-loop		commands/ commands/acceptance-init.md feature-loop/scripts/duong-nen.mjs lib/
+tests/scripts/duong-nen.test.mjs	scripts	16	acceptance-gate,feature-loop	co	commands/acceptance-init.md feature-loop/ feature-loop/scripts/ feature-loop/scripts/duong-nen.mjs
+tests/scripts/eval-thay-boi.test.mjs	scripts	8	acceptance-gate,feature-loop	co	feature-loop/scripts/ feature-loop/scripts/repin-lane.mjs feature-loop/skills/ feature-loop/skills/feature-loop/SKILL.md
+tests/scripts/evals-sat-le-lib.mjs	scripts	11	acceptance-gate,feature-loop	co	feature-loop/scripts/ feature-loop/scripts/carry-plan.mjs feature-loop/scripts/s4-args.mjs feature-loop/workflows/
+tests/scripts/evals-sat-le.test.mjs	scripts	27	acceptance-gate,feature-loop	co	commands/acceptance-card.md feature-loop/ feature-loop/scripts/carry-plan.mjs feature-loop/scripts/chup-ho-so-da-thong.mjs
+tests/scripts/expected-exit.test.mjs	scripts	2	acceptance-gate,feature-loop		feature-loop/workflows/acceptance-verify.js lib/eval-yaml.cjs
+tests/scripts/finding-line-bo-doc.test.mjs	scripts	19	acceptance-gate,feature-loop		feature-loop/scripts/ feature-loop/scripts/dem-dung-lai-model.mjs feature-loop/scripts/giu-tuoi.mjs feature-loop/scripts/lib/dung-lai-model.mjs
+tests/scripts/fixtures/duong-nen-cay-ban-lich-su.tsv	scripts	4	acceptance-gate	co	commands/signoff.md scripts/ho-so-tom-tat.cjs scripts/lo-trinh.mjs skills/acceptance/references/lo-trinh-du-lieu.md
+tests/scripts/fixtures/ten-ca-turbo/ghi-ban-ghi.mjs	scripts	1	feature-loop		feature-loop/scripts/lib/chay-lenh.mjs
+tests/scripts/fixtures/ten-ca-turbo/NGUON.md	scripts	1	feature-loop		feature-loop/scripts/lib/chay-lenh.mjs
+tests/scripts/gate-card-dec-key.test.mjs	scripts	8	acceptance-gate,feature-loop		commands/acceptance-card.md commands/approve.md feature-loop/scripts/claim-scan.mjs feature-loop/skills/feature-loop/SKILL.md
+tests/scripts/gate-card-duong-nen.test.mjs	scripts	5	acceptance-gate,feature-loop	co	feature-loop/ feature-loop/scripts/ feature-loop/scripts/duong-nen.mjs scripts/gate-card.js
+tests/scripts/gate-card-expected-exit.test.mjs	scripts	4	acceptance-gate		lib/ lib/eval-yaml.cjs scripts/ scripts/gate-card.js
+tests/scripts/gate-card-goal.test.mjs	scripts	6	acceptance-gate,feature-loop		feature-loop/skills/feature-loop/SKILL.md lib/ lib/nguong-o-co-hoi.cjs scripts/
+tests/scripts/gate-card-lmcms.test.mjs	scripts	6	acceptance-gate	co	commands/approve.md commands/signoff.md lib/nguong-o-co-hoi.cjs scripts/gate-card.js
+tests/scripts/gate-card-thuoc-vat.test.mjs	scripts	2	acceptance-gate,feature-loop		feature-loop/scripts/thuoc-vat.mjs scripts/gate-card.js
+tests/scripts/gate-fixture.mjs	scripts	1	acceptance-gate		scripts/gate-card.js
+tests/scripts/ghi-boi-tac-tu-cham.test.mjs	scripts	4	feature-loop	co	feature-loop/scripts/lib/ghi-boi.mjs feature-loop/scripts/s4-args.mjs feature-loop/scripts/thuoc-vat.mjs feature-loop/workflows/acceptance-verify.js
+tests/scripts/ghi-tri-thuc.test.mjs	scripts	5	acceptance-gate,tri-thuc	co	scripts/tri-thuc-ghi.mjs scripts/tri-thuc.mjs skills/acceptance/references/tri-thuc-template.md tri-thuc/README.md
+tests/scripts/gia-lan-fixture.mjs	scripts	1	feature-loop		feature-loop/scripts/repin-lane.mjs
+tests/scripts/giu-tuoi-fixture.mjs	scripts	2	acceptance-gate,feature-loop	co	feature-loop/scripts/repin-lane.mjs scripts/recheck-evidence.cjs
+tests/scripts/glob-thoat-ngoac.test.mjs	scripts	4	acceptance-gate,feature-loop		feature-loop/scripts/carry-plan.mjs feature-loop/scripts/repin-lane.mjs lib/evidence-core.cjs scripts/pre-merge-check.sh
+tests/scripts/hang-pr.test.mjs	scripts	4	acceptance-gate	co	.claude-plugin/plugin.json lib/ scripts/ scripts/pre-merge-check.sh
+tests/scripts/ho-so-da-ky-giu-tuoi-cac-kho.mjs	scripts	8	acceptance-gate,dieu-phoi,feature-loop	co	dieu-phoi/scripts/ feature-loop/scripts/giu-tuoi.mjs feature-loop/scripts/repin-lane.mjs lib/do-san-tren-nen.cjs
+tests/scripts/ho-so-da-ky-giu-tuoi.test.mjs	scripts	9	acceptance-gate,feature-loop	co	feature-loop/scripts/giu-tuoi.mjs feature-loop/scripts/lib/chay-lai.mjs feature-loop/scripts/repin-lane.mjs lib/do-san-tren-nen.cjs
+tests/scripts/ho-so-nghi.test.mjs	scripts	8	acceptance-gate	co	lib/evidence-core.cjs lib/workspace-record.cjs scripts/gate-card.js scripts/pre-merge-check.sh
+tests/scripts/hskt.test.mjs	scripts	12	acceptance-gate,feature-loop	co	feature-loop/workflows/acceptance-verify.js lib/ lib/out-of-contract.cjs lib/workspace-record.cjs
+tests/scripts/htkd.test.mjs	scripts	7	acceptance-gate,feature-loop	co	feature-loop/scripts/s4-args.mjs feature-loop/skills/feature-loop/SKILL.md feature-loop/workflows/acceptance-verify.js lib/evidence-core.cjs
+tests/scripts/kho-cam-ket-co-lo-trinh-cac-kho.mjs	scripts	3	acceptance-gate	co	hooks/acceptance-evidence-gate.js lib/chan-lo-trinh.cjs scripts/lo-trinh.mjs
+tests/scripts/kho-cam-ket-co-lo-trinh.test.mjs	scripts	10	acceptance-gate,feature-loop,road-map	co	.claude-plugin/marketplace.json commands/acceptance-init.md feature-loop/skills/feature-loop/SKILL.md hooks/acceptance-evidence-gate.js
+tests/scripts/kho-moi-cai-goi-road-map-cac-kho.mjs	scripts	3	acceptance-gate	co	.claude-plugin/marketplace.json commands/acceptance-init.md scripts/lo-trinh-khoi-tao.mjs
+tests/scripts/kho-moi-cai-goi-road-map.test.mjs	scripts	16	acceptance-gate,feature-loop,road-map	co	.claude-plugin/marketplace.json commands/acceptance-init.md feature-loop/skills/feature-loop/SKILL.md lib/chan-lo-trinh.cjs
+tests/scripts/kho-tri-thuc-va-lint.test.mjs	scripts	5	acceptance-gate,tri-thuc		scripts/product-map.mjs scripts/tri-thuc-khoa.cjs scripts/tri-thuc.mjs skills/acceptance/references/tri-thuc-template.md
+tests/scripts/khoi-khuon-tren-the-cong.test.mjs	scripts	6	acceptance-gate,feature-loop	co	feature-loop/skills/feature-loop/SKILL.md scripts/ban-do-khuon.cjs scripts/can-cu-s1.cjs scripts/design-floor-khuon.mjs
+tests/scripts/khuon-doc-ban-do-that.test.mjs	scripts	2	acceptance-gate		scripts/ban-do-khuon.cjs scripts/design-floor-khuon.mjs
+tests/scripts/khuon-loi.test.mjs	scripts	9	acceptance-gate,feature-loop	co	feature-loop/scripts/s4-args.mjs feature-loop/skills/feature-loop/SKILL.md lib/workspace-record.cjs scripts/ban-do-khuon.cjs
+tests/scripts/kiem-ban-cai-loi-sua.test.mjs	scripts	3	acceptance-gate	co	.claude-plugin/marketplace.json .claude-plugin/plugin.json scripts/kiem-ban-cai.mjs
+tests/scripts/kiem-ban-cai.ca.mjs	scripts	13	acceptance-gate,dieu-phoi,feature-loop	co	.claude-plugin/marketplace.json .claude-plugin/plugin.json dieu-phoi/.claude-plugin/plugin.json dieu-phoi/scripts/dieu-phoi.mjs
+tests/scripts/l1-khoi.test.mjs	scripts	2	acceptance-gate		lib/evidence-core.cjs scripts/recheck-evidence.cjs
+tests/scripts/label-occlusion.test.mjs	scripts	1	diagram-design		diagram-design/skills/diagram-design/scripts/check_label_occlusion.py
+tests/scripts/lan-status-not-run.test.mjs	scripts	4	acceptance-gate,feature-loop	co	feature-loop/scripts/repin-lane.mjs lib/evidence-core.cjs lib/workspace-record.cjs scripts/recheck-evidence.cjs
+tests/scripts/lmtl-the.test.mjs	scripts	4	acceptance-gate,feature-loop	co	feature-loop/scripts/thuoc-vat.mjs feature-loop/skills/feature-loop/SKILL.md feature-loop/workflows/acceptance-verify.js scripts/gate-card.js
+tests/scripts/lnt-no.test.mjs	scripts	9	acceptance-gate	co	lib/ lib/eval-yaml.cjs lib/lop-nhin-thay.cjs lib/nguong-o-co-hoi.cjs
+tests/scripts/lo-trinh-chup-crm.mjs	scripts	2	acceptance-gate		lib/evidence-core.cjs scripts/product-map.mjs
+tests/scripts/lo-trinh-du-lieu-ngay.test.mjs	scripts	3	acceptance-gate	co	scripts/lo-trinh.mjs scripts/product-map.mjs skills/acceptance/references/lo-trinh-du-lieu.md
+tests/scripts/lo-trinh-gio-may.test.mjs	scripts	7	acceptance-gate,feature-loop,road-map	co	feature-loop/skills/feature-loop/SKILL.md feature-loop/workflows/ road-map/commands/xem.md scripts/do-vong.mjs
+tests/scripts/lo-trinh-mau-trang.mjs	scripts	2	acceptance-gate		scripts/lo-trinh.mjs scripts/product-map.mjs
+tests/scripts/lo-trinh-mau.mjs	scripts	2	acceptance-gate		scripts/lo-trinh.mjs scripts/product-map.mjs
+tests/scripts/lo-trinh.test.mjs	scripts	24	acceptance-gate,feature-loop	co	commands/approve.md commands/observed.md commands/signoff.md commands/start.md
+tests/scripts/loop-health.test.mjs	scripts	2	acceptance-gate		scripts/loop-health.mjs skills/acceptance/references/contract-template.md
+tests/scripts/luat-san-pham.ca.mjs	scripts	13	acceptance-gate,feature-loop		commands/acceptance-card.md feature-loop/skills/feature-loop/SKILL.md feature-loop/workflows/acceptance-verify.js lib/
+tests/scripts/luot-kiem-nhe-ca-cham.mjs	scripts	1	acceptance-gate	co	scripts/gate-card.js
+tests/scripts/luot-kiem-nhe.test.mjs	scripts	1	acceptance-gate		scripts/product-map.mjs
+tests/scripts/luot-sua-giu-du.test.mjs	scripts	6	acceptance-gate,feature-loop	co	.claude-plugin/plugin.json feature-loop/scripts/carry-plan.mjs feature-loop/scripts/s4-args.mjs feature-loop/scripts/thuoc-vat.mjs
+tests/scripts/md-section.test.mjs	scripts	5	acceptance-gate		lib/ lib/md-section.cjs scripts/ scripts/evidence-page.js
+tests/scripts/mirror-sync-grandfather.mjs	scripts	1	acceptance-gate		scripts/recheck-evidence.cjs
+tests/scripts/moc-chien-dich-crm.mjs	scripts	2	acceptance-gate	co	scripts/lo-trinh.mjs scripts/product-map.mjs
+tests/scripts/moc-chien-dich.test.mjs	scripts	5	acceptance-gate,feature-loop	co	commands/start.md feature-loop/workflows/ scripts/lo-trinh.mjs scripts/product-map.mjs
+tests/scripts/moi-cong-khong-qua-nut.test.mjs	scripts	10	acceptance-gate,dieu-phoi,feature-loop		commands/acceptance-card.md dieu-phoi/commands/dong-dot.md dieu-phoi/commands/mo-dot.md dieu-phoi/commands/tiep-tuc.md
+tests/scripts/msbv-cau-noi.test.mjs	scripts	3	acceptance-gate		lib/ scripts/ scripts/cau-noi-ruling.mjs
+tests/scripts/msbv-fixture.mjs	scripts	1	feature-loop		feature-loop/skills/feature-loop/SKILL.md
+tests/scripts/msbv-so.test.mjs	scripts	2	acceptance-gate		commands/acceptance-card.md lib/workspace-record.cjs
+tests/scripts/msbv-the.test.mjs	scripts	3	acceptance-gate	co	lib/ scripts/ scripts/gate-card.js
+tests/scripts/ngay-ky.test.mjs	scripts	6	acceptance-gate	co	lib/workspace-record.cjs scripts/cat-luot.mjs scripts/ho-so-tom-tat.cjs scripts/start-scan.mjs
+tests/scripts/ngoai-n-khoi-khac.mjs	scripts	2	acceptance-gate,feature-loop	co	feature-loop/skills/feature-loop/SKILL.md skills/acceptance/references/human-facing-language.md
+tests/scripts/ngoai-n-tu-dinh-tuyen.test.mjs	scripts	14	acceptance-gate,feature-loop		feature-loop/ feature-loop/scripts/resolve-plugin.mjs feature-loop/skills/feature-loop/SKILL.md feature-loop/workflows/acceptance-verify.js
+tests/scripts/nlvh-the.test.mjs	scripts	5	acceptance-gate,feature-loop	co	commands/signoff.md feature-loop/workflows/acceptance-verify.js lib/workspace-record.cjs scripts/gate-card.js
+tests/scripts/ntr-hieu-chuan.test.mjs	scripts	2	acceptance-gate		commands/observed.md scripts/hieu-chuan-moc.mjs
+tests/scripts/ntr-luoi.test.mjs	scripts	7	acceptance-gate,feature-loop		commands/observed.md commands/signoff.md feature-loop/workflows/acceptance-verify.js lib/nhan-canh-gay.cjs
+tests/scripts/ntr-the-canh-gay.test.mjs	scripts	5	acceptance-gate,feature-loop	co	feature-loop/scripts/duong-nen.mjs feature-loop/scripts/s4-args.mjs feature-loop/scripts/thuoc-vat.mjs feature-loop/workflows/acceptance-verify.js
+tests/scripts/ntr-thuoc.test.mjs	scripts	4	feature-loop	co	feature-loop/scripts/carry-plan.mjs feature-loop/scripts/lib/phan-loai.mjs feature-loop/scripts/s4-args.mjs feature-loop/scripts/thuoc-vat.mjs
+tests/scripts/ntr-trang-thai.test.mjs	scripts	3	acceptance-gate	co	lib/workspace-record.cjs scripts/product-map.mjs scripts/start-scan.mjs
+tests/scripts/o-mo-viec-mang-nguon.test.mjs	scripts	7	acceptance-gate	co	scripts/cat-luot.mjs scripts/lo-trinh.mjs scripts/tri-thuc-khoa.cjs scripts/tri-thuc-nguon.cjs
+tests/scripts/out-of-contract.test.mjs	scripts	2	acceptance-gate,feature-loop		feature-loop/workflows/acceptance-verify.js lib/out-of-contract.cjs
+tests/scripts/phan-loai.test.mjs	scripts	6	acceptance-gate,feature-loop		feature-loop/ feature-loop/scripts/ feature-loop/scripts/lib/phan-loai.mjs feature-loop/scripts/s4-args.mjs
+tests/scripts/pre-merge-doc-lib-theo-kit.test.mjs	scripts	5	acceptance-gate	co	lib/ lib/out-of-contract.cjs scripts/ scripts/pre-merge-check.sh
+tests/scripts/premerge-repin.test.mjs	scripts	2	acceptance-gate		scripts/pre-merge-check.sh scripts/recheck-evidence.cjs
+tests/scripts/quet-het-han-khong-moi-ky.test.mjs	scripts	3	acceptance-gate		scripts/gate-card.js scripts/han-quet.cjs scripts/start-scan.mjs
+tests/scripts/ra-soat-lo-trinh-crm.mjs	scripts	1	acceptance-gate	co	scripts/lo-trinh.mjs
+tests/scripts/ra-soat-lo-trinh.test.mjs	scripts	19	acceptance-gate,dieu-phoi,feature-loop,road-map	co	.claude-plugin/marketplace.json .claude-plugin/plugin.json dieu-phoi/.claude-plugin/plugin.json feature-loop/.claude-plugin/plugin.json
+tests/scripts/recheck-repin.test.mjs	scripts	1	acceptance-gate		scripts/recheck-evidence.cjs
+tests/scripts/repin-evals.test.mjs	scripts	5	acceptance-gate		lib/ lib/evidence-core.cjs scripts/ scripts/pre-merge-check.sh
+tests/scripts/repin-lane-dung-lai-model.test.mjs	scripts	4	acceptance-gate,feature-loop	co	feature-loop/scripts/dem-dung-lai-model.mjs feature-loop/scripts/lib/dung-lai-model.mjs feature-loop/skills/feature-loop/SKILL.md scripts/recheck-evidence.cjs
+tests/scripts/repin-lane-khuon-gia.test.mjs	scripts	3	acceptance-gate,feature-loop		feature-loop/scripts/lib/lan-khoa.mjs feature-loop/skills/feature-loop/SKILL.md lib/evidence-core.cjs
+tests/scripts/repin-lane-lop-cu.test.mjs	scripts	9	acceptance-gate,feature-loop	co	feature-loop/scripts/ feature-loop/scripts/repin-lane.mjs feature-loop/scripts/resolve-plugin.mjs lib/
+tests/scripts/repin-lane-noi-ra.test.mjs	scripts	7	acceptance-gate,feature-loop	co	feature-loop/scripts/ feature-loop/scripts/repin-lane.mjs feature-loop/skills/feature-loop/SKILL.md scripts/eval-coverage-lint.js
+tests/scripts/repin-lane-skip-unchanged.test.mjs	scripts	2	acceptance-gate,feature-loop		commands/signoff.md feature-loop/scripts/repin-lane.mjs
+tests/scripts/repin-lane-tran.test.mjs	scripts	1	feature-loop		feature-loop/scripts/lib/chay-lenh.mjs
+tests/scripts/repin-lane.test.mjs	scripts	4	acceptance-gate,feature-loop		feature-loop/scripts/repin-lane.mjs feature-loop/skills/feature-loop/SKILL.md scripts/pre-merge-check.sh scripts/recheck-evidence.cjs
+tests/scripts/repin-roundtrip.test.mjs	scripts	3	acceptance-gate,feature-loop		feature-loop/skills/feature-loop/SKILL.md scripts/pre-merge-check.sh scripts/recheck-evidence.cjs
+tests/scripts/road-map-de-dung.test.mjs	scripts	5	acceptance-gate	co	scripts/cat-luot.mjs scripts/gio-may.mjs scripts/lo-trinh.mjs scripts/product-map.mjs
+tests/scripts/routing-baseline-t1.test.mjs	scripts	5	acceptance-gate,feature-loop		commands/signoff.md feature-loop/scripts/repin-lane.mjs lib/evidence-core.cjs scripts/pre-merge-check.sh
+tests/scripts/routing-baseline.mjs	scripts	1	acceptance-gate		scripts/gate-card.js
+tests/scripts/run-id-danh-sach-cho-phep.test.mjs	scripts	4	acceptance-gate,feature-loop	co	feature-loop/scripts/carry-plan.mjs feature-loop/workflows/acceptance-verify.js lib/evidence-core.cjs skills/acceptance/references/evidence-report-template.md
+tests/scripts/run-tests.sh	scripts	19	acceptance-gate,feature-loop	co	feature-loop/scripts/ feature-loop/scripts/resolve-plugin.mjs hooks/acceptance-evidence-gate.js lib/
+tests/scripts/s4-args-delta.test.mjs	scripts	1	feature-loop		feature-loop/scripts/s4-args.mjs
+tests/scripts/s4-args-dev-server.test.mjs	scripts	1	feature-loop		feature-loop/scripts/s4-args.mjs
+tests/scripts/s4-args-expected-exit.test.mjs	scripts	5	acceptance-gate,feature-loop		feature-loop/scripts/repin-lane.mjs feature-loop/scripts/s4-args.mjs feature-loop/workflows/acceptance-verify.js lib/eval-yaml.cjs
+tests/scripts/s4-args-judgment-inputs.test.mjs	scripts	4	acceptance-gate,feature-loop		feature-loop/scripts/lib/hoi-ngoai-inputs.mjs feature-loop/scripts/s4-args.mjs feature-loop/workflows/acceptance-verify.js lib/eval-yaml.cjs
+tests/scripts/s4-args-lenh-dai-chay-rieng.test.mjs	scripts	2	acceptance-gate,feature-loop		feature-loop/ scripts/
+tests/scripts/s4-args-main-branch.test.mjs	scripts	1	feature-loop	co	feature-loop/scripts/s4-args.mjs
+tests/scripts/s4-args-not-run.test.mjs	scripts	4	acceptance-gate,feature-loop		feature-loop/scripts/s4-args.mjs lib/ lib/evidence-core.cjs skills/acceptance/
+tests/scripts/s4-args-vung-vat.test.mjs	scripts	4	feature-loop	co	feature-loop/ feature-loop/scripts/carry-plan.mjs feature-loop/scripts/s4-args.mjs feature-loop/workflows/acceptance-verify.js
+tests/scripts/s5-ship-default.test.mjs	scripts	2	acceptance-gate,feature-loop		commands/acceptance-init.md feature-loop/skills/feature-loop/SKILL.md
+tests/scripts/stale-by-paths.test.mjs	scripts	2	acceptance-gate,feature-loop		feature-loop/scripts/carry-plan.mjs lib/evidence-core.cjs
+tests/scripts/t3-can-ho-so-arm.test.mjs	scripts	4	acceptance-gate		lib/evidence-core.cjs lib/workspace-record.cjs scripts/pre-merge-check.sh skills/acceptance/references/contract-template.md
+tests/scripts/tat-rd1.mjs	scripts	2	acceptance-gate	co	scripts/gio-may.mjs scripts/lo-trinh.mjs
+tests/scripts/ten-ca-qua-tien-to.test.mjs	scripts	2	acceptance-gate,feature-loop		feature-loop/scripts/ lib/
+tests/scripts/tep-sinh-khong-chan-gop.test.mjs	scripts	6	acceptance-gate	co	lib/ lib/workspace-record.cjs scripts/ scripts/lo-trinh.mjs
+tests/scripts/thiet-ke-nap-tri-thuc.test.mjs	scripts	7	acceptance-gate,feature-loop	co	feature-loop/skills/feature-loop/SKILL.md scripts/can-cu-s1.cjs scripts/gate-card.js scripts/lo-trinh.mjs
+tests/scripts/thuoc-vat.test.mjs	scripts	4	acceptance-gate,feature-loop	co	feature-loop/scripts/ feature-loop/scripts/thuoc-vat.mjs lib/evidence-core.cjs scripts/
+tests/scripts/tin-hieu.test.mjs	scripts	10	acceptance-gate,dieu-phoi	co	dieu-phoi/scripts/hinh-dang.mjs lib/workspace-record.cjs scripts/cat-luot.mjs scripts/lo-trinh.mjs
+tests/scripts/vat-da-o-nhanh-goc.test.mjs	scripts	4	acceptance-gate		lib/ scripts/ scripts/start-scan.mjs skills/acceptance/references/evidence-report-template.md
+tests/scripts/ve-lo-trinh-doc-tin-hieu-cua-cay.test.mjs	scripts	6	acceptance-gate,road-map	co	road-map/commands/gui.md scripts/lo-trinh-khoi-tao.mjs scripts/lo-trinh.mjs scripts/product-map.mjs
+tests/scripts/vong-don-le-tra-tri-thuc.test.mjs	scripts	7	acceptance-gate,feature-loop	co	feature-loop/skills/feature-loop/SKILL.md scripts/can-cu-s1.cjs scripts/gate-card.js scripts/lo-trinh.mjs
+tests/scripts/vong-meta-dang-mo.test.mjs	scripts	5	acceptance-gate		.claude-plugin/plugin.json lib/ lib/workspace-record.cjs scripts/
+tests/scripts/w6-w8-pham-vi.test.mjs	scripts	4	acceptance-gate		lib/ lib/context-glossary.js scripts/eval-coverage-lint.js skills/acceptance/references/contract-template.md
+tests/scripts/wf-usage.test.mjs	scripts	1	feature-loop		feature-loop/scripts/wf-usage.mjs
+tests/scripts/xem-trang-lo-trinh.test.mjs	scripts	2	acceptance-gate	co	scripts/lo-trinh.mjs scripts/product-map.mjs
+tests/scripts/yaml-chuan.test.mjs	scripts	2	acceptance-gate	co	scripts/gate-card.js scripts/yaml-chuan.cjs
+tests/skills/ux-ui-craft/analyze-tests.js	skills	1	acceptance-gate		skills/ux-ui-craft/scripts/measure_layout.js
+tests/workflows/acceptance-verify.test.mjs	workflows	5	acceptance-gate,feature-loop		feature-loop/scripts/lib/phan-loai.mjs feature-loop/workflows/acceptance-verify.js lib/evidence-core.cjs skills/acceptance/references/evidence-report-template.md
+tests/workflows/baseline-tran-bo-qua-don.test.mjs	workflows	1	feature-loop	co	feature-loop/workflows/acceptance-verify.js
+tests/workflows/baseline-worktree-co-lap.test.mjs	workflows	2	acceptance-gate,feature-loop		feature-loop/workflows/acceptance-verify.js scripts/gate-card.js
+tests/workflows/carry-plan.test.mjs	workflows	2	feature-loop		feature-loop/scripts/carry-plan.mjs feature-loop/workflows/acceptance-verify.js
+tests/workflows/chot-truong-nguoi-corpus.mjs	workflows	1	acceptance-gate	co	lib/evidence-core.cjs
+tests/workflows/chot-truong-nguoi.test.mjs	workflows	4	acceptance-gate,feature-loop		feature-loop/scripts/s4-args.mjs feature-loop/workflows/acceptance-verify.js lib/evidence-core.cjs skills/acceptance/references/evidence-report-template.md
+tests/workflows/claim-scan.test.mjs	workflows	3	acceptance-gate,feature-loop		feature-loop/.claude-plugin/plugin.json feature-loop/scripts/claim-scan.mjs lib/md-section.cjs
+tests/workflows/doc-ghi-troi.test.mjs	workflows	5	acceptance-gate,feature-loop		feature-loop/workflows/acceptance-verify.js lib/ lib/evidence-core.cjs lib/out-of-contract.cjs
+tests/workflows/doi-chung-chay-duoc.test.mjs	workflows	3	feature-loop	co	feature-loop/agents/ feature-loop/agents/cham-lenh.md feature-loop/workflows/acceptance-verify.js
+tests/workflows/execute-parallel.test.mjs	workflows	1	feature-loop		feature-loop/workflows/execute-parallel.js
+tests/workflows/gen-red-probe.mjs	workflows	1	feature-loop		feature-loop/workflows/acceptance-verify.js
+tests/workflows/harness.mjs	workflows	1	acceptance-gate		skills/acceptance/references/tool-kill-rule.md
+tests/workflows/lane-pin.test.mjs	workflows	1	feature-loop		feature-loop/workflows/acceptance-verify.js
+tests/workflows/lenh-dai-chay-rieng.test.mjs	workflows	1	feature-loop	co	feature-loop/workflows/acceptance-verify.js
+tests/workflows/luot-sua-giu-du.test.mjs	workflows	6	acceptance-gate,feature-loop		feature-loop/scripts/carry-plan.mjs feature-loop/scripts/s4-args.mjs feature-loop/workflows/acceptance-verify.js lib/evidence-core.cjs
+tests/workflows/measure-law-mutants.test.mjs	workflows	2	feature-loop	co	feature-loop/skills/feature-loop/SKILL.md feature-loop/workflows/acceptance-verify.js
+tests/workflows/not-run-luot-cham.test.mjs	workflows	1	feature-loop		feature-loop/workflows/acceptance-verify.js
+tests/workflows/pr-san-sang.test.mjs	workflows	1	feature-loop	co	feature-loop/scripts/pr-san-sang.mjs
+tests/workflows/round-signal.test.mjs	workflows	2	feature-loop		feature-loop/scripts/round-tally-read.mjs feature-loop/workflows/acceptance-verify.js
+tests/workflows/skill-claims.test.mjs	workflows	1	feature-loop		feature-loop/skills/feature-loop/SKILL.md
+tests/workflows/suite-tuan-tu.test.mjs	workflows	1	feature-loop		feature-loop/workflows/acceptance-verify.js
+tests/workflows/tac-tu-cham-hep.test.mjs	workflows	2	feature-loop	co	feature-loop/agents/ feature-loop/workflows/acceptance-verify.js
+tests/workflows/triage-do-tin.test.mjs	workflows	1	feature-loop		feature-loop/workflows/acceptance-verify.js
+tests/workflows/ui-check-tuan-tu.test.mjs	workflows	2	feature-loop		feature-loop/scripts/s4-args.mjs feature-loop/workflows/acceptance-verify.js
+tests/workflows/vung-vat-mutants.test.mjs	workflows	2	feature-loop		feature-loop/scripts/lib/phan-loai.mjs feature-loop/workflows/acceptance-verify.js

@@ -1,0 +1,657 @@
+# máy sinh bởi migration/tra-soat/kho-tieu-thu.mjs — crm @ 74a29a68 (2026-11-03), kit @ 909dffd8 — đừng sửa tay
+tep	dong	loai	gay	chu	tep_kit
+_acceptance/config.yaml	236	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	236	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	236	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	236	tim-kit	xem-tay	tcd_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/tai-lieu/[trang]/man-doc.tsx" "apps/app/app/(app)/[slug]/tai-lieu/[trang]/sua/page.ts	
+_acceptance/config.yaml	237	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	237	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	237	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	237	tim-kit	xem-tay	tdk_san_thiet_ke: 'for t in $(git ls-files "apps/app/app/(app)/[[]slug]/tai-lieu/*.tsx" "apps/app/app/(app)/[[]slug]/tai-lieu/**/*.tsx" "app	
+_acceptance/config.yaml	255	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	255	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	255	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	255	tim-kit	xem-tay	ktl_san_thiet_ke: 'for t in $(git ls-files "apps/app/app/(app)/[[]slug]/tai-lieu/*.tsx" "packages/ui/src/components/trinh-soan*.tsx" "packag	
+_acceptance/config.yaml	296	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	296	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	296	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	296	tim-kit	xem-tay	kh1_san_thiet_ke: 'for t in "apps/app/components/crm/record-sheet/plan-sheet.tsx" "apps/app/components/crm/record-sheet/plan-steps.tsx" "app	
+_acceptance/config.yaml	317	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	317	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	317	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	317	tim-kit	xem-tay	kh2_san_thiet_ke: 'for t in "apps/app/components/crm/record-sheet/company-plans.tsx" "apps/app/components/crm/record-sheet/contact-plans.tsx	
+_acceptance/config.yaml	331	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	331	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	331	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	331	tim-kit	xem-tay	mn3_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/dashboard-summary.tsx" "apps/app/components/crm/record-sheet/theo-doi-ke-hoach.tsx"; 	
+_acceptance/config.yaml	353	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	353	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	353	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	353	tim-kit	xem-tay	nqz_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/settings/notifications/page.tsx" "apps/app/app/(app)/[slug]/settings/connections/zalo	
+_acceptance/config.yaml	420	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	420	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	420	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	420	tim-kit	xem-tay	cp_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/settings/members/allowances-table.tsx" "apps/app/app/(app)/[slug]/settings/members/all	
+_acceptance/config.yaml	709	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	709	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	709	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	709	tim-kit	xem-tay	mk_san_thiet_ke: for t in "apps/app/app/(landing)/dat-mat-khau/[token]/page.tsx" "apps/app/app/(landing)/sign-in/password-sign-in.tsx" "apps	
+_acceptance/config.yaml	744	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	744	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	744	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	744	tim-kit	xem-tay	qmk_san_thiet_ke: for t in "apps/app/app/(landing)/quen-mat-khau/page.tsx" "apps/app/app/(landing)/quen-mat-khau/quen-mat-khau-form.tsx" "ap	
+_acceptance/config.yaml	861	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	861	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	861	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	861	tim-kit	xem-tay	ogd_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/onboarding/danh-muc-table.tsx" "apps/app/app/(app)/[slug]/onboarding/danh-muc-cong-cu	
+_acceptance/config.yaml	1441	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	1441	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	1441	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	1441	tim-kit	xem-tay	r1c_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/okr/hoi-y/khoi-ket-luan.tsx" "apps/app/app/(app)/[slug]/okr/cap-nhat-tuan/cap-nhat-tu	
+_acceptance/config.yaml	1472	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	1472	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	1472	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	1472	tim-kit	xem-tay	r1c_dg_san_thiet_ke: 'node ${CLAUDE_PLUGIN_ROOT:-$(node scripts/resolve-plugin.mjs --plugin acceptance-gate --require scripts/design-gate.mj	
+_acceptance/config.yaml	1714	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	1714	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	1714	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	1714	tim-kit	xem-tay	dlt_hoi_quy: 'git diff --quiet cf003458611be9efadd4b71cbda61dc04df02d2b -- apps/app/test/giai-doan-cai-dat.dom.tsx && node ${CLAUDE_PLUGIN_R	
+_acceptance/config.yaml	2497	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2497	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	2497	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2497	tim-kit	xem-tay	ltk_san_thiet_ke: 'for t in apps/app/components/crm/fields/field-editor.tsx apps/app/components/crm/fields/fields-list.tsx; do node ${CLAUDE	
+_acceptance/config.yaml	2503	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2503	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	2503	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2503	tim-kit	xem-tay	lqc_san_thiet_ke: 'for t in apps/app/components/crm/record-sheet/record-parts.tsx apps/app/components/crm/record-sheet/company-sheet.tsx app	
+_acceptance/config.yaml	2509	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2509	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	2509	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2509	tim-kit	xem-tay	ltc_thiet_ke: 'for f in apps/app/components/lo-trinh/*.tsx "apps/app/app/(app)/[slug]/lo-trinh/page.tsx"; do node ${CLAUDE_PLUGIN_ROOT:-$(no	
+_acceptance/config.yaml	2581	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2581	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	2581	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2581	tim-kit	xem-tay	tlk_san_thiet_ke: 'for t in $(git ls-files "apps/app/app/(app)/[[]slug]/tai-lieu/*.tsx" "apps/app/app/(app)/[[]slug]/tai-lieu/**/*.tsx"); do	
+_acceptance/config.yaml	2594	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2594	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	2594	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2594	tim-kit	xem-tay	msd_san_thiet_ke: 'for t in $(git ls-files "apps/app/app/(app)/[[]slug]/tai-lieu/*.tsx" "apps/app/app/(app)/[[]slug]/tai-lieu/**/*.tsx" "pac	
+_acceptance/config.yaml	2619	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2619	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	2619	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2619	tim-kit	xem-tay	nzm_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/settings/notifications/page.tsx" "apps/app/app/(app)/[slug]/settings/connections/zalo	
+_acceptance/config.yaml	2628	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2628	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	2628	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2628	tim-kit	xem-tay	zgh_san_thiet_ke: 'node ${CLAUDE_PLUGIN_ROOT:-$(node scripts/resolve-plugin.mjs --plugin acceptance-gate --require scripts/design-gate.mjs -	
+_acceptance/config.yaml	2667	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/product-map.mjs	scripts/product-map.mjs
+_acceptance/config.yaml	2669	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+_acceptance/config.yaml	2669	tim-kit	xem-tay	resolve_plugin: "node scripts/resolve-plugin.mjs --plugin acceptance-gate --require scripts/product-map.mjs"	
+_acceptance/config.yaml	2700	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2700	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	2700	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	2700	tim-kit	xem-tay	bdk_san_thiet_ke: 'node ${CLAUDE_PLUGIN_ROOT:-$(node scripts/resolve-plugin.mjs --plugin acceptance-gate --require scripts/design-gate.mjs -	
+_acceptance/config.yaml	3024	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3024	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3024	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3024	tim-kit	xem-tay	tdc_san_thiet_ke: 'for t in "packages/ui/src/components/data-table.tsx" "apps/app/app/(app)/[slug]/campaigns/campaigns-table.tsx"; do node $	
+_acceptance/config.yaml	3101	tim-kit	xem-tay	tdb_lan_hai_ho_so: 'node "$(node scripts/resolve-plugin.mjs --plugin feature-loop --require scripts/repin-lane.mjs)/scripts/repin-lane.mjs" 	
+_acceptance/config.yaml	3119	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3119	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3119	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3119	tim-kit	xem-tay	tvhk_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/settings/members/page.tsx" "apps/app/app/(app)/[slug]/settings/members/members-table	
+_acceptance/config.yaml	3124	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3124	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3124	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3124	tim-kit	xem-tay	cvdn_san_thiet_ke: 'for t in apps/app/components/auth-shell.tsx apps/app/components/cua-vao/*.tsx; do node ${CLAUDE_PLUGIN_ROOT:-$(node scri	
+_acceptance/config.yaml	3131	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3131	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3131	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3131	tim-kit	xem-tay	dtoc_san_thiet_ke: 'for t in apps/app/components/auth-shell.tsx apps/app/components/cua-vao/*.tsx packages/ui/src/components/luoi-cham.tsx p	
+_acceptance/config.yaml	3151	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3151	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3151	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3151	tim-kit	xem-tay	tln_san_thiet_ke: for t in "apps/app/app/(app)/[slug]/settings/okr/the-tro-ly-okr.tsx" "apps/app/app/(app)/[slug]/settings/okr/the-so-chi-ph	
+_acceptance/config.yaml	3160	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3160	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3160	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3160	tim-kit	xem-tay	vtl_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/okr/hop-thoai-kr.tsx" "apps/app/app/(app)/[slug]/okr/hop-thoai-muc-tieu.tsx" "apps/ap	
+_acceptance/config.yaml	3167	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3167	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3167	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3167	tim-kit	xem-tay	tdx_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/okr/cot-gop-y.tsx" "apps/app/app/(app)/[slug]/okr/hop-thoai-muc-tieu.tsx" "apps/app/a	
+_acceptance/config.yaml	3171	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3171	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3171	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3171	tim-kit	xem-tay	tts_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/okr/khoi-tom-tat.tsx" "apps/app/app/(app)/[slug]/okr/hop-tuan.tsx" "apps/app/app/(app	
+_acceptance/config.yaml	3193	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3193	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3193	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3193	tim-kit	xem-tay	tgy_san_thiet_ke: 'for t in "packages/ui/src/components/proposed-change.tsx" "packages/ui/src/components/ai-elements/confirmation.tsx" "apps	
+_acceptance/config.yaml	3197	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3197	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3197	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3197	tim-kit	xem-tay	mtkr_san_thiet_ke: 'for t in "packages/ui/src/components/simple-table.tsx" "apps/app/app/(app)/[slug]/okr/bang-muc-tieu.tsx" "apps/app/app/(	
+_acceptance/config.yaml	3214	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3214	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3214	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3214	tim-kit	xem-tay	kto_san_thiet_ke: 'for t in "packages/ui/src/components/sheet.tsx" "packages/ui/src/components/dialog.tsx" "apps/app/app/(app)/[slug]/okr/ho	
+_acceptance/config.yaml	3218	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3218	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3218	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3218	tim-kit	xem-tay	nk_san_thiet_ke: '{ printf "%s\n" "packages/ui/src/components/kara.tsx" "packages/ui/src/components/proposed-change.tsx" "packages/ui/src/co	
+_acceptance/config.yaml	3223	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3223	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3223	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3223	tim-kit	xem-tay	gy_san_thiet_ke: 'for t in "apps/app/components/crm/record-sheet/objective-sheet.tsx" "apps/app/app/(app)/[slug]/okr/hop-thoai-muc-tieu.tsx"	
+_acceptance/config.yaml	3226	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3226	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3226	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3226	tim-kit	xem-tay	sol_san_thiet_ke: for t in "apps/app/app/(app)/[slug]/okr/soan/nut-soan.tsx" "apps/app/app/(app)/[slug]/okr/soan/man-soan.tsx" "apps/app/app	
+_acceptance/config.yaml	3241	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3241	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3241	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3241	tim-kit	xem-tay	k1_san_thiet_ke: '{ find packages/ui/src/components/kara -name "*.tsx"; printf "%s\n" packages/ui/src/components/ai-elements/artifact.tsx pa	
+_acceptance/config.yaml	3248	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3248	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3248	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3248	tim-kit	xem-tay	r1b_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/settings/members/page.tsx" "apps/app/app/(app)/[slug]/settings/members/cho-phep-dia-c	
+_acceptance/config.yaml	3253	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3253	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3253	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3253	tim-kit	xem-tay	r1f_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/error.tsx" "apps/app/app/(app)/error.tsx" "apps/app/components/trang-loi-tam.tsx" "ap	
+_acceptance/config.yaml	3259	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3259	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3259	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3259	tim-kit	xem-tay	r1a_san_thiet_ke: for t in "apps/app/components/detail-sheet.tsx" "apps/app/components/crm/record-sheet/objective-sheet.tsx" "apps/app/compo	
+_acceptance/config.yaml	3261	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3261	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3261	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3261	tim-kit	xem-tay	r1h_chu_va_san: 'cd apps/app && bun test test/messages-guard.spec.ts && cd ../.. && node ${CLAUDE_PLUGIN_ROOT:-$(node scripts/resolve-plugin	
+_acceptance/config.yaml	3263	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3263	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3263	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3263	tim-kit	xem-tay	tl45_chu_va_san: 'cd apps/app && bun test test/messages-guard.spec.ts && cd ../.. && node ${CLAUDE_PLUGIN_ROOT:-$(node scripts/resolve-plugi	
+_acceptance/config.yaml	3266	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3266	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3266	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3266	tim-kit	xem-tay	r1d_san_thiet_ke: for t in "apps/app/app/(app)/[slug]/okr/bang-muc-tieu.tsx" "apps/app/app/(app)/[slug]/okr/bang-kr.tsx" "apps/app/app/(app)	
+_acceptance/config.yaml	3306	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3306	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3306	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3306	tim-kit	xem-tay	k2_san_thiet_ke: '{ find "apps/app/app/(app)/[slug]/okr/soan" -name "*.tsx"; printf "%s\n" packages/ui/src/components/resizable.tsx packages	
+_acceptance/config.yaml	3318	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3318	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3318	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3318	tim-kit	xem-tay	sk_san_thiet_ke: '{ find "apps/app/app/(app)/[slug]/okr/soan" -name "*.tsx"; printf "%s\n" apps/app/components/crm/record-sheet/soan-sheet.t	
+_acceptance/config.yaml	3362	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3362	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3362	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3362	tim-kit	xem-tay	dlr_san_thiet_ke: 'for t in packages/ui/src/components/data-table.tsx "apps/app/app/(app)/[slug]/contacts/contacts-table.tsx" "apps/app/app/	
+_acceptance/config.yaml	3364	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3364	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3364	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3364	tim-kit	xem-tay	olht_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/okr/cham-diem.tsx" "apps/app/app/(app)/[slug]/settings/okr/hop-thoai-dong-ky.tsx"; d	
+_acceptance/config.yaml	3367	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3367	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3367	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3367	tim-kit	xem-tay	ctt_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/okr/cua-toi.tsx" "apps/app/app/(app)/[slug]/okr/nhom-da-bo.tsx"; do node ${CLAUDE_PLU	
+_acceptance/config.yaml	3407	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3407	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3407	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3407	tim-kit	xem-tay	mcl_san_thiet_ke: 'node ${CLAUDE_PLUGIN_ROOT:-$(node scripts/resolve-plugin.mjs --plugin acceptance-gate --require scripts/design-gate.mjs -	
+_acceptance/config.yaml	3414	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3414	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3414	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3414	tim-kit	xem-tay	dva_san_thiet_ke: 'node ${CLAUDE_PLUGIN_ROOT:-$(node scripts/resolve-plugin.mjs --plugin acceptance-gate --require scripts/design-gate.mjs -	
+_acceptance/config.yaml	3430	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3430	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3430	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3430	tim-kit	xem-tay	dt_san_thiet_ke: 'for t in "apps/app/components/crm/record-sheet/quick-add.tsx" "apps/app/app/(app)/[slug]/contacts/create-contact-sheet.tsx	
+_acceptance/config.yaml	3438	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3438	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3438	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3438	tim-kit	xem-tay	dt2_san_thiet_ke: 'for t in "apps/app/components/crm/record-sheet/deal-sheet.tsx" "apps/app/components/crm/record-sheet/company-sheet.tsx" "	
+_acceptance/config.yaml	3447	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3447	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3447	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3447	tim-kit	xem-tay	tvk_thiet_ke: 'for f in "apps/app/app/(app)/[slug]/settings/api-keys/"*.tsx; do node ${CLAUDE_PLUGIN_ROOT:-$(node scripts/resolve-plugin.mjs	
+_acceptance/config.yaml	3448	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3448	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3448	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3448	tim-kit	xem-tay	gth_thiet_ke: 'for f in apps/app/components/tin-hieu/*.tsx "apps/app/app/(app)/[slug]/tin-hieu/page.tsx"; do node ${CLAUDE_PLUGIN_ROOT:-$(no	
+_acceptance/config.yaml	3454	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3454	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3454	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3454	tim-kit	xem-tay	ltsp_thiet_ke: 'for f in apps/app/components/lo-trinh/*.tsx "apps/app/app/(app)/[slug]/lo-trinh/page.tsx" "apps/app/app/(app)/[slug]/setting	
+_acceptance/config.yaml	3456	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3456	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3456	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3456	tim-kit	xem-tay	ldbc_thiet_ke: 'for f in apps/app/components/lo-trinh/*.tsx "apps/app/app/(app)/[slug]/lo-trinh/page.tsx" "apps/app/app/(app)/[slug]/setting	
+_acceptance/config.yaml	3459	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3459	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3459	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3459	tim-kit	xem-tay	mth_thiet_ke: 'for f in apps/app/components/tin-hieu/thanh-the-tin-hieu.tsx apps/app/components/tin-hieu/ba-so-tin-hieu.tsx apps/app/compone	
+_acceptance/config.yaml	3493	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3493	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3493	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3493	tim-kit	xem-tay	sol_san_thiet_ke_trang: for t in "apps/app/app/(app)/[slug]/okr/soan/nut-soan.tsx" "apps/app/app/(app)/[slug]/okr/soan/trang-soan.tsx" "apps	
+_acceptance/config.yaml	3516	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3516	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3516	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3516	tim-kit	xem-tay	htb_thiet_ke: 'for f in apps/app/components/thong-bao/*.tsx "apps/app/app/(app)/[slug]/thong-bao/page.tsx"; do node ${CLAUDE_PLUGIN_ROOT:-$(	
+_acceptance/config.yaml	3552	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3552	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3552	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3552	tim-kit	xem-tay	sgt_thiet_ke: for f in apps/app/components/tin-hieu/*.tsx "apps/app/app/(app)/[slug]/tin-hieu/"*.tsx; do node ${CLAUDE_PLUGIN_ROOT:-$(node s	
+_acceptance/config.yaml	3555	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3555	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3555	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3555	tim-kit	xem-tay	tdx_thiet_ke: for f in apps/app/components/tin-hieu/danh-sach-tin-hieu.tsx "apps/app/app/(app)/[slug]/tin-hieu/danh-sach-tin-hieu-trang.tsx"	
+_acceptance/config.yaml	3582	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3582	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3582	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3582	tim-kit	xem-tay	dh5_san_thiet_ke: 'for t in "apps/app/app/(app)/[slug]/okr/quanh-muc-tieu/[objectiveId]/page.tsx" "apps/app/app/(app)/[slug]/okr/quanh-muc-t	
+_acceptance/config.yaml	3730	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3730	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3730	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3730	tim-kit	xem-tay	gate: "node ${CLAUDE_PLUGIN_ROOT:-$(node scripts/resolve-plugin.mjs --plugin acceptance-gate --require scripts/design-gate.mjs --require scr	
+_acceptance/config.yaml	3731	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
+_acceptance/config.yaml	3731	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3731	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/design-scan.js	scripts/design-scan.js
+_acceptance/config.yaml	3731	tim-kit	xem-tay	ui_check: "node ${CLAUDE_PLUGIN_ROOT:-$(node scripts/resolve-plugin.mjs --plugin acceptance-gate --require scripts/design-gate.mjs --require	
+_acceptance/config.yaml	3741	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+_acceptance/config.yaml	3744	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+_acceptance/config.yaml	3749	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+_acceptance/config.yaml	3750	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/recheck-evidence.cjs	scripts/recheck-evidence.cjs
+_acceptance/config.yaml	3751	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+_acceptance/config.yaml	3752	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/gap-probe.cjs	lib/gap-probe.cjs
+_acceptance/config.yaml	3753	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+_acceptance/config.yaml	3754	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/ac-line.cjs	lib/ac-line.cjs
+_acceptance/config.yaml	3755	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/md-section.cjs	lib/md-section.cjs
+_acceptance/config.yaml	3756	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+_acceptance/config.yaml	3760	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/lop-nhin-thay.cjs	lib/lop-nhin-thay.cjs
+_acceptance/config.yaml	3761	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/nhan-canh-gay.cjs	lib/nhan-canh-gay.cjs
+_acceptance/config.yaml	3765	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+_acceptance/config.yaml	3766	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/trang-thai-ho-so.cjs	scripts/trang-thai-ho-so.cjs
+_acceptance/config.yaml	3767	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/khong-can-nguoi.mjs	scripts/khong-can-nguoi.mjs
+_acceptance/config.yaml	3768	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/nguong-o-co-hoi.cjs	lib/nguong-o-co-hoi.cjs
+_acceptance/config.yaml	3769	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/out-of-contract.cjs	lib/out-of-contract.cjs
+_acceptance/config.yaml	3770	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh-khoa.cjs	scripts/lo-trinh-khoa.cjs
+_acceptance/config.yaml	3771	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh.mjs	scripts/lo-trinh.mjs
+_acceptance/config.yaml	3774	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/ho-so-tom-tat.cjs	scripts/ho-so-tom-tat.cjs
+_acceptance/config.yaml	3775	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu-khoa.cjs	scripts/tin-hieu-khoa.cjs
+_acceptance/config.yaml	3776	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+_acceptance/config.yaml	3777	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/cat-luot.mjs	scripts/cat-luot.mjs
+_acceptance/config.yaml	3779	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/co-hop-dong.cjs	scripts/co-hop-dong.cjs
+_acceptance/config.yaml	3781	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/gio-may.mjs	scripts/gio-may.mjs
+_acceptance/config.yaml	3782	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/chan-lo-trinh.cjs	lib/chan-lo-trinh.cjs
+_acceptance/config.yaml	3783	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/do-san-tren-nen.cjs	lib/do-san-tren-nen.cjs
+_acceptance/config.yaml	3784	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/do-san-tren-nen.cjs	lib/do-san-tren-nen.cjs
+_acceptance/config.yaml	3787	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	dieu-phoi/scripts/hinh-dang.mjs	dieu-phoi/scripts/hinh-dang.mjs
+_acceptance/config.yaml	3788	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	dieu-phoi/scripts/cau-hinh.mjs	dieu-phoi/scripts/cau-hinh.mjs
+_acceptance/config.yaml	3789	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	dieu-phoi/scripts/dot.mjs	dieu-phoi/scripts/dot.mjs
+_acceptance/config.yaml	3790	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	skills/acceptance/references/tin-hieu-template.md	skills/acceptance/references/tin-hieu-template.md
+_acceptance/config.yaml	3793	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc-khoa.cjs	scripts/tri-thuc-khoa.cjs
+_acceptance/config.yaml	3794	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc-nguon.cjs	scripts/tri-thuc-nguon.cjs
+_acceptance/config.yaml	3795	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc.mjs	scripts/tri-thuc.mjs
+_acceptance/config.yaml	3796	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	skills/acceptance/references/tri-thuc-template.md	skills/acceptance/references/tri-thuc-template.md
+_acceptance/config.yaml	3798	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc-tra.cjs	scripts/tri-thuc-tra.cjs
+_acceptance/config.yaml	3799	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/can-cu-s1.cjs	scripts/can-cu-s1.cjs
+_acceptance/config.yaml	3800	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/luat-san-pham.cjs	scripts/luat-san-pham.cjs
+_acceptance/config.yaml	3842	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+_acceptance/config.yaml	3843	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+_acceptance/config.yaml	3844	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+_acceptance/config.yaml	3845	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+_acceptance/config.yaml	3846	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh.mjs	scripts/lo-trinh.mjs
+_acceptance/config.yaml	3847	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+_acceptance/handoff.md	283	lenh-skill	giu-ten	acceptance-gate:signoff	
+_acceptance/handoff.md	441	lenh-skill	giu-ten	feature-loop:feature-loop	
+_acceptance/NO-CAN-TRA.md	67	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+_acceptance/README.md	6	lenh-skill	giu-ten	acceptance-gate:acceptance	
+_acceptance/README.md	16	tim-kit	xem-tay	export CLAUDE_PLUGIN_ROOT=$(node scripts/resolve-plugin.mjs \	
+_acceptance/README.md	17	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+_acceptance/README.md	18	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/product-map.mjs	scripts/product-map.mjs
+.claude/settings.json	6	id-plugin	doi-ten-cho	acceptance-gate@acceptance-gate-kit	
+.claude/settings.json	7	id-plugin	doi-ten-cho	feature-loop@acceptance-gate-kit	
+.claude/settings.json	8	id-plugin	doi-ten-cho	diagram-design@acceptance-gate-kit	
+.claude/settings.json	10	id-plugin	doi-ten-cho-va-plugin	dieu-phoi@acceptance-gate-kit	
+.claude/settings.json	11	id-plugin	doi-ten-cho-va-plugin	road-map@acceptance-gate-kit	
+.claude/settings.json	12	id-plugin	doi-ten-cho-va-plugin	tri-thuc@acceptance-gate-kit	
+.claude/settings.json	15	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+.claude/settings.json	18	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+.github/scripts/test/phan-loai.test.mjs	8	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	../../../lib/workspace-record.cjs	lib/workspace-record.cjs
+.github/scripts/test/phan-loai.test.mjs	198	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+.github/workflows/acceptance.yml	44	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+.github/workflows/acceptance.yml	50	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+.github/workflows/acceptance.yml	52	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+.github/workflows/tin-hieu-gom.yml	54	ten-cho-hoac-ten-kho	url-kho-hoac-cho	acceptance-gate-kit	
+.github/workflows/tin-hieu-gom.yml	55	ten-cho-hoac-ten-kho	url-kho-hoac-cho	acceptance-gate-kit	
+.github/workflows/tin-hieu-gom.yml	55	tim-kit	xem-tay	claude plugin marketplace add "$RUNNER_TEMP/acceptance-gate-kit"	
+.github/workflows/tin-hieu-gom.yml	56	id-plugin	doi-ten-cho	acceptance-gate@acceptance-gate-kit	
+.github/workflows/tin-hieu-gom.yml	56	tim-kit	xem-tay	claude plugin install acceptance-gate@acceptance-gate-kit	
+apps/agent/test/mau/lo-trinh-kit.html	43	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/agent/test/mau/lo-trinh-kit.html	52	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/agent/test/mau/lo-trinh-kit.html	53	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/agent/test/mau/lo-trinh-kit.html	73	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/agent/test/mau/lo-trinh-kit.html	80	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/agent/test/mau/lo-trinh-kit.html	85	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	scripts/dieu-phoi/README.md	dieu-phoi/README.md
+apps/agent/test/mau/lo-trinh-kit.html	92	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/agent/test/mau/lo-trinh-kit.html	100	lenh-skill	doi-ten-plugin	road-map:gui	
+apps/agent/test/mau/lo-trinh-kit.html	101	lenh-skill	doi-ten-plugin	road-map:gui	
+apps/agent/test/mau/lo-trinh-kit.html	104	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh.mjs	scripts/lo-trinh.mjs
+apps/agent/test/mau/lo-trinh-kit.html	104	lenh-skill	doi-ten-plugin	road-map:xem	
+apps/agent/test/mau/lo-trinh-kit.html	108	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/agent/test/mau/lo-trinh-kit.html	113	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/scripts/lib/chay-lai.mjs	feature-loop/scripts/lib/chay-lai.mjs
+apps/agent/test/mau/lo-trinh-kit.html	118	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+apps/agent/test/mau/lo-trinh-kit.html	118	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh.mjs	scripts/lo-trinh.mjs
+apps/agent/test/mau/lo-trinh-kit.html	118	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/scripts/repin-lane.mjs	feature-loop/scripts/repin-lane.mjs
+apps/agent/test/mau/lo-trinh-kit.html	118	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/skills/feature-loop/SKILL.md	feature-loop/skills/feature-loop/SKILL.md
+apps/agent/test/mau/lo-trinh-kit.html	118	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	scripts/dieu-phoi/README.md	dieu-phoi/README.md
+apps/agent/test/mau/lo-trinh-kit.html	118	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/scripts/duong-nen.mjs	feature-loop/scripts/duong-nen.mjs
+apps/agent/test/mau/lo-trinh-kit.html	118	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/scripts/lib/chay-lai.mjs	feature-loop/scripts/lib/chay-lai.mjs
+apps/agent/test/mau/lo-trinh-kit.html	118	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/agent/test/mau/lo-trinh-kit.html	118	lenh-skill	doi-ten-plugin	dieu-phoi:mo-dot	
+apps/agent/test/mau/lo-trinh-kit.html	118	lenh-skill	doi-ten-plugin	dieu-phoi:dong-dot	
+apps/agent/test/mau/lo-trinh-kit.html	118	lenh-skill	doi-ten-plugin	dieu-phoi:xem	
+apps/agent/test/mau/lo-trinh-kit.html	118	lenh-skill	doi-ten-plugin	dieu-phoi:tiep-tuc	
+apps/agent/test/mau/lo-trinh-kit.html	118	lenh-skill	doi-ten-plugin	dieu-phoi:ban-giao	
+apps/agent/test/mau/lo-trinh-kit.html	118	lenh-skill	doi-ten-plugin	road-map:gui	
+apps/agent/test/mau/lo-trinh-kit.html	118	lenh-skill	doi-ten-plugin	road-map:xem	
+apps/agent/test/mau/lo-trinh-kit.html	118	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/api/test/san-pham-lo-trinh.spec.ts	80	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/api/test/san-pham-lo-trinh.spec.ts	184	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/app/app/proto/_modules/lo-trinh-hien-ngay-du-kien/du-lieu-mau.json	17	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/app/proto/_modules/lo-trinh-hien-ngay-du-kien/du-lieu-mau.json	4041	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/app/proto/_modules/lo-trinh-hien-ngay-du-kien/du-lieu-mau.json	4545	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/app/proto/_modules/lo-trinh-nhieu-san-pham/index.tsx	177	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/app/app/proto/_modules/lo-trinh-nhieu-san-pham/index.tsx	255	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/app/app/proto/_modules/lo-trinh-nhieu-san-pham/index.tsx	279	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/app/app/proto/_modules/lo-trinh-nhieu-san-pham/index.tsx	491	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/app/app/proto/_modules/ngan-ho-so-trong-lo-trinh/du-lieu-x2.json	17	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/app/proto/_modules/ngan-ho-so-trong-lo-trinh/du-lieu-x2.json	4312	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/app/proto/_modules/ngan-ho-so-trong-lo-trinh/du-lieu-x2.json	4871	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/app/proto/_modules/trang-lo-trinh-trong-crm/du-lieu-mau.json	17	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/app/proto/_modules/trang-lo-trinh-trong-crm/du-lieu-mau.json	1069	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/app/proto/_modules/trang-lo-trinh-trong-crm/du-lieu-mau.json	1310	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/lib/messages/san-pham.ts	67	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/app/lib/messages/san-pham.ts	159	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/app/test/fixtures/lo-trinh/b1/LO-TRINH.html	42	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/fixtures/lo-trinh/b1/LO-TRINH.html	54	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/fixtures/lo-trinh/b1/LO-TRINH.html	111	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/fixtures/lo-trinh/LO-TRINH.mau.html	42	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/fixtures/lo-trinh/LO-TRINH.mau.html	54	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/fixtures/lo-trinh/LO-TRINH.mau.html	111	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/fixtures/lo-trinh/x2/LO-TRINH.html	43	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/fixtures/lo-trinh/x2/LO-TRINH.html	49	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/fixtures/lo-trinh/x2/LO-TRINH.html	55	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/fixtures/lo-trinh/x2/LO-TRINH.html	207	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/fixtures/tin-hieu/LO-TRINH.mau.html	42	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/fixtures/tin-hieu/LO-TRINH.mau.html	60	lenh-skill	giu-ten	feature-loop:feature-loop	
+apps/app/test/lo-trinh-du-kien.spec.ts	45	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh.mjs	scripts/lo-trinh.mjs
+apps/app/test/lo-trinh-du-kien.spec.ts	49	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh.mjs	scripts/lo-trinh.mjs
+apps/app/test/lo-trinh-san-pham-mau.ts	22	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/app/test/san-pham-lo-trinh.dom.tsx	293	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+apps/app/test/support/khoi-tin-hieu-mau.ts	152	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+CLAUDE.md	28	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+CLAUDE.md	65	lenh-skill	giu-ten	feature-loop:feature-loop	
+CLAUDE.md	66	lenh-skill	giu-ten	acceptance-gate:acceptance	
+CLAUDE.md	77	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+lib/ac-line.cjs	4	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/gate-card.js	scripts/gate-card.js
+lib/ac-line.cjs	38	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/md-section.cjs	lib/md-section.cjs
+lib/ac-line.cjs	75	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	lib/context-glossary.js	lib/context-glossary.js
+lib/chan-lo-trinh.cjs	7	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/lo-trinh-khoi-tao.mjs	scripts/lo-trinh-khoi-tao.mjs
+lib/chan-lo-trinh.cjs	10	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh.mjs	scripts/lo-trinh.mjs
+lib/chan-lo-trinh.cjs	17	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/chan-lo-trinh.cjs	lib/chan-lo-trinh.cjs
+lib/chan-lo-trinh.cjs	68	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh-khoa.cjs	scripts/lo-trinh-khoa.cjs
+lib/do-san-tren-nen.cjs	2	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/scripts/repin-lane.mjs	feature-loop/scripts/repin-lane.mjs
+lib/eval-yaml.cjs	74	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/workflows/acceptance-verify.js	feature-loop/workflows/acceptance-verify.js
+lib/evidence-core.cjs	7	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	hooks/acceptance-evidence-gate.js	hooks/acceptance-evidence-gate.js
+lib/evidence-core.cjs	8	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/recheck-evidence.cjs	scripts/recheck-evidence.cjs
+lib/evidence-core.cjs	80	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+lib/evidence-core.cjs	108	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/scripts/s4-args.mjs	feature-loop/scripts/s4-args.mjs
+lib/evidence-core.cjs	381	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/scripts/carry-plan.mjs	feature-loop/scripts/carry-plan.mjs
+lib/evidence-core.cjs	742	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+lib/evidence-core.cjs	748	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+lib/evidence-core.cjs	761	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/scripts/repin-lane.mjs	feature-loop/scripts/repin-lane.mjs
+lib/evidence-core.cjs	770	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+lib/evidence-core.cjs	794	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/do-san-tren-nen.cjs	lib/do-san-tren-nen.cjs
+lib/evidence-core.cjs	798	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/do-san-tren-nen.cjs	lib/do-san-tren-nen.cjs
+lib/evidence-core.cjs	1429	lenh-skill	giu-ten	acceptance-gate:signoff	
+lib/evidence-core.cjs	1460	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+lib/evidence-core.cjs	1461	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/start-scan.mjs	scripts/start-scan.mjs
+lib/evidence-core.cjs	1517	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+lib/evidence-core.cjs	1518	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/lop-nhin-thay.cjs	lib/lop-nhin-thay.cjs
+lib/evidence-core.cjs	1519	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+lib/evidence-core.cjs	1521	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+lib/gap-probe.cjs	3	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	../lib/gap-probe.cjs	lib/gap-probe.cjs
+lib/gap-probe.cjs	3	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/gate-card.js	scripts/gate-card.js
+lib/gap-probe.cjs	4	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+lib/gap-probe.cjs	4	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/gap-probe.cjs	lib/gap-probe.cjs
+lib/lop-nhin-thay.cjs	92	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/lop-nhin-thay.cjs	lib/lop-nhin-thay.cjs
+lib/lop-nhin-thay.cjs	93	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/gap-probe.cjs	lib/gap-probe.cjs
+lib/md-section.cjs	41	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/ac-line.cjs	lib/ac-line.cjs
+lib/md-section.cjs	44	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/ac-line.cjs	lib/ac-line.cjs
+lib/nguong-o-co-hoi.cjs	7	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+lib/nguong-o-co-hoi.cjs	80	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/lop-nhin-thay.cjs	lib/lop-nhin-thay.cjs
+lib/nhan-canh-gay.cjs	14	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/do-san-tren-nen.cjs	lib/do-san-tren-nen.cjs
+lib/nhan-canh-gay.cjs	21	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/workflows/acceptance-verify.js	feature-loop/workflows/acceptance-verify.js
+lib/nhan-canh-gay.cjs	44	lenh-skill	giu-ten	acceptance-gate:signoff	
+lib/nhan-canh-gay.cjs	45	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	commands/signoff.md	commands/signoff.md
+lib/nhan-canh-gay.cjs	153	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/nhan-canh-gay.cjs	lib/nhan-canh-gay.cjs
+lib/nhan-canh-gay.cjs	156	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/nhan-canh-gay.cjs	lib/nhan-canh-gay.cjs
+lib/out-of-contract.cjs	74	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/workflows/acceptance-verify.js	feature-loop/workflows/acceptance-verify.js
+lib/out-of-contract.cjs	162	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	commands/signoff.md	commands/signoff.md
+lib/workspace-record.cjs	253	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+lib/workspace-record.cjs	319	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	commands/observed.md	commands/observed.md
+lib/workspace-record.cjs	416	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+LO-TRINH.html	43	lenh-skill	giu-ten	feature-loop:feature-loop	
+LO-TRINH.html	55	lenh-skill	giu-ten	feature-loop:feature-loop	
+LO-TRINH.html	336	lenh-skill	giu-ten	feature-loop:feature-loop	
+packages/ui/test/pre-push-da-chung.spec.ts	38	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+packages/ui/test/pre-push-da-chung.spec.ts	39	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+packages/ui/test/pre-push-da-chung.spec.ts	40	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+packages/ui/test/pre-push-da-chung.spec.ts	41	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+packages/ui/test/pre-push-t1.spec.ts	31	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+packages/ui/test/pre-push-t1.spec.ts	32	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+packages/ui/test/pre-push-t1.spec.ts	33	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+packages/ui/test/pre-push-t1.spec.ts	34	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+packages/ui/test/push-ghim-lai-t1.spec.ts	254	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+packages/ui/test/push-ghim-lai-t1.spec.ts	255	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+packages/ui/test/push-ghim-lai-t1.spec.ts	256	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+packages/ui/test/push-ghim-lai-t1.spec.ts	257	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+packages/ui/test/t1-ma-doc.spec.ts	23	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+packages/ui/test/t1-ma-doc.spec.ts	24	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+packages/ui/test/t1-ma-doc.spec.ts	25	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+packages/ui/test/t1-ma-doc.spec.ts	26	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+packages/ui/test/t1-ma-doc.spec.ts	235	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+packages/ui/test/trang-ve-gop.spec.ts	26	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+packages/ui/test/trang-ve-gop.spec.ts	103	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+packages/ui/test/trang-ve-gop.spec.ts	127	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+packages/ui/test/trang-ve-gop.spec.ts	183	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+packages/validation/test/san-pham-lo-trinh.spec.ts	12	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+scripts/can-cu-s1.cjs	10	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/can-cu-s1.cjs	scripts/can-cu-s1.cjs
+scripts/can-cu-s1.cjs	11	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/can-cu-s1.cjs	scripts/can-cu-s1.cjs
+scripts/can-cu-s1.cjs	33	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc-tra.cjs	scripts/tri-thuc-tra.cjs
+scripts/cat-luot.mjs	6	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	skills/acceptance/references/pham-vi-template.md	skills/acceptance/references/pham-vi-template.md
+scripts/cat-luot.mjs	21	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc.mjs	scripts/tri-thuc.mjs
+scripts/cat-luot.mjs	27	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/cat-luot.mjs	scripts/cat-luot.mjs
+scripts/cat-luot.mjs	28	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/cat-luot.mjs	scripts/cat-luot.mjs
+scripts/cat-luot.mjs	29	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/cat-luot.mjs	scripts/cat-luot.mjs
+scripts/cat-luot.mjs	60	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	dieu-phoi/scripts/glob.mjs	dieu-phoi/scripts/glob.mjs
+scripts/cat-luot.mjs	61	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	dieu-phoi/scripts/trung-tep.mjs	dieu-phoi/scripts/trung-tep.mjs
+scripts/cat-luot.mjs	196	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/co-hop-dong.cjs	scripts/co-hop-dong.cjs
+scripts/co-hop-dong.cjs	64	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/gio-may.mjs	4	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh.mjs	scripts/lo-trinh.mjs
+scripts/ho-so-tom-tat.cjs	22	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/ac-line.cjs	lib/ac-line.cjs
+scripts/ho-so-tom-tat.cjs	185	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	commands/signoff.md	commands/signoff.md
+scripts/khong-can-nguoi.mjs	3	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+scripts/khong-can-nguoi.mjs	37	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/luat-san-pham.cjs	scripts/luat-san-pham.cjs
+scripts/khong-can-nguoi.mjs	56	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/md-section.cjs	lib/md-section.cjs
+scripts/khong-can-nguoi.mjs	165	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	hooks/acceptance-evidence-gate.js	hooks/acceptance-evidence-gate.js
+scripts/kiem-cheo/cau-hinh.mjs	17	tim-kit	xem-tay	giaiBang: "resolve-plugin.mjs",	
+scripts/kiem-cheo/cau-hinh.mjs	19	id-plugin	doi-ten-cho-va-plugin	dieu-phoi@acceptance-gate-kit	
+scripts/kiem-cheo/cau-hinh.mjs	19	tim-kit	xem-tay	"claude plugin install dieu-phoi@acceptance-gate-kit --scope project",	
+scripts/kiem-cheo/cau-hinh.mjs	35	tim-kit	xem-tay	giaiBang: "scripts/resolve-plugin.mjs",	
+scripts/kiem-cheo/tap-cham.mjs	7	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	../../lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/kiem-cheo/tap-cham.mjs	8	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	../../lib/eval-yaml.cjs	lib/eval-yaml.cjs
+scripts/kiem-cheo/test/dem.test.mjs	99	id-plugin	doi-ten-cho-va-plugin	dieu-phoi@acceptance-gate-kit	
+scripts/kiem-cheo/test/dem.test.mjs	99	tim-kit	xem-tay	assert.match(r.ket.ly_do, /claude plugin install dieu-phoi@acceptance-gate-kit/);	
+scripts/lan-do/quet.mjs	63	tim-kit	xem-tay	"scripts/resolve-plugin.mjs",	
+scripts/lan-do/quet.mjs	72	tim-kit	xem-tay	thoat(2, "không giải được feature-loop qua resolve-plugin.mjs");	
+scripts/lo-trinh-khoa.cjs	2	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh.mjs	scripts/lo-trinh.mjs
+scripts/lo-trinh.mjs	41	lenh-skill	giu-ten	acceptance-gate:cat-luot	
+scripts/lo-trinh.mjs	41	lenh-skill	giu-ten	feature-loop:feature-loop	
+scripts/lo-trinh.mjs	100	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/lo-trinh-khoa.cjs	scripts/lo-trinh-khoa.cjs
+scripts/lo-trinh.mjs	561	lenh-skill	giu-ten	feature-loop:feature-loop	
+scripts/lo-trinh.mjs	686	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	skills/acceptance/references/lo-trinh-du-lieu.md	skills/acceptance/references/lo-trinh-du-lieu.md
+scripts/lo-trinh.mjs	714	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+scripts/lo-trinh.mjs	723	lenh-skill	giu-ten	feature-loop:feature-loop	
+scripts/lo-trinh.mjs	1042	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+scripts/lo-trinh.mjs	1343	lenh-skill	doi-ten-plugin	road-map:tra-lai	
+scripts/lo-trinh.mjs	1460	lenh-skill	doi-ten-plugin	road-map:xem	
+scripts/lo-trinh.mjs	1462	lenh-skill	doi-ten-plugin	road-map:xem	
+scripts/lo-trinh.mjs	1565	lenh-skill	doi-ten-plugin	road-map:tra-lai	
+scripts/lo-trinh.mjs	1593	lenh-skill	doi-ten-plugin	road-map:ghim	
+scripts/lo-trinh.mjs	1593	lenh-skill	doi-ten-plugin	road-map:bo-ghim	
+scripts/lo-trinh.mjs	1704	lenh-skill	doi-ten-plugin	road-map:xem	
+scripts/luat-san-pham.cjs	5	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	skills/acceptance/references/product-invariants-template.md	skills/acceptance/references/product-invariants-template.md
+scripts/luat-san-pham.cjs	131	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	../lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/luat-san-pham.cjs	162	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/luat-san-pham.cjs	164	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	../lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/luat-san-pham.cjs	236	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	../lib/out-of-contract.cjs	lib/out-of-contract.cjs
+scripts/pre-merge-check.sh	26	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	55	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/recheck-evidence.cjs	scripts/recheck-evidence.cjs
+scripts/pre-merge-check.sh	55	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	73	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	77	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/ac-line.cjs	lib/ac-line.cjs
+scripts/pre-merge-check.sh	82	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	../lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	150	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	246	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/gate-card.js	scripts/gate-card.js
+scripts/pre-merge-check.sh	250	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	/lib/gap-probe.cjs	lib/gap-probe.cjs
+scripts/pre-merge-check.sh	360	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	366	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	/lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	525	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	/lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	540	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	541	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/lop-nhin-thay.cjs	lib/lop-nhin-thay.cjs
+scripts/pre-merge-check.sh	595	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	596	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/lop-nhin-thay.cjs	lib/lop-nhin-thay.cjs
+scripts/pre-merge-check.sh	705	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/config-patch.mjs	scripts/config-patch.mjs
+scripts/pre-merge-check.sh	782	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	934	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	937	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	HERE/../lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	941	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	958	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	HERE/../lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	962	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	999	lenh-skill	giu-ten	acceptance-gate:observed	
+scripts/pre-merge-check.sh	1000	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	1003	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	/lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	1010	lenh-skill	giu-ten	acceptance-gate:observed	
+scripts/pre-merge-check.sh	1105	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/ac-line.cjs	lib/ac-line.cjs
+scripts/pre-merge-check.sh	1117	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/md-section.cjs	lib/md-section.cjs
+scripts/pre-merge-check.sh	1118	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	/lib/ac-line.cjs	lib/ac-line.cjs
+scripts/pre-merge-check.sh	1193	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/lop-nhin-thay.cjs	lib/lop-nhin-thay.cjs
+scripts/pre-merge-check.sh	1194	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/gap-probe.cjs	lib/gap-probe.cjs
+scripts/pre-merge-check.sh	1200	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	/lib/lop-nhin-thay.cjs	lib/lop-nhin-thay.cjs
+scripts/pre-merge-check.sh	1208	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/lop-nhin-thay.cjs	lib/lop-nhin-thay.cjs
+scripts/pre-merge-check.sh	1254	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/gap-probe.cjs	lib/gap-probe.cjs
+scripts/pre-merge-check.sh	1303	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/nhan-canh-gay.cjs	lib/nhan-canh-gay.cjs
+scripts/pre-merge-check.sh	1305	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	/lib/nhan-canh-gay.cjs	lib/nhan-canh-gay.cjs
+scripts/pre-merge-check.sh	1316	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/nhan-canh-gay.cjs	lib/nhan-canh-gay.cjs
+scripts/pre-merge-check.sh	1326	lenh-skill	giu-ten	acceptance-gate:signoff	
+scripts/pre-merge-check.sh	1502	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	1516	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	1607	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	1608	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+scripts/pre-merge-check.sh	1615	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	HERE/../lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	1620	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	1636	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	HERE/../lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	1641	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	1641	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+scripts/pre-merge-check.sh	1644	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	1713	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/recheck-evidence.cjs	scripts/recheck-evidence.cjs
+scripts/pre-merge-check.sh	1743	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	1747	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	HERE/../lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	1748	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	HERE/../lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/pre-merge-check.sh	1832	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	HERE/../lib/chan-lo-trinh.cjs	lib/chan-lo-trinh.cjs
+scripts/pre-merge-check.sh	1846	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/chan-lo-trinh.cjs	lib/chan-lo-trinh.cjs
+scripts/pre-merge-check.sh	1915	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/ac-line.cjs	lib/ac-line.cjs
+scripts/pre-merge-check.sh	1919	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/pre-merge-check.sh	1923	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/product-map.mjs	10	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/product-map.mjs	24	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/product-map.mjs	56	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	skills/acceptance/references/opportunity-template.md	skills/acceptance/references/opportunity-template.md
+scripts/product-map.mjs	152	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/do-san-tren-nen.cjs	lib/do-san-tren-nen.cjs
+scripts/product-map.mjs	244	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/product-map.mjs	261	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/start-scan.mjs	scripts/start-scan.mjs
+scripts/product-map.mjs	274	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/product-map.mjs	376	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+scripts/product-map.mjs	398	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu-khoa.cjs	scripts/tin-hieu-khoa.cjs
+scripts/product-map.mjs	445	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+scripts/product-map.mjs	518	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/recheck-evidence.cjs	8	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/recheck-evidence.cjs	25	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/evidence-core.cjs	lib/evidence-core.cjs
+scripts/recheck-evidence.cjs	63	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/nhan-canh-gay.cjs	lib/nhan-canh-gay.cjs
+scripts/recheck-evidence.cjs	106	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/resolve-plugin.mjs	3	tim-kit	xem-tay	* resolve-plugin.mjs — locate an INSTALLED sibling plugin's version root.	
+scripts/resolve-plugin.mjs	6	tim-kit	xem-tay	* `$HOME/.claude/plugins/cache` down to a plugin's version directory, then	
+scripts/resolve-plugin.mjs	26	tim-kit	xem-tay	*   resolve-plugin.mjs --plugin <name> [--require <relpath>]...	
+scripts/resolve-plugin.mjs	47	tim-kit	xem-tay	process.stderr.write('resolve-plugin: --plugin <name> is required\n');	
+scripts/resolve-plugin.mjs	79	tim-kit	xem-tay	`resolve-plugin: --root "${explicitRoot}" does not carry ${requires.join(', ') || '(nothing required)'}\n` +	
+scripts/resolve-plugin.mjs	101	tim-kit	xem-tay	`resolve-plugin: no usable install of "${plugin}" found.\n` +	
+scripts/resolve-plugin.mjs	107	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+scripts/resolve-plugin.mjs	107	tim-kit	xem-tay	`  fix: claude plugin install ${plugin}@acceptance-gate-kit\n`);	
+scripts/tin-hieu-khoa.cjs	2	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+scripts/tin-hieu.mjs	11	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	skills/acceptance/references/tin-hieu-template.md	skills/acceptance/references/tin-hieu-template.md
+scripts/tin-hieu.mjs	12	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	skills/gom-tin-hieu/SKILL.md	skills/gom-tin-hieu/SKILL.md
+scripts/tin-hieu.mjs	14	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+scripts/tin-hieu.mjs	15	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+scripts/tin-hieu.mjs	16	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+scripts/tin-hieu.mjs	17	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+scripts/tin-hieu.mjs	27	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	../dieu-phoi/scripts/hinh-dang.mjs	dieu-phoi/scripts/hinh-dang.mjs
+scripts/tin-hieu.mjs	30	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	../dieu-phoi/scripts/dot.mjs	dieu-phoi/scripts/dot.mjs
+scripts/tin-hieu/gom-cau-hinh.ts	18	tim-kit	xem-tay	"scripts/resolve-plugin.mjs",	
+scripts/tin-hieu/gom-cau-hinh.ts	22	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+scripts/tin-hieu/gom-cau-hinh.ts	24	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	skills/gom-tin-hieu/SKILL.md	skills/gom-tin-hieu/SKILL.md
+scripts/tin-hieu/gom-cau-hinh.ts	26	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/cat-luot.mjs	scripts/cat-luot.mjs
+scripts/tin-hieu/gom-cau-hinh.ts	28	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+scripts/tin-hieu/gom-cau-hinh.ts	29	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/cat-luot.mjs	scripts/cat-luot.mjs
+scripts/tin-hieu/gom-cau-hinh.ts	92	lenh-skill	giu-ten	acceptance-gate:gom-tin-hieu	
+scripts/tin-hieu/gom-cau-hinh.ts	92	lenh-skill	giu-ten	acceptance-gate:cat-luot	
+scripts/tin-hieu/gom-cau-hinh.ts	115	lenh-skill	giu-ten	acceptance-gate:gom-tin-hieu	
+scripts/tin-hieu/gom-cau-hinh.ts	115	lenh-skill	giu-ten	acceptance-gate:cat-luot	
+scripts/tin-hieu/gom-cau-hinh.ts	130	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+scripts/tin-hieu/lich.ts	31	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+scripts/tin-hieu/test/gom-gia-co.test.ts	390	lenh-skill	giu-ten	acceptance-gate:gom-tin-hieu	
+scripts/tin-hieu/test/gom-gia-co.test.ts	390	lenh-skill	giu-ten	acceptance-gate:cat-luot	
+scripts/tin-hieu/test/gom-gia-co.test.ts	445	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	AG/scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+scripts/tin-hieu/test/gom-gia-co.test.ts	764	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+scripts/tin-hieu/test/gom-kho-tam.ts	122	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+scripts/tin-hieu/test/gom-kho-tam.ts	242	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	/scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+scripts/tin-hieu/test/gom-lich.test.ts	248	lenh-skill	giu-ten	acceptance-gate:gom-tin-hieu	
+scripts/tin-hieu/test/gom-lich.test.ts	249	lenh-skill	giu-ten	acceptance-gate:cat-luot	
+scripts/tin-hieu/test/gom-lich.test.ts	268	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+scripts/trang-thai-ho-so.cjs	8	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/khong-can-nguoi.mjs	scripts/khong-can-nguoi.mjs
+scripts/trang-thai-ho-so.cjs	10	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/workspace-record.cjs	lib/workspace-record.cjs
+scripts/trang-thai-ho-so.cjs	15	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/start-scan.mjs	scripts/start-scan.mjs
+scripts/trang-ve-gop.mjs	10	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+scripts/trang-ve-gop.mjs	11	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/product-map.mjs	scripts/product-map.mjs
+scripts/tri-thuc-khoa.cjs	2	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc.mjs	scripts/tri-thuc.mjs
+scripts/tri-thuc-nguon.cjs	14	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	lib/nguong-o-co-hoi.cjs	lib/nguong-o-co-hoi.cjs
+scripts/tri-thuc-nguon.cjs	20	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc.mjs	scripts/tri-thuc.mjs
+scripts/tri-thuc-nguon.cjs	31	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc.mjs	scripts/tri-thuc.mjs
+scripts/tri-thuc-tra.cjs	7	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc.mjs	scripts/tri-thuc.mjs
+scripts/tri-thuc-tra.cjs	10	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc-tra.cjs	scripts/tri-thuc-tra.cjs
+scripts/tri-thuc.mjs	5	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	skills/acceptance/references/tri-thuc-template.md	skills/acceptance/references/tri-thuc-template.md
+scripts/tri-thuc.mjs	6	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/cat-luot.mjs	scripts/cat-luot.mjs
+scripts/tri-thuc.mjs	8	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc.mjs	scripts/tri-thuc.mjs
+scripts/tri-thuc.mjs	9	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc.mjs	scripts/tri-thuc.mjs
+scripts/ui-capture.mjs	13	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/skills/acceptance/references/ui-capture.reference.mjs	skills/acceptance/references/ui-capture.reference.mjs
+skills/acceptance/references/opportunity-template.md	140	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc-nguon.cjs	scripts/tri-thuc-nguon.cjs
+skills/acceptance/references/tin-hieu-template.md	18	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	dieu-phoi/scripts/hinh-dang.mjs	dieu-phoi/scripts/hinh-dang.mjs
+skills/acceptance/references/tin-hieu-template.md	51	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tin-hieu.mjs	scripts/tin-hieu.mjs
+skills/acceptance/references/tri-thuc-template.md	3	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	scripts/tri-thuc.mjs	scripts/tri-thuc.mjs
+skills/acceptance/references/tri-thuc-template.md	3	lenh-skill	doi-ten-plugin	tri-thuc:ghi	
+skills/acceptance/references/tri-thuc-template.md	73	lenh-skill	doi-ten-plugin	tri-thuc:ghi	
+skills/acceptance/references/tri-thuc-template.md	106	duong-dan-vao-ban-chep	khong-gay-doi-nguon-chep	skills/acceptance/references/tri-thuc-template.md	skills/acceptance/references/tri-thuc-template.md
+skills/acceptance/references/tri-thuc-template.md	106	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	

@@ -1,0 +1,9 @@
+# máy sinh bởi migration/tra-soat/kiem-ke.mjs từ kit-cu/main @ 909dffd8 (2026-11-12) — đừng sửa tay, chạy lại kịch bản
+tu	chu	kieu	dong
+design-floor/vendor/design-os/src/core/content-checks.ts	./core/content-checks.js	import-trong-ma-nhap-ngoai	12
+design-floor/vendor/design-os/src/core/ds-guidelines-model.ts	./ds-guidelines-answers.js	import-trong-ma-nhap-ngoai	11
+design-floor/vendor/design-os/src/core/reuse-plan-check-new.ts	./reuse-plan-types.js	import-trong-ma-nhap-ngoai	8
+design-floor/vendor/design-os/src/core/reuse-plan-check-row.ts	./reuse-plan-types.js	import-trong-ma-nhap-ngoai	7
+design-floor/vendor/design-os/src/core/reuse-plan-check.ts	./reuse-plan-types.js	import-trong-ma-nhap-ngoai	17
+design-floor/vendor/design-os/src/core/reuse-plan-render.ts	./reuse-plan-types.js	import-trong-ma-nhap-ngoai	7
+design-floor/vendor/design-os/src/core/tell-rules-rendered.ts	./rendered/runtime-capture.js	import-trong-ma-nhap-ngoai	16
