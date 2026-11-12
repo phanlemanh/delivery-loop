@@ -106,6 +106,20 @@ B1 soạn và chủ kho thấy ở Cổng Phạm vi.
 
 B1 cần quyết: có nhận tệp `.claude/skills/review-change/SKILL.md` không (kit đã có đường xét duyệt riêng).
 
+**Bộ kiểm trên Mac Studio (12/11, nhánh `chuyen-nha` `35c1e754`, Node 24.16):** scripts **968 xanh / 1 đỏ** · plugins
+xanh · hooks 71/71 · workflows xanh · điều phối 667/667 · bản đồ sản phẩm khớp · `migration/` 21/21. Ca đỏ duy nhất là
+`MC-11` (`tests/scripts/moc-chien-dich.test.mjs`), và nó đỏ **chỉ vì tên kho**: ca so tên phiên với chữ cứng
+`(acceptance-gate-kit)`, mà `tenKho()` ở `scripts/lo-trinh.mjs` lấy tên theo THƯ MỤC chứa bản kéo (`delivery-loop`),
+không theo remote. Ở kho cũ ca xanh vì CI kéo vào thư mục tên `acceptance-gate-kit` — kho mới sẽ đỏ mãi. Đây là lớp đỏ
+«đổi tên kho» mà B0 chưa đo (B0 giữ nguyên tên); B1 đo đủ lớp này, B2 xử. Bộ kiểm có 19 tệp nhắc chữ `acceptance-gate-kit`
+— phần lớn là tên chợ, phải đổi cùng lượt với `resolve-plugin`.
+
+**Rà điều kiện dọn nhà (12/11, Mac Studio) — điều đo được ngoài các bảng trên:** sổ tra soát còn tươi và tất định (chạy
+lại khớp từng byte) · bản kéo Quỹ hàng trên Mac Studio ở `~/onehub-quy-hang` (không ở `~/dev`) và chậm 2 332 commit so
+với nhánh chính của nó — B3 cắt worktree từ `origin/main` · kho mới đang **cho gộp dồn**, kho cũ cấm (gộp dồn mất commit
+chữ ký Cổng Bằng chứng) — phải đặt giống kho cũ trước PR đầu tiên ở kho mới · plugin kit trên Mac Studio đã lên 2.38.1
+(phạm vi người dùng, `delivery-loop`, bản kéo chính kho cũ); plugin ở các kho tiêu thụ để nguyên theo lời chủ kho.
+
 ## Kế — theo thứ tự phụ thuộc
 
 | # | Việc | Ở kho nào | Mở khi |
@@ -147,6 +161,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 12/11/2026 | Mac Studio | Chủ kho bảo «Thêm ca chạy thử phiên thật vào thước B1» → `chay-thu-phien/`, đẩy `35c1e754`. Chạy hai bộ kiểm lớn trên `chuyen-nha`: một đỏ, `MC-11`, do tên kho (đoạn «Bộ kiểm trên Mac Studio»). Rà lại mọi điều kiện dọn nhà theo lời chủ kho. Nâng plugin kit lên 2.38.1 trên máy. |
 | 12/11/2026 | Mac Studio | **Nhận giữ.** Chủ kho giao kèm lệnh mở mốc 2.39 ở phiên riêng trỏ thẳng kho cũ, kho nhận Quỹ hàng. Kiểm trước khi nhận: dòng nhả đúng · `origin/main` = `kit-cu/main` = `909dffd8` · 30 thẻ · Node 24.16.0 «khớp» (máy mặc định Node 26) · chợ `acceptance-gate-kit` ở cả hai tệp cài đặt trỏ GitHub, không ghim thẻ · bộ đệm plugin trên máy mới tới 2.37.0. |
 | 12/11/2026 | MacBook Pro | **Nhả.** Chủ kho bảo «Nhả cho Mac Studio». Đã đẩy hết; `main` khớp kho cũ `909dffd8`. Máy nhận kế: Mac Studio. |
 | 12/11/2026 | MacBook Pro | Tra soát kho cũ: dựng ba kịch bản sinh sổ ở `tra-soat/` cùng 13 ca kiểm hai chiều (mỗi ca đã phá thử cho đỏ); đo trên kit `909dffd8`, Quỹ hàng `eedec225`, crm `74a29a68`. Đầu vào B1 ở `BOI-CANH.md` trỏ sang sổ. |
@@ -176,7 +191,7 @@ chưa đổi thì nó không làm gì.
 | Một phiên không biết gì đọc thử bộ bàn giao | 6 chỗ nặng, 8 vừa, 7 nhẹ — đã sửa ở commit này; phần không sửa được bằng chữ thành chín «câu còn mở» ở `BOI-CANH.md`; ba chỗ nhiễu nhẹ trong phần lịch sử của `KE-HOACH.md` để nguyên |
 | Thứ chỉ có trên MacBook Pro (ba kho) | không có commit nào GitHub chưa có |
 
-**Chưa chạy:** hai bộ kiểm lớn (script, plugin — khoảng một giờ) trên nhánh `chuyen-nha` · trọn kịch bản đo B0 từ bản trong
+**Chưa chạy:** ~~hai bộ kiểm lớn (script, plugin — khoảng một giờ) trên nhánh `chuyen-nha`~~ (đã chạy trên Mac Studio 12/11 — đoạn «Bộ kiểm trên Mac Studio») · trọn kịch bản đo B0 từ bản trong
 kho (mới thử bước dựng) · bất cứ điều gì trên chính Mac Studio (bản Node, nguồn chợ plugin, bản kéo kho tiêu thụ) · tệp chỉ
 đường có tự nạp trên máy khác không · lượt chạy trọn đầu tiên trên nhánh chính kho cũ sau A1 — sau đó đã xanh (đọc lúc nhả 12/11).
 
