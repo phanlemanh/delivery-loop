@@ -5,11 +5,14 @@ Tệp duy nhất phải sửa mỗi khi đổi máy hoặc xong một việc. Ai
 
 ## Đang giữ
 
-**MacBook Pro** — từ 11/11/2026, chủ kho giao («MacBook Pro làm tiếp»).
+**Mac Studio** — từ 12/11/2026, chủ kho giao («Nhận và mở 2.39 với phiên độc lập … còn phiên này sẽ thực hiện kế hoạch
+chuyển nhà»). Đã kiểm dòng nhả của MacBook Pro trước khi nhận. Lúc nhận: `main` = nhánh chính kho cũ `909dffd8`.
 
-**ĐÃ NHẢ 12/11 — chờ Mac Studio nhận.** Chủ kho bảo «Nhả cho Mac Studio». MacBook Pro đã đẩy hết và tạo commit nhả;
-không còn gì chỉ nằm trên máy ấy. Mac Studio nhận theo Bước 2 của `MO-PHIEN.md` (kiểm dòng nhả, rồi sửa dòng trên thành
-«Mac Studio» + ngày). Lúc nhả: `main` = nhánh chính kho cũ `909dffd8`, lượt chạy trọn đầu tiên trên đó sau A1 đã xanh.
+Máy này mặc định chạy Node 26 — mọi lệnh kiểm phải chạy dưới `export PATH=/opt/homebrew/opt/node@24/bin:$PATH`
+(24.16.0), nếu không bộ chạy thoát mã 3.
+
+Mốc 2.39 (việc 3b) chạy ở một phiên RIÊNG trên Mac Studio, trỏ thẳng vào kho cũ `~/dev/acceptance-gate-kit`, kho nhận
+`onehub-quy-hang`; phiên giữ đợt không làm mốc.
 
 Luật giữ: mỗi lúc chỉ MỘT máy sửa nhánh `chuyen-nha`. **Máy đang giữ, trước khi rời:** đẩy hết, rồi tạo một commit có thông
 điệp bắt đầu bằng «migration: <tên máy> nhả» và không sửa gì sau đó. **Máy nhận:** (1) kéo nhánh về, (2) kiểm
@@ -37,7 +40,7 @@ chủ kho.
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| — | — | Không có việc nào đang dở ở kho này. Việc kế là mốc 2.39 của kho cũ (bảng «Kế»). |
+| Mốc 2.39 (việc 3b) | kho CŨ, phiên riêng trên Mac Studio, worktree nhánh `release-2-39` của `~/dev/acceptance-gate-kit` | Mở 12/11 — chưa có PR mốc, chưa cắt thẻ, Quỹ hàng chưa cài. Ở kho này không có việc nào dở. |
 
 ## Ghi chú giữ cho B1
 
@@ -109,7 +112,7 @@ B1 cần quyết: có nhận tệp `.claude/skills/review-change/SKILL.md` khôn
 | 1 | Bật quét bí mật + chặn đẩy bí mật, bật tự xoá nhánh sau gộp | kho CŨ, cài đặt GitHub | chủ kho bảo (đổi cài đặt kho) |
 | 2 | ~~R1 — khuôn «kho plugin»~~ — xong 11/11, bản 0.5.0 | `repo-standards` | — |
 | 3 | ~~A1 `luot-kiem-nhe`~~ — xong 12/11, gộp tại `909dffd8` | kho CŨ | — |
-| 3b | **Mốc 2.39** (làn V): ba việc chỉ-bớt + cắt số + một kho tiêu thụ cài. Đo 12/11 cả ba CHƯA làm: mô tả trong tệp khai plugin lõi còn 84 582 ký tự và `feature-loop` 34 579 · hai tệp thừa `scripts/rel-cua-so.sh`, `lib/eval-yaml.js` còn (xoá phải kèm: `tests/plugins/run-tests.sh` nhắc tệp sau, `CHANGELOG.md` nhắc tệp trước như công cụ đối chiếu lúc cắt mốc) · `.env` chưa vào danh sách bỏ qua. Chưa có hồ sơ mốc | kho CŨ, làm ở Mac Studio (việc kit ở Mac Studio) | chủ kho gọi tên mốc và kho nhận |
+| 3b | **Mốc 2.39** (làn V): ba việc chỉ-bớt + cắt số + một kho tiêu thụ cài. Đo 12/11 cả ba CHƯA làm: mô tả trong tệp khai plugin lõi còn 84 582 ký tự và `feature-loop` 34 579 · hai tệp thừa `scripts/rel-cua-so.sh`, `lib/eval-yaml.js` còn (xoá phải kèm: `tests/plugins/run-tests.sh` nhắc tệp sau, `CHANGELOG.md` nhắc tệp trước như công cụ đối chiếu lúc cắt mốc) · `.env` chưa vào danh sách bỏ qua. Chưa có hồ sơ mốc | kho CŨ, làm ở Mac Studio (việc kit ở Mac Studio) | **đã gọi tên 12/11** — kho nhận `onehub-quy-hang`; đang chạy ở phiên riêng |
 | 4 | B1 `kich-ban-chuyen-nha` — kịch bản sinh commit dọn nhà lên trên nhánh chính kho cũ. Đầu vào và các câu còn mở: `BOI-CANH.md`, hai mục «Đầu vào cho B1» | kho này, `migration/` | **hai điều kiện:** mốc 2.39 đã có một kho tiêu thụ cài (việc 3b) · chủ kho gọi đích danh tên vòng (`kich-ban-chuyen-nha` hoặc «B1»; câu giao máy KHÔNG phải gọi tên vòng). Ngoại lệ luật chiều rộng (b), hạn dừng và bảng tên KHÔNG phải điều kiện mở — chủ kho quyết chúng tại Cổng Phạm vi của chính B1 (`KE-HOACH.md` mục 12) |
 | 5 | B2 `bo-kiem-xanh-o-kho-moi` | kho này | sau B1 (B1 đo lớp đỏ do đổi bố cục) |
 | 6 | B3 cắt sang — mốc 3.0, Quỹ hàng nhận trước | kho này + kho tiêu thụ | chữ ký của chủ kho |
@@ -124,8 +127,8 @@ Việc 2 và 3 đã xong; việc đang chặn B1 là việc 3b (mốc 2.39 của
 4. Chốt hẳn tên `delivery-loop` và bảng tên ở `KE-HOACH.md` mục 3 — quyết tại Cổng Phạm vi của B1.
 5. Ngày cắt sang.
 6. Vòng riêng cho hai tệp máy vẽ — hai hạt giống 16/10 và 30/10.
-7. Gọi tên mốc 2.39 và kho tiêu thụ nhận nó (việc 3b) — đây là thứ đang chặn B1.
-8. Bảo máy nào giữ đợt từ nay (chủ kho nói 12/11 sẽ chuyển sang Mac Studio; chưa bảo đổi).
+7. ~~Gọi tên mốc 2.39 và kho tiêu thụ nhận nó~~ — xong 12/11: kho nhận `onehub-quy-hang`. B1 còn chờ: Quỹ hàng cài 2.39 và chủ kho gọi đích danh tên vòng B1.
+8. ~~Bảo máy nào giữ đợt từ nay~~ — xong 12/11: Mac Studio.
 9. Cài đặt của kho này trên GitHub trước ngày cắt — xem «Kiểm bàn giao 12/11», mục cài đặt.
 
 ## Việc lặp lại: cập nhật `main` khi kho cũ đi thêm
@@ -143,6 +146,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 12/11/2026 | Mac Studio | **Nhận giữ.** Chủ kho giao kèm lệnh mở mốc 2.39 ở phiên riêng trỏ thẳng kho cũ, kho nhận Quỹ hàng. Kiểm trước khi nhận: dòng nhả đúng · `origin/main` = `kit-cu/main` = `909dffd8` · 30 thẻ · Node 24.16.0 «khớp» (máy mặc định Node 26) · chợ `acceptance-gate-kit` ở cả hai tệp cài đặt trỏ GitHub, không ghim thẻ · bộ đệm plugin trên máy mới tới 2.37.0. |
 | 12/11/2026 | MacBook Pro | **Nhả.** Chủ kho bảo «Nhả cho Mac Studio». Đã đẩy hết; `main` khớp kho cũ `909dffd8`. Máy nhận kế: Mac Studio. |
 | 12/11/2026 | MacBook Pro | Tra soát kho cũ: dựng ba kịch bản sinh sổ ở `tra-soat/` cùng 13 ca kiểm hai chiều (mỗi ca đã phá thử cho đỏ); đo trên kit `909dffd8`, Quỹ hàng `eedec225`, crm `74a29a68`. Đầu vào B1 ở `BOI-CANH.md` trỏ sang sổ. |
 | 12/11/2026 | MacBook Pro | A1 gộp vào nhánh chính kho cũ (`909dffd8`, PR #499); cập nhật `main` kho này theo. Chủ kho bảo kiểm lại bộ bàn giao để Mac Studio nhận phần dọn nhà: kéo sạch, làm theo `MO-PHIEN.md`, cho một phiên trắng đọc thử, sửa các chỗ đã cũ, thêm đầu vào cho B1 vào `BOI-CANH.md`. |
