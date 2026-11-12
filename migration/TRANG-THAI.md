@@ -36,6 +36,7 @@ chủ kho.
 | Kiểm lại bộ bàn giao trên một bản kéo sạch (12/11) — xem «Kiểm bàn giao 12/11» cuối tệp | mục đó |
 | Tra soát kho cũ cho B1 (12/11, chủ kho bảo «Làm tra soát»): ba sổ máy sinh — kiểm kê tệp, chỗ hai kho tiêu thụ bám vào kit, tệp kiểm bám bố cục cũ | `tra-soat/README.md` · `node --test migration/tra-soat/*.test.mjs` 13 ca xanh |
 | Thước B1 có ca chạy thử phiên thật (12/11, chủ kho bảo «Thêm ca chạy thử phiên thật vào thước B1»): kịch bản đọc những gì một phiên thật nạp từ chợ của một cây, 0 token, ~13 giây; nền `909dffd8` = 6 plugin, 33 lệnh và skill, 3 tác tử | `KE-HOACH.md` mục 12 · `node --test migration/chay-thu-phien/chay-thu.test.mjs` 8 ca xanh, 4 biến thể tiêm lỗi đều đỏ đúng ca |
+| Hai thước nữa vào kế hoạch (12/11, chủ kho bảo «Ghi hai thước vào kế hoạch»): B2 giữ đủ khoá ca — nền 4 749 khoá ở bốn bộ bash + 667 ca điều phối trên `13c523e6`; ngưỡng thực tế đóng đợt ở mốc 3.0 | `KE-HOACH.md` mục 12, dưới bảng dãy B · `BOI-CANH.md` quyết định 12 |
 
 ## Đang dở
 
@@ -161,6 +162,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 12/11/2026 | Mac Studio | Chủ kho hỏi «Làm thế nào để biết được chuyển nhà thành công?» rồi bảo «Ghi hai thước vào kế hoạch» → B2 giữ đủ khoá ca, ngưỡng thực tế mốc 3.0. Khi ghi, đo ra hồ sơ lượt chấm không ghi phiên bản kit — khai giới hạn. |
 | 12/11/2026 | Mac Studio | Chủ kho bảo «Thêm ca chạy thử phiên thật vào thước B1» → `chay-thu-phien/`, đẩy `35c1e754`. Chạy hai bộ kiểm lớn trên `chuyen-nha`: một đỏ, `MC-11`, do tên kho (đoạn «Bộ kiểm trên Mac Studio»). Rà lại mọi điều kiện dọn nhà theo lời chủ kho. Nâng plugin kit lên 2.38.1 trên máy. |
 | 12/11/2026 | Mac Studio | **Nhận giữ.** Chủ kho giao kèm lệnh mở mốc 2.39 ở phiên riêng trỏ thẳng kho cũ, kho nhận Quỹ hàng. Kiểm trước khi nhận: dòng nhả đúng · `origin/main` = `kit-cu/main` = `909dffd8` · 30 thẻ · Node 24.16.0 «khớp» (máy mặc định Node 26) · chợ `acceptance-gate-kit` ở cả hai tệp cài đặt trỏ GitHub, không ghim thẻ · bộ đệm plugin trên máy mới tới 2.37.0. |
 | 12/11/2026 | MacBook Pro | **Nhả.** Chủ kho bảo «Nhả cho Mac Studio». Đã đẩy hết; `main` khớp kho cũ `909dffd8`. Máy nhận kế: Mac Studio. |

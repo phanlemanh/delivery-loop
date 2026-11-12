@@ -37,6 +37,11 @@ kia không nói: ai đã quyết gì, luật làm việc của đợt, và các 
 
 11. **Thước B1 có thêm ca chạy thử phiên thật** (chủ kho 12/11, «Thêm ca chạy thử phiên thật vào thước B1») — `KE-HOACH.md`
     mục 12, đoạn dưới bảng dãy B; hiện thân `chay-thu-phien/`.
+12. **Hai thước nữa** (chủ kho 12/11, «Ghi hai thước vào kế hoạch») — `KE-HOACH.md` mục 12, dưới bảng dãy B: B2 **giữ đủ
+    khoá ca** (túi khoá kho cũ nằm trọn trong kho mới, trừ danh sách bỏ có lý do hiện trên thẻ), và **ngưỡng thực tế của
+    mốc 3.0** (một vòng thật ở Quỹ hàng gộp được trên kit 3.0 · năm dòng số không xấu đi do kit mới · chủ kho ghi
+    `da-cham-boi-thuc-te` sau cửa sổ 14 ngày, có đường lùi). Đợt chỉ ĐÓNG khi đủ ba vế; crm không là điều kiện đóng đợt.
+    Con số ngưỡng là máy đề xuất, chủ kho đổi được ở Cổng Phạm vi mốc 3.0.
 
 ## Chủ kho CHƯA quyết (đừng tự quyết)
 

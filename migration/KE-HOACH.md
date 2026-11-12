@@ -266,8 +266,8 @@ Không phải vòng của kit nên không tính vào luật chiều rộng (b). 
 |---|---|---|---|
 | B0 đo thử (không phải vòng) | Biết bao nhiêu ca kiểm đỏ khi thiếu hồ sơ, sổ làm việc và lịch sử của kho cũ | Số ca đỏ theo ba lớp, có bản đối chứng nguyên vẹn | 2–3 giờ máy, máy nào cũng chạy được |
 | B1 `kich-ban-chuyen-nha` (T3) | Một kịch bản lấy nhánh chính kho cũ → sinh cây kho mới: bố cục mới, tên mới theo mục 3, tài liệu sống, con trỏ sang kho cũ bằng đường dẫn đầy đủ | Chạy hai lần ra cùng một cây; mọi tệp sản phẩm của kho cũ có đúng một chỗ ở kho mới hoặc nằm trong danh sách bỏ có lý do; **chạy thử phiên thật** (thêm 12/11, xem dưới bảng): phiên mở trên chợ của cây mới nạp đúng mọi plugin, lệnh, skill, tác tử của kho cũ sau khi đổi qua bảng tên — không mất, không thừa | 7–10 giờ máy |
-| B2 `bo-kiem-xanh-o-kho-moi` (T2, có thể tách hai) | Bộ kiểm xanh trên cây do kịch bản sinh: bản chụp đóng băng các hồ sơ bộ kiểm cần, xử các ca bám mã commit và lịch sử | Bộ kiểm xanh ở kho mới; cùng ca ấy vẫn xanh ở kho cũ | 4–14 giờ máy (rộng vì chưa có số B0) |
-| B3 cắt sang (mốc 3.0) | Phép vi phân phán quyết cũ so mới trên hồ sơ thật của hai kho tiêu thụ không đổi; một kho tiêu thụ chuyển sang chợ mới trên cây làm việc riêng rồi gộp; kho cũ đóng băng 2.38.x | 0 phán quyết đổi; một kho đã cài 3.0 | 4–6 giờ máy |
+| B2 `bo-kiem-xanh-o-kho-moi` (T2, có thể tách hai) | Bộ kiểm xanh trên cây do kịch bản sinh: bản chụp đóng băng các hồ sơ bộ kiểm cần, xử các ca bám mã commit và lịch sử | Bộ kiểm xanh ở kho mới; cùng ca ấy vẫn xanh ở kho cũ; **giữ đủ khoá ca** (thêm 12/11, xem dưới bảng): mọi khoá ca của kho cũ có mặt ở kho mới hoặc nằm trong danh sách bỏ có lý do | 4–14 giờ máy (rộng vì chưa có số B0) |
+| B3 cắt sang (mốc 3.0) | Phép vi phân phán quyết cũ so mới trên hồ sơ thật của hai kho tiêu thụ không đổi; một kho tiêu thụ chuyển sang chợ mới trên cây làm việc riêng rồi gộp; kho cũ đóng băng 2.38.x | 0 phán quyết đổi; một kho đã cài 3.0; **ngưỡng thực tế** (thêm 12/11, xem dưới bảng): một vòng thật ở Quỹ hàng gộp được trên kit 3.0 và năm dòng số không xấu đi — mới đóng được đợt | 4–6 giờ máy |
 
 `3.0: ~15–30 giờ máy · token chưa ước · bắt đầu sau 2.39 và R1`
 
@@ -291,6 +291,50 @@ dương, tất định, bảng tên chỉ nhắc thứ đang có, hai ca độ n
 biến thể tiêm lỗi, mỗi biến thể làm đỏ đúng ca nhắm tới (đo 12/11, Mac Studio). **Giới hạn đã khai:** không thấy móc (hook)
 có bắn đúng lúc không — phần đó vẫn do bộ kiểm hooks giữ; không chạy lệnh nào, chỉ thấy lệnh đã nạp. Ca này là CỘNG chủ kho
 đã duyệt đích danh, không cần duyệt lại ở Cổng Phạm vi của B1.
+
+**Thước «giữ đủ khoá ca» của B2 (chủ kho thêm 12/11, «Ghi hai thước vào kế hoạch»).** Lý do: thước «bộ kiểm xanh ở kho
+mới» tự nó XANH được bằng cách bớt ca — một ca khó sửa bị xoá, gắn nhãn bỏ qua, hay không còn chạy tới vì bộ chạy đổi chỗ
+quét. Răng cùng dạng với «mỗi tệp sản phẩm có đúng một chỗ» của B1, áp lên ca kiểm:
+
+- **Nguồn khoá:** bảng thời gian từng ca do bộ chạy tự ghi từ vòng A1 (`.acceptance-runs/thoi-gian-ca/<bộ>-<mảnh>.tsv`, mỗi
+  dòng kết quả «PASS:»/«FAIL:» một hàng) cho bốn bộ bash; tên ca trong đầu ra TAP cho bộ điều phối; một khoá cho bước bản đồ
+  sản phẩm. Khoá = dòng kết quả bỏ tiền tố, cắt ở « — » hoặc « (», che đường dẫn tạm và mã commit (như `b0/tach.py`). So
+  theo **túi** (khoá kèm số lần), vì có khoá lặp: đo 12/11 trên `chuyen-nha` `13c523e6`, bốn bộ bash có **4 749 khoá**
+  (hooks 80 · plugins 283 · scripts 3 356 · workflows 1 030; 55 khoá lặp), điều phối 667 ca.
+- **Luật:** túi khoá của kho cũ, sau khi đổi qua `chay-thu-phien/bang-ten.json`, nằm trọn trong túi khoá của kho mới, trừ
+  các khoá ghi trong một danh sách bỏ (`migration/` — tên tệp B2 đặt), mỗi dòng một khoá kèm lý do. Ca SKIP hay «không đo
+  được» ở kho mới tính là THIẾU, không tính là còn. Khoá thừa ở kho mới (ca mới) in ra để đọc, không làm đỏ.
+- **Danh sách bỏ lên thẻ:** mỗi khoá trong đó hiện ở khối «CHƯA duyệt» của Cổng Bằng chứng B2 — bỏ một ca là bớt bằng
+  chứng, nên người ký thấy đủ, không phải tin. Danh sách rỗng là kết quả mong đợi.
+- **Hai chiều, phá thử trước khi tin:** xoá một ca ở bản sao kho mới → thước đỏ, nêu đúng khoá; thêm một ca, hay sửa tài
+  liệu và hồ sơ vòng → thước im. Độ chuẩn hoá khoá chốt trong B2 (ba hình dạng đã gặp phải phủ: mã ca có hậu tố con như
+  «MC-7 moi-co-moc», dòng cùng mã lặp, đường dẫn tạm trong tên).
+- **Đã thấy một lớp sẽ thử thước này:** `MC-11` đỏ ở kho mới chỉ vì tên kho (`TRANG-THAI.md`, «Bộ kiểm trên Mac Studio»).
+  Đường dễ là ghim chữ `delivery-loop`; đường đúng tầng là ca rút tên kho bằng chính `tenKho()` — thước này không phân biệt
+  hai đường, Cổng Bằng chứng B2 phân biệt.
+
+**Ngưỡng thực tế của mốc 3.0 (chủ kho thêm 12/11, cùng lời).** Lý do: «một kho đã cài 3.0» chứng minh cài được, chưa chứng
+minh dùng được; North Star tính kết quả khi vật đã GỘP vào nhánh chính kho tiêu thụ. Đợt chuyển nhà chỉ ĐÓNG khi đủ ba vế:
+
+1. **Một vòng thật ở Quỹ hàng gộp được trên kit 3.0** — vòng sản phẩm của kho ấy (không phải vòng dựng để thử), mở SAU
+   commit cài 3.0, đi qua các cổng của tầng mình tới commit gộp trên nhánh chính Quỹ hàng. Máy kiểm hai điều tại commit gộp:
+   `ci.yml` của Quỹ hàng kéo kit từ kho `delivery-loop` ở `KIT_TAG` 3.0.x (đọc 12/11 trên nhánh chính Quỹ hàng: kho
+   `acceptance-gate-kit`, `KIT_TAG: v2.37.0`), và `dieu-phoi.mjs dem` tìm thấy commit gộp mang chữ ký của vòng.
+   **Giới hạn đã khai:** hồ sơ lượt chấm KHÔNG ghi phiên bản plugin của phiên làm vòng (đo 12/11 trên `luot-kiem-nhe`:
+   `run-log.jsonl` và `evidence-report.md` không có trường nào như vậy), nên «phiên làm vòng chạy plugin 3.0» chỉ suy được
+   từ thẻ CI, không đọc thẳng được. Thêm trường ấy là một CỘNG, cân ở Cổng Phạm vi của mốc 3.0.
+2. **Năm dòng số của hồ sơ mốc 3.0 không xấu đi do kit mới**, so với cửa sổ 2.39 trên vòng của Quỹ hàng: lượt gọi người
+   ngoài thiết kế quy về kit mới = 0 · số lượt chấm bị hạ tầng kit đốt = 0 (dòng 3 — chỉ báo thẳng nhất của chỗ gãy do
+   chuyển nhà) · lượt gọi người mỗi vòng ≤ trần thiết kế (T2 3, T3 4) · thời gian làm-xong→ký và ký→gộp không vượt trung vị
+   cửa sổ 2.39 quá 50 %; vượt thì ghi nguyên nhân, và nguyên nhân thuộc kit mới thì vế này đỏ. Hai dòng máy đo (token, phút)
+   chỉ đọc, không làm đỏ — điều kiện tin cậy (i) của luật (c) không giữ được khi đường chấm đổi chỗ. Các con số ngưỡng là
+   máy đề xuất; chủ kho đổi được ở Cổng Phạm vi của mốc 3.0.
+3. **Thực tế đọc:** chủ kho ghi `da-cham-boi-thuc-te` lên hồ sơ mốc 3.0 (thao tác `observed`, ADR 0020) sau một cửa sổ quan
+   sát — đề xuất 14 ngày kể từ commit cài 3.0 ở Quỹ hàng. Trong cửa sổ đó kho cũ vẫn cài được ở 2.38.x; một vế đỏ thì
+   **đường lùi** là Quỹ hàng bật lại chợ cũ và đảo commit cài — rẻ, kho tiêu thụ không mất hồ sơ nào.
+
+crm **không** là điều kiện đóng đợt: kho cũ đóng băng ở 2.38.x tiếp tục phục vụ crm cho tới khi crm chuyển trong một vòng
+của riêng nó. Ghi thẳng để «đã đóng đợt» không bị đọc thành «mọi kho đã sang».
 
 Kịch bản chuyển nhà đặt ở kho mới, trong thư mục công cụ (không phải sản phẩm), để sửa nó không phải đi qua lượt kiểm 58
 phút của kho cũ và không bị chép sang kho tiêu thụ.
