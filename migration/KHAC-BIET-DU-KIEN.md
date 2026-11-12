@@ -89,9 +89,12 @@ là **chiếu** của các nguồn ấy — mâu thuẫn thì nguồn thắng, s
 | # | Điều | Trước | Sau | Kiểm bằng |
 |---|---|---|---|---|
 | R1 | Tệp của khuôn | Chưa có `Makefile`, `tools/`, `.editorconfig`, `.repo-setup.json` | Có, áp **trong** kịch bản B1 sau bước đổi bố cục (chốt 11/11); `make test` nối vào bộ chạy kiểm thật | `ls` · `make test` chạy đúng bộ kiểm |
-| R2 | Điểm `doctor` | 9/20 mục (thử trên bản sao 11/11) | ≥ 14/20 (bản sao sau khi tiếp nhận) — cao hơn khi bố cục đúng | `/repo-setup:doctor` |
+| R2 | Điểm `doctor` | **55/100** trên cây `chuyen-nha` 12/11: đạt 10, trượt 10 (11/11 trên một bản sao khác ghi 9/20 mục) | Trượt 0–1 mục (`plugin_versions` tuỳ B10) — ai giải mục nào: `NOI-REPO-STANDARDS.md` | `doctor.py --target <cây> --json` |
 | R3 | Lỗi của bộ kiểm tệp khai plugin | 4: sáu plugin lệch phiên bản · lõi lấy cả kho làm nguồn · hai mô tả quá dài | 0 (mô tả: 2.39 · nguồn: bố cục mới · phiên bản: theo quyết B10) | `tools/plugin_lint.py` |
 | R4 | `.claude/skills/review-change/SKILL.md` của khuôn | — | **mở** — nhận hay không (kit đã có đường xét duyệt riêng) | Cổng Phạm vi B1 |
+| R5 | `/repo-setup:github` (mức `team`) | Không chạy ở kho này | **Không chạy** — nó luôn đặt chỉ gộp dồn, trái luật cấm gộp dồn (C3); kho ở mức `starter` | `.repo-setup.json` → `level` = `starter` · C3 |
+| R6 | `.repo-setup.json` | Chưa có | Có, ghi khuôn, mức, biến, mã băm từng tệp khuôn — tệp tự xưng của lớp Repo Standards | `cat .repo-setup.json` |
+| R7 | Lời trỏ từ Repo Standards sang kit | 2 README trỏ `acceptance-gate-kit`; ca `tests/run.sh:552` ghim chữ ấy | Trỏ `delivery-loop`, ca đổi cùng lượt — việc ở kho Repo Standards, ngày cắt | `grep` README của Repo Standards |
 
 ## 7. Số của North Star — không được xấu đi
 

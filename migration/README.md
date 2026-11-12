@@ -5,6 +5,7 @@ Thư mục này chỉ sống ở nhánh `chuyen-nha` cho tới ngày cắt sang 
 | Tệp | Là gì |
 |---|---|
 | `KHAC-BIET-DU-KIEN.md` | **Bảng chủ kho dò lúc ký mốc 3.0**: mỗi điều trước và sau ngày cắt, trạng thái quyết, kiểm bằng gì |
+| `NOI-REPO-STANDARDS.md` | Ranh giới và điểm nối giữa Repo Standards (`repo-setup`) và kho này — ai sở hữu gì, tám điểm nối, mười mục `doctor` trượt và ai giải |
 | `TRANG-THAI.md` | **Tệp sống** — máy nào đang giữ, đã xong, đang dở, việc kế, quyết định còn chờ chủ kho |
 | `MO-PHIEN.md` | Máy cần có gì, lệnh kéo kho, cách nhận giữ, lời mở phiên |
 | `BOI-CANH.md` | Quyết định đã có, luật của đợt, bẫy đã dẫm, thứ không nằm trong kho |

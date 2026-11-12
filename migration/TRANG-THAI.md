@@ -37,7 +37,8 @@ chủ kho.
 | Tra soát kho cũ cho B1 (12/11, chủ kho bảo «Làm tra soát»): ba sổ máy sinh — kiểm kê tệp, chỗ hai kho tiêu thụ bám vào kit, tệp kiểm bám bố cục cũ | `tra-soat/README.md` · `node --test migration/tra-soat/*.test.mjs` 13 ca xanh |
 | Thước B1 có ca chạy thử phiên thật (12/11, chủ kho bảo «Thêm ca chạy thử phiên thật vào thước B1»): kịch bản đọc những gì một phiên thật nạp từ chợ của một cây, 0 token, ~13 giây; nền `909dffd8` = 6 plugin, 33 lệnh và skill, 3 tác tử | `KE-HOACH.md` mục 12 · `node --test migration/chay-thu-phien/chay-thu.test.mjs` 8 ca xanh, 4 biến thể tiêm lỗi đều đỏ đúng ca |
 | Hai thước nữa vào kế hoạch (12/11, chủ kho bảo «Ghi hai thước vào kế hoạch»): B2 giữ đủ khoá ca — nền 4 749 khoá ở bốn bộ bash + 667 ca điều phối trên `13c523e6`; ngưỡng thực tế đóng đợt ở mốc 3.0 | `KE-HOACH.md` mục 12, dưới bảng dãy B · `BOI-CANH.md` quyết định 12 |
-| Bảng khác biệt dự kiến trước/sau chuyển nhà — bảng chủ kho dò lúc ký mốc 3.0 (12/11, chủ kho bảo «Lập bảng sự khác biệt dự kiến…»): 10 điều giữ nguyên, 50 điều đổi hay đo, 13 hàng còn quyết định «mở» (N2, N10, N12, B1, B5, B8, B9, B10, B13, C1, C4, R4, O4) | `KHAC-BIET-DU-KIEN.md` |
+| Bảng khác biệt dự kiến trước/sau chuyển nhà — bảng chủ kho dò lúc ký mốc 3.0 (12/11, chủ kho bảo «Lập bảng sự khác biệt dự kiến…»): 10 điều giữ nguyên, 53 điều đổi hay đo (thêm R5–R7 cùng ngày), 13 hàng còn quyết định «mở» (N2, N10, N12, B1, B5, B8, B9, B10, B13, C1, C4, R4, O4) | `KHAC-BIET-DU-KIEN.md` |
+| Ranh giới và điểm nối với Repo Standards (12/11, chủ kho bảo «Kiểm xem repo standards … xác định ranh giới và điểm nối»): hai bên không gọi nhau lúc chạy, nối qua tệp; `doctor` 55/100 trên cây hôm nay; một va cứng — `/repo-setup:github` luôn đặt chỉ gộp dồn | `NOI-REPO-STANDARDS.md` · `KHAC-BIET-DU-KIEN.md` R2, R5–R7 |
 
 ## Đang dở
 
@@ -106,7 +107,7 @@ python3 <repo-standards>/plugins/repo-setup/scripts/apply.py --target <cây kho 
 Giá trị cho chỗ trống: `<repo-standards>` = bản kéo tại thẻ ở đoạn «Gọi công cụ khuôn từ đâu»; `<mô tả>` = một câu mô tả kho,
 B1 soạn và chủ kho thấy ở Cổng Phạm vi.
 
-B1 cần quyết: có nhận tệp `.claude/skills/review-change/SKILL.md` không (kit đã có đường xét duyệt riêng).
+B1 cần quyết: có nhận tệp `.claude/skills/review-change/SKILL.md` không (kit đã có đường xét duyệt riêng) — và bốn điều nữa ở cuối `NOI-REPO-STANDARDS.md`.
 
 **Bộ kiểm trên Mac Studio (12/11, nhánh `chuyen-nha` `35c1e754`, Node 24.16):** scripts **968 xanh / 1 đỏ** · plugins
 xanh · hooks 71/71 · workflows xanh · điều phối 667/667 · bản đồ sản phẩm khớp · `migration/` 21/21. Ca đỏ duy nhất là
