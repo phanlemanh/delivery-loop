@@ -99,8 +99,8 @@ test('KB-AC2-do', () => {
 test('KB-AC2-nguon-moi', () => {
   const f = moFix();
   assert.equal(donNha(f, 'don-nha/3.0').status, 0);
-  const wtTruoc = git(f.kho, ['worktree', 'list', '--porcelain']);
   const s2 = themCommit(f.kho, { 'dieu-phoi/scripts/moi.mjs': '// moi.mjs\n' }, 'nguồn đi thêm');
+  const wtTruoc = git(f.kho, ['worktree', 'list', '--porcelain']);
   const r = donNha(f, 'don-nha/3.0', { nguon: s2 });
   assert.equal(r.status, 0, r.stderr);
   assert.equal(rev(f.kho, 'don-nha/3.0~5'), s2);
