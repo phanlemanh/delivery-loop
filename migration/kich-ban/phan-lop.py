@@ -4,7 +4,7 @@
 Dùng: phan-lop.py <thư mục đo> <mã nguồn> <mã cây mới>  > migration/kich-ban/ket-qua/lop-do.md
 <thư mục đo>/out/{A,B}/<bộ>.log và ketqua.tsv do migration/b0/chay.sh ghi (A = cây cũ, B = cây mới).
 Khoá ca và dòng mẫu: ca_do của migration/b0/tach.py (cùng thước với đo thử B0), thêm che đường thư mục tạm của máy.
-Lớp dấu hiệu đọc trên dòng FAIL và tới sáu dòng trước, sáu dòng sau nó trong nhật ký, theo thứ tự: lich-su · duong-dan · ten-doi · khac;
+Lớp dấu hiệu đọc trên dòng FAIL cùng phần sau nó; không ra lớp nào thì cùng phần trước nó (tới 12 dòng mỗi phía), theo thứ tự: lich-su · duong-dan · ten-doi · khac;
 bộ thoát khác 0 mà không in ca đỏ nào → một mục lớp bo-chay; ca rơi vào «khac» mà tệp kiểm chứa nó có lỗi đường dẫn →
 lớp cung-tep (thường là ca chạy theo ca đã đỏ — đối chứng dương, ca thông điệp).
 """
@@ -17,7 +17,7 @@ from tach import ca_do, SUITES  # noqa: E402
 TEN_CU = ['acceptance-gate-kit', 'dieu-phoi', 'road-map', 'tri-thuc', 'cat-luot', 'gom-tin-hieu']
 LOP = [
     ('lich-su', re.compile(r'not a valid object name|not a tree object|unknown revision|bad revision|ambiguous argument')),
-    ('duong-dan', re.compile(r'\b(got|exit|mã|ma|code)[ :=]*127\b|\b127 !==|!== 127\b|\[127\]|command not found|ENOENT|No such file|Cannot find module|MODULE_NOT_FOUND|not found|không tìm thấy|không có tệp|khong co tep|can\'t open file|cannot open')),
+    ('duong-dan', re.compile(r'FileNotFoundError|\b(got|exit|mã|ma|code)[ :=]*127\b|\b127 !==|!== 127\b|\[127\]|command not found|ENOENT|No such file|Cannot find module|MODULE_NOT_FOUND|not found|không tìm thấy|không có tệp|khong co tep|can\'t open file|cannot open')),
     ('ten-doi', re.compile('|'.join(re.escape(t) for t in TEN_CU))),
 ]
 CHE = [(re.compile(r'/(?:private/)?var/folders/\S+'), '<tmp>'), (re.compile(r'/(?:private/)?tmp/\S+'), '<tmp>')]
@@ -49,21 +49,31 @@ def rc(thu, ban):
 
 
 def boi_canh(dong, mau):
-    """Dòng FAIL và tới sáu dòng sau nó; không có dòng lỗi nào sau thì tới sáu dòng trước nó (dừng ở dòng kết quả ca khác) — chữ để chia lớp."""
-    goc = mau.strip()[:80]
+    """(dòng FAIL, chữ SAU nó, chữ TRƯỚC nó) — mỗi cửa sổ tối đa 12 dòng, dừng ở dòng kết quả ca khác hay tiêu đề khối.
+    Bộ chạy node in lỗi SAU dòng kết quả; bộ chạy bash in đầu ra của ca TRƯỚC dòng FAIL."""
     ke = re.compile(r'^\s*(FAIL|PASS|ok |not ok |[✗×✓])|^\s*(===|---) .+ (===|---)\s*$')
+    goc = mau.strip()[:80]
     for i, d in enumerate(dong):
         if goc and goc in d:
             j = i + 1
-            while j < len(dong) and j < i + 7 and not ke.match(dong[j]):
+            while j < len(dong) and j < i + 13 and not ke.match(dong[j]):
                 j += 1
-            if j > i + 1 and any(x.strip() and not re.match(r'^\s*(===|---)', x) for x in dong[i + 1:j]):
-                return '\n'.join(dong[i:j])
-            h = i  # không có dòng lỗi sau FAIL: bộ chạy bash in đầu ra TRƯỚC dòng FAIL — lấy tới dòng kết quả ca liền trước
-            while h > 0 and h > i - 7 and not ke.match(dong[h - 1]):
+            h = i
+            while h > 0 and h > i - 12 and not ke.match(dong[h - 1]):
                 h -= 1
-            return '\n'.join(dong[i:i + 1] + dong[h:i])
-    return mau
+            return d, '\n'.join(dong[i + 1:j]), '\n'.join(dong[h:i])
+    return mau, '', ''
+
+
+def lop_ca(dong, mau):
+    """Lớp của một ca đỏ + chữ mẫu: đọc dòng FAIL với phần SAU nó trước; không ra lớp nào thì đọc với phần TRƯỚC."""
+    fail, sau, truoc = boi_canh(dong, mau)
+    for phan in (sau, truoc):
+        chu = che(fail + '\n' + phan)
+        l = lop_cua(chu)
+        if l != 'khac':
+            return l, chu
+    return 'khac', che(fail + '\n' + (sau or truoc))
 
 
 def lop_cua(chu):
@@ -101,14 +111,13 @@ def main():
         them = sorted(set(b) - set(a))
         lop = {}
         for k in them:
-            chu = che(boi_canh(dongB, b[k]))
-            l = lop_cua(chu)
+            l, chu = lop_ca(dongB, b[k])
             if l == 'khac' and dict(LOP)['duong-dan'].search(doan_tep(dongB, b[k])):
                 l = 'cung-tep'  # ca không tự in lỗi đường dẫn, nhưng tệp kiểm chứa nó có — thường là ca chạy theo ca đã đỏ
             lop[l] = lop.get(l, 0) + 1
             so['mau'].setdefault(l, [])
-            if len(so['mau'][l]) < 3:
-                so['mau'][l].append(f'{bo}: ' + ' ⏎ '.join(x.strip() for x in chu.split('\n')[:3])[:260])
+            if sum(1 for m in so['mau'][l] if m.startswith(bo + ':')) < 2:  # tối đa hai dòng mẫu mỗi lớp trong MỖI bộ
+                so['mau'][l].append(f'{bo}: ' + ' ⏎ '.join(x.strip() for x in chu.split('\n') if x.strip())[:400])
         if rcB.get(bo, 0) != 0 and not b:
             lop['bo-chay'] = lop.get('bo-chay', 0) + 1
             so['mau'].setdefault('bo-chay', []).append(f'{bo}: bộ thoát {rcB.get(bo)} mà không in ca đỏ nào')
@@ -139,7 +148,8 @@ def main():
     p('')
     p('**Giới hạn:** lớp chia theo CHỮ của nhật ký (dòng FAIL và vài dòng quanh nó), không chạy lại từng ca. «Tên đổi» có thể')
     p('đếm nhầm ca in danh sách tên hồ sơ có chứa tên cũ; «cùng tệp» là ca không tự in lỗi đường dẫn nhưng tệp kiểm chứa nó có —')
-    p('thường là ca chạy theo ca đã đỏ. Một lượt đo mỗi cây trên một máy.')
+    p('thường là ca chạy theo ca đã đỏ. Ca không tự in lỗi sau dòng FAIL thì đọc phần trước nó, nên có thể mượn lớp của ca liền')
+    p('trước trong nhật ký kiểu node. Một lượt đo mỗi cây trên một máy.')
     p('')
     p('| Bộ | Mã thoát cũ | Mã thoát mới | Đỏ cây cũ | Đỏ cây mới | Đỏ cả hai | Đỏ thêm | Chỉ đỏ ở cây cũ |')
     p('|---|---|---|---|---|---|---|---|')

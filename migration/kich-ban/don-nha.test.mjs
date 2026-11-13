@@ -388,7 +388,7 @@ function nhatKyGia() {
   const ghi = (ban, bo, chu) => { fs.mkdirSync(path.join(T, 'out', ban), { recursive: true }); fs.writeFileSync(path.join(T, 'out', ban, bo + '.log'), chu); };
   const rc = (ban, m) => fs.writeFileSync(path.join(T, 'out', ban, 'ketqua.tsv'), Object.entries(m).map(([b, r]) => `${b}\t${r}\t1`).join('\n') + '\nXONG\n');
   ghi('A', 'scripts', 'PASS: X0\nFAIL: X1 — chập chờn\n');
-  ghi('B', 'scripts', 'FAIL: X1 — chập chờn\nFAIL: X2 — đọc tệp\n  Error: Cannot find module \'/kho/scripts/a.mjs\'\nFAIL: X3 — bản cũ\n  fatal: not a valid object name v2.24.0\nFAIL: X4 — chợ\n  không thấy plugin acceptance-gate-kit\nFAIL: X5 — lạ\n  sai số 3\n--- khối Y ---\n  bash: /x/y.sh: No such file or directory\nPASS: Y0\nFAIL: Y1 — theo sau\n');
+  ghi('B', 'scripts', 'FAIL: X1 — chập chờn\nFAIL: X2 — đọc tệp\n  Error: Cannot find module \'/kho/scripts/a.mjs\'\nFAIL: X3 — bản cũ\n  fatal: not a valid object name v2.24.0\nFAIL: X4 — chợ\n  không thấy plugin acceptance-gate-kit\nPASS: X4b\nFAIL: X5 — lạ\n  sai số 3\n--- khối Y ---\n  bash: /x/y.sh: No such file or directory\nPASS: Y0\nFAIL: Y1 — theo sau\n');
   ghi('A', 'ban-do', 'PRODUCT-MAP.md khớp hồ sơ xưởng.\n');
   ghi('B', 'ban-do', 'node: không chạy được\n');
   rc('A', { scripts: 1, 'ban-do': 0 }); rc('B', { scripts: 1, 'ban-do': 1 });
@@ -452,4 +452,14 @@ test('KB-AC10-do-cay', () => {
   assert.ok(r.loi.includes('báo cáo lớp đỏ đo trên cây cũ'), r.loi.join('\n'));
   assert.ok(r.dong.some(d => d.startsWith('báo cáo đo trên ')), r.dong.join('\n'));
   assert.deepEqual(cu.loi, []);
+});
+
+test('KB-AC7-do-bo-tuong-doi', () => {
+  const f = moFix();
+  const script = banSaoTiem('don-nha.mjs', "if (tien && path.posix.normalize(path.posix.join(path.posix.dirname(tu), m)) !== toi) return m;", 'if (tien) return m;');
+  assert.equal(donNha(f, 'don-nha/a', { script }).status, 0);
+  const skill = git(f.kho, ['show', 'don-nha/a:plugins/acceptance-gate/skills/scope-slice/SKILL.md']);
+  assert.ok(skill.includes('](../../docs/reference/ghi-chu.md)'), skill);
+  const kq = kiemCho({ kho: f.kho, nguon: f.nguon, dich: 'don-nha/a', bangXep: f.bangXep });
+  assert.ok(kq.loi.includes('con trỏ còn treo: plugins/acceptance-gate/skills/scope-slice/SKILL.md → docs/reference/ghi-chu.md'), kq.loi.join('\n'));
 });

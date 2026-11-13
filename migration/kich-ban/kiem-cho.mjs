@@ -202,6 +202,16 @@ function ac7(kho, nguon, dich, kk, bx, dp) {
     const b = git(kho, ['show', `${dich}:${t}`]);
     if (URL_DINH.test(b)) loi.push(`con trỏ hỏng: ${t}`);
   }
+  // Quét theo sổ NGUỒN: con trỏ tương đối còn nguyên ở cây mới không giải về toi từ thư mục MỚI (nên lượt quét trên
+  // bằng sổ của cây mới không thấy nó) — giải từ thư mục của tệp NGUỒN thì thấy.
+  for (const r of kk.con_tro) {
+    if (r.mo_ho || giu.duong_kho_tieu_thu.includes(r.toi)) continue;
+    const d = dichDayDu(r.tu, bx, dp); if (!d.startsWith('plugins/')) continue;
+    let chu; try { chu = git(kho, ['show', `${dich}:${d}`]); } catch { continue; }
+    const treo = chu.split('\n').some(L => [...L.matchAll(reConTro(r.toi))].some(m => (!m[1] || giaiVe(r.tu, m[0], r.toi)) && !loaiGiuRieng(d, L.slice(0, m.index), giu, r.toi)));
+    if (treo) loi.push(`con trỏ còn treo: ${d} → ${r.toi}`);
+  }
+  loi.splice(0, loi.length, ...new Set(loi));
   const g = dem.lenh + dem['tu-host'] + dem['du-lieu'] + dem['duong-kho-tieu-thu'];
   const dong = loi.length ? [] : [`AC-7 đạt: ${dem.doi} con trỏ đã đổi, ${g} giữ có lý do (lenh ${dem.lenh} · tu-host ${dem['tu-host']} · du-lieu ${dem['du-lieu']} · duong-kho-tieu-thu ${dem['duong-kho-tieu-thu']}), 0 còn treo trong plugins/`];
   return { loi, dong };
