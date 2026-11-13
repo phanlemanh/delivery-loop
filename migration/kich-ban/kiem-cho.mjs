@@ -157,7 +157,11 @@ function loaiGiuRieng(tep, truoc, giu, toi) {
   if (laMa && !(/^\s*(#|\*|\/\*)/.test(truoc) || truoc.includes('//'))) return 'du-lieu';
   return null;
 }
-const reConTro = (toi) => new RegExp('(?<![\\w.-])(?<!\\w\\/)(?:\\.\\/)?' + thoat(toi) + '(?![\\w/-])', 'g');
+const reConTro = (toi) => new RegExp('(?<![\\w./-])((?:\\.\\.?/)*)' + thoat(toi) + '(?![\\w/-])', 'g');
+// Chuỗi khớp có tiền tố tương đối thì chỉ tính khi nó giải (từ thư mục tệp nguồn t) về đúng toi.
+const giaiVe = (t, m, toi) => path.posix.normalize(path.posix.join(path.posix.dirname(t), m)) === toi;
+// Phép kiểm KHÁC cơ chế với phép đổi: một URL kho cũ dính ngay sau ký tự đường dẫn là con trỏ bị đổi nửa chừng.
+const URL_DINH = /[\w.\/-]https:\/\/github\.com\/phanlemanh\/acceptance-gate-kit\//;
 
 // Đổi con trỏ của một tệp (đường NGUỒN t, đường ĐÍCH d) → [chữ mới, {toi: 'doi' | loại giữ}].
 function doiConTro(t, d, chu, kk, bx, ma) {
@@ -166,7 +170,8 @@ function doiConTro(t, d, chu, kk, bx, ma) {
     if (r.mo_ho || r.tu !== t) continue;
     if (giu.duong_kho_tieu_thu.includes(r.toi)) { ket[r.toi] = 'duong-kho-tieu-thu'; continue; }
     let doi = 0, loai = null;
-    chu = chu.split('\n').map(L => L.replace(reConTro(r.toi), (m, i) => {
+    chu = chu.split('\n').map(L => L.replace(reConTro(r.toi), (m, tien, i) => {
+      if (tien && !giaiVe(t, m, r.toi)) return m;
       const k = loaiGiuRieng(d, L.slice(0, i), giu, r.toi); if (k) { loai = loai || k; return m; }
       doi++; return bx.con_tro.url.replace('{ma}', ma).replace('{duong}', r.toi);
     })).join('\n');
@@ -190,8 +195,12 @@ function ac7(kho, nguon, dich, kk, bx, dp) {
   for (const r of kkMoi.con_tro) {
     if (r.mo_ho || !r.tu.startsWith('plugins/') || giu.duong_kho_tieu_thu.includes(r.toi)) continue;
     const chu = git(kho, ['show', `${dich}:${r.tu}`]);
-    const treo = chu.split('\n').some(L => [...L.matchAll(reConTro(r.toi))].some(m => !loaiGiuRieng(r.tu, L.slice(0, m.index), giu, r.toi)));
+    const treo = chu.split('\n').some(L => [...L.matchAll(reConTro(r.toi))].some(m => (!m[1] || giaiVe(r.tu, m[0], r.toi)) && !loaiGiuRieng(r.tu, L.slice(0, m.index), giu, r.toi)));
     if (treo) loi.push(`con trỏ còn treo: ${r.tu} → ${r.toi}`);
+  }
+  for (const t of lsTree(kho, dich).filter(x => x.startsWith('plugins/'))) {
+    const b = git(kho, ['show', `${dich}:${t}`]);
+    if (URL_DINH.test(b)) loi.push(`con trỏ hỏng: ${t}`);
   }
   const g = dem.lenh + dem['tu-host'] + dem['du-lieu'] + dem['duong-kho-tieu-thu'];
   const dong = loi.length ? [] : [`AC-7 đạt: ${dem.doi} con trỏ đã đổi, ${g} giữ có lý do (lenh ${dem.lenh} · tu-host ${dem['tu-host']} · du-lieu ${dem['du-lieu']} · duong-kho-tieu-thu ${dem['duong-kho-tieu-thu']}), 0 còn treo trong plugins/`];

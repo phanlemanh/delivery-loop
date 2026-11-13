@@ -189,9 +189,9 @@ evals:
     expected: >
       Exit 0. Đọc migration/kich-ban/ket-qua/lop-do.md: frontmatter có `nguon` (40-hex), `cay_moi` (40-hex), sáu bộ; với
       mỗi bộ số đỏ thêm = đỏ cây mới − đỏ cả hai cây; tổng các lớp = tổng đỏ thêm; dựng lại cây bằng kịch bản trên
-      `nguon` của báo cáo ra đúng `cay_moi`. Báo cáo đo trên nguồn khác kit-cu/main hiện tại → in một dòng «báo cáo đo
-      trên <nguồn cũ>, kit-cu/main nay <mới>» (thông tin, không đỏ); `cay_moi` lệch cây dựng lại → đỏ «báo cáo lớp đỏ đo
-      trên cây cũ».
+      kit-cu/main LÚC CHẤM ra đúng `cay_moi` của báo cáo, không thì đỏ «báo cáo lớp đỏ đo trên cây cũ» (báo cáo đo trên
+      nguồn khác kit-cu/main hiện tại in thêm một dòng «báo cáo đo trên <nguồn cũ>, kit-cu/main nay <mới>»). Hai chiều của
+      phép dựng lại do ca KB-AC10-do-cay giữ.
     paths: [migration/kich-ban/**]
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
   - id: E10j

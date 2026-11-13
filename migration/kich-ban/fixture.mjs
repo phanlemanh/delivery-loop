@@ -55,7 +55,7 @@ export const TEP_KIT = {
     '---', 'name: cat-luot', 'description: Cắt lượt.', '---', '',
     'Gọi `acceptance-gate:cat-luot` khi cắt lượt.',
     'Dùng skill `cat-luot` để cắt; script ở scripts/cat-luot.mjs, hồ sơ lo-trinh-cat-luot.',
-    'Bối cảnh ghi ở docs/reference/ghi-chu.md.',
+    'Bối cảnh ghi ở docs/reference/ghi-chu.md, xem [ghi chú](../../docs/reference/ghi-chu.md).',
     'Tri thức ở kho acceptance-gate-kit-tri-thuc.',
     '',
   ].join('\n'),

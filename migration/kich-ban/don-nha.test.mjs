@@ -172,6 +172,15 @@ test('KB-AC9-thu-muc', () => {
   assert.equal(r.status, 1);
   assert.match(r.stderr, /thư mục gốc chưa xếp: la/);
   assert.ok(!coRef(f.kho, 'refs/heads/don-nha/3.0'));
+  // Nhánh đã có từ một lần lành trên nguồn cũ: lượt đỏ không được đè nó.
+  const g = moFix();
+  assert.equal(donNha(g, 'don-nha/3.0').status, 0);
+  const truoc = rev(g.kho, 'don-nha/3.0');
+  const s2 = themCommit(g.kho, { 'la/x.md': 'lạ\n' }, 'thư mục lạ');
+  const r2 = donNha(g, 'don-nha/3.0', { nguon: s2 });
+  assert.equal(r2.status, 1);
+  assert.match(r2.stderr, /thư mục gốc chưa xếp: la/);
+  assert.equal(rev(g.kho, 'don-nha/3.0'), truoc);
 });
 
 // ── AC-4 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -261,6 +270,13 @@ test('KB-AC9-luat', () => {
   assert.equal(r.status, 1);
   assert.match(r.stderr, /luật không khớp chỗ nào: dieu-phoi:khong-co/);
   assert.ok(!coRef(f.kho, 'refs/heads/don-nha/3.0'));
+  // Nhánh đã có từ một lần lành: lượt đỏ không được đè nó.
+  fs.writeFileSync(f.bangTenTep, JSON.stringify(JSON.parse(fs.readFileSync(f.bangTenTep, 'utf8')), null, 2).replace(/,\s*"dieu-phoi:khong-co": "dispatch:none"/, ''));
+  assert.equal(donNha(f, 'don-nha/3.0').status, 0);
+  const truoc = rev(f.kho, 'don-nha/3.0');
+  fs.writeFileSync(f.bangTenTep, JSON.stringify(bangTen));
+  assert.equal(donNha(f, 'don-nha/3.0').status, 1);
+  assert.equal(rev(f.kho, 'don-nha/3.0'), truoc);
 });
 
 // ── AC-7 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -270,6 +286,8 @@ test('KB-AC7', () => {
   const skill = git(f.kho, ['show', 'don-nha/a:plugins/acceptance-gate/skills/scope-slice/SKILL.md']);
   assert.ok(skill.includes(`https://github.com/phanlemanh/acceptance-gate-kit/blob/${f.nguon}/docs/reference/ghi-chu.md`), skill);
   assert.ok(!skill.includes('ở docs/reference/ghi-chu.md'), skill);
+  assert.ok(skill.includes(`[ghi chú](https://github.com/phanlemanh/acceptance-gate-kit/blob/${f.nguon}/docs/reference/ghi-chu.md)`), skill);
+  assert.ok(!/[\w./-]https:\/\//.test(skill), skill);
   assert.ok(git(f.kho, ['show', 'don-nha/a:plugins/acceptance-gate/commands/acceptance-init.md']).includes('`node tests/a.test.mjs`'));
   assert.ok(git(f.kho, ['show', 'don-nha/a:plugins/dispatch/commands/open.md']).includes('Ca kiểm ở tests/a.test.mjs.'));
   const goi = git(f.kho, ['show', 'don-nha/a:plugins/acceptance-gate/scripts/goi.mjs']);
@@ -399,4 +417,39 @@ test('KB-AC10-do-so-hoc', () => {
   const hong2 = chu.replace('"tong_do_them": 6', '"tong_do_them": 7');
   assert.notEqual(hong2, chu);
   assert.ok(kiemSoLieu(hong2).loi.some(l => l.startsWith('tổng đỏ thêm lệch')));
+});
+
+test('KB-AC7-do-tuong-doi', () => {
+  const f = moFix();
+  const script = banSaoTiem('don-nha.mjs', "if (tien && path.posix.normalize(path.posix.join(path.posix.dirname(tu), m)) !== toi) return m;", '');
+  const s2 = fs.readFileSync(script, 'utf8').replace("`(?<![\\\\w.\\\\/-])((?:\\\\.{1,2}\\\\/)*)${esc(toi)}(?![\\\\w/-])`", "`(?<![\\\\w.-])(?<!\\\\w\\\\/)()(?:\\\\.\\\\/)?${esc(toi)}(?![\\\\w/-])`");
+  assert.notEqual(s2, fs.readFileSync(script, 'utf8'), 'kim regex cũ phải khớp');
+  fs.writeFileSync(script, s2);
+  assert.equal(donNha(f, 'don-nha/a', { script }).status, 0);
+  const kq = kiemCho({ kho: f.kho, nguon: f.nguon, dich: 'don-nha/a', bangXep: f.bangXep });
+  assert.ok(kq.loi.includes('con trỏ hỏng: plugins/acceptance-gate/skills/scope-slice/SKILL.md'), kq.loi.join('\n'));
+});
+
+import { kiemLopDo } from './lop-do.mjs';
+test('KB-AC10-do-cay', () => {
+  const f = moFix();
+  const dung = (n, nguon) => donNha(f, n, { nguon }).status === 0;
+  assert.ok(dung('don-nha/thu', f.nguon));
+  const cay = rev(f.kho, 'don-nha/thu^{tree}');
+  const T = nhatKyGia();
+  const baoCao = (nguon, cayMoi) => {
+    const r = spawnSync('python3', [path.join(DAY, 'phan-lop.py'), T, nguon, cayMoi], { encoding: 'utf8' });
+    const p = path.join(T, `lop-do-${nguon.slice(0, 6)}-${cayMoi.slice(0, 6)}.md`); fs.writeFileSync(p, r.stdout); return p;
+  };
+  const chay1 = (tep) => { const loi = [], dong = []; kiemLopDo({ kho: f.kho, S: f.nguon, ra: (x) => dong.push(x), loi, donNha: dung, nhanh: 'don-nha/thu', tep }); return { loi, dong }; };
+  const lanh = chay1(baoCao(f.nguon, cay));
+  assert.deepEqual(lanh.loi, []);
+  assert.ok(lanh.dong.some(d => d.startsWith('AC-10 đạt')), lanh.dong.join('\n'));
+  assert.ok(chay1(baoCao(f.nguon, 'c'.repeat(40))).loi.includes('báo cáo lớp đỏ đo trên cây cũ'));
+  const s2 = themCommit(f.kho, { 'scripts/moi.mjs': '// mới\n' }, 'nguồn đi thêm');
+  const cu = chay1(baoCao(f.nguon, cay));
+  const r = { loi: [], dong: [] }; kiemLopDo({ kho: f.kho, S: s2, ra: (x) => r.dong.push(x), loi: r.loi, donNha: dung, nhanh: 'don-nha/thu', tep: baoCao(f.nguon, cay) });
+  assert.ok(r.loi.includes('báo cáo lớp đỏ đo trên cây cũ'), r.loi.join('\n'));
+  assert.ok(r.dong.some(d => d.startsWith('báo cáo đo trên ')), r.dong.join('\n'));
+  assert.deepEqual(cu.loi, []);
 });

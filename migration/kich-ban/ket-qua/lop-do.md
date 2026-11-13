@@ -1,7 +1,7 @@
 ---
 nguon: 0c4e503b1d9649faa6948dd169573717b6dddce4
-cay_moi: 2097a267f88ee45207720b0cfaf915a2bde1d8f9
-do_luc: 2026-11-13T13:31:09Z
+cay_moi: c7aa88325b54528243e9592f250446d2da2d7263
+do_luc: 2026-11-13T13:49:24Z
 bo: [scripts, hooks, plugins, workflows, dieu-phoi, ban-do]
 tong_do_them: 1790
 ---
@@ -31,12 +31,12 @@ thường là ca chạy theo ca đã đỏ. Một lượt đo mỗi cây trên m
 
 | Lớp | Số ca | scripts | hooks | plugins | workflows | dieu-phoi | ban-do |
 |---|---|---|---|---|---|---|---|
-| đường dẫn không còn (`duong-dan`) | 1032 | 642 | 33 | 46 | 0 | 311 | 0 |
+| đường dẫn không còn (`duong-dan`) | 1031 | 642 | 32 | 46 | 0 | 311 | 0 |
 | cùng tệp kiểm có lỗi đường dẫn (`cung-tep`) | 493 | 469 | 24 | 0 | 0 | 0 | 0 |
 | tên đổi (`ten-doi`) | 31 | 5 | 0 | 2 | 0 | 24 | 0 |
 | dựng bản cũ từ lịch sử (`lich-su`) | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | bộ chạy không chạy được (`bo-chay`) | 2 | 0 | 0 | 0 | 1 | 0 | 1 |
-| khác (`khac`) | 232 | 72 | 14 | 109 | 0 | 37 | 0 |
+| khác (`khac`) | 233 | 72 | 15 | 109 | 0 | 37 | 0 |
 
 **Mẫu — đường dẫn không còn:**
 
@@ -75,6 +75,6 @@ thường là ca chạy theo ca đã đỏ. Một lượt đo mỗi cây trên m
 
 <!-- <<<LOP-DO-SO-LIEU -->
 ```json
-{"bo": {"ban-do": {"ca_hai": [], "chi_do_cu": 0, "do_ca_hai": 0, "do_cu": 0, "do_moi": 0, "do_them": 1, "lop": {"bo-chay": 1}, "rc_cu": 0, "rc_moi": 1}, "dieu-phoi": {"ca_hai": [], "chi_do_cu": 0, "do_ca_hai": 0, "do_cu": 0, "do_moi": 372, "do_them": 372, "lop": {"duong-dan": 311, "khac": 37, "ten-doi": 24}, "rc_cu": 0, "rc_moi": 1}, "hooks": {"ca_hai": [], "chi_do_cu": 0, "do_ca_hai": 0, "do_cu": 0, "do_moi": 71, "do_them": 71, "lop": {"cung-tep": 24, "duong-dan": 33, "khac": 14}, "rc_cu": 0, "rc_moi": 1}, "plugins": {"ca_hai": [], "chi_do_cu": 0, "do_ca_hai": 0, "do_cu": 0, "do_moi": 157, "do_them": 157, "lop": {"duong-dan": 46, "khac": 109, "ten-doi": 2}, "rc_cu": 0, "rc_moi": 1}, "scripts": {"ca_hai": ["moc-chien-dich.test.mjs"], "chi_do_cu": 1, "do_ca_hai": 1, "do_cu": 2, "do_moi": 1189, "do_them": 1188, "lop": {"cung-tep": 469, "duong-dan": 642, "khac": 72, "ten-doi": 5}, "rc_cu": 1, "rc_moi": 1}, "workflows": {"ca_hai": [], "chi_do_cu": 0, "do_ca_hai": 0, "do_cu": 0, "do_moi": 0, "do_them": 1, "lop": {"bo-chay": 1}, "rc_cu": 0, "rc_moi": 1}}, "cay_moi": "2097a267f88ee45207720b0cfaf915a2bde1d8f9", "lop": {"bo-chay": 2, "cung-tep": 493, "duong-dan": 1032, "khac": 232, "lich-su": 0, "ten-doi": 31}, "nguon": "0c4e503b1d9649faa6948dd169573717b6dddce4", "tong_do_them": 1790}
+{"bo": {"ban-do": {"ca_hai": [], "chi_do_cu": 0, "do_ca_hai": 0, "do_cu": 0, "do_moi": 0, "do_them": 1, "lop": {"bo-chay": 1}, "rc_cu": 0, "rc_moi": 1}, "dieu-phoi": {"ca_hai": [], "chi_do_cu": 0, "do_ca_hai": 0, "do_cu": 0, "do_moi": 372, "do_them": 372, "lop": {"duong-dan": 311, "khac": 37, "ten-doi": 24}, "rc_cu": 0, "rc_moi": 1}, "hooks": {"ca_hai": [], "chi_do_cu": 0, "do_ca_hai": 0, "do_cu": 0, "do_moi": 71, "do_them": 71, "lop": {"cung-tep": 24, "duong-dan": 32, "khac": 15}, "rc_cu": 0, "rc_moi": 1}, "plugins": {"ca_hai": [], "chi_do_cu": 0, "do_ca_hai": 0, "do_cu": 0, "do_moi": 157, "do_them": 157, "lop": {"duong-dan": 46, "khac": 109, "ten-doi": 2}, "rc_cu": 0, "rc_moi": 1}, "scripts": {"ca_hai": ["moc-chien-dich.test.mjs"], "chi_do_cu": 1, "do_ca_hai": 1, "do_cu": 2, "do_moi": 1189, "do_them": 1188, "lop": {"cung-tep": 469, "duong-dan": 642, "khac": 72, "ten-doi": 5}, "rc_cu": 1, "rc_moi": 1}, "workflows": {"ca_hai": [], "chi_do_cu": 0, "do_ca_hai": 0, "do_cu": 0, "do_moi": 0, "do_them": 1, "lop": {"bo-chay": 1}, "rc_cu": 0, "rc_moi": 1}}, "cay_moi": "c7aa88325b54528243e9592f250446d2da2d7263", "lop": {"bo-chay": 2, "cung-tep": 493, "duong-dan": 1031, "khac": 233, "lich-su": 0, "ten-doi": 31}, "nguon": "0c4e503b1d9649faa6948dd169573717b6dddce4", "tong_do_them": 1790}
 ```
 <!-- LOP-DO-SO-LIEU>>> -->

@@ -40,8 +40,9 @@ export function kiemLopDo({ kho, S, ra, loi, donNha, nhanh, tep = TEP_BAO_CAO })
   const k = kiemSoLieu(fs.readFileSync(tep, 'utf8'));
   loi.push(...k.loi);
   if (!k.so) return;
+  // Hợp đồng AC-10: mã cây của báo cáo phải bằng mã cây kịch bản dựng trên nguồn LÚC CHẤM.
   if (k.fm.nguon !== S) ra(`báo cáo đo trên ${k.fm.nguon}, kit-cu/main nay ${S}`);
-  if (!donNha(nhanh, k.fm.nguon)) return;
+  if (!donNha(nhanh, S)) return;
   const cay = execFileSync('git', ['-C', kho, 'rev-parse', `${nhanh}^{tree}`], { encoding: 'utf8' }).trim();
   if (cay !== k.fm.cay_moi) { loi.push('báo cáo lớp đỏ đo trên cây cũ'); return; }
   if (!k.loi.length) {

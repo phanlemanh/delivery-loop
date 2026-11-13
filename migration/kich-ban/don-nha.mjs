@@ -195,9 +195,11 @@ function buoc4ConTro(wt, bx, S, dichPlugin) {
     let nd = fs.readFileSync(p, 'utf8');
     for (const toi of dsToi) {
       if (giu.duong_kho_tieu_thu.includes(toi)) { ket.giu['duong-kho-tieu-thu']++; continue; }
-      const re = new RegExp(`(?<![\\w.-])(?<!\\w\\/)(?:\\.\\/)?${esc(toi)}(?![\\w/-])`, 'g');
+      // Cả chuỗi, kể cả tiền tố tương đối ../ hay ./ — chỉ khi chuỗi ấy giải (từ thư mục của tệp NGUỒN) về đúng tệp đích.
+      const re = new RegExp(`(?<![\\w.\\/-])((?:\\.{1,2}\\/)*)${esc(toi)}(?![\\w/-])`, 'g');
       let doi = 0, loai = null;
-      nd = nd.split('\n').map(L => L.replace(re, (m, viTri) => {
+      nd = nd.split('\n').map(L => L.replace(re, (m, tien, viTri) => {
+        if (tien && path.posix.normalize(path.posix.join(path.posix.dirname(tu), m)) !== toi) return m;
         const k = loaiGiu(d, L.slice(0, viTri), giu, toi);
         if (k) { loai = loai || k; return m; }
         doi++; return bx.con_tro.url.replace('{ma}', S).replace('{duong}', toi);
