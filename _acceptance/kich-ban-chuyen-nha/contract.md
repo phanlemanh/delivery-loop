@@ -5,7 +5,7 @@ slug: kich-ban-chuyen-nha
 owner: phanlemanh@gmail.com
 risk_tier: T3      # chủ kho đặt T3 (migration/KE-HOACH.md mục 12, bảng dãy B); vật ở migration/, ngoài t3_paths — máy tự suy ra T2
 surfaces: [cli]
-status: approved
+status: implemented
 approved_by: Phan Le Manh
 approved_at: 2026-11-13
 design_doc: migration/kich-ban/THIET-KE.md
