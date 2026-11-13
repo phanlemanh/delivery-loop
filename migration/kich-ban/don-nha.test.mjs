@@ -287,3 +287,67 @@ test('KB-AC7-do', () => {
   const kq = kiemCho({ kho: f.kho, nguon: f.nguon, dich: 'don-nha/a', bangXep: f.bangXep });
   assert.ok(kq.loi.includes('con trỏ còn treo: plugins/acceptance-gate/skills/scope-slice/SKILL.md → docs/reference/ghi-chu.md'), kq.loi.join('\n'));
 });
+
+// ── AC-1 qua hai ngày, AC-8, AC-9c — khuôn Repo Standards ─────────────────────────────────────────────────────────
+test('KB-AC1-ngay', () => {
+  const f = moFix();
+  assert.equal(donNha(f, 'don-nha/a', { env: { RS_GIA_NGAY: '2026-01-01' } }).status, 0);
+  assert.equal(donNha(f, 'don-nha/b', { env: { RS_GIA_NGAY: '2026-06-30' } }).status, 0);
+  assert.equal(soHaiLan(f.kho, 'don-nha/a', 'don-nha/b'), null);
+});
+
+test('KB-AC1-do-ngay', () => {
+  const f = moFix();
+  const script = banSaoTiem('don-nha.mjs', "'--var', `today=${ngayNguon.slice(0, 10)}`, ", '');
+  assert.equal(donNha(f, 'don-nha/a', { script, env: { RS_GIA_NGAY: '2026-01-01' } }).status, 0);
+  assert.equal(donNha(f, 'don-nha/b', { script, env: { RS_GIA_NGAY: '2026-06-30' } }).status, 0);
+  assert.equal(soHaiLan(f.kho, 'don-nha/a', 'don-nha/b'), 'hai lần chạy khác mã cây');
+});
+
+test('KB-AC8-danh-sach', () => {
+  const f = moFix();
+  assert.equal(donNha(f, 'don-nha/a').status, 0);
+  const bx = JSON.parse(fs.readFileSync(f.bangXep, 'utf8'));
+  const dong = git(f.kho, ['diff', '--name-status', 'don-nha/a~1', 'don-nha/a']).trim().split('\n').map(d => d.split('\t'));
+  assert.ok(dong.length > 0);
+  for (const [loai, tep] of dong) {
+    const duoc = loai === 'A' ? bx.khuon.duoc_cham.them : loai === 'M' ? bx.khuon.duoc_cham.sua : bx.khuon.duoc_cham.xoa;
+    assert.ok(duoc.includes(tep), `${loai} ${tep}`);
+  }
+  const cay = git(f.kho, ['ls-tree', '-r', '--name-only', 'don-nha/a']).split('\n');
+  assert.ok(!cay.some(t => t.startsWith('.claude/skills/review-change/')));
+  const mk = git(f.kho, ['show', 'don-nha/a:Makefile']);
+  assert.ok(mk.includes(`test: ## Run the tests\n\t${bx.khuon.make_test}\n`), mk);
+  const rsj = JSON.parse(git(f.kho, ['show', 'don-nha/a:.repo-setup.json']));
+  assert.equal(rsj.vars.today, '2026-11-01');
+});
+
+test('KB-AC8-do', () => {
+  const f = moFix();
+  themCommit(f.rs, { 'plugins/repo-setup/README.md': 'đi tiếp\n' }, 'sau thẻ');
+  const r = donNha(f, 'don-nha/3.0');
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /khuôn không đúng thẻ repo-setup-v0\.5\.0/);
+  assert.ok(!coRef(f.kho, 'refs/heads/don-nha/3.0'));
+});
+
+test('KB-AC8-do-cham', () => {
+  const f = moFix();
+  const r = donNha(f, 'don-nha/3.0', { env: { RS_GIA_CHAM: 'CLAUDE.md' } });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /khuôn chạm tệp ngoài danh sách: CLAUDE\.md/);
+  assert.ok(!coRef(f.kho, 'refs/heads/don-nha/3.0'));
+});
+
+test('KB-AC9-khuon', () => {
+  const f = moFix();
+  const r = donNha(f, 'don-nha/3.0', { env: { RS_GIA_XUNG_DOT: 'GUIDE.md' } });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /khuôn xung đột: GUIDE\.md/);
+  assert.ok(!coRef(f.kho, 'refs/heads/don-nha/3.0'));
+  assert.equal(donNha(f, 'don-nha/3.0').status, 0);
+  const truoc = rev(f.kho, 'don-nha/3.0');
+  assert.equal(donNha(f, 'don-nha/3.0', { env: { RS_GIA_XUNG_DOT: 'GUIDE.md' } }).status, 1);
+  assert.equal(rev(f.kho, 'don-nha/3.0'), truoc);
+  assert.deepEqual(git(f.kho, ['worktree', 'list', '--porcelain']).match(/^worktree /gm).length, 1);
+});
