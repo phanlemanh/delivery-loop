@@ -3,10 +3,10 @@ schema_version: 1
 slug: kich-ban-chuyen-nha
 feature: «Một kịch bản lấy nhánh chính kho cũ và sinh các commit dọn nhà lên trên nó — bố cục plugins/<tên>/, tên mới, khuôn Repo Standards — chạy lại mỗi khi kho cũ đổi, không sửa tay ở kho mới»
 owner: phanlemanh@gmail.com
-stage: discovery              # discovery | decided | archived
-decision:         # build | iterate | park | kill — người ký Cổng 0 điền
-decided_by:
-decided_at:       # ISO UTC
+stage: decided                # discovery | decided | archived
+decision: build   # build | iterate | park | kill — người ký Cổng 0 điền
+decided_by: Manh Phan
+decided_at: 2026-11-13T10:46:49Z   # chủ kho gõ «làm» một chạm 13/11, máy ghi hộ
 prototype:
   base_commit:     # điểm cắt nhánh proto khỏi nhánh chính — guard diffBase khi keep
   disposition:     # keep | archive
@@ -83,7 +83,7 @@ Ba điều máy đề xuất cho cách chạy, chủ kho quyết cùng chữ ký
 Một dòng hạ tầng: plugin kit trên máy là 2.38.1 (phạm vi người dùng) trong khi kho cũ đã 2.39.0; vòng chạy mọi lệnh của kit
 từ chính cây 2.39.0 này (kho tự host), không tự nâng plugin trên máy.
 
-- **decision = …** Căn cứ: …
+- **decision = build** Căn cứ: chủ kho gõ «làm» 13/11 — nhận cả ba đề xuất cách chạy (hồ sơ ở kho này, Gốc trỏ release-2-39-0, nhánh `don-nha/3.0` cục bộ).
 - **disposition = …** Căn cứ: không dựng prototype — bỏ trống.
 - **Ngưỡng UAT chốt cùng lúc ký:** «Không đo được» ở mục Ngưỡng.
 

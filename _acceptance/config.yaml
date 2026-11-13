@@ -1145,6 +1145,13 @@ executors:
     t3ak_e8: bash _acceptance/t3-can-ho-so-arm/rang/chay-ca.sh HA49-do HA49-mut
     luot_kiem_nhe: node tests/scripts/luot-kiem-nhe.test.mjs
     luot_kiem_nhe_ca_cham: node tests/scripts/luot-kiem-nhe-ca-cham.mjs
+    # Hồ sơ kich-ban-chuyen-nha (vòng B1 đợt chuyển nhà — chỉ có ở kho delivery-loop, nhánh của vòng; ngoại lệ chủ kho
+    # duyệt ở Cổng Đáng 13/11). Vật ở migration/kich-ban/. KHÔNG vào feature_loop.suite_keys: `_that`, `_phien`, `_lop_do`
+    # đọc kit-cu/main và kéo Repo Standards tại thẻ (cần mạng lần đầu); `_phien` cần lệnh `claude`.
+    kich_ban_chuyen_nha: node --test migration/kich-ban/don-nha.test.mjs
+    kich_ban_chuyen_nha_that: node migration/kich-ban/thuoc-that.mjs
+    kich_ban_chuyen_nha_phien: node migration/kich-ban/thuoc-that.mjs --phien
+    kich_ban_chuyen_nha_lop_do: node migration/kich-ban/thuoc-that.mjs --lop-do
 risk_tiers:
   t1_skip_globs:
     # Chỉ docs THẬT. Không dùng "*.md" — xem ghi chú 2 ở đầu file.
