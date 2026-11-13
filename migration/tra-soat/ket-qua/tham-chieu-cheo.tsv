@@ -1,12 +1,5 @@
-# máy sinh bởi migration/tra-soat/kiem-ke.mjs từ kit-cu/main @ 909dffd8 (2026-11-12) — đừng sửa tay, chạy lại kịch bản
+# máy sinh bởi migration/tra-soat/kiem-ke.mjs từ kit-cu/main @ 0c4e503b (2026-11-13) — đừng sửa tay, chạy lại kịch bản
 tu	toi	kieu	dong
-.claude-plugin/plugin.json	dieu-phoi/README.md	nhac	4
-.claude-plugin/plugin.json	dieu-phoi/scripts/cau-hinh.mjs	nhac	4
-.claude-plugin/plugin.json	dieu-phoi/scripts/hinh-dang.mjs	nhac	4
-.claude-plugin/plugin.json	feature-loop/scripts/carry-plan.mjs	nhac	4
-.claude-plugin/plugin.json	feature-loop/scripts/repin-lane.mjs	nhac	4
-.claude-plugin/plugin.json	feature-loop/scripts/s4-args.mjs	nhac	4
-.claude-plugin/plugin.json	feature-loop/scripts/thuoc-vat.mjs	nhac	4
 commands/acceptance-init.md	dieu-phoi/scripts/cau-hinh.mjs	goc-plugin	194
 commands/acceptance-init.md	dieu-phoi/scripts/dot.mjs	goc-plugin	195
 commands/acceptance-init.md	dieu-phoi/scripts/hinh-dang.mjs	goc-plugin	193
@@ -15,11 +8,6 @@ dieu-phoi/scripts/cua-tin-hieu.mjs	scripts/tin-hieu-khoa.cjs	nhac	14
 dieu-phoi/scripts/nguon-hang.mjs	scripts/lo-trinh.mjs	nhac	121
 dieu-phoi/scripts/the.mjs	lib/evidence-core.cjs	nhac	8
 dieu-phoi/scripts/yeu-cau.mjs	scripts/tin-hieu.mjs	nhac	68
-feature-loop/.claude-plugin/plugin.json	lib/evidence-core.cjs	qua-resolve-plugin	4
-feature-loop/.claude-plugin/plugin.json	lib/nhan-canh-gay.cjs	qua-resolve-plugin	4
-feature-loop/.claude-plugin/plugin.json	lib/workspace-record.cjs	qua-resolve-plugin	4
-feature-loop/.claude-plugin/plugin.json	scripts/cau-noi-ruling.mjs	qua-resolve-plugin	4
-feature-loop/.claude-plugin/plugin.json	skills/acceptance/references/duong-nen-template.md	qua-resolve-plugin	4
 feature-loop/scripts/carry-plan.mjs	lib/ac-line.cjs	nhac	54
 feature-loop/scripts/carry-plan.mjs	lib/eval-yaml.cjs	nhac	224
 feature-loop/scripts/carry-plan.mjs	lib/evidence-core.cjs	nhac	222
@@ -29,10 +17,6 @@ feature-loop/scripts/chup-ho-so-da-thong.mjs	skills/acceptance/references/eval-e
 feature-loop/scripts/duong-nen.mjs	commands/acceptance-init.md	nhac	73
 feature-loop/scripts/duong-nen.mjs	lib/evidence-core.cjs	nhac	88
 feature-loop/scripts/duong-nen.mjs	skills/acceptance/references/duong-nen-template.md	nhac	72
-feature-loop/scripts/giu-tuoi.mjs	lib/do-san-tren-nen.cjs	nhac	84
-feature-loop/scripts/giu-tuoi.mjs	lib/evidence-core.cjs	nhac	83
-feature-loop/scripts/giu-tuoi.mjs	lib/nhan-canh-gay.cjs	nhac	85
-feature-loop/scripts/giu-tuoi.mjs	scripts/pre-merge-check.sh	nhac	69
 feature-loop/scripts/lib/cay-doi.mjs	lib/nhan-canh-gay.cjs	nhac	8
 feature-loop/scripts/lib/dung-lai-model.mjs	lib/nguong-o-co-hoi.cjs	nhac	14
 feature-loop/scripts/lib/lan-khoa.mjs	lib/evidence-core.cjs	nhac	32

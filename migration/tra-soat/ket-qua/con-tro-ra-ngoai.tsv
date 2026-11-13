@@ -1,14 +1,6 @@
-# máy sinh bởi migration/tra-soat/kiem-ke.mjs từ kit-cu/main @ 909dffd8 (2026-11-12) — đừng sửa tay, chạy lại kịch bản
+# máy sinh bởi migration/tra-soat/kiem-ke.mjs từ kit-cu/main @ 0c4e503b (2026-11-13) — đừng sửa tay, chạy lại kịch bản
 tu	toi	lop	dong	mo_ho
-.claude-plugin/plugin.json	CONTEXT.md	tai-lieu-song	4	cung-ten-tep-o-kho-tieu-thu
-.claude-plugin/plugin.json	docs/plans/2026-08-24-hat-giong-khop-vong-dac-ta-ux.md	so-lam-viec	4	
-.claude-plugin/plugin.json	docs/reference/diagram-skin.md	tai-lieu-song	4	
-.claude-plugin/plugin.json	docs/research/known-limits-ledger.tsv	so-lam-viec	4	
-.claude-plugin/plugin.json	GUIDE.md	tai-lieu-song	4	cung-ten-tep-o-kho-tieu-thu
-.claude-plugin/plugin.json	LO-TRINH.html	may-ve	4	cung-ten-tep-o-kho-tieu-thu
-.claude-plugin/plugin.json	PRODUCT-MAP.md	may-ve	4	cung-ten-tep-o-kho-tieu-thu
-.claude-plugin/plugin.json	tests/plugins/hfl_clause.py	bo-kiem	4	
-.claude-plugin/plugin.json	tests/scripts/routing-baseline.mjs	bo-kiem	4	
+.claude-plugin/plugin.json	CHANGELOG.md	nhat-ky	4	cung-ten-tep-o-kho-tieu-thu
 commands/acceptance-card.md	CLAUDE.md	tai-lieu-song	127	cung-ten-tep-o-kho-tieu-thu
 commands/acceptance-card.md	CONTEXT.md	tai-lieu-song	113	cung-ten-tep-o-kho-tieu-thu
 commands/acceptance-init.md	LO-TRINH.html	may-ve	267	cung-ten-tep-o-kho-tieu-thu
@@ -57,8 +49,8 @@ dieu-phoi/scripts/tin-giao.mjs	docs/plans/2026-10-17-hat-giong-luat-giao-tiep-gi
 evals/goi-thang-ten/scaffold.sh	tests/scripts/run-tests.sh	bo-kiem	3	
 evals/kich-hoat-tu-ngu-canh/scaffold.sh	tests/scripts/run-tests.sh	bo-kiem	3	
 evals/README.md	docs/findings/2026-08-30-ra-soat-tinh-nang-moi-anthropic.md	so-lam-viec	13	
+feature-loop/.claude-plugin/plugin.json	CHANGELOG.md	nhat-ky	4	cung-ten-tep-o-kho-tieu-thu
 feature-loop/README.md	GUIDE.md	tai-lieu-song	3	cung-ten-tep-o-kho-tieu-thu
-feature-loop/scripts/giu-tuoi.mjs	docs/superpowers/specs/2026-10-17-ho-so-da-ky-giu-tuoi-design.md	so-lam-viec	11	
 feature-loop/scripts/lib/dung-lai-model.mjs	CONTEXT.md	tai-lieu-song	6	cung-ten-tep-o-kho-tieu-thu
 feature-loop/scripts/lib/dung-lai-model.mjs	tests/scripts/repin-lane-dung-lai-model.test.mjs	bo-kiem	3	
 feature-loop/scripts/lib/hoi-ngoai-inputs.mjs	docs/findings/assets/2026-10-01-quet-judgment-hoi-ngoai-inputs.cjs	so-lam-viec	8	
@@ -104,13 +96,11 @@ scripts/gate-card.js	tests/plugins/run-tests.sh	bo-kiem	371
 scripts/gate-card.js	tests/scripts/gate-card-dec-key.test.mjs	bo-kiem	530	
 scripts/gio-may.mjs	docs/superpowers/specs/2026-10-15-lo-trinh-gio-may-design.md	so-lam-viec	2	
 scripts/khong-can-nguoi.mjs	tests/plugins/lan-v.test.mjs	bo-kiem	22	
-scripts/kiem-ban-cai.mjs	LO-TRINH.html	may-ve	36	cung-ten-tep-o-kho-tieu-thu
 scripts/lo-trinh-khoi-tao.mjs	docs/superpowers/specs/2026-10-15-kho-moi-cai-goi-road-map-design.md	so-lam-viec	5	
 scripts/lo-trinh-khoi-tao.mjs	LO-TRINH.html	may-ve	147	cung-ten-tep-o-kho-tieu-thu
 scripts/lo-trinh-khoi-tao.mjs	PRODUCT-MAP.md	may-ve	161	cung-ten-tep-o-kho-tieu-thu
 scripts/lo-trinh.mjs	docs/superpowers/specs/2026-10-02-viec-ke-theo-plan-design.md	so-lam-viec	3	
 scripts/lo-trinh.mjs	LO-TRINH.html	may-ve	36	cung-ten-tep-o-kho-tieu-thu
-scripts/loop-health.mjs	CLAUDE.md	tai-lieu-song	4	cung-ten-tep-o-kho-tieu-thu
 scripts/luat-san-pham.cjs	tests/scripts/luat-san-pham.ca.mjs	bo-kiem	8	
 scripts/pre-merge-check.sh	tests/scripts/hang-pr.test.mjs	bo-kiem	15	
 scripts/product-map.mjs	CONTEXT.md	tai-lieu-song	119	cung-ten-tep-o-kho-tieu-thu

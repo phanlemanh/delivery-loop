@@ -1,6 +1,6 @@
 # Ca kiểm bám bố cục cũ — tóm tắt
 
-<!-- máy sinh bởi migration/tra-soat/bo-kiem.mjs từ kit-cu/main @ 909dffd8 (2026-11-12) — đừng sửa tay -->
+<!-- máy sinh bởi migration/tra-soat/bo-kiem.mjs từ kit-cu/main @ 0c4e503b (2026-11-13) — đừng sửa tay -->
 
 Trong 1146 tệp của bộ kiểm, **273** tệp gọi sản phẩm bằng đường dẫn tính từ gốc kho; **118** trong số đó còn dựng bản cũ từ lịch sử git (lớp khó: commit cũ mang bố cục cũ).
 

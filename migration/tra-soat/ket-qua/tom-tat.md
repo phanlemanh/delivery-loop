@@ -1,19 +1,19 @@
 # Sổ kiểm kê tệp — tóm tắt
 
-<!-- máy sinh bởi migration/tra-soat/kiem-ke.mjs từ kit-cu/main @ 909dffd8 (2026-11-12) — đừng sửa tay, chạy lại kịch bản -->
+<!-- máy sinh bởi migration/tra-soat/kiem-ke.mjs từ kit-cu/main @ 0c4e503b (2026-11-13) — đừng sửa tay, chạy lại kịch bản -->
 
-Mã commit: `909dffd8` (2026-11-12) · tổng **5725** tệp, mỗi tệp đúng một lớp.
+Mã commit: `0c4e503b` (2026-11-13) · tổng **5737** tệp, mỗi tệp đúng một lớp.
 
 ## Theo lớp
 
 | Lớp | Số tệp |
 |---|---|
-| `ho-so-vong` | 3037 |
+| `ho-so-vong` | 3050 |
 | `bo-kiem` | 1146 |
 | `so-lam-viec` | 835 |
-| `san-pham` | 614 |
-| `tai-lieu-song` | 62 |
-| `chua-ro` | 20 |
+| `san-pham` | 610 |
+| `tai-lieu-song` | 63 |
+| `chua-ro` | 22 |
 | `cong-cu-kho` | 6 |
 | `may-ve` | 2 |
 | `phap-ly` | 2 |
@@ -25,8 +25,8 @@ Mã commit: `909dffd8` (2026-11-12) · tổng **5725** tệp, mỗi tệp đúng
 
 | Plugin | Thư mục nguồn | Sản phẩm (điểm vào / lần tới / gọi chéo) | Chưa rõ: bộ kiểm gọi · chỉ trùng tên · không ai gọi |
 |---|---|---|---|
-| `acceptance-gate` | `./` | 285 (76 / 202 / 7) | 14: 1 · 3 · 10 |
-| `feature-loop` | `feature-loop` | 29 (8 / 16 / 5) | 3: 2 · 1 · 0 |
+| `acceptance-gate` | `./` | 282 (76 / 196 / 10) | 15: 3 · 3 · 9 |
+| `feature-loop` | `feature-loop` | 28 (8 / 17 / 3) | 4: 3 · 1 · 0 |
 | `diagram-design` | `diagram-design` | 214 (214 / 0 / 0) | 3: 3 · 0 · 0 |
 | `dieu-phoi` | `dieu-phoi` | 75 (10 / 59 / 6) | 0: 0 · 0 · 0 |
 | `road-map` | `road-map` | 7 (7 / 0 / 0) | 0: 0 · 0 · 0 |
@@ -37,11 +37,10 @@ Mã commit: `909dffd8` (2026-11-12) · tổng **5725** tệp, mỗi tệp đúng
 | Thư mục | Số tệp | Bộ kiểm gọi | Không ai gọi |
 |---|---|---|---|
 | `design-floor/vendor` | 9 | 0 | 8 |
+| `feature-loop/scripts` | 4 | 3 | 0 |
 | `diagram-design` | 3 | 3 | 0 |
-| `feature-loop/scripts` | 3 | 2 | 0 |
+| `scripts` | 3 | 3 | 0 |
 | `vendor/impeccable` | 3 | 0 | 1 |
-| `lib` | 1 | 1 | 0 |
-| `scripts` | 1 | 0 | 1 |
 
 ## Tham chiếu chéo giữa plugin
 
@@ -49,10 +48,10 @@ Gãy khi mỗi plugin vào một thư mục riêng, TRỪ kiểu `qua-resolve-pl
 
 | Từ → tới | Kiểu | Số cạnh |
 |---|---|---|
-| feature-loop → acceptance-gate | `nhac` | 45 |
-| feature-loop → acceptance-gate | `qua-resolve-plugin` | 26 |
-| acceptance-gate → feature-loop | `nhac` | 19 |
-| acceptance-gate → dieu-phoi | `nhac` | 10 |
+| feature-loop → acceptance-gate | `nhac` | 41 |
+| feature-loop → acceptance-gate | `qua-resolve-plugin` | 21 |
+| acceptance-gate → feature-loop | `nhac` | 15 |
+| acceptance-gate → dieu-phoi | `nhac` | 7 |
 | tri-thuc → acceptance-gate | `nhac` | 6 |
 | road-map → acceptance-gate | `nhac` | 5 |
 | acceptance-gate → dieu-phoi | `import-tuong-doi` | 4 |
@@ -69,10 +68,11 @@ Sản phẩm nhắc tới một tệp không phải sản phẩm. Hôm nay plugi
 
 | Lớp của đích | Con trỏ rõ (có thư mục) | Con trỏ mơ hồ | Số tệp sản phẩm nhắc (rõ) |
 |---|---|---|---|
-| `so-lam-viec` | 44 | 0 | 34 |
-| `tai-lieu-song` | 8 | 35 | 8 |
-| `bo-kiem` | 30 | 0 | 22 |
-| `may-ve` | 0 | 29 | 0 |
+| `so-lam-viec` | 41 | 0 | 32 |
+| `tai-lieu-song` | 7 | 32 | 7 |
+| `bo-kiem` | 28 | 0 | 21 |
+| `may-ve` | 0 | 26 | 0 |
+| `nhat-ky` | 0 | 2 | 0 |
 
 ## Đường dẫn khai chặt mà trỏ vào không có gì (treo từ hôm nay)
 

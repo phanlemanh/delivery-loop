@@ -1,4 +1,4 @@
-# máy sinh bởi migration/tra-soat/kho-tieu-thu.mjs — quy-hang @ eedec225 (2026-11-11), kit @ 909dffd8 — đừng sửa tay
+# máy sinh bởi migration/tra-soat/kho-tieu-thu.mjs — quy-hang @ eedec225 (2026-11-11), kit @ 0c4e503b — đừng sửa tay
 tep	dong	loai	gay	chu	tep_kit
 _acceptance/config.yaml	39	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/scripts/resolve-plugin.mjs	feature-loop/scripts/resolve-plugin.mjs
 _acceptance/config.yaml	39	tim-kit	xem-tay	# trỏ bản cài (tìm bằng feature-loop/scripts/resolve-plugin.mjs --plugin acceptance-gate). Không ghi đường cache.	

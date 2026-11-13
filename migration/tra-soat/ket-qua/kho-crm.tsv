@@ -1,4 +1,4 @@
-# máy sinh bởi migration/tra-soat/kho-tieu-thu.mjs — crm @ 74a29a68 (2026-11-03), kit @ 909dffd8 — đừng sửa tay
+# máy sinh bởi migration/tra-soat/kho-tieu-thu.mjs — crm @ 74a29a68 (2026-11-03), kit @ 0c4e503b — đừng sửa tay
 tep	dong	loai	gay	chu	tep_kit
 _acceptance/config.yaml	236	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-gate.mjs	scripts/design-gate.mjs
 _acceptance/config.yaml	236	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-scan.js	scripts/design-scan.js

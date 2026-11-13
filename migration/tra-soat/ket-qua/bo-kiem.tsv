@@ -1,4 +1,4 @@
-# máy sinh bởi migration/tra-soat/bo-kiem.mjs từ kit-cu/main @ 909dffd8 (2026-11-12) — đừng sửa tay
+# máy sinh bởi migration/tra-soat/bo-kiem.mjs từ kit-cu/main @ 0c4e503b (2026-11-13) — đừng sửa tay
 tep	bo	so_duong_dan	plugin	lich_su	mau
 tests/design-eval/khong-do-duoc.test.mjs	design-eval	3	acceptance-gate	co	lib/design-detect.mjs scripts/design-gate.mjs vendor/impeccable/
 tests/design-eval/lib/dom-detect.mjs	design-eval	1	acceptance-gate		lib/design-detect.mjs
@@ -73,7 +73,7 @@ tests/dieu-phoi/vung-giao-viec.test.mjs	dieu-phoi	9	acceptance-gate,dieu-phoi,fe
 tests/fixtures/ghi-boi/0710-agent-ae624896.jsonl	fixtures	2	feature-loop	co	feature-loop/scripts/carry-plan.mjs feature-loop/scripts/thuoc-vat.mjs
 tests/hooks/ruling-truoc-khi-xoa.test.mjs	hooks	2	acceptance-gate		hooks/hooks.json hooks/ruling-truoc-khi-xoa.js
 tests/hooks/run-tests.sh	hooks	1	acceptance-gate		hooks/acceptance-evidence-gate.js
-tests/plugins/asserts-da-go.txt	plugins	3	acceptance-gate,feature-loop		feature-loop/scripts/resolve-plugin.mjs feature-loop/workflows/ skills/design-pass/
+tests/plugins/asserts-da-go.txt	plugins	4	acceptance-gate,feature-loop		.claude-plugin/plugin.json feature-loop/scripts/resolve-plugin.mjs feature-loop/workflows/ skills/design-pass/
 tests/plugins/bang-dieu-khien.test.mjs	plugins	8	acceptance-gate		commands/acceptance-card.md commands/acceptance-status.md commands/approve.md commands/signoff.md
 tests/plugins/design-pass-nac.test.mjs	plugins	7	acceptance-gate,feature-loop		commands/acceptance-init.md feature-loop/skills/feature-loop/SKILL.md lib/ scripts/
 tests/plugins/duong-do.test.mjs	plugins	5	acceptance-gate,feature-loop		feature-loop/skills/feature-loop/SKILL.md lib/md-section.cjs scripts/gate-card.js skills/acceptance/references/contract-template.md
@@ -254,7 +254,7 @@ tests/workflows/baseline-worktree-co-lap.test.mjs	workflows	2	acceptance-gate,fe
 tests/workflows/carry-plan.test.mjs	workflows	2	feature-loop		feature-loop/scripts/carry-plan.mjs feature-loop/workflows/acceptance-verify.js
 tests/workflows/chot-truong-nguoi-corpus.mjs	workflows	1	acceptance-gate	co	lib/evidence-core.cjs
 tests/workflows/chot-truong-nguoi.test.mjs	workflows	4	acceptance-gate,feature-loop		feature-loop/scripts/s4-args.mjs feature-loop/workflows/acceptance-verify.js lib/evidence-core.cjs skills/acceptance/references/evidence-report-template.md
-tests/workflows/claim-scan.test.mjs	workflows	3	acceptance-gate,feature-loop		feature-loop/.claude-plugin/plugin.json feature-loop/scripts/claim-scan.mjs lib/md-section.cjs
+tests/workflows/claim-scan.test.mjs	workflows	2	acceptance-gate,feature-loop		feature-loop/scripts/claim-scan.mjs lib/md-section.cjs
 tests/workflows/doc-ghi-troi.test.mjs	workflows	5	acceptance-gate,feature-loop		feature-loop/workflows/acceptance-verify.js lib/ lib/evidence-core.cjs lib/out-of-contract.cjs
 tests/workflows/doi-chung-chay-duoc.test.mjs	workflows	3	feature-loop	co	feature-loop/agents/ feature-loop/agents/cham-lenh.md feature-loop/workflows/acceptance-verify.js
 tests/workflows/execute-parallel.test.mjs	workflows	1	feature-loop		feature-loop/workflows/execute-parallel.js

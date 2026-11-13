@@ -1,6 +1,6 @@
 ## quy-hang
 
-<!-- máy sinh bởi migration/tra-soat/kho-tieu-thu.mjs — quy-hang @ eedec225 (2026-11-11), kit @ 909dffd8 — đừng sửa tay -->
+<!-- máy sinh bởi migration/tra-soat/kho-tieu-thu.mjs — quy-hang @ eedec225 (2026-11-11), kit @ 0c4e503b — đừng sửa tay -->
 
 Mã commit `eedec225` (2026-11-11). 50 chỗ bám ở 13 tệp sống; thêm 791 dòng trong hồ sơ đã ký và `docs/` (lịch sử, không viết lại).
 

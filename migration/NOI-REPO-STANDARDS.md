@@ -58,6 +58,9 @@ của kit.
 | `agent_permissions` | Kit thêm `deny Read(./.env*)` vào `.claude/settings.json` của mình — không nhận `deny` sửa quy trình CI |
 | `language_policy` | Kit thêm `## Language` vào `CLAUDE.md`, nội dung theo luật đã chốt của kit — sửa `CLAUDE.md` là đổi luật kho, chủ kho duyệt |
 
+**13/11, trên kit 2.39.0 (`0c4e503b`):** `doctor` 64/100. Hai mục giao mốc 2.39 (`plugin_description_short`, `gitignore`) đã
+đạt, đúng như bảng trên dự báo; tám mục còn lại giữ nguyên chủ.
+
 Sau B1, kỳ vọng còn trượt 0–1 mục (`plugin_versions` tuỳ quyết B10). Thước R2 của bảng khác biệt nên đọc theo điểm
 `doctor` (0–100) thay cho «9/20 → 14/20 mục» ghi 11/11 trên một bản sao khác.
 

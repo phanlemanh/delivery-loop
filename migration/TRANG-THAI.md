@@ -27,7 +27,7 @@ chủ kho.
 | Kế hoạch chốt với chủ kho (phương thức, tên tạm, bốn dãy việc) | `KE-HOACH.md` mục 3, 12, 13 |
 | Đo thử B0 — bỏ lịch sử, hồ sơ, sổ làm việc thì bao nhiêu ca kiểm đỏ | `KE-HOACH.md` mục 13 · `b0/ket-qua/` |
 | Kho `phanlemanh/delivery-loop` tạo trên GitHub, riêng tư, chạy kiểm tự động (Actions) tắt | `gh repo view phanlemanh/delivery-loop` |
-| `main` = nhánh chính kho cũ (lần cập nhật gần nhất 12/11: `909dffd8`), đủ 30 thẻ chính thức | `git rev-parse origin/main kit-cu/main` |
+| `main` = nhánh chính kho cũ (lần cập nhật gần nhất 13/11: `0c4e503b`), đủ 31 thẻ chính thức | `git rev-parse origin/main kit-cu/main` |
 | Nhánh `chuyen-nha` có thư mục `migration/` và tệp chỉ đường `.claude/rules/chuyen-nha.md` | nhánh này |
 | Thử kéo kho về chỗ trống và làm theo `MO-PHIEN.md` | 11/11, MacBook Pro — xem cuối tệp |
 | Thử plugin `repo-setup` trên kho này (không ghi): chưa có khuôn cho kho plugin, khuôn gần nhất thêm sai loại tệp | `KE-HOACH.md` mục 14 |
@@ -39,12 +39,13 @@ chủ kho.
 | Hai thước nữa vào kế hoạch (12/11, chủ kho bảo «Ghi hai thước vào kế hoạch»): B2 giữ đủ khoá ca — nền 4 749 khoá ở bốn bộ bash + 667 ca điều phối trên `13c523e6`; ngưỡng thực tế đóng đợt ở mốc 3.0 | `KE-HOACH.md` mục 12, dưới bảng dãy B · `BOI-CANH.md` quyết định 12 |
 | Bảng khác biệt dự kiến trước/sau chuyển nhà — bảng chủ kho dò lúc ký mốc 3.0 (12/11, chủ kho bảo «Lập bảng sự khác biệt dự kiến…»): 10 điều giữ nguyên, 53 điều đổi hay đo (thêm R5–R7 cùng ngày), 13 hàng còn quyết định «mở» (N2, N10, N12, B1, B5, B8, B9, B10, B13, C1, C4, R4, O4) | `KHAC-BIET-DU-KIEN.md` |
 | Ranh giới và điểm nối với Repo Standards (12/11, chủ kho bảo «Kiểm xem repo standards … xác định ranh giới và điểm nối»): hai bên không gọi nhau lúc chạy, nối qua tệp; `doctor` 55/100 trên cây hôm nay; một va cứng — `/repo-setup:github` luôn đặt chỉ gộp dồn | `NOI-REPO-STANDARDS.md` · `KHAC-BIET-DU-KIEN.md` R2, R5–R7 |
+| Mốc 2.39 cắt ở kho cũ (13/11): PR #500 ký Cổng Bằng chứng, gộp tại `0c4e503b`, thẻ `v2.39.0`, `gate` trên nhánh chính xanh. Đủ ba việc chỉ-bớt — mô tả plugin lõi 84 582 → 424 ký tự, `feature-loop` 34 579 → 299 · `scripts/rel-cua-so.sh` và `lib/eval-yaml.js` đã xoá · `.env` vào `.gitignore`. `main` kho này cập nhật theo, 31 thẻ | `gh pr view 500 --repo phanlemanh/acceptance-gate-kit` · `git rev-parse origin/main kit-cu/main` |
 
 ## Đang dở
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| Mốc 2.39 (việc 3b) | kho CŨ, phiên riêng trên Mac Studio, worktree nhánh `release-2-39` của `~/dev/acceptance-gate-kit` | Mở 12/11 — chưa có PR mốc, chưa cắt thẻ, Quỹ hàng chưa cài. Ở kho này không có việc nào dở. |
+| Quỹ hàng cài 2.39 (nửa sau của việc 3b) | kho `onehub-quy-hang` | Thẻ đã cắt 13/11; chủ kho chọn «Để sau» nên chưa có PR nào ở Quỹ hàng. Nhánh chính Quỹ hàng (`eedec225`) còn `KIT_TAG: v2.37.0`. Việc cần làm: một PR đổi dòng ấy thành `v2.39.0`, CI xanh, gộp. Thử trước 13/11 trên bản sao: cổng của kit ở 2.39 chạy sạch như ở 2.37 — đoạn «Sẵn sàng cho B1». Ở kho này không có việc nào dở. |
 
 ## Ghi chú giữ cho B1
 
@@ -123,6 +124,19 @@ với nhánh chính của nó — B3 cắt worktree từ `origin/main` · kho m�
 chữ ký Cổng Bằng chứng) — phải đặt giống kho cũ trước PR đầu tiên ở kho mới · plugin kit trên Mac Studio đã lên 2.38.1
 (phạm vi người dùng, `delivery-loop`, bản kéo chính kho cũ); plugin ở các kho tiêu thụ để nguyên theo lời chủ kho.
 
+## Sẵn sàng cho B1 (đo 13/11 trên kit `0c4e503b` = 2.39.0, Mac Studio, Node 24.16)
+
+| Thứ | Kết quả |
+|---|---|
+| Thước B1 «chạy thử phiên thật», 2.38.1 (`909dffd8`) so 2.39.0 | đạt — 6 plugin, 33 lệnh và skill, 3 tác tử, không mất không thừa; phiên bản nạp: năm plugin 2.39.0, `diagram-design` 2.7.1 |
+| Thử trước PR nâng Quỹ hàng: bản sao Quỹ hàng `eedec225` + một commit đổi `KIT_TAG`, chạy đúng hai bước `gate` của `ci.yml` | `pre-merge-check` sạch (4 luật chạy) và `product-map --check` thoát 0 — ở kit `v2.37.0` (đối chứng) và ở `v2.39.0` như nhau. Không thấy hồ sơ nào phải ghim lại để nâng |
+| Ba sổ tra soát chạy lại trên `0c4e503b` (đã ghi đè `tra-soat/ket-qua/`) | 13/13 ca xanh. Đổi: 5 737 tệp · `san-pham` 614 → 610 · `chua-ro` 20 → 22 — mô tả plugin ngắn lại nên vài tệp mất dấu «được nhắc từ tệp khai», trong đó `feature-loop/scripts/giu-tuoi.mjs` rơi xuống `chua-ro`. Hai sổ kho tiêu thụ: không đổi chỗ bám nào |
+| `doctor` của Repo Standards 0.5.0 | 55 → **64**/100; hết trượt `plugin_description_short` và `gitignore`. Còn 8 mục trượt, đều đã có chủ ở `NOI-REPO-STANDARDS.md` |
+| Đỏ đã biết mà B1/B2 phải xử | `MC-11` đỏ vì tên thư mục kho (đoạn «Bộ kiểm trên Mac Studio») · 22 tệp `chua-ro` cần xếp · kho mới đang cho gộp dồn |
+
+**Chưa đo lại trên 2.39:** hai bộ kiểm lớn (script, plugin) trên `chuyen-nha` — CI nhánh chính kho cũ đã xanh trên `0c4e503b`,
+và lần chạy trên Mac Studio 12/11 ở `35c1e754`.
+
 ## Kế — theo thứ tự phụ thuộc
 
 | # | Việc | Ở kho nào | Mở khi |
@@ -130,13 +144,13 @@ chữ ký Cổng Bằng chứng) — phải đặt giống kho cũ trước PR �
 | 1 | Bật quét bí mật + chặn đẩy bí mật, bật tự xoá nhánh sau gộp | kho CŨ, cài đặt GitHub | chủ kho bảo (đổi cài đặt kho) |
 | 2 | ~~R1 — khuôn «kho plugin»~~ — xong 11/11, bản 0.5.0 | `repo-standards` | — |
 | 3 | ~~A1 `luot-kiem-nhe`~~ — xong 12/11, gộp tại `909dffd8` | kho CŨ | — |
-| 3b | **Mốc 2.39** (làn V): ba việc chỉ-bớt + cắt số + một kho tiêu thụ cài. Đo 12/11 cả ba CHƯA làm: mô tả trong tệp khai plugin lõi còn 84 582 ký tự và `feature-loop` 34 579 · hai tệp thừa `scripts/rel-cua-so.sh`, `lib/eval-yaml.js` còn (xoá phải kèm: `tests/plugins/run-tests.sh` nhắc tệp sau, `CHANGELOG.md` nhắc tệp trước như công cụ đối chiếu lúc cắt mốc) · `.env` chưa vào danh sách bỏ qua. Chưa có hồ sơ mốc | kho CŨ, làm ở Mac Studio (việc kit ở Mac Studio) | **đã gọi tên 12/11** — kho nhận `onehub-quy-hang`; đang chạy ở phiên riêng |
+| 3b | **Mốc 2.39** (làn V): ba việc chỉ-bớt + cắt số + một kho tiêu thụ cài. ~~Ba việc + cắt số~~ — xong 13/11, `0c4e503b`, thẻ `v2.39.0`. **Còn: Quỹ hàng cài** (PR đổi `KIT_TAG` sang `v2.39.0`, gộp) | kho CŨ (xong) · kho `onehub-quy-hang` (còn) | chủ kho bảo làm PR ở Quỹ hàng |
 | 4 | B1 `kich-ban-chuyen-nha` — kịch bản sinh commit dọn nhà lên trên nhánh chính kho cũ. Đầu vào và các câu còn mở: `BOI-CANH.md`, hai mục «Đầu vào cho B1» | kho này, `migration/` | **hai điều kiện:** mốc 2.39 đã có một kho tiêu thụ cài (việc 3b) · chủ kho gọi đích danh tên vòng (`kich-ban-chuyen-nha` hoặc «B1»; câu giao máy KHÔNG phải gọi tên vòng). Ngoại lệ luật chiều rộng (b), hạn dừng và bảng tên KHÔNG phải điều kiện mở — chủ kho quyết chúng tại Cổng Phạm vi của chính B1 (`KE-HOACH.md` mục 12) |
 | 5 | B2 `bo-kiem-xanh-o-kho-moi` | kho này | sau B1 (B1 đo lớp đỏ do đổi bố cục) |
 | 5b | Repo Standards: `tools/github_setup.py` cho chọn kiểu gộp (hôm nay luôn đặt chỉ gộp dồn — va cứng với luật cấm gộp dồn của kit), và đổi lời trỏ sang `delivery-loop` cùng ca `tests/run.sh:552` | kho `repo-standards` | **sau B1** (chủ kho chọn 12/11, «Để sau B1»); tới lúc đó kho này ở mức `starter` và không chạy `/repo-setup:github` — `NOI-REPO-STANDARDS.md` |
 | 6 | B3 cắt sang — mốc 3.0, Quỹ hàng nhận trước | kho này + kho tiêu thụ | chữ ký của chủ kho |
 
-Việc 2 và 3 đã xong; việc đang chặn B1 là việc 3b (mốc 2.39 của kho cũ, một kho tiêu thụ đã cài) và các quyết định ở mục dưới. Chi tiết, thước đo và ước giờ máy: `KE-HOACH.md` mục 12.
+Việc 2 và 3 đã xong, việc 3b xong nửa kho cũ; B1 còn chờ đúng hai điều: Quỹ hàng gộp PR nâng `KIT_TAG` lên `v2.39.0`, và chủ kho gọi đích danh B1. Các quyết định ở mục dưới không chặn việc mở B1 — chúng được hỏi ở Cổng Phạm vi của B1. Chi tiết, thước đo và ước giờ máy: `KE-HOACH.md` mục 12.
 
 ## Chờ chủ kho (chưa ai được tự quyết)
 
@@ -146,7 +160,8 @@ Việc 2 và 3 đã xong; việc đang chặn B1 là việc 3b (mốc 2.39 của
 4. Chốt hẳn tên `delivery-loop` và bảng tên ở `KE-HOACH.md` mục 3 — quyết tại Cổng Phạm vi của B1.
 5. Ngày cắt sang.
 6. Vòng riêng cho hai tệp máy vẽ — hai hạt giống 16/10 và 30/10.
-7. ~~Gọi tên mốc 2.39 và kho tiêu thụ nhận nó~~ — xong 12/11: kho nhận `onehub-quy-hang`. B1 còn chờ: Quỹ hàng cài 2.39 và chủ kho gọi đích danh tên vòng B1.
+7. ~~Gọi tên mốc 2.39 và kho tiêu thụ nhận nó~~ — xong 12/11: kho nhận `onehub-quy-hang`; thẻ cắt 13/11. B1 còn chờ: Quỹ hàng cài 2.39 (chủ kho chọn «Để sau» lúc cắt thẻ) và chủ kho gọi đích danh tên vòng B1.
+10. Khối bọc Node 24 trong `~/.zshrc` (thêm 12/11 cho tác tử chấm của mốc 2.39) — giữ cho B1 hay gỡ. Phiên mốc ghi nó là việc còn treo; B1 cũng chạy bộ kiểm cần Node 24 nên khuyến nghị giữ tới hết B2.
 8. ~~Bảo máy nào giữ đợt từ nay~~ — xong 12/11: Mac Studio.
 9. Cài đặt của kho này trên GitHub trước ngày cắt — xem «Kiểm bàn giao 12/11», mục cài đặt.
 
@@ -165,6 +180,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 13/11/2026 | Mac Studio | Mốc 2.39 cắt ở kho cũ (`0c4e503b`, thẻ `v2.39.0`); cập nhật `main` kho này theo. Chủ kho hỏi điều gì đang cản chuyển nhà → đo lại thước B1, thử trước PR nâng Quỹ hàng trên bản sao, chạy lại ba sổ tra soát, chấm lại `doctor` — đoạn «Sẵn sàng cho B1». |
 | 12/11/2026 | Mac Studio | Chủ kho hỏi «Làm thế nào để biết được chuyển nhà thành công?» rồi bảo «Ghi hai thước vào kế hoạch» → B2 giữ đủ khoá ca, ngưỡng thực tế mốc 3.0. Khi ghi, đo ra hồ sơ lượt chấm không ghi phiên bản kit — khai giới hạn. |
 | 12/11/2026 | Mac Studio | Chủ kho bảo «Thêm ca chạy thử phiên thật vào thước B1» → `chay-thu-phien/`, đẩy `35c1e754`. Chạy hai bộ kiểm lớn trên `chuyen-nha`: một đỏ, `MC-11`, do tên kho (đoạn «Bộ kiểm trên Mac Studio»). Rà lại mọi điều kiện dọn nhà theo lời chủ kho. Nâng plugin kit lên 2.38.1 trên máy. |
 | 12/11/2026 | Mac Studio | **Nhận giữ.** Chủ kho giao kèm lệnh mở mốc 2.39 ở phiên riêng trỏ thẳng kho cũ, kho nhận Quỹ hàng. Kiểm trước khi nhận: dòng nhả đúng · `origin/main` = `kit-cu/main` = `909dffd8` · 30 thẻ · Node 24.16.0 «khớp» (máy mặc định Node 26) · chợ `acceptance-gate-kit` ở cả hai tệp cài đặt trỏ GitHub, không ghim thẻ · bộ đệm plugin trên máy mới tới 2.37.0. |

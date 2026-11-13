@@ -1,6 +1,6 @@
 ## crm
 
-<!-- máy sinh bởi migration/tra-soat/kho-tieu-thu.mjs — crm @ 74a29a68 (2026-11-03), kit @ 909dffd8 — đừng sửa tay -->
+<!-- máy sinh bởi migration/tra-soat/kho-tieu-thu.mjs — crm @ 74a29a68 (2026-11-03), kit @ 0c4e503b — đừng sửa tay -->
 
 Mã commit `74a29a68` (2026-11-03). 655 chỗ bám ở 77 tệp sống; thêm 809 dòng trong hồ sơ đã ký và `docs/` (lịch sử, không viết lại).
 
@@ -17,7 +17,7 @@ Mã commit `74a29a68` (2026-11-03). 655 chỗ bám ở 77 tệp sống; thêm 80
 | `id-plugin` | `doi-ten-cho` | 4 | 2 |
 | `ten-cho-hoac-ten-kho` | `url-kho-hoac-cho` | 2 | 1 |
 
-**Bản chép tệp kit trong kho:** 37 tệp ở đúng đường dẫn của kit (35 giống hệt kit @ `909dffd8`, 2 khác). Sau dọn nhà, nguồn chép đổi từ `<gốc kho kit>/<đường dẫn>` sang `<gốc kho kit>/plugins/<plugin>/<đường dẫn>`.
+**Bản chép tệp kit trong kho:** 37 tệp ở đúng đường dẫn của kit (35 giống hệt kit @ `0c4e503b`, 2 khác). Sau dọn nhà, nguồn chép đổi từ `<gốc kho kit>/<đường dẫn>` sang `<gốc kho kit>/plugins/<plugin>/<đường dẫn>`.
 
 `dieu-phoi/scripts/cau-hinh.mjs` · `dieu-phoi/scripts/dot.mjs` · `dieu-phoi/scripts/hinh-dang.mjs` (khác) · `lib/ac-line.cjs` · `lib/chan-lo-trinh.cjs` · `lib/do-san-tren-nen.cjs` · `lib/eval-yaml.cjs` · `lib/evidence-core.cjs` · `lib/gap-probe.cjs` · `lib/lop-nhin-thay.cjs` · `lib/md-section.cjs` · `lib/nguong-o-co-hoi.cjs` · `lib/nhan-canh-gay.cjs` · `lib/out-of-contract.cjs` · `lib/workspace-record.cjs` · `scripts/can-cu-s1.cjs` · `scripts/cat-luot.mjs` · `scripts/co-hop-dong.cjs` · `scripts/gio-may.mjs` · `scripts/ho-so-tom-tat.cjs` · `scripts/khong-can-nguoi.mjs` · `scripts/lo-trinh-khoa.cjs` · `scripts/lo-trinh.mjs` · `scripts/luat-san-pham.cjs` · `scripts/pre-merge-check.sh` (khác) · `scripts/product-map.mjs` · `scripts/recheck-evidence.cjs` · `scripts/tin-hieu-khoa.cjs` · `scripts/tin-hieu.mjs` · `scripts/trang-thai-ho-so.cjs` · `scripts/tri-thuc-khoa.cjs` · `scripts/tri-thuc-nguon.cjs` · `scripts/tri-thuc-tra.cjs` · `scripts/tri-thuc.mjs` · `skills/acceptance/references/opportunity-template.md` · `skills/acceptance/references/tin-hieu-template.md` · `skills/acceptance/references/tri-thuc-template.md`
 
