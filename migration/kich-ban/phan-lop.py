@@ -4,8 +4,9 @@
 Dùng: phan-lop.py <thư mục đo> <mã nguồn> <mã cây mới>  > migration/kich-ban/ket-qua/lop-do.md
 <thư mục đo>/out/{A,B}/<bộ>.log và ketqua.tsv do migration/b0/chay.sh ghi (A = cây cũ, B = cây mới).
 Khoá ca và dòng mẫu: ca_do của migration/b0/tach.py (cùng thước với đo thử B0), thêm che đường thư mục tạm của máy.
-Lớp dấu hiệu đọc trên dòng FAIL và sáu dòng sau nó trong nhật ký, theo thứ tự: lich-su · duong-dan · ten-doi · khac;
-bộ thoát khác 0 mà không in ca đỏ nào → một mục lớp bo-chay.
+Lớp dấu hiệu đọc trên dòng FAIL và tới sáu dòng trước, sáu dòng sau nó trong nhật ký, theo thứ tự: lich-su · duong-dan · ten-doi · khac;
+bộ thoát khác 0 mà không in ca đỏ nào → một mục lớp bo-chay; ca rơi vào «khac» mà tệp kiểm chứa nó có lỗi đường dẫn →
+lớp cung-tep (thường là ca chạy theo ca đã đỏ — đối chứng dương, ca thông điệp).
 """
 import datetime, json, os, re, sys
 
@@ -16,7 +17,7 @@ from tach import ca_do, SUITES  # noqa: E402
 TEN_CU = ['acceptance-gate-kit', 'dieu-phoi', 'road-map', 'tri-thuc', 'cat-luot', 'gom-tin-hieu']
 LOP = [
     ('lich-su', re.compile(r'not a valid object name|not a tree object|unknown revision|bad revision|ambiguous argument')),
-    ('duong-dan', re.compile(r'ENOENT|No such file|Cannot find module|MODULE_NOT_FOUND|not found|không tìm thấy|không có tệp|khong co tep|can\'t open file|cannot open')),
+    ('duong-dan', re.compile(r'\b(got|exit|mã|ma|code)[ :=]*127\b|\b127 !==|!== 127\b|\[127\]|command not found|ENOENT|No such file|Cannot find module|MODULE_NOT_FOUND|not found|không tìm thấy|không có tệp|khong co tep|can\'t open file|cannot open')),
     ('ten-doi', re.compile('|'.join(re.escape(t) for t in TEN_CU))),
 ]
 CHE = [(re.compile(r'/(?:private/)?var/folders/\S+'), '<tmp>'), (re.compile(r'/(?:private/)?tmp/\S+'), '<tmp>')]
@@ -48,15 +49,20 @@ def rc(thu, ban):
 
 
 def boi_canh(dong, mau):
-    """Dòng FAIL + sáu dòng sau nó trong nhật ký (chữ để chia lớp)."""
+    """Dòng FAIL và tới sáu dòng sau nó; không có dòng lỗi nào sau thì tới sáu dòng trước nó (dừng ở dòng kết quả ca khác) — chữ để chia lớp."""
     goc = mau.strip()[:80]
-    ke = re.compile(r'^\s*(FAIL|PASS|ok |not ok |[✗×✓])')
+    ke = re.compile(r'^\s*(FAIL|PASS|ok |not ok |[✗×✓])|^\s*(===|---) .+ (===|---)\s*$')
     for i, d in enumerate(dong):
         if goc and goc in d:
             j = i + 1
             while j < len(dong) and j < i + 7 and not ke.match(dong[j]):
                 j += 1
-            return '\n'.join(dong[i:j])
+            if j > i + 1 and any(x.strip() and not re.match(r'^\s*(===|---)', x) for x in dong[i + 1:j]):
+                return '\n'.join(dong[i:j])
+            h = i  # không có dòng lỗi sau FAIL: bộ chạy bash in đầu ra TRƯỚC dòng FAIL — lấy tới dòng kết quả ca liền trước
+            while h > 0 and h > i - 7 and not ke.match(dong[h - 1]):
+                h -= 1
+            return '\n'.join(dong[i:i + 1] + dong[h:i])
     return mau
 
 
@@ -67,10 +73,25 @@ def lop_cua(chu):
     return 'khac'
 
 
+def doan_tep(dong, mau):
+    """Đoạn nhật ký của tệp kiểm chứa ca (giữa hai dòng tiêu đề «=== <tệp> ===»)."""
+    goc = mau.strip()[:80]
+    i = next((k for k, d in enumerate(dong) if goc and goc in d), None)
+    if i is None:
+        return ''
+    h = i
+    while h > 0 and not re.match(r'^\s*(===|---) .+ (===|---)\s*$', dong[h]):
+        h -= 1
+    j = i + 1
+    while j < len(dong) and not re.match(r'^\s*(===|---) .+ (===|---)\s*$', dong[j]):
+        j += 1
+    return '\n'.join(dong[h:j]) if h > 0 or re.match(r'^\s*(===|---) .+ (===|---)\s*$', dong[0] if dong else '') else ''
+
+
 def main():
     thu, nguon, cay_moi = sys.argv[1:4]
     rcA, rcB = rc(thu, 'A'), rc(thu, 'B')
-    so = {'nguon': nguon, 'cay_moi': cay_moi, 'bo': {}, 'lop': {k: 0 for k in ['duong-dan', 'ten-doi', 'lich-su', 'bo-chay', 'khac']}, 'mau': {}}
+    so = {'nguon': nguon, 'cay_moi': cay_moi, 'bo': {}, 'lop': {k: 0 for k in ['duong-dan', 'cung-tep', 'ten-doi', 'lich-su', 'bo-chay', 'khac']}, 'mau': {}}
     for bo in SUITES:
         a, _ = doc(thu, 'A', bo)
         b, dongB = doc(thu, 'B', bo)
@@ -82,6 +103,8 @@ def main():
         for k in them:
             chu = che(boi_canh(dongB, b[k]))
             l = lop_cua(chu)
+            if l == 'khac' and dict(LOP)['duong-dan'].search(doan_tep(dongB, b[k])):
+                l = 'cung-tep'  # ca không tự in lỗi đường dẫn, nhưng tệp kiểm chứa nó có — thường là ca chạy theo ca đã đỏ
             lop[l] = lop.get(l, 0) + 1
             so['mau'].setdefault(l, [])
             if len(so['mau'][l]) < 3:
@@ -114,6 +137,10 @@ def main():
     p('sáu bước của việc `tests` (`migration/b0/chay.sh`). Khoá ca như đo thử B0. «Đỏ thêm» = đỏ ở cây mới mà không đỏ ở cây cũ;')
     p('ca đỏ ở cả hai cây là nợ có sẵn hoặc chập chờn, không tính cho đổi bố cục.')
     p('')
+    p('**Giới hạn:** lớp chia theo CHỮ của nhật ký (dòng FAIL và vài dòng quanh nó), không chạy lại từng ca. «Tên đổi» có thể')
+    p('đếm nhầm ca in danh sách tên hồ sơ có chứa tên cũ; «cùng tệp» là ca không tự in lỗi đường dẫn nhưng tệp kiểm chứa nó có —')
+    p('thường là ca chạy theo ca đã đỏ. Một lượt đo mỗi cây trên một máy.')
+    p('')
     p('| Bộ | Mã thoát cũ | Mã thoát mới | Đỏ cây cũ | Đỏ cây mới | Đỏ cả hai | Đỏ thêm | Chỉ đỏ ở cây cũ |')
     p('|---|---|---|---|---|---|---|---|')
     for bo, v in so['bo'].items():
@@ -122,7 +149,7 @@ def main():
     p('')
     p('## Đỏ thêm theo lớp dấu hiệu')
     p('')
-    ten_lop = {'duong-dan': 'đường dẫn không còn', 'ten-doi': 'tên đổi', 'lich-su': 'dựng bản cũ từ lịch sử', 'bo-chay': 'bộ chạy không chạy được', 'khac': 'khác'}
+    ten_lop = {'duong-dan': 'đường dẫn không còn', 'cung-tep': 'cùng tệp kiểm có lỗi đường dẫn', 'ten-doi': 'tên đổi', 'lich-su': 'dựng bản cũ từ lịch sử', 'bo-chay': 'bộ chạy không chạy được', 'khac': 'khác'}
     p('| Lớp | Số ca | ' + ' | '.join(SUITES) + ' |')
     p('|---|---|' + '---|' * len(SUITES))
     for l, n in so['lop'].items():
