@@ -1,38 +1,7 @@
 {
   "feature_plain": "Một lệnh dựng sẵn kho mới delivery-loop từ nhánh chính kho cũ: sản phẩm vào thư mục riêng của từng plugin, tên mới, khuôn chuẩn kho. Chạy lại lúc nào cũng ra đúng cây ấy, và có số đo bộ kiểm đỏ bao nhiêu cho vòng sau.",
-  "will_do": [
-    {"id": "AC-1", "p": "Sẽ cho ra đúng cùng một kết quả (cùng mã commit, cùng mã cây) khi chạy hai lần trên cùng nguồn, kể cả hai lần ở hai ngày khác nhau."},
-    {"id": "AC-2", "p": "Sẽ chỉ thêm năm commit dọn nhà lên trên nhánh chính kho cũ, vào đúng một nhánh trên máy; main, chuyen-nha, nhánh kho cũ và thư mục đang làm không đổi. Kho cũ đi thêm thì chạy lại vào cùng nhánh được."},
-    {"id": "AC-3", "p": "Sẽ đặt mỗi tệp sản phẩm (632 tệp hôm nay) vào đúng một chỗ trong plugins/<tên>/; mọi tệp khác giữ nguyên chỗ."},
-    {"id": "AC-4", "p": "Sẽ chỉ đổi chữ theo các luật đã khai; một bảng chuỗi viết trước chứng minh tên script nội bộ, tên hồ sơ và tên kho tri thức không bị đổi nhầm."},
-    {"id": "AC-5", "p": "Sẽ cho chợ plugin tên delivery-loop, đủ sáu plugin, mỗi plugin một thư mục riêng, ba plugin mang tên mới (dispatch, roadmap, knowledge), qua bộ kiểm tệp khai của Claude Code."},
-    {"id": "AC-6", "p": "Sẽ cho một phiên Claude Code thật nạp đủ sáu plugin, mọi lệnh và skill, ba tác tử như kho cũ, sau khi đổi qua bảng tên — không mất, không thừa."},
-    {"id": "AC-7", "p": "Sẽ đổi mọi chỗ sản phẩm trỏ sang tài liệu hay bộ kiểm thành đường dẫn đầy đủ tới kho cũ (công khai), để bản cài không còn con trỏ treo."},
-    {"id": "AC-8", "p": "Sẽ áp khuôn Repo Standards 0.5.0 sau khi đổi bố cục, chỉ thêm hay sửa đúng bảy tệp được phép, không nhận skill xét duyệt của khuôn, và điểm chấm kho hết lỗi «plugin lõi lấy cả kho làm nguồn»."},
-    {"id": "AC-10", "p": "Sẽ ghi một báo cáo: chạy bộ kiểm của kit trên cây cũ và cây mới, đỏ thêm bao nhiêu ca ở từng bộ, chia theo nguyên nhân, kèm dòng mẫu — đầu vào chia việc cho vòng B2."}
+  "decisions": [
+    {"id": "E10j", "q": "Báo cáo lớp đỏ đã đủ để vòng B2 chia việc chưa?", "why": "Lượt chấm 2 thấy lớp «khác» chiếm 69 % ở bộ plugins; bản sửa sau lượt ấy hạ còn 13/157 và thêm dòng mẫu cho từng bộ — chưa được chấm lại."}
   ],
-  "wont_do": [
-    {"id": "AC-9", "p": "Chặn: nguồn có thư mục lạ, luật đổi tên không khớp chỗ nào, hay khuôn xung đột thì dừng, gọi tên chỗ hỏng và không đụng tới nhánh."},
-    {"id": "OOS-1", "p": "Sẽ KHÔNG làm bộ kiểm xanh trên kho mới — đó là vòng B2."},
-    {"id": "OOS-2", "p": "Sẽ KHÔNG sửa bảy chỗ plugin lõi gọi thẳng plugin điều phối — sửa ở kho cũ, một vòng riêng trước ngày cắt."},
-    {"id": "OOS-3", "p": "Sẽ KHÔNG đổi số phiên bản — số 3.0 cắt ở mốc 3.0."},
-    {"id": "OOS-4", "p": "Sẽ KHÔNG đẩy nhánh dọn nhà lên GitHub, không đổi cài đặt GitHub nào."},
-    {"id": "OOS-5", "p": "Sẽ KHÔNG viết lại tài liệu (README song ngữ, tệp luật kho, ADR, nhật ký) ngoài đổi tên có neo."},
-    {"id": "OOS-6", "p": "Sẽ KHÔNG sửa kho cũ hay hai kho tiêu thụ."}
-  ],
-  "coverage_plain": [
-    {"i": 0, "p": "Mọi lớp tệp đều có chỗ: sản phẩm lõi, plugin con, tệp chưa rõ, tài liệu đã khai, cấu hình kho, phần không phải sản phẩm — đo bằng sổ kiểm kê (AC-3, AC-4, AC-7)."},
-    {"i": 1, "p": "Mọi phép biến đổi đều có thước: dời (AC-3), đổi tên (AC-4, AC-5, AC-6), con trỏ (AC-7), khuôn (AC-8), giữ nguyên (AC-3, AC-4)."},
-    {"i": 2, "p": "Mọi thuộc tính phải giữ đều có thước: cùng kết quả khi chạy lại (AC-1), không chạm nhánh khác (AC-2), đủ một chỗ (AC-3), nạp được trong phiên thật (AC-6), dừng khi nguồn lạ (AC-9)."},
-    {"i": 3, "p": "Bốn tình huống chạy: lần đầu, chạy lại cùng nguồn (AC-1), kho cũ đi thêm (AC-2), nguồn hỏng (AC-9)."},
-    {"i": 4, "p": "Số đo cho vòng sau: bộ kiểm đỏ thêm bao nhiêu vì đổi bố cục (AC-10)."},
-    {"i": 5, "p": "Giả định chờ anh gạch: bố cục plugins/<tên>/ là bố cục chợ plugin mà Claude Code nhận — AC-5 và AC-6 kiểm thẳng điều này."}
-  ],
-  "gap_probe_plain": [
-    {"i": 0, "p": "Cách xếp 22 tệp chưa rõ là việc người phải quyết, nhưng máy đã tự quyết. Đã chuyển thành Hỏi-4."},
-    {"i": 1, "p": "Lý do cố định tác giả và ngày commit là lập luận vòng. Đã tách làm hai phần: ngày cho khuôn vẫn bắt buộc để cây giống nhau, còn tác giả và ngày commit chuyển thành Hỏi-5."},
-    {"i": 2, "p": "Khuôn có thể chạm tệp luật của kit mà không thước nào thấy. Đã sửa: commit khuôn chỉ được đụng bảy tệp có tên, đụng tệp khác thì đỏ."},
-    {"i": 3, "p": "Thước đổi chữ có thể tự chấm chính nó. Đã sửa: thước dùng mã riêng, kèm bảng chuỗi phải đổi và chuỗi phải giữ viết trước."},
-    {"i": 4, "p": "Chưa đo trường hợp chạy ở hai ngày khác nhau và trường hợp chạy lại sau khi kho cũ đổi. Đã thêm hai ca kiểm."}
-  ]
+  "analyst_plain": "Không eval nào có bản trước vòng để so: mọi tệp đo đều mới ở vòng này."
 }
