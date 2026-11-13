@@ -20,7 +20,7 @@ import { chayThu, dungCay, soSanh, moiTruongTach } from '../chay-thu-phien/chay-
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const KHO = path.resolve(DAY, '..', '..');
 const BANG_XEP = path.join(DAY, 'bang-xep.json');
-const NHANH = ['don-nha/thuoc-a', 'don-nha/thuoc-b'];
+const NHANH = [`don-nha/thuoc-${process.pid}-a`, `don-nha/thuoc-${process.pid}-b`];
 
 const git = (args, cwd = KHO) => execFileSync('git', ['-C', cwd, ...args], { encoding: 'utf8', maxBuffer: 1 << 30, stdio: ['ignore', 'pipe', 'pipe'] });
 const loi = [];
@@ -99,7 +99,16 @@ function chinh(bx, S) {
   const khac = soHaiLan(KHO, NHANH[0], NHANH[1]);
   if (khac) loi.push(khac);
   else ra(`AC-1 đạt: hai lần chạy cùng commit ${git(['rev-parse', NHANH[0]]).trim()} cùng cây ${git(['rev-parse', `${NHANH[0]}^{tree}`]).trim()}`);
-  const doiRef = soChup(truoc, chupKho(KHO), NHANH[0]).filter(l => l !== `ref không phải đích bị đổi: refs/heads/${NHANH[1]}`);
+  // Lượt chấm có thể chạy việc khác trên cùng kho (đường nền tạo cây làm việc, eval khác tạo nhánh): ở nguồn thật chỉ
+  // tính ref ĐÃ CÓ từ trước bị đổi hay mất, và cây làm việc tạm của kịch bản (đường chứa «don-nha-») còn sót lại.
+  // Fixture (KB-AC2) giữ phép so chặt trọn ảnh chụp.
+  const sau = chupKho(KHO);
+  const doiRef = soChup(truoc, sau, NHANH[0]).filter(l => {
+    const m = l.match(/^ref không phải đích bị đổi: (.+)$/);
+    if (m) return m[1] !== `refs/heads/${NHANH[1]}` && truoc.refs.has(m[1]);
+    if (l === 'danh sách cây làm việc bị đổi') return /\/don-nha-[^/\n]*\/cay\b/.test(sau.worktree);
+    return true;
+  });
   const tieuDe = git(['log', '--reverse', '--format=%s', `${S}..${NHANH[0]}`]).trim().split('\n');
   const dungTieuDe = tieuDe.length === 5 && tieuDe.every((t, i) => t.startsWith(`dọn nhà ${i + 1}/5: `)) && git(['rev-parse', `${NHANH[0]}~5`]).trim() === S;
   if (!dungTieuDe) loi.push(`nhánh đích không phải nguồn + 5 commit dọn nhà: ${tieuDe.join(' | ')}`);
@@ -129,6 +138,21 @@ function phien(bx, S) {
     else loi.push('AC-6: chạy thử phiên thật lệch');
   } finally { fs.rmSync(cayCu, { recursive: true, force: true }); fs.rmSync(cayMoi, { recursive: true, force: true }); }
 }
+
+// Ba chế độ chạy lần lượt (khoá trong thư mục git chung): cùng kịch bản, cùng kho, cùng tên chợ.
+function giuKhoa() {
+  const khoa = path.join(git(['rev-parse', '--git-common-dir']).trim().replace(/^(?!\/)/, KHO + '/'), 'thuoc-that.lock');
+  const han = Date.now() + 40 * 60 * 1000;
+  for (;;) {
+    try { fs.mkdirSync(khoa); break; } catch {
+      if (Date.now() > han) khongDoc(`chờ khoá quá 40 phút: ${khoa}`);
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2000);
+    }
+  }
+  return () => fs.rmSync(khoa, { recursive: true, force: true });
+}
+const nhaKhoa = giuKhoa();
+process.on('exit', nhaKhoa);
 
 const bx = JSON.parse(fs.readFileSync(BANG_XEP, 'utf8'));
 const S = git(['rev-parse', `${bx.nguon_mac_dinh}^{commit}`]).trim();
