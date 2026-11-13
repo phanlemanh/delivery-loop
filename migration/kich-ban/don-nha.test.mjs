@@ -361,3 +361,42 @@ test('KB-AC4-ten-tu-khai', () => {
   assert.ok(git(f.kho, ['show', 'don-nha/a:plugins/dispatch/types/index.d.ts']).includes("'dispatch': { khung: K }"));
   assert.deepEqual(kiemCho({ kho: f.kho, nguon: f.nguon, dich: 'don-nha/a', bangXep: f.bangXep }).loi, []);
 });
+
+// ── AC-10 — phép chia lớp (phan-lop.py) và phép đối chiếu báo cáo (lop-do.mjs) trên nhật ký giả ──────────────────
+import { kiemSoLieu } from './lop-do.mjs';
+
+function nhatKyGia() {
+  const T = moTam('kb-lop-do-');
+  const ghi = (ban, bo, chu) => { fs.mkdirSync(path.join(T, 'out', ban), { recursive: true }); fs.writeFileSync(path.join(T, 'out', ban, bo + '.log'), chu); };
+  const rc = (ban, m) => fs.writeFileSync(path.join(T, 'out', ban, 'ketqua.tsv'), Object.entries(m).map(([b, r]) => `${b}\t${r}\t1`).join('\n') + '\nXONG\n');
+  ghi('A', 'scripts', 'PASS: X0\nFAIL: X1 — chập chờn\n');
+  ghi('B', 'scripts', 'FAIL: X1 — chập chờn\nFAIL: X2 — đọc tệp\n  Error: Cannot find module \'/kho/scripts/a.mjs\'\nFAIL: X3 — bản cũ\n  fatal: not a valid object name v2.24.0\nFAIL: X4 — chợ\n  không thấy plugin acceptance-gate-kit\nFAIL: X5 — lạ\n  sai số 3\n');
+  ghi('A', 'ban-do', 'PRODUCT-MAP.md khớp hồ sơ xưởng.\n');
+  ghi('B', 'ban-do', 'node: không chạy được\n');
+  rc('A', { scripts: 1, 'ban-do': 0 }); rc('B', { scripts: 1, 'ban-do': 1 });
+  return T;
+}
+const S40 = 'a'.repeat(40), C40 = 'b'.repeat(40);
+const chayPhanLop = (T) => spawnSync('python3', [path.join(DAY, 'phan-lop.py'), T, S40, C40], { encoding: 'utf8' });
+
+test('KB-AC10-phan-lop', () => {
+  const r = chayPhanLop(nhatKyGia());
+  assert.equal(r.status, 0, r.stderr);
+  const { loi, so } = kiemSoLieu(r.stdout);
+  assert.deepEqual(loi, []);
+  assert.deepEqual(so.bo.scripts.lop, { 'duong-dan': 1, 'lich-su': 1, 'ten-doi': 1, khac: 1 });
+  assert.equal(so.bo.scripts.do_ca_hai, 1);
+  assert.equal(so.bo['ban-do'].lop['bo-chay'], 1);
+  assert.equal(so.tong_do_them, 5);
+  assert.match(r.stdout, /\| scripts \| 1 \| 1 \| 1 \| 5 \| 1 \| 4 \| 0 \|/);
+});
+
+test('KB-AC10-do-so-hoc', () => {
+  const chu = chayPhanLop(nhatKyGia()).stdout;
+  const hong = chu.replace('| scripts | 1 | 1 | 1 | 5 | 1 | 4 | 0 |', '| scripts | 1 | 1 | 1 | 5 | 1 | 3 | 0 |');
+  assert.notEqual(hong, chu);
+  assert.ok(kiemSoLieu(hong).loi.includes('bảng chữ lệch khối số liệu ở bộ scripts'));
+  const hong2 = chu.replace('"tong_do_them": 5', '"tong_do_them": 6');
+  assert.notEqual(hong2, chu);
+  assert.ok(kiemSoLieu(hong2).loi.some(l => l.startsWith('tổng đỏ thêm lệch')));
+});

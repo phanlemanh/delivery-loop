@@ -38,8 +38,8 @@ function banKeoRs(bx) {
   return d;
 }
 
-function donNha(nhanh, rs) {
-  const r = spawnSync(process.execPath, [path.join(DAY, 'don-nha.mjs'), '--kho', KHO, '--nhanh', nhanh, '--repo-standards', rs], { encoding: 'utf8' });
+function donNha(nhanh, rs, nguon) {
+  const r = spawnSync(process.execPath, [path.join(DAY, 'don-nha.mjs'), '--kho', KHO, '--nhanh', nhanh, '--repo-standards', rs, ...(nguon ? ['--nguon', nguon] : [])], { encoding: 'utf8' });
   if (r.status !== 0) { loi.push(`kịch bản thoát ${r.status}: ${r.stderr.trim()}`); return null; }
   return r.stdout.trim().split('\n').pop();
 }
@@ -134,7 +134,7 @@ const bx = JSON.parse(fs.readFileSync(BANG_XEP, 'utf8'));
 const S = git(['rev-parse', `${bx.nguon_mac_dinh}^{commit}`]).trim();
 ra(`nguồn: ${S} (${bx.nguon_mac_dinh})`);
 try {
-  if (process.argv.includes('--lop-do')) (await import('./lop-do.mjs')).kiemLopDo({ kho: KHO, S, ra, loi, donNha: (n) => donNha(n, banKeoRs(bx)), nhanh: NHANH[0] });
+  if (process.argv.includes('--lop-do')) (await import('./lop-do.mjs')).kiemLopDo({ kho: KHO, S, ra, loi, donNha: (n, nguon) => donNha(n, banKeoRs(bx), nguon), nhanh: NHANH[0] });
   else if (process.argv.includes('--phien')) phien(bx, S);
   else chinh(bx, S);
 } finally {
