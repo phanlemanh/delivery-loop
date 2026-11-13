@@ -30,7 +30,7 @@ const git = (cwd, args, env) => execFileSync('git', ['-C', cwd, ...args], {
 
 function doiSo(argv) {
   const a = { kho: path.join(DAY, '..', '..'), bangXep: path.join(DAY, 'bang-xep.json') };
-  const khoa = { '--kho': 'kho', '--nguon': 'nguon', '--nhanh': 'nhanh', '--bang-xep': 'bangXep', '--repo-standards': 'rs' };
+  const khoa = { '--kho': 'kho', '--nguon': 'nguon', '--nhanh': 'nhanh', '--bang-xep': 'bangXep', '--repo-standards': 'rs', '--ra': 'ra' };
   for (let i = 0; i < argv.length; i++) {
     const k = khoa[argv[i]];
     if (!k || argv[i + 1] === undefined) return null;
@@ -80,6 +80,7 @@ function thayMotLan(s, cu, moi, noi) {
 
 // ── Bước 2: tệp khai chợ và plugin (sửa chữ, giữ nguyên định dạng) ─────────────────────────────────────────────────
 function buoc2TepKhai(wt, bx) {
+  const dichPlugin = {};
   const tepCho = path.join(wt, '.claude-plugin/marketplace.json');
   let s = fs.readFileSync(tepCho, 'utf8');
   const cho = JSON.parse(s);
@@ -88,6 +89,7 @@ function buoc2TepKhai(wt, bx) {
     const nguon = path.posix.normalize(p.source).replace(/^\.\/?/, '').replace(/\/$/, '');
     const dich = nguon === '' || nguon === '.' ? gocLoi(bx) : bx.thu_muc[nguon];
     if (!dich) dung(`nguồn plugin chưa xếp: ${p.name} (${p.source})`);
+    dichPlugin[p.name] = dich;
     s = thayMotLan(s, `"source": "${p.source}"`, `"source": "./${dich}"`, 'marketplace.json');
     const moi = bx._bangTen.plugin[p.name];
     if (moi) {
@@ -97,9 +99,63 @@ function buoc2TepKhai(wt, bx) {
     }
   }
   fs.writeFileSync(tepCho, s);
+  return dichPlugin;
 }
 
-export function chay({ kho, nguon, nhanh, bangXep, rs }) {
+// ── Bước 3: đổi tên theo bảng tên (tên tệp lệnh, thư mục skill, chữ có neo) ───────────────────────────────────────
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const laChu = (buf) => !buf.subarray(0, 8192).includes(0);
+
+// Luật đổi chữ theo thứ tự áp. `khoa` = mục của bảng tên mà luật phục vụ (để đếm «0 chỗ»).
+export function luatDoiChu(bx) {
+  const L = [];
+  for (const [cu, moi] of Object.entries(bx._bangTen.lenh)) L.push({ khoa: cu, re: new RegExp(`(?<![\\w-])${esc(cu)}(?![\\w-])`, 'g'), thay: moi });
+  for (const [p, q] of Object.entries(bx._bangTen.plugin)) {
+    L.push({ khoa: p, re: new RegExp(`(?<![\\w-])${esc(p)}:(?=[a-z])`, 'g'), thay: `${q}:` });
+    L.push({ khoa: p, re: new RegExp(`(?<![\\w-])${esc(p)}@`, 'g'), thay: `${q}@` });
+    L.push({ khoa: p, re: new RegExp(`--plugin ${esc(p)}(?![\\w-])`, 'g'), thay: `--plugin ${q}` });
+  }
+  L.push({ khoa: bx.cho_moi.ten_cu, re: new RegExp(bx.luat_cho.mau, 'g'), thay: bx.luat_cho.thay });
+  return L;
+}
+
+function buoc3DoiTen(wt, bx, dichPlugin) {
+  const dem = new Map(); // khoá bảng tên → số chỗ
+  const cong = (k, n = 1) => dem.set(k, (dem.get(k) || 0) + n);
+  for (const p of Object.keys(bx._bangTen.plugin)) if (dichPlugin[p]) cong(p);   // thư mục + tệp khai đã đổi ở bước 1–2
+  cong(bx.cho_moi.ten_cu);                                                        // tên chợ đã đổi ở bước 2
+  for (const [cu, moi] of Object.entries(bx._bangTen.lenh)) {
+    const [pc, lc] = cu.split(':'); const lm = moi.split(':')[1];
+    const D = dichPlugin[pc];
+    if (!D) dung(`luật trỏ plugin không có: ${cu}`);
+    const cmd = `${D}/commands/${lc}.md`; const sk = `${D}/skills/${lc}`;
+    if (fs.existsSync(path.join(wt, cmd))) { git(wt, ['mv', cmd, `${D}/commands/${lm}.md`]); cong(cu); }
+    else if (fs.existsSync(path.join(wt, sk))) {
+      git(wt, ['mv', sk, `${D}/skills/${lm}`]); cong(cu);
+      const tep = path.join(wt, D, 'skills', lm, 'SKILL.md');
+      const nd = fs.readFileSync(tep, 'utf8'); const re = new RegExp(`^name: ${esc(lc)}$`, 'm');
+      if (re.test(nd)) { fs.writeFileSync(tep, nd.replace(re, `name: ${lm}`)); cong(cu); }
+    }
+  }
+  const L = luatDoiChu(bx);
+  const tap = [...git(wt, ['ls-files', '-z', 'plugins']).split('\0').filter(Boolean), ...bx.tai_lieu_doi_chu.filter(t => fs.existsSync(path.join(wt, t)))];
+  const so = [];
+  for (const t of tap) {
+    const buf = fs.readFileSync(path.join(wt, t)); if (!laChu(buf)) continue;
+    let nd = buf.toString('utf8'); const goc = nd;
+    for (const l of L) {
+      const n = (nd.match(l.re) || []).length;
+      if (n) { nd = nd.replace(l.re, l.thay); cong(l.khoa, n); so.push([l.khoa, t, n]); }
+    }
+    if (nd !== goc) fs.writeFileSync(path.join(wt, t), nd);
+  }
+  for (const k of [...Object.keys(bx._bangTen.lenh), ...Object.keys(bx._bangTen.plugin), bx.cho_moi.ten_cu]) {
+    if (!dem.get(k)) dung(`luật không khớp chỗ nào: ${k}`);
+  }
+  return so;
+}
+
+export function chay({ kho, nguon, nhanh, bangXep, rs, ra }) {
   const bx = docBangXep(bangXep);
   nguon = nguon || bx.nguon_mac_dinh;
   nhanh = nhanh || bx.nhanh_mac_dinh;
@@ -120,13 +176,17 @@ export function chay({ kho, nguon, nhanh, bangXep, rs }) {
   try {
     const commit = (tieuDe) => { git(wt, ['add', '-A']); git(wt, ['-c', 'commit.gpgsign=false', 'commit', '-q', '--allow-empty', '-m', tieuDe], env); };
     buoc1Doi(wt, bx); commit('dọn nhà 1/5: dời sản phẩm vào plugins/<tên>/');
-    buoc2TepKhai(wt, bx); commit('dọn nhà 2/5: tệp khai chợ và plugin');
-    commit('dọn nhà 3/5: đổi tên theo bảng tên');
+    const dichPlugin = buoc2TepKhai(wt, bx); commit('dọn nhà 2/5: tệp khai chợ và plugin');
+    const soDoiChu = buoc3DoiTen(wt, bx, dichPlugin); commit('dọn nhà 3/5: đổi tên theo bảng tên');
     commit('dọn nhà 4/5: con trỏ sang kho cũ');
     commit('dọn nhà 5/5: khuôn Repo Standards');
     const dinh = git(wt, ['rev-parse', 'HEAD']).trim();
     const cay = git(wt, ['rev-parse', 'HEAD^{tree}']).trim();
     git(kho, ['update-ref', REF_DICH, dinh]);
+    if (ra) {
+      fs.mkdirSync(ra, { recursive: true });
+      fs.writeFileSync(path.join(ra, 'doi-chu.tsv'), ['# máy sinh bởi migration/kich-ban/don-nha.mjs từ ' + S, 'luat\ttep\tso', ...soDoiChu.map(r => r.join('\t'))].join('\n') + '\n');
+    }
     return { nguon: S, commit: dinh, cay };
   } finally {
     try { git(kho, ['worktree', 'remove', '--force', wt]); } catch { /* đã gỡ */ }

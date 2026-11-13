@@ -13,6 +13,8 @@
 // Thoát: 0 đạt (in các dòng «AC-<n> đạt: …») · 1 có lỗi (mỗi lỗi một dòng stderr) · 2 sai đối số.
 
 import fs from 'node:fs';
+import os from 'node:os';
+import { isDeepStrictEqual } from 'node:util';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -38,14 +40,107 @@ export function dichCua(t, bx) {
   return t;
 }
 
-function ac3(kk, cayMoi, bx) {
+// ── AC-4: nội dung chỉ đổi bởi luật đã khai (phép áp luật CÀI LẠI ở đây) ───────────────────────────────────────
+const thoat = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function luatRieng(bx) {
+  const L = [];
+  for (const [a, b] of Object.entries(bx.ten.lenh)) L.push([a, new RegExp('(?<![\\w-])' + thoat(a) + '(?![\\w-])', 'g'), b]);
+  for (const [p, q] of Object.entries(bx.ten.plugin)) {
+    L.push([p, new RegExp('(?<![\\w-])' + thoat(p) + ':(?=[a-z])', 'g'), q + ':']);
+    L.push([p, new RegExp('(?<![\\w-])' + thoat(p) + '@', 'g'), q + '@']);
+    L.push([p, new RegExp('--plugin ' + thoat(p) + '(?![\\w-])', 'g'), '--plugin ' + q]);
+  }
+  L.push([bx.cho_moi.ten_cu, new RegExp(bx.luat_cho.mau, 'g'), bx.luat_cho.thay]);
+  return L;
+}
+const apLuat = (s, L) => L.reduce((x, [, re, thay]) => x.replace(re, thay), s);
+const laChu = (b) => !b.subarray(0, 8192).includes(0);
+const CHUOI_GIU = ['dieu-phoi.mjs', 'cat-luot.mjs', 'acceptance-gate-kit-tri-thuc'];
+
+function giaiNen(kho, ref) {
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), 'kiem-cho-'));
+  execFileSync('sh', ['-c', 'git -C "$1" archive "$2" | tar -x -C "$3"', 'sh', kho, ref, d], { maxBuffer: 1 << 30 });
+  return d;
+}
+
+// Thư mục đích của từng plugin cũ, đọc từ tệp khai của NGUỒN.
+function dichPluginCua(choNguon, bx) {
+  const m = {};
+  for (const p of choNguon.plugins) {
+    const src = path.posix.normalize(p.source).replace(/^\.\/?/, '').replace(/\/$/, '');
+    m[p.name] = src === '' || src === '.' ? path.posix.dirname(path.posix.dirname(bx.tep['.claude-plugin/plugin.json'])) : bx.thu_muc[src];
+  }
+  return m;
+}
+
+// Đích sau bước 1 + đổi tên tệp lệnh / thư mục skill của bước 3.
+function dichDayDu(t, bx, dp) {
+  let d = dichCua(t, bx);
+  for (const [a, b] of Object.entries(bx.ten.lenh)) {
+    const [pa, la] = a.split(':'); const lb = b.split(':')[1]; const D = dp[pa]; if (!D) continue;
+    if (d === `${D}/commands/${la}.md`) d = `${D}/commands/${lb}.md`;
+    else if (d.startsWith(`${D}/skills/${la}/`)) d = `${D}/skills/${lb}/` + d.slice(`${D}/skills/${la}/`.length);
+  }
+  return d;
+}
+
+function ac4(kho, nguon, dich, kk, bx, sua = (t, s) => s) {
+  const loi = [];
+  const L = luatRieng(bx);
+  const A = giaiNen(kho, nguon), B = giaiNen(kho, dich);
+  try {
+    const docA = (t) => fs.readFileSync(path.join(A, t)); const docB = (t) => fs.readFileSync(path.join(B, t));
+    const choNguon = JSON.parse(docA('.claude-plugin/marketplace.json').toString('utf8'));
+    const dp = dichPluginCua(choNguon, bx);
+    const sp = new Set(kk.hang.filter(h => h.lop === 'san-pham' || h.lop === 'chua-ro').map(h => h.tep));
+    const taiLieu = new Set(bx.tai_lieu_doi_chu);
+    const khuonSua = new Set(bx.khuon?.duoc_cham?.sua || []);
+    const skillDoi = new Map(Object.entries(bx.ten.lenh).map(([a, b]) => [a.split(':'), b.split(':')[1]]).filter(([[pa, la]]) => dp[pa]).map(([[pa, la], lb]) => [`${dp[pa]}/skills/${lb}/SKILL.md`, [la, lb]]));
+    const cayMoi = new Set(lsTree(kho, dich)); const daCo = new Set();
+    let n = 0, m = 0; const demGiu = Object.fromEntries(CHUOI_GIU.map(x => [x, [0, 0]]));
+    for (const t of lsTree(kho, nguon)) {
+      const d = sp.has(t) ? dichDayDu(t, bx, dp) : t; daCo.add(d);
+      if (!cayMoi.has(d)) continue; // AC-3 đã báo
+      const a = docA(t), b = docB(d);
+      const doiChu = (sp.has(t) && d.startsWith('plugins/')) || taiLieu.has(t);
+      if (!doiChu) {
+        if (t === '.claude-plugin/marketplace.json' || khuonSua.has(t)) continue; // AC-5 và AC-8 đo
+        if (!a.equals(b)) loi.push(`tệp không phải sản phẩm bị sửa: ${t}`); else m++;
+        continue;
+      }
+      if (!laChu(a)) { if (!a.equals(b)) loi.push(`nội dung lệch luật: ${d}`); else n++; continue; }
+      const sa = a.toString('utf8'), sb = b.toString('utf8');
+      for (const x of CHUOI_GIU) { demGiu[x][0] += sa.split(x).length - 1; demGiu[x][1] += sb.split(x).length - 1; }
+      let ky = sua(t, apLuat(sa, L));
+      if (skillDoi.has(d)) { const [la, lb] = skillDoi.get(d); ky = ky.replace(new RegExp(`^name: ${thoat(la)}$`, 'm'), `name: ${lb}`); }
+      if (/(^|\/)\.claude-plugin\/plugin\.json$/.test(d)) {
+        const o = JSON.parse(ky);
+        const cu = Object.keys(dp).find(k => `${dp[k]}/.claude-plugin/plugin.json` === d);
+        if (cu && bx.ten.plugin[cu]) o.name = bx.ten.plugin[cu];
+        if (!isDeepStrictEqual(o, JSON.parse(sb))) loi.push(`nội dung lệch luật: ${d}`); else n++;
+        continue;
+      }
+      if (ky !== sb) loi.push(`nội dung lệch luật: ${d}`); else n++;
+    }
+    const them = new Set(bx.khuon?.duoc_cham?.them || []);
+    for (const d of cayMoi) if (!daCo.has(d) && !them.has(d)) loi.push(`tệp lạ ở cây mới: ${d}`);
+    for (const [x, [u, v]] of Object.entries(demGiu)) if (u !== v) loi.push(`chuỗi phải giữ đổi số: ${x} ${u}→${v}`);
+    const dong = loi.length ? [] : [
+      `AC-4 đạt: ${n} tệp đúng luật, ${m} tệp không phải sản phẩm giữ nguyên`,
+      'chuỗi phải giữ: ' + CHUOI_GIU.map(x => `${x} ${demGiu[x][0]}→${demGiu[x][1]}`).join(' · '),
+    ];
+    return { loi, dong };
+  } finally { fs.rmSync(A, { recursive: true, force: true }); fs.rmSync(B, { recursive: true, force: true }); }
+}
+
+function ac3(kk, cayMoi, bx, dp) {
   const loi = [];
   const sp = kk.hang.filter(h => h.lop === 'san-pham' || h.lop === 'chua-ro');
   const bo = new Set((bx.bo || []).map(b => b.tep));
   const demDich = new Map();
   for (const h of sp) {
     if (bo.has(h.tep)) continue;
-    const d = dichCua(h.tep, bx);
+    const d = dichDayDu(h.tep, bx, dp);
     demDich.set(d, (demDich.get(d) || 0) + 1);
     if (!cayMoi.has(d)) loi.push(`tệp sản phẩm không có chỗ: ${h.tep}`);
     else if (d !== h.tep && cayMoi.has(h.tep)) loi.push(`tệp sản phẩm hai chỗ: ${h.tep}`);
@@ -85,7 +180,8 @@ export function kiemCho({ kho, nguon, dich, bangXep = path.join(DAY, 'bang-xep.j
   const bx = docBang(bangXep);
   const kk = kiemKe({ kho, ref: nguon, luat });
   const cayMoi = new Set(lsTree(kho, dich));
-  const ket = [ac3(kk, cayMoi, bx), ac5(kho, dich, cayMoi, kk, bx)];
+  const dp = dichPluginCua(JSON.parse(git(kho, ['show', `${nguon}:.claude-plugin/marketplace.json`])), bx);
+  const ket = [ac3(kk, cayMoi, bx, dp), ac4(kho, nguon, dich, kk, bx), ac5(kho, dich, cayMoi, kk, bx)];
   return { loi: ket.flatMap(k => k.loi), dong: ket.flatMap(k => k.dong), kk };
 }
 
