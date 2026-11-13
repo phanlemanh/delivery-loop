@@ -40,12 +40,13 @@ chủ kho.
 | Bảng khác biệt dự kiến trước/sau chuyển nhà — bảng chủ kho dò lúc ký mốc 3.0 (12/11, chủ kho bảo «Lập bảng sự khác biệt dự kiến…»): 10 điều giữ nguyên, 53 điều đổi hay đo (thêm R5–R7 cùng ngày), 13 hàng còn quyết định «mở» (N2, N10, N12, B1, B5, B8, B9, B10, B13, C1, C4, R4, O4) | `KHAC-BIET-DU-KIEN.md` |
 | Ranh giới và điểm nối với Repo Standards (12/11, chủ kho bảo «Kiểm xem repo standards … xác định ranh giới và điểm nối»): hai bên không gọi nhau lúc chạy, nối qua tệp; `doctor` 55/100 trên cây hôm nay; một va cứng — `/repo-setup:github` luôn đặt chỉ gộp dồn | `NOI-REPO-STANDARDS.md` · `KHAC-BIET-DU-KIEN.md` R2, R5–R7 |
 | Mốc 2.39 cắt ở kho cũ (13/11): PR #500 ký Cổng Bằng chứng, gộp tại `0c4e503b`, thẻ `v2.39.0`, `gate` trên nhánh chính xanh. Đủ ba việc chỉ-bớt — mô tả plugin lõi 84 582 → 424 ký tự, `feature-loop` 34 579 → 299 · `scripts/rel-cua-so.sh` và `lib/eval-yaml.js` đã xoá · `.env` vào `.gitignore`. `main` kho này cập nhật theo, 31 thẻ | `gh pr view 500 --repo phanlemanh/acceptance-gate-kit` · `git rev-parse origin/main kit-cu/main` |
+| **Quỹ hàng cài 2.39** (13/11, chủ kho bảo «Mở PR Quỹ hàng» rồi «Gộp PR»): PR [#246](https://github.com/phanlemanh/onehub-quy-hang/pull/246) gộp tại `f1d123ee` (commit gộp, không gộp dồn); CI nhánh chính Quỹ hàng xanh đủ 7 việc, kể cả `gate` và `deploy`. PR đổi `KIT_TAG` ở **hai** luồng — `ci.yml` và `ghim-lai-ban-that.yml` (luồng sau nằm trong `t3_paths`) — cùng `AGENTS.md`; ghim lại hồ sơ `ghim-lai-ban-that-qua-ci` trên kit 2.39 (làn máy xanh 1,3 phút, chữ ký 08/11 giữ); ca phá thử E2 của hồ sơ ấy thôi ghi cứng thẻ. **Điều kiện thứ nhất của B1 đạt.** Nhánh `chore/nang-kit-v2-39-0` còn trên GitHub (kho không tự xoá nhánh sau gộp) | `git show origin/main:.github/workflows/ci.yml` ở Quỹ hàng: `KIT_TAG: v2.39.0` |
 
 ## Đang dở
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| Quỹ hàng cài 2.39 (nửa sau của việc 3b) | kho `onehub-quy-hang`, PR [#246](https://github.com/phanlemanh/onehub-quy-hang/pull/246), nhánh `chore/nang-kit-v2-39-0`, worktree `~/onehub-quy-hang-nang-kit-2-39` | Chủ kho bảo «Mở PR Quỹ hàng» 13/11. PR đổi `KIT_TAG` ở **hai** luồng (`ci.yml`, `ghim-lai-ban-that.yml` — luồng sau nằm trong `t3_paths`) + `AGENTS.md`; ghim lại hồ sơ `ghim-lai-ban-that-qua-ci` trên kit 2.39 (làn máy xanh, chữ ký 08/11 giữ); sửa ca phá thử E2 của hồ sơ ấy thôi ghi cứng `v2.37.0`. Cổng máy cục bộ sạch. **Còn:** CI xanh, chủ kho gộp. Ở kho này không có việc nào dở. |
+| — | — | Không có việc nào dở. B1 chờ chủ kho gọi tên. |
 
 ## Ghi chú giữ cho B1
 
@@ -144,13 +145,13 @@ và lần chạy trên Mac Studio 12/11 ở `35c1e754`.
 | 1 | Bật quét bí mật + chặn đẩy bí mật, bật tự xoá nhánh sau gộp | kho CŨ, cài đặt GitHub | chủ kho bảo (đổi cài đặt kho) |
 | 2 | ~~R1 — khuôn «kho plugin»~~ — xong 11/11, bản 0.5.0 | `repo-standards` | — |
 | 3 | ~~A1 `luot-kiem-nhe`~~ — xong 12/11, gộp tại `909dffd8` | kho CŨ | — |
-| 3b | **Mốc 2.39** (làn V): ba việc chỉ-bớt + cắt số + một kho tiêu thụ cài. ~~Ba việc + cắt số~~ — xong 13/11, `0c4e503b`, thẻ `v2.39.0`. **Còn: Quỹ hàng cài** (PR đổi `KIT_TAG` sang `v2.39.0`, gộp) | kho CŨ (xong) · kho `onehub-quy-hang` (còn) | chủ kho bảo làm PR ở Quỹ hàng |
+| 3b | ~~**Mốc 2.39** (làn V): ba việc chỉ-bớt + cắt số + một kho tiêu thụ cài~~ — xong 13/11: thẻ `v2.39.0` (`0c4e503b`), Quỹ hàng gộp PR #246 tại `f1d123ee` | — | — |
 | 4 | B1 `kich-ban-chuyen-nha` — kịch bản sinh commit dọn nhà lên trên nhánh chính kho cũ. Đầu vào và các câu còn mở: `BOI-CANH.md`, hai mục «Đầu vào cho B1» | kho này, `migration/` | **hai điều kiện:** mốc 2.39 đã có một kho tiêu thụ cài (việc 3b) · chủ kho gọi đích danh tên vòng (`kich-ban-chuyen-nha` hoặc «B1»; câu giao máy KHÔNG phải gọi tên vòng). Ngoại lệ luật chiều rộng (b), hạn dừng và bảng tên KHÔNG phải điều kiện mở — chủ kho quyết chúng tại Cổng Phạm vi của chính B1 (`KE-HOACH.md` mục 12) |
 | 5 | B2 `bo-kiem-xanh-o-kho-moi` | kho này | sau B1 (B1 đo lớp đỏ do đổi bố cục) |
 | 5b | Repo Standards: `tools/github_setup.py` cho chọn kiểu gộp (hôm nay luôn đặt chỉ gộp dồn — va cứng với luật cấm gộp dồn của kit), và đổi lời trỏ sang `delivery-loop` cùng ca `tests/run.sh:552` | kho `repo-standards` | **sau B1** (chủ kho chọn 12/11, «Để sau B1»); tới lúc đó kho này ở mức `starter` và không chạy `/repo-setup:github` — `NOI-REPO-STANDARDS.md` |
 | 6 | B3 cắt sang — mốc 3.0, Quỹ hàng nhận trước | kho này + kho tiêu thụ | chữ ký của chủ kho |
 
-Việc 2 và 3 đã xong, việc 3b xong nửa kho cũ; B1 còn chờ đúng hai điều: Quỹ hàng gộp PR nâng `KIT_TAG` lên `v2.39.0`, và chủ kho gọi đích danh B1. Các quyết định ở mục dưới không chặn việc mở B1 — chúng được hỏi ở Cổng Phạm vi của B1. Chi tiết, thước đo và ước giờ máy: `KE-HOACH.md` mục 12.
+Việc 2, 3 và 3b đã xong; B1 còn chờ đúng một điều: chủ kho gọi đích danh B1 (hoặc `kich-ban-chuyen-nha`). Các quyết định ở mục dưới không chặn việc mở B1 — chúng được hỏi ở Cổng Phạm vi của B1. Chi tiết, thước đo và ước giờ máy: `KE-HOACH.md` mục 12.
 
 ## Chờ chủ kho (chưa ai được tự quyết)
 
@@ -160,7 +161,7 @@ Việc 2 và 3 đã xong, việc 3b xong nửa kho cũ; B1 còn chờ đúng hai
 4. Chốt hẳn tên `delivery-loop` và bảng tên ở `KE-HOACH.md` mục 3 — quyết tại Cổng Phạm vi của B1.
 5. Ngày cắt sang.
 6. Vòng riêng cho hai tệp máy vẽ — hai hạt giống 16/10 và 30/10.
-7. ~~Gọi tên mốc 2.39 và kho tiêu thụ nhận nó~~ — xong 12/11: kho nhận `onehub-quy-hang`; thẻ cắt 13/11. B1 còn chờ: Quỹ hàng cài 2.39 (chủ kho chọn «Để sau» lúc cắt thẻ) và chủ kho gọi đích danh tên vòng B1.
+7. ~~Gọi tên mốc 2.39 và kho tiêu thụ nhận nó~~ — xong 12/11: kho nhận `onehub-quy-hang`; thẻ cắt 13/11; Quỹ hàng cài 13/11 (PR #246). B1 còn chờ: chủ kho gọi đích danh tên vòng B1.
 10. Khối bọc Node 24 trong `~/.zshrc` (thêm 12/11 cho tác tử chấm của mốc 2.39) — giữ cho B1 hay gỡ. Phiên mốc ghi nó là việc còn treo; B1 cũng chạy bộ kiểm cần Node 24 nên khuyến nghị giữ tới hết B2.
 8. ~~Bảo máy nào giữ đợt từ nay~~ — xong 12/11: Mac Studio.
 9. Cài đặt của kho này trên GitHub trước ngày cắt — xem «Kiểm bàn giao 12/11», mục cài đặt.
@@ -180,6 +181,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 13/11/2026 | Mac Studio | Chủ kho bảo «Mở PR Quỹ hàng» → PR #246 (hai luồng ghim thẻ, ghim lại một hồ sơ T3, sửa một ca phá thử ghi cứng thẻ); cài `gitleaks` lên máy cho móc trước-commit của Quỹ hàng. Chủ kho bảo «Gộp PR» → gộp `f1d123ee`, CI nhánh chính Quỹ hàng xanh. Điều kiện thứ nhất của B1 đạt. |
 | 13/11/2026 | Mac Studio | Mốc 2.39 cắt ở kho cũ (`0c4e503b`, thẻ `v2.39.0`); cập nhật `main` kho này theo. Chủ kho hỏi điều gì đang cản chuyển nhà → đo lại thước B1, thử trước PR nâng Quỹ hàng trên bản sao, chạy lại ba sổ tra soát, chấm lại `doctor` — đoạn «Sẵn sàng cho B1». |
 | 12/11/2026 | Mac Studio | Chủ kho hỏi «Làm thế nào để biết được chuyển nhà thành công?» rồi bảo «Ghi hai thước vào kế hoạch» → B2 giữ đủ khoá ca, ngưỡng thực tế mốc 3.0. Khi ghi, đo ra hồ sơ lượt chấm không ghi phiên bản kit — khai giới hạn. |
 | 12/11/2026 | Mac Studio | Chủ kho bảo «Thêm ca chạy thử phiên thật vào thước B1» → `chay-thu-phien/`, đẩy `35c1e754`. Chạy hai bộ kiểm lớn trên `chuyen-nha`: một đỏ, `MC-11`, do tên kho (đoạn «Bộ kiểm trên Mac Studio»). Rà lại mọi điều kiện dọn nhà theo lời chủ kho. Nâng plugin kit lên 2.38.1 trên máy. |
