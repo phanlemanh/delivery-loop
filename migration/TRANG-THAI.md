@@ -45,7 +45,7 @@ chủ kho.
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| Quỹ hàng cài 2.39 (nửa sau của việc 3b) | kho `onehub-quy-hang` | Thẻ đã cắt 13/11; chủ kho chọn «Để sau» nên chưa có PR nào ở Quỹ hàng. Nhánh chính Quỹ hàng (`eedec225`) còn `KIT_TAG: v2.37.0`. Việc cần làm: một PR đổi dòng ấy thành `v2.39.0`, CI xanh, gộp. Thử trước 13/11 trên bản sao: cổng của kit ở 2.39 chạy sạch như ở 2.37 — đoạn «Sẵn sàng cho B1». Ở kho này không có việc nào dở. |
+| Quỹ hàng cài 2.39 (nửa sau của việc 3b) | kho `onehub-quy-hang`, PR [#246](https://github.com/phanlemanh/onehub-quy-hang/pull/246), nhánh `chore/nang-kit-v2-39-0`, worktree `~/onehub-quy-hang-nang-kit-2-39` | Chủ kho bảo «Mở PR Quỹ hàng» 13/11. PR đổi `KIT_TAG` ở **hai** luồng (`ci.yml`, `ghim-lai-ban-that.yml` — luồng sau nằm trong `t3_paths`) + `AGENTS.md`; ghim lại hồ sơ `ghim-lai-ban-that-qua-ci` trên kit 2.39 (làn máy xanh, chữ ký 08/11 giữ); sửa ca phá thử E2 của hồ sơ ấy thôi ghi cứng `v2.37.0`. Cổng máy cục bộ sạch. **Còn:** CI xanh, chủ kho gộp. Ở kho này không có việc nào dở. |
 
 ## Ghi chú giữ cho B1
 
