@@ -173,3 +173,92 @@ test('KB-AC9-thu-muc', () => {
   assert.match(r.stderr, /thư mục gốc chưa xếp: la/);
   assert.ok(!coRef(f.kho, 'refs/heads/don-nha/3.0'));
 });
+
+// ── AC-4 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+// Ma trận VIẾT TRƯỚC, không rút từ bảng xếp: năm chuỗi phải đổi, năm chuỗi phải giữ nguyên byte.
+const PHAI_DOI = [
+  ['/dieu-phoi:mo-dot', '/dispatch:open'],
+  ['dieu-phoi@acceptance-gate-kit', 'dispatch@delivery-loop'],
+  ['--plugin dieu-phoi', '--plugin dispatch'],
+  ['acceptance-gate:cat-luot', 'acceptance-gate:scope-slice'],
+  ['name: cat-luot', 'name: scope-slice'],
+];
+const PHAI_GIU = ['scripts/cat-luot.mjs', 'lo-trinh-cat-luot', 'dieu-phoi.mjs', 'acceptance-gate-kit-tri-thuc', 'skill `cat-luot`'];
+
+// Gộp chữ của mọi tệp dưới plugins/ + tài liệu đã khai (cây mới) / mọi tệp sản phẩm + tài liệu (nguồn).
+function chuCua(kho, ref, loc) {
+  return git(kho, ['ls-tree', '-r', '--name-only', ref]).split('\n').filter(Boolean).filter(loc)
+    .map(t => git(kho, ['show', `${ref}:${t}`])).join('\n');
+}
+const TAI_LIEU = new Set(['README.md', 'GUIDE.md', 'QUICKSTART.md', '.claude/settings.json']);
+const dem = (s, x) => s.split(x).length - 1;
+function kiemMaTran(f, dich) {
+  const loi = [];
+  const cu = chuCua(f.kho, f.nguon, t => /^(skills|scripts|commands|dieu-phoi)\//.test(t) || TAI_LIEU.has(t));
+  const moi = chuCua(f.kho, dich, t => t.startsWith('plugins/') || TAI_LIEU.has(t));
+  for (const [a, b] of PHAI_DOI) {
+    if (!dem(cu, a)) loi.push(`fixture thiếu chuỗi phải đổi: ${a}`);
+    if (dem(moi, a)) loi.push(`chuỗi phải đổi còn nguyên: ${a}`);
+    if (dem(moi, b) < dem(cu, a)) loi.push(`chuỗi phải đổi chưa tới đích: ${a} → ${b}`);
+  }
+  for (const x of PHAI_GIU) {
+    if (!dem(cu, x)) loi.push(`fixture thiếu chuỗi phải giữ: ${x}`);
+    if (dem(moi, x) !== dem(cu, x)) loi.push(`chuỗi phải giữ bị đổi: ${x}`);
+  }
+  return { loi, dat: PHAI_DOI.length + PHAI_GIU.length - new Set(loi.map(l => l.split(': ').slice(1).join(': '))).size };
+}
+
+test('KB-AC4', () => {
+  const f = moFix();
+  assert.equal(donNha(f, 'don-nha/a').status, 0);
+  const kq = kiemCho({ kho: f.kho, nguon: f.nguon, dich: 'don-nha/a', bangXep: f.bangXep });
+  assert.deepEqual(kq.loi, []);
+  assert.ok(kq.dong.some(d => /^AC-4 đạt: \d+ tệp đúng luật, \d+ tệp không phải sản phẩm giữ nguyên$/.test(d)), kq.dong.join('\n'));
+});
+
+test('KB-AC4-ma-tran', () => {
+  const f = moFix();
+  assert.equal(donNha(f, 'don-nha/a').status, 0);
+  const { loi, dat } = kiemMaTran(f, 'don-nha/a');
+  assert.deepEqual(loi, []);
+  assert.equal(`${dat}/10`, '10/10');
+});
+
+test('KB-AC4-do', () => {
+  const f = moFix();
+  assert.equal(donNha(f, 'don-nha/a').status, 0);
+  const p = 'plugins/acceptance-gate/scripts/cat-luot.mjs';
+  const hong = nhanhHong(f.kho, 'don-nha/a', { [p]: git(f.kho, ['show', `don-nha/a:${p}`]) + '// sửa tay\n' }, 'hong-luat');
+  const kq = kiemCho({ kho: f.kho, nguon: f.nguon, dich: hong, bangXep: f.bangXep });
+  assert.ok(kq.loi.includes(`nội dung lệch luật: ${p}`), kq.loi.join('\n'));
+});
+
+test('KB-AC4-do-neo', () => {
+  const f = moFix();
+  const bx = JSON.parse(fs.readFileSync(f.bangXep, 'utf8'));
+  assert.equal(bx.luat_cho.mau, 'acceptance-gate-kit(?![\\w-])');
+  bx.luat_cho.mau = 'acceptance-gate-kit';
+  const bangXep = path.join(path.dirname(f.bangXep), 'bang-xep-mat-neo.json');
+  fs.writeFileSync(bangXep, JSON.stringify(bx));
+  assert.equal(donNha(f, 'don-nha/a', { bangXep }).status, 0);
+  assert.ok(kiemMaTran(f, 'don-nha/a').loi.includes('chuỗi phải giữ bị đổi: acceptance-gate-kit-tri-thuc'));
+});
+
+test('KB-AC4-doc-lap', () => {
+  const s = fs.readFileSync(path.join(DAY, 'kiem-cho.mjs'), 'utf8');
+  const nhap = [...s.matchAll(/^\s*import\b[^;]*?from\s+['"]([^'"]+)['"]/gm)].map(m => m[1]);
+  assert.ok(nhap.length > 0);
+  assert.ok(!nhap.some(x => /don-nha(\.mjs)?$/.test(x)), nhap.join(', '));
+  assert.ok(!/import\(\s*['"][^'"]*don-nha/.test(s));
+});
+
+test('KB-AC9-luat', () => {
+  const f = moFix();
+  const bangTen = { ...JSON.parse(fs.readFileSync(f.bangTenTep, 'utf8')) };
+  bangTen.lenh = { ...bangTen.lenh, 'dieu-phoi:khong-co': 'dispatch:none' };
+  fs.writeFileSync(f.bangTenTep, JSON.stringify(bangTen));
+  const r = donNha(f, 'don-nha/3.0');
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /luật không khớp chỗ nào: dieu-phoi:khong-co/);
+  assert.ok(!coRef(f.kho, 'refs/heads/don-nha/3.0'));
+});

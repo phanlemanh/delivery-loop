@@ -5,6 +5,7 @@
   "tac_gia": { "ten": "delivery-loop don-nha", "email": "don-nha@delivery-loop.invalid" },
   "bang_ten": "../chay-thu-phien/bang-ten.json",
   "cho_moi": { "ten_cu": "acceptance-gate-kit", "ten_moi": "delivery-loop" },
+  "luat_cho": { "mau": "acceptance-gate-kit(?![\\w-])", "thay": "delivery-loop", "_ghi_chu": "neo đuôi giữ acceptance-gate-kit-tri-thuc (kho tri thức riêng) nguyên" },
   "thu_muc": {
     "skills": "plugins/acceptance-gate/skills",
     "commands": "plugins/acceptance-gate/commands",
