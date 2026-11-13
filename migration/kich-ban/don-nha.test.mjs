@@ -271,9 +271,13 @@ test('KB-AC7', () => {
   assert.ok(skill.includes(`https://github.com/phanlemanh/acceptance-gate-kit/blob/${f.nguon}/docs/reference/ghi-chu.md`), skill);
   assert.ok(!skill.includes('ở docs/reference/ghi-chu.md'), skill);
   assert.ok(git(f.kho, ['show', 'don-nha/a:plugins/acceptance-gate/commands/acceptance-init.md']).includes('`node tests/a.test.mjs`'));
+  assert.ok(git(f.kho, ['show', 'don-nha/a:plugins/dispatch/commands/open.md']).includes('Ca kiểm ở tests/a.test.mjs.'));
+  const goi = git(f.kho, ['show', 'don-nha/a:plugins/acceptance-gate/scripts/goi.mjs']);
+  assert.ok(goi.includes(`// bối cảnh: https://github.com/phanlemanh/acceptance-gate-kit/blob/${f.nguon}/docs/reference/ghi-chu.md`), goi);
+  assert.ok(goi.includes("export const GHI_CHU = 'docs/reference/ghi-chu.md';"), goi);
   const kq = kiemCho({ kho: f.kho, nguon: f.nguon, dich: 'don-nha/a', bangXep: f.bangXep });
   assert.deepEqual(kq.loi, []);
-  assert.ok(kq.dong.includes('AC-7 đạt: 1 con trỏ đã đổi, 1 giữ có lý do (lenh 1 · du-lieu 0 · duong-kho-tieu-thu 0), 0 còn treo trong plugins/'), kq.dong.join('\n'));
+  assert.ok(kq.dong.includes('AC-7 đạt: 2 con trỏ đã đổi, 2 giữ có lý do (lenh 1 · tu-host 1 · du-lieu 0 · duong-kho-tieu-thu 0), 0 còn treo trong plugins/'), kq.dong.join('\n'));
 });
 
 test('KB-AC7-do', () => {

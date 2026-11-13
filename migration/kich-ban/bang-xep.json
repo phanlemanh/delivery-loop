@@ -33,10 +33,12 @@
   "tai_lieu_doi_chu": ["README.md", "GUIDE.md", "QUICKSTART.md", ".claude/settings.json"],
   "con_tro": {
     "url": "https://github.com/phanlemanh/acceptance-gate-kit/blob/{ma}/{duong}",
-    "_ghi_chu": "Con trỏ = chỗ DẪN người đọc sang tệp không phải sản phẩm. Ba loại giữ nguyên, mỗi loại một lý do: lenh — lệnh chạy ở gốc kho (tests/ vẫn ở gốc kho mới) · du-lieu — giá trị trong tệp dữ liệu · duong-kho-tieu-thu — đường của kho TIÊU THỤ trùng tên một tệp của kit (đổi sang URL kit là trỏ sai). Dòng sổ S3 của hồ sơ, 13/11.",
+    "_ghi_chu": "Con trỏ = chỗ DẪN người đọc sang tệp không phải sản phẩm. Bốn loại giữ nguyên, mỗi loại một lý do: lenh — lệnh chạy ở gốc kho (tests/ vẫn ở gốc kho mới) · tu-host — chỉ dẫn trong tệp .md trỏ bộ kiểm (tests/), việc của kho tự chạy kit, đường tương đối đúng ở kho mới · du-lieu — giá trị trong tệp dữ liệu, hay chuỗi trong mã ngoài chú thích · duong-kho-tieu-thu — đường của kho TIÊU THỤ trùng tên một tệp của kit (đổi sang URL kit là trỏ sai). Hai dòng sổ S3 của hồ sơ, 13/11.",
     "giu": {
       "duong_kho_tieu_thu": ["docs/reference/diagram-skin.md"],
       "duoi_du_lieu": [".json"],
+      "md_tu_host_tien_to": ["tests/"],
+      "duoi_ma_chi_doi_chu_thich": [".mjs", ".cjs", ".js", ".ts", ".sh", ".py"],
       "lenh_dung_truoc": ["node", "bash", "sh", "python3", "python", "npm", "npx", "--prefix"]
     }
   },

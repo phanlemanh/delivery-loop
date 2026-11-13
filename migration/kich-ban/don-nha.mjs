@@ -18,8 +18,10 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { kiemKe } from '../tra-soat/kiem-ke.mjs';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
+const LUAT_XEP = path.join(DAY, '..', 'tra-soat', 'luat-xep.json');
 
 export class Dung extends Error {}
 const dung = (lyDo) => { throw new Dung(lyDo); };
@@ -155,6 +157,56 @@ function buoc3DoiTen(wt, bx, dichPlugin) {
   return so;
 }
 
+// ── Bước 4: con trỏ sang kho cũ ─────────────────────────────────────────────────────────────────────────────────
+// Đích của một tệp NGUỒN sau bước 1 và bước 3 (đổi tên tệp lệnh, thư mục skill).
+function dichSau(t, bx, dichPlugin) {
+  const dau = t.split('/')[0];
+  let d = bx.tep[t] || (bx.thu_muc[dau] ? bx.thu_muc[dau] + t.slice(dau.length) : t);
+  for (const [cu, moi] of Object.entries(bx._bangTen.lenh)) {
+    const [pc, lc] = cu.split(':'); const lm = moi.split(':')[1]; const D = dichPlugin[pc]; if (!D) continue;
+    if (d === `${D}/commands/${lc}.md`) d = `${D}/commands/${lm}.md`;
+    else if (d.startsWith(`${D}/skills/${lc}/`)) d = `${D}/skills/${lm}/` + d.slice(`${D}/skills/${lc}/`.length);
+  }
+  return d;
+}
+
+// Loại giữ của một lần xuất hiện con trỏ (null = đổi thành URL). `truoc` = phần dòng đứng trước con trỏ.
+function loaiGiu(tep, truoc, giu, toi) {
+  if (giu.duoi_du_lieu.some(x => tep.endsWith(x))) return 'du-lieu';
+  const lenh = new RegExp(`(?:^|[\\s\`(|&;])(?:${giu.lenh_dung_truoc.map(esc).join('|')})\\s+(?:\\S+\\s+){0,3}$`);
+  if (lenh.test(truoc)) return 'lenh';
+  if (tep.endsWith('.md') && giu.md_tu_host_tien_to.some(x => toi.startsWith(x))) return 'tu-host';
+  if (giu.duoi_ma_chi_doi_chu_thich.some(x => tep.endsWith(x)) && !/(^\s*(#|\*|\/\*)|\/\/)/.test(truoc)) return 'du-lieu';
+  return null;
+}
+
+function buoc4ConTro(wt, bx, S, dichPlugin) {
+  const giu = bx.con_tro.giu;
+  const kk = kiemKe({ kho: wt, ref: S, luat: LUAT_XEP });
+  const ket = { doi: 0, giu: { lenh: 0, 'tu-host': 0, 'du-lieu': 0, 'duong-kho-tieu-thu': 0 } };
+  const theoTep = new Map();
+  for (const r of kk.con_tro) if (!r.mo_ho) theoTep.set(r.tu, [...(theoTep.get(r.tu) || []), r.toi]);
+  for (const [tu, dsToi] of theoTep) {
+    const d = dichSau(tu, bx, dichPlugin);
+    const p = path.join(wt, d);
+    let nd = fs.readFileSync(p, 'utf8');
+    for (const toi of dsToi) {
+      if (giu.duong_kho_tieu_thu.includes(toi)) { ket.giu['duong-kho-tieu-thu']++; continue; }
+      const re = new RegExp(`(?<![\\w.-])(?<!\\w\\/)(?:\\.\\/)?${esc(toi)}(?![\\w/-])`, 'g');
+      let doi = 0, loai = null;
+      nd = nd.split('\n').map(L => L.replace(re, (m, viTri) => {
+        const k = loaiGiu(d, L.slice(0, viTri), giu, toi);
+        if (k) { loai = loai || k; return m; }
+        doi++; return bx.con_tro.url.replace('{ma}', S).replace('{duong}', toi);
+      })).join('\n');
+      if (!doi && !loai) dung(`con trỏ không tìm thấy: ${d} → ${toi}`);
+      if (doi) ket.doi++; else ket.giu[loai]++;
+    }
+    fs.writeFileSync(p, nd);
+  }
+  return ket;
+}
+
 export function chay({ kho, nguon, nhanh, bangXep, rs, ra }) {
   const bx = docBangXep(bangXep);
   nguon = nguon || bx.nguon_mac_dinh;
@@ -178,7 +230,7 @@ export function chay({ kho, nguon, nhanh, bangXep, rs, ra }) {
     buoc1Doi(wt, bx); commit('dọn nhà 1/5: dời sản phẩm vào plugins/<tên>/');
     const dichPlugin = buoc2TepKhai(wt, bx); commit('dọn nhà 2/5: tệp khai chợ và plugin');
     const soDoiChu = buoc3DoiTen(wt, bx, dichPlugin); commit('dọn nhà 3/5: đổi tên theo bảng tên');
-    commit('dọn nhà 4/5: con trỏ sang kho cũ');
+    buoc4ConTro(wt, bx, S, dichPlugin); commit('dọn nhà 4/5: con trỏ sang kho cũ');
     commit('dọn nhà 5/5: khuôn Repo Standards');
     const dinh = git(wt, ['rev-parse', 'HEAD']).trim();
     const cay = git(wt, ['rev-parse', 'HEAD^{tree}']).trim();
