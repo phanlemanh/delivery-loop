@@ -49,6 +49,8 @@ function luatRieng(bx) {
     L.push([p, new RegExp('(?<![\\w-])' + thoat(p) + ':(?=[a-z])', 'g'), q + ':']);
     L.push([p, new RegExp('(?<![\\w-])' + thoat(p) + '@', 'g'), q + '@']);
     L.push([p, new RegExp('--plugin ' + thoat(p) + '(?![\\w-])', 'g'), '--plugin ' + q]);
+    L.push([p, new RegExp("plugin: '" + thoat(p) + "'", 'g'), "plugin: '" + q + "'"]);
+    L.push([p, new RegExp("'" + thoat(p) + "': \\{", 'g'), "'" + q + "': {"]);
   }
   L.push([bx.cho_moi.ten_cu, new RegExp(bx.luat_cho.mau, 'g'), bx.luat_cho.thay]);
   return L;
@@ -99,8 +101,16 @@ function ac4(kho, nguon, dich, kk, bx) {
     const cayMoi = new Set(lsTree(kho, dich)); const daCo = new Set();
     const maNguon = git(kho, ['rev-parse', nguon]).trim();
     let n = 0, m = 0; const demGiu = Object.fromEntries(CHUOI_GIU.map(x => [x, [0, 0]]));
+    // Số chỗ khớp của từng mục bảng tên: chữ khớp + đổi tên thư mục plugin, tệp lệnh, thư mục skill.
+    const demLuat = new Map([...Object.keys(bx.ten.lenh), ...Object.keys(bx.ten.plugin), bx.cho_moi.ten_cu].map(k => [k, 0]));
+    for (const p of Object.keys(bx.ten.plugin)) if (dp[p]) demLuat.set(p, demLuat.get(p) + 1);
+    demLuat.set(bx.cho_moi.ten_cu, demLuat.get(bx.cho_moi.ten_cu) + 1);
     for (const t of lsTree(kho, nguon)) {
       const d = sp.has(t) ? dichDayDu(t, bx, dp) : t; daCo.add(d);
+      if (d !== dichCua(t, bx)) for (const [a, b] of Object.entries(bx.ten.lenh)) {
+        const [pa, la] = a.split(':'); const D = dp[pa];
+        if (D && (dichCua(t, bx) === `${D}/commands/${la}.md` || dichCua(t, bx) === `${D}/skills/${la}/SKILL.md`)) demLuat.set(a, demLuat.get(a) + 1);
+      }
       if (!cayMoi.has(d)) continue; // AC-3 đã báo
       const a = docA(t), b = docB(d);
       const doiChu = (sp.has(t) && d.startsWith('plugins/')) || taiLieu.has(t);
@@ -112,6 +122,7 @@ function ac4(kho, nguon, dich, kk, bx) {
       if (!laChu(a)) { if (!a.equals(b)) loi.push(`nội dung lệch luật: ${d}`); else n++; continue; }
       const sa = a.toString('utf8'), sb = b.toString('utf8');
       for (const x of CHUOI_GIU) { demGiu[x][0] += sa.split(x).length - 1; demGiu[x][1] += sb.split(x).length - 1; }
+      for (const [k, re] of L) demLuat.set(k, demLuat.get(k) + (sa.match(re) || []).length);
       let [ky] = doiConTro(t, d, apLuat(sa, L), kk, bx, maNguon);
       if (skillDoi.has(d)) { const [la, lb] = skillDoi.get(d); ky = ky.replace(new RegExp(`^name: ${thoat(la)}$`, 'm'), `name: ${lb}`); }
       if (/(^|\/)\.claude-plugin\/plugin\.json$/.test(d)) {
@@ -126,9 +137,11 @@ function ac4(kho, nguon, dich, kk, bx) {
     const them = new Set(bx.khuon?.duoc_cham?.them || []);
     for (const d of cayMoi) if (!daCo.has(d) && !them.has(d)) loi.push(`tệp lạ ở cây mới: ${d}`);
     for (const [x, [u, v]] of Object.entries(demGiu)) if (u !== v) loi.push(`chuỗi phải giữ đổi số: ${x} ${u}→${v}`);
+    for (const [k, v] of demLuat) if (!v) loi.push(`luật không khớp chỗ nào: ${k}`);
     const dong = loi.length ? [] : [
       `AC-4 đạt: ${n} tệp đúng luật, ${m} tệp không phải sản phẩm giữ nguyên`,
       'chuỗi phải giữ: ' + CHUOI_GIU.map(x => `${x} ${demGiu[x][0]}→${demGiu[x][1]}`).join(' · '),
+      `luật đổi chữ: ${demLuat.size}/${demLuat.size} mục bảng tên có chỗ khớp — ` + [...demLuat].map(([k, v]) => `${k} ${v}`).join(' · '),
     ];
     return { loi, dong };
   } finally { fs.rmSync(A, { recursive: true, force: true }); fs.rmSync(B, { recursive: true, force: true }); }

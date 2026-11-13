@@ -69,6 +69,8 @@ KE-HOACH mục 3). Các neo:
 - tên chợ: `acceptance-gate-kit` không theo sau bởi `-` hay chữ/số (giữ `acceptance-gate-kit-tri-thuc`, kho tri thức riêng);
 - tiền tố lệnh `<plugin cũ>:<lệnh cũ>` theo khoá `lenh` của `bang-ten.json`, rồi `<plugin cũ>:` còn lại → `<plugin mới>:`;
 - khoá bật plugin `<plugin cũ>@`; đối số `--plugin <plugin cũ>`; chuỗi JSON `"<plugin cũ>"` trong tệp khai;
+- tên tự khai của chính plugin trong mã mod: `plugin: '<plugin cũ>'` (khoá trạng thái) và `'<plugin cũ>': {` (khoá kiểu)
+  — thêm ở S3 vì thiếu nó `claude plugin validate` đỏ ở `dispatch`;
 - dòng `name: <skill cũ>` trong `SKILL.md` của skill đổi tên.
 
 Mỗi luật đếm số chỗ khớp trên toàn tập; luật 0 chỗ → dừng (bảng tên trỏ thứ không còn). Kịch bản ghi sổ

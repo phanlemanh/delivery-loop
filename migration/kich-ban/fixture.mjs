@@ -72,6 +72,8 @@ export const TEP_KIT = {
   'dieu-phoi/.claude-plugin/plugin.json': json({ name: 'dieu-phoi', version: '2.39.0', description: 'Điều phối.' }),
   'dieu-phoi/commands/mo-dot.md': 'Mở đợt — gọi scripts/dieu-phoi.mjs.\nCa kiểm ở tests/a.test.mjs.\n',
   'dieu-phoi/scripts/dieu-phoi.mjs': '// dieu-phoi.mjs\nexport const z = 3;\n',
+  'dieu-phoi/hooks/mod/khung.ts': "const khung = atom({ plugin: 'dieu-phoi', key: 'khung' } as const, null)\nconst thuMuc = ['.claude', 'dieu-phoi', 'may']\n",
+  'dieu-phoi/types/index.d.ts': "interface S {\n    'dieu-phoi': { khung: K }\n}\n",
   'docs/reference/ghi-chu.md': 'Ghi chú cho người sửa kit.\n',
   'tests/a.test.mjs': '// kiểm scripts/cat-luot.mjs\n',
   'README.md': 'Cài: `claude plugin marketplace add phanlemanh/acceptance-gate-kit`.\nMở đợt: `/dieu-phoi:mo-dot`.\n',

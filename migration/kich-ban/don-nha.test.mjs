@@ -351,3 +351,13 @@ test('KB-AC9-khuon', () => {
   assert.equal(rev(f.kho, 'don-nha/3.0'), truoc);
   assert.deepEqual(git(f.kho, ['worktree', 'list', '--porcelain']).match(/^worktree /gm).length, 1);
 });
+
+test('KB-AC4-ten-tu-khai', () => {
+  const f = moFix();
+  assert.equal(donNha(f, 'don-nha/a').status, 0);
+  const khung = git(f.kho, ['show', 'don-nha/a:plugins/dispatch/hooks/mod/khung.ts']);
+  assert.ok(khung.includes("atom({ plugin: 'dispatch', key: 'khung' }"), khung);
+  assert.ok(khung.includes("['.claude', 'dieu-phoi', 'may']"), khung);
+  assert.ok(git(f.kho, ['show', 'don-nha/a:plugins/dispatch/types/index.d.ts']).includes("'dispatch': { khung: K }"));
+  assert.deepEqual(kiemCho({ kho: f.kho, nguon: f.nguon, dich: 'don-nha/a', bangXep: f.bangXep }).loi, []);
+});

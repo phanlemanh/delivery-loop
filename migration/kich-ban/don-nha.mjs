@@ -116,6 +116,9 @@ export function luatDoiChu(bx) {
     L.push({ khoa: p, re: new RegExp(`(?<![\\w-])${esc(p)}:(?=[a-z])`, 'g'), thay: `${q}:` });
     L.push({ khoa: p, re: new RegExp(`(?<![\\w-])${esc(p)}@`, 'g'), thay: `${q}@` });
     L.push({ khoa: p, re: new RegExp(`--plugin ${esc(p)}(?![\\w-])`, 'g'), thay: `--plugin ${q}` });
+    // Tên tự khai của chính plugin trong mã mod: khoá trạng thái (atom) và khoá kiểu (types/index.d.ts).
+    L.push({ khoa: p, re: new RegExp(`plugin: '${esc(p)}'`, 'g'), thay: `plugin: '${q}'` });
+    L.push({ khoa: p, re: new RegExp(`'${esc(p)}': \\{`, 'g'), thay: `'${q}': {` });
   }
   L.push({ khoa: bx.cho_moi.ten_cu, re: new RegExp(bx.luat_cho.mau, 'g'), thay: bx.luat_cho.thay });
   return L;
