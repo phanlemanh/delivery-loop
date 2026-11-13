@@ -207,6 +207,38 @@ function buoc4ConTro(wt, bx, S, dichPlugin) {
   return ket;
 }
 
+// ── Bước 5: khuôn Repo Standards ────────────────────────────────────────────────────────────────────────────────
+function buoc5Khuon(wt, bx, rs, ngayNguon) {
+  const k = bx.khuon;
+  if (!rs) dung('thiếu bản kéo Repo Standards (--repo-standards)');
+  let ma;
+  try { ma = git(rs, ['rev-parse', 'HEAD']).trim(); } catch { dung(`không đọc được bản kéo Repo Standards: ${rs}`); }
+  if (ma !== k.ma) dung(`khuôn không đúng thẻ ${k.the}: bản kéo đứng ở ${ma.slice(0, 8)}, cần ${k.ma.slice(0, 8)}`);
+  const vars = Object.entries(k.vars).flatMap(([a, b]) => ['--var', `${a}=${b}`]);
+  let ra;
+  try {
+    ra = execFileSync('python3', [path.join(rs, k.apply), '--target', wt, '--preset', 'claude-plugin', '--level', 'starter', '--adopt', '--json',
+      '--var', `year=${ngayNguon.slice(0, 4)}`, '--var', `today=${ngayNguon.slice(0, 10)}`, ...vars], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  } catch (e) { dung(`khuôn chạy lỗi: ${String(e.stderr || e.message).trim().split('\n').pop()}`); }
+  const kq = JSON.parse(ra);
+  for (const t of kq.conflict || []) if (!k.trung_duoc_phep.includes(t)) dung(`khuôn xung đột: ${t}`);
+  for (const t of k.bo_tep) fs.rmSync(path.join(wt, t), { force: true });
+  const mk = path.join(wt, 'Makefile');
+  if (!fs.existsSync(mk)) dung('khuôn không tạo Makefile');
+  const dong = fs.readFileSync(mk, 'utf8').split('\n');
+  const i = dong.findIndex(d => /^test:/.test(d));
+  if (i < 0) dung('Makefile của khuôn không có đích test');
+  let j = i + 1; while (j < dong.length && dong[j].startsWith('\t')) j++;
+  dong.splice(i + 1, j - i - 1, `\t${k.make_test}`);
+  fs.writeFileSync(mk, dong.join('\n'));
+  git(wt, ['add', '-A']);
+  const duoc = { A: k.duoc_cham.them, M: k.duoc_cham.sua, D: k.duoc_cham.xoa };
+  for (const d of git(wt, ['diff', '--cached', '--name-status', '--no-renames']).split('\n').filter(Boolean)) {
+    const [loai, tep] = d.split('\t');
+    if (!(duoc[loai] || []).includes(tep)) dung(`khuôn chạm tệp ngoài danh sách: ${tep}`);
+  }
+}
+
 export function chay({ kho, nguon, nhanh, bangXep, rs, ra }) {
   const bx = docBangXep(bangXep);
   nguon = nguon || bx.nguon_mac_dinh;
@@ -231,7 +263,7 @@ export function chay({ kho, nguon, nhanh, bangXep, rs, ra }) {
     const dichPlugin = buoc2TepKhai(wt, bx); commit('dọn nhà 2/5: tệp khai chợ và plugin');
     const soDoiChu = buoc3DoiTen(wt, bx, dichPlugin); commit('dọn nhà 3/5: đổi tên theo bảng tên');
     buoc4ConTro(wt, bx, S, dichPlugin); commit('dọn nhà 4/5: con trỏ sang kho cũ');
-    commit('dọn nhà 5/5: khuôn Repo Standards');
+    buoc5Khuon(wt, bx, rs, ngayNguon); commit('dọn nhà 5/5: khuôn Repo Standards');
     const dinh = git(wt, ['rev-parse', 'HEAD']).trim();
     const cay = git(wt, ['rev-parse', 'HEAD^{tree}']).trim();
     git(kho, ['update-ref', REF_DICH, dinh]);
