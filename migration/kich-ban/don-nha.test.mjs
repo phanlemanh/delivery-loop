@@ -262,3 +262,24 @@ test('KB-AC9-luat', () => {
   assert.match(r.stderr, /luật không khớp chỗ nào: dieu-phoi:khong-co/);
   assert.ok(!coRef(f.kho, 'refs/heads/don-nha/3.0'));
 });
+
+// ── AC-7 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+test('KB-AC7', () => {
+  const f = moFix();
+  assert.equal(donNha(f, 'don-nha/a').status, 0);
+  const skill = git(f.kho, ['show', 'don-nha/a:plugins/acceptance-gate/skills/scope-slice/SKILL.md']);
+  assert.ok(skill.includes(`https://github.com/phanlemanh/acceptance-gate-kit/blob/${f.nguon}/docs/reference/ghi-chu.md`), skill);
+  assert.ok(!skill.includes('ở docs/reference/ghi-chu.md'), skill);
+  assert.ok(git(f.kho, ['show', 'don-nha/a:plugins/acceptance-gate/commands/acceptance-init.md']).includes('`node tests/a.test.mjs`'));
+  const kq = kiemCho({ kho: f.kho, nguon: f.nguon, dich: 'don-nha/a', bangXep: f.bangXep });
+  assert.deepEqual(kq.loi, []);
+  assert.ok(kq.dong.includes('AC-7 đạt: 1 con trỏ đã đổi, 1 giữ có lý do (lenh 1 · du-lieu 0 · duong-kho-tieu-thu 0), 0 còn treo trong plugins/'), kq.dong.join('\n'));
+});
+
+test('KB-AC7-do', () => {
+  const f = moFix();
+  const script = banSaoTiem('don-nha.mjs', 'buoc4ConTro(wt, bx, S, dichPlugin);', '/* bước 4 bị gỡ */');
+  assert.equal(donNha(f, 'don-nha/a', { script }).status, 0);
+  const kq = kiemCho({ kho: f.kho, nguon: f.nguon, dich: 'don-nha/a', bangXep: f.bangXep });
+  assert.ok(kq.loi.includes('con trỏ còn treo: plugins/acceptance-gate/skills/scope-slice/SKILL.md → docs/reference/ghi-chu.md'), kq.loi.join('\n'));
+});

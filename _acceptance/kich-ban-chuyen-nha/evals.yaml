@@ -132,9 +132,11 @@ evals:
     executor: script
     cmd: config:executors.script.kich_ban_chuyen_nha
     expected: >
-      Exit 0, có `ok` của KB-AC7 và KB-AC7-do. KB-AC7: con trỏ của fixture thành
-      `https://github.com/phanlemanh/acceptance-gate-kit/blob/<nguồn>/<đường>`; quét plugins/ không còn con trỏ rõ.
-      KB-AC7-do: bản sao kịch bản bỏ bước con trỏ → đỏ «con trỏ còn treo: <tệp> → <đường>».
+      Exit 0, có `ok` của KB-AC7 và KB-AC7-do. KB-AC7: con trỏ văn xuôi của fixture thành
+      `https://github.com/phanlemanh/acceptance-gate-kit/blob/<nguồn>/<đường>`; lệnh `node tests/a.test.mjs` của fixture
+      giữ nguyên (loại «lenh»); thước in `AC-7 đạt: 1 con trỏ đã đổi, 1 giữ có lý do (lenh 1 · du-lieu 0 ·
+      duong-kho-tieu-thu 0), 0 còn treo trong plugins/`. KB-AC7-do: bản sao kịch bản bỏ bước con trỏ → đỏ «con trỏ còn
+      treo: <tệp> → <đường>». (Ba loại giữ thêm ở S3 — dòng sổ S3 «con trỏ là chỗ dẫn người đọc».)
     paths: [migration/kich-ban/**]
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
   - id: E7t
@@ -142,8 +144,8 @@ evals:
     executor: script
     cmd: config:executors.script.kich_ban_chuyen_nha_that
     expected: >
-      Exit 0, có dòng `AC-7 đạt: <k> con trỏ đã đổi, 0 còn treo trong plugins/` với k bằng số dòng con trỏ rõ của sổ
-      nguồn mà thước tự đếm.
+      Exit 0, có dòng `AC-7 đạt: <k> con trỏ đã đổi, <g> giữ có lý do (lenh <a> · du-lieu <b> · duong-kho-tieu-thu
+      <c>), 0 còn treo trong plugins/` với k + g bằng số dòng con trỏ rõ của sổ nguồn mà thước tự đếm (76 trên 0c4e503b).
     paths: [migration/kich-ban/**, migration/tra-soat/**]
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
   - id: E8

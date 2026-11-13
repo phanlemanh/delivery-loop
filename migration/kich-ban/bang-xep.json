@@ -31,7 +31,15 @@
   ],
   "bo": [],
   "tai_lieu_doi_chu": ["README.md", "GUIDE.md", "QUICKSTART.md", ".claude/settings.json"],
-  "con_tro": { "url": "https://github.com/phanlemanh/acceptance-gate-kit/blob/{ma}/{duong}" },
+  "con_tro": {
+    "url": "https://github.com/phanlemanh/acceptance-gate-kit/blob/{ma}/{duong}",
+    "_ghi_chu": "Con trỏ = chỗ DẪN người đọc sang tệp không phải sản phẩm. Ba loại giữ nguyên, mỗi loại một lý do: lenh — lệnh chạy ở gốc kho (tests/ vẫn ở gốc kho mới) · du-lieu — giá trị trong tệp dữ liệu · duong-kho-tieu-thu — đường của kho TIÊU THỤ trùng tên một tệp của kit (đổi sang URL kit là trỏ sai). Dòng sổ S3 của hồ sơ, 13/11.",
+    "giu": {
+      "duong_kho_tieu_thu": ["docs/reference/diagram-skin.md"],
+      "duoi_du_lieu": [".json"],
+      "lenh_dung_truoc": ["node", "bash", "sh", "python3", "python", "npm", "npx", "--prefix"]
+    }
+  },
   "khuon": {
     "the": "repo-setup-v0.5.0",
     "ma": "4dc53e079df7d1a71c36147a994bf8d9db4f4f56",

@@ -66,7 +66,7 @@ export const TEP_KIT = {
     '// chạy /dieu-phoi:mo-dot rồi dieu-phoi.mjs',
     'export const y = 2;', '',
   ].join('\n'),
-  'commands/acceptance-init.md': 'Khởi tạo.\n\nBật `dieu-phoi@acceptance-gate-kit` khi kho muốn chạy đợt.\n',
+  'commands/acceptance-init.md': 'Khởi tạo.\n\nBật `dieu-phoi@acceptance-gate-kit` khi kho muốn chạy đợt.\nKiểm: `node tests/a.test.mjs`.\n',
   'dieu-phoi/.claude-plugin/plugin.json': json({ name: 'dieu-phoi', version: '2.39.0', description: 'Điều phối.' }),
   'dieu-phoi/commands/mo-dot.md': 'Mở đợt — gọi scripts/dieu-phoi.mjs.\n',
   'dieu-phoi/scripts/dieu-phoi.mjs': '// dieu-phoi.mjs\nexport const z = 3;\n',
