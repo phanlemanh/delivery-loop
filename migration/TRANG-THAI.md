@@ -46,7 +46,7 @@ chủ kho.
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| — | — | Không có việc nào dở. B1 chờ chủ kho gọi tên. |
+| **B1 `kich-ban-chuyen-nha`** (T3) | phiên riêng trên Mac Studio, worktree nhánh `b1-kich-ban-chuyen-nha` cắt từ `chuyen-nha` | Chủ kho gọi tên 13/11: «Mở B1 kiểu này» — một vòng feature-loop, không phiên điều phối, không lộ trình. Đề xuất mang lên Cổng Đáng: hồ sơ trên nhánh của vòng (ngoại lệ luật «chỉ sửa `migration/`»), neo `_acceptance/release-2-39-0/`, commit dọn nhà lên nhánh riêng cắt từ `kit-cu/main`. Mới mở, chưa qua cổng nào. |
 
 ## Ghi chú giữ cho B1
 
@@ -181,6 +181,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 13/11/2026 | Mac Studio | Chủ kho hỏi chạy B1 theo hướng nào → khuyến nghị một vòng feature-loop ở phiên riêng (B1 một vòng, B2 nối đuôi — điều phối không có gì để chạy song song mà thêm hai thẻ khởi tạo/đóng đợt). Chủ kho: «Mở B1 kiểu này» → mở phiên B1. |
 | 13/11/2026 | Mac Studio | Chủ kho bảo «Mở PR Quỹ hàng» → PR #246 (hai luồng ghim thẻ, ghim lại một hồ sơ T3, sửa một ca phá thử ghi cứng thẻ); cài `gitleaks` lên máy cho móc trước-commit của Quỹ hàng. Chủ kho bảo «Gộp PR» → gộp `f1d123ee`, CI nhánh chính Quỹ hàng xanh. Điều kiện thứ nhất của B1 đạt. |
 | 13/11/2026 | Mac Studio | Mốc 2.39 cắt ở kho cũ (`0c4e503b`, thẻ `v2.39.0`); cập nhật `main` kho này theo. Chủ kho hỏi điều gì đang cản chuyển nhà → đo lại thước B1, thử trước PR nâng Quỹ hàng trên bản sao, chạy lại ba sổ tra soát, chấm lại `doctor` — đoạn «Sẵn sàng cho B1». |
 | 12/11/2026 | Mac Studio | Chủ kho hỏi «Làm thế nào để biết được chuyển nhà thành công?» rồi bảo «Ghi hai thước vào kế hoạch» → B2 giữ đủ khoá ca, ngưỡng thực tế mốc 3.0. Khi ghi, đo ra hồ sơ lượt chấm không ghi phiên bản kit — khai giới hạn. |
