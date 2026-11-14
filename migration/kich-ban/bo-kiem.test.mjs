@@ -80,6 +80,10 @@ test('BK-AC1', () => {
   assert.match(js, /ENV = \{ CLAUDE_PLUGIN_ROOT: `\$\{KIT\}\/plugins\/acceptance-gate` \}/, 'gốc plugin lõi qua CLAUDE_PLUGIN_ROOT');
   assert.match(sh, /--ag-root "\$ROOT\/plugins\/acceptance-gate" --slug a/, 'gốc plugin lõi qua --ag-root (bash)');
   assert.match(js, /--ag-root "\$\{KIT\}\/plugins\/acceptance-gate" --slug b/, 'dạng "${X}" giữ ngoặc (template literal)');
+  const py = xem(f, 'don-nha/a', 'tests/plugins/kiem.py');
+  assert.match(py, /TEP = root \/ 'plugins\/acceptance-gate\/scripts' \/ 'goi\.mjs'/, 'cặp phần tử Python (dấu /)');
+  assert.match(py, /SK = root\/'plugins\/acceptance-gate\/skills'\/'scope-slice'\/'SKILL\.md'/, 'cặp Python có skill đổi tên');
+  assert.match(xem(f, 'don-nha/a', 'plugins/acceptance-gate/scripts/goi.mjs'), /path\.join\(__dirname, '\.\.', 'skills', 'scope-slice', 'SKILL\.md'\)/, 'mã sản phẩm trỏ skill đổi tên (bước 3)');
   assert.match(js, /THU_MUC = path\.join\(KIT, 'plugins\/acceptance-gate\/commands'\)/, 'đối số đơn sau biến gốc kho');
   assert.match(js, /SKILL_CAP = path\.join\(KIT, 'plugins\/acceptance-gate\/skills', 'scope-slice', 'SKILL\.md'\)/, 'cặp phần tử skill đổi tên');
   assert.match(xem(f, 'don-nha/a', '.github/workflows/gate.yml'), /run: node plugins\/acceptance-gate\/scripts\/goi\.mjs/);

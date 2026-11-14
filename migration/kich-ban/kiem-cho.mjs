@@ -42,8 +42,15 @@ export function dichCua(t, bx) {
 
 // ── AC-4: nội dung chỉ đổi bởi luật đã khai (phép áp luật CÀI LẠI ở đây) ───────────────────────────────────────
 const thoat = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-function luatRieng(bx) {
+function luatRieng(bx, dp = {}) {
   const L = [];
+  // B2: đường tới skill / lệnh đổi tên trong mã của chính plugin ấy (cài lại; phần tử thứ tư = thư mục giới hạn).
+  for (const [a, b] of Object.entries(bx.ten.lenh)) {
+    const [pa, la] = a.split(':'); const lb = b.split(':')[1]; const D = dp[pa]; if (!D) continue;
+    L.push([a, new RegExp(`(['"])skills\\1(\\s*,\\s*)(['"])${thoat(la)}\\3`, 'g'), `$1skills$1$2$3${lb}$3`, D]);
+    L.push([a, new RegExp(`(?<![\\w-])skills/${thoat(la)}(?=/)`, 'g'), `skills/${lb}`, D]);
+    L.push([a, new RegExp(`(?<![\\w-])commands/${thoat(la)}\\.md(?![\\w-])`, 'g'), `commands/${lb}.md`, D]);
+  }
   for (const [a, b] of Object.entries(bx.ten.lenh)) L.push([a, new RegExp('(?<![\\w-])' + thoat(a) + '(?![\\w-])', 'g'), b]);
   for (const [p, q] of Object.entries(bx.ten.plugin)) {
     L.push([p, new RegExp('(?<![\\w-])' + thoat(p) + ':(?=[a-z])', 'g'), q + ':']);
@@ -55,7 +62,7 @@ function luatRieng(bx) {
   L.push([bx.cho_moi.ten_cu, new RegExp(bx.luat_cho.mau, 'g'), bx.luat_cho.thay]);
   return L;
 }
-const apLuat = (s, L) => L.reduce((x, [, re, thay]) => x.replace(re, thay), s);
+const apLuat = (s, L, d = '') => L.reduce((x, [, re, thay, D]) => (D && !d.startsWith(`${D}/`) ? x : x.replace(re, thay)), s);
 
 // ── B2 AC-2: tệp bộ kiểm chỉ khác bản gốc ở đường và tên (phép ĐẢO, cài lại ở đây) ────────────────────────────────
 // Tập bước 6 (đọc bo_kiem của bảng xếp làm dữ liệu): tệp mã dưới `tap` trừ `tru`, cộng `tep_goc`.
@@ -84,8 +91,8 @@ export function phepDao(bx, dp) {
   // Đổi tên skill / lệnh ở dạng cặp phần tử: '<D>/skills', '<mới>' → '<D>/skills', '<cũ>' (đường đảo tiếp ở dưới).
   for (const [a, b] of Object.entries(bx.ten.lenh)) {
     const [pa, la] = a.split(':'); const lb = b.split(':')[1]; const D = dp[pa]; if (!D) continue;
-    L.push([new RegExp(`(['"])(${thoat(D)}/skills)\\1(\\s*,\\s*)(['"])${thoat(lb)}\\4`, 'g'), `$1$2$1$3$4${la}$4`]);
-    L.push([new RegExp(`(['"])(${thoat(D)}/commands)\\1(\\s*,\\s*)(['"])${thoat(lb)}\\.md\\4`, 'g'), `$1$2$1$3$4${la}.md$4`]);
+    L.push([new RegExp(`(['"])(${thoat(D)}/skills)\\1(\\s*[,/]\\s*)(['"])${thoat(lb)}\\4`, 'g'), `$1$2$1$3$4${la}$4`]);
+    L.push([new RegExp(`(['"])(${thoat(D)}/commands)\\1(\\s*[,/]\\s*)(['"])${thoat(lb)}\\.md\\4`, 'g'), `$1$2$1$3$4${la}.md$4`]);
   }
   for (const [cu, moi] of Object.entries(bx.tep)) L.push([new RegExp(thoat(moi), 'g'), cu]);
   for (const [cu, moi] of Object.entries(bx.thu_muc).sort((x, y) => y[1].length - x[1].length)) {
@@ -156,12 +163,12 @@ function dichDayDu(t, bx, dp) {
 
 function ac4(kho, nguon, dich, kk, bx, ngoai) {
   const loi = [];
-  const L = luatRieng(bx);
   const A = giaiNen(kho, nguon), B = giaiNen(kho, dich);
   try {
     const docA = (t) => fs.readFileSync(path.join(A, t)); const docB = (t) => fs.readFileSync(path.join(B, t));
     const choNguon = JSON.parse(docA('.claude-plugin/marketplace.json').toString('utf8'));
     const dp = dichPluginCua(choNguon, bx);
+    const L = luatRieng(bx, dp);
     const sp = new Set(kk.hang.filter(h => h.lop === 'san-pham' || h.lop === 'chua-ro').map(h => h.tep));
     const taiLieu = new Set(bx.tai_lieu_doi_chu);
     const khuonSua = new Set(bx.khuon?.duoc_cham?.sua || []);
@@ -199,7 +206,7 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
       const sa = a.toString('utf8'), sb = b.toString('utf8');
       for (const x of CHUOI_GIU) { demGiu[x][0] += sa.split(x).length - 1; demGiu[x][1] += sb.split(x).length - 1; }
       for (const [k, re] of L) demLuat.set(k, demLuat.get(k) + (sa.match(re) || []).length);
-      let [ky] = doiConTro(t, d, apLuat(sa, L), kk, bx, maNguon, ngoai);
+      let [ky] = doiConTro(t, d, apLuat(sa, L, d), kk, bx, maNguon, ngoai);
       if (skillDoi.has(d)) { const [la, lb] = skillDoi.get(d); ky = ky.replace(new RegExp(`^name: ${thoat(la)}$`, 'm'), `name: ${lb}`); }
       if (/(^|\/)\.claude-plugin\/plugin\.json$/.test(d)) {
         const o = JSON.parse(ky);
@@ -286,7 +293,7 @@ function ac7(kho, nguon, dich, kk, bx, dp, ngoai) {
   const dem = { doi: 0, lenh: 0, 'tu-host': 0, 'du-lieu': 0, 'duong-kho-tieu-thu': 0 };
   const tu = [...new Set([...kk.con_tro.filter(r => !r.mo_ho).map(r => r.tu), ...ngoai.keys()])];
   for (const t of tu) {
-    const chu = apLuat(git(kho, ['show', `${nguon}:${t}`]), luatRieng(bx));
+    const chu = apLuat(git(kho, ['show', `${nguon}:${t}`]), luatRieng(bx, dp), dichDayDu(t, bx, dp));
     const [, ket] = doiConTro(t, dichDayDu(t, bx, dp), chu, kk, bx, ma, ngoai);
     for (const [toi, k] of Object.entries(ket)) { if (k === 'khong-thay') loi.push(`con trỏ không tìm thấy trên nguồn: ${t} → ${toi}`); else dem[k]++; }
   }

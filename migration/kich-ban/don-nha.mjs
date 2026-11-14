@@ -125,6 +125,20 @@ export function luatDoiChu(bx) {
   return L;
 }
 
+// B2: mã sản phẩm trỏ tới skill / lệnh đã đổi tên bằng ĐƯỜNG (`path.join(…, 'skills', 'cat-luot', …)`, `skills/cat-luot/`)
+// — bước 3 dời thư mục nên đường phải đổi theo. Mỗi luật chỉ áp trong thư mục của chính plugin ấy (`chiTrong`).
+export function luatDuongDoiTen(bx, dichPlugin) {
+  const L = [];
+  for (const [cu, moi] of Object.entries(bx._bangTen.lenh)) {
+    const [pc, lc] = cu.split(':'); const lm = moi.split(':')[1]; const D = dichPlugin[pc];
+    if (!D) continue;
+    L.push({ khoa: cu, chiTrong: D, re: new RegExp(`(['"])skills\\1(\\s*,\\s*)(['"])${esc(lc)}\\3`, 'g'), thay: `$1skills$1$2$3${lm}$3` });
+    L.push({ khoa: cu, chiTrong: D, re: new RegExp(`(?<![\\w-])skills/${esc(lc)}(?=/)`, 'g'), thay: `skills/${lm}` });
+    L.push({ khoa: cu, chiTrong: D, re: new RegExp(`(?<![\\w-])commands/${esc(lc)}\\.md(?![\\w-])`, 'g'), thay: `commands/${lm}.md` });
+  }
+  return L;
+}
+
 function buoc3DoiTen(wt, bx, dichPlugin) {
   const dem = new Map(); // khoá bảng tên → số chỗ
   const cong = (k, n = 1) => dem.set(k, (dem.get(k) || 0) + n);
@@ -143,13 +157,14 @@ function buoc3DoiTen(wt, bx, dichPlugin) {
       if (re.test(nd)) { fs.writeFileSync(tep, nd.replace(re, `name: ${lm}`)); cong(cu); }
     }
   }
-  const L = luatDoiChu(bx);
+  const L = [...luatDuongDoiTen(bx, dichPlugin), ...luatDoiChu(bx)];
   const tap = [...git(wt, ['ls-files', '-z', 'plugins']).split('\0').filter(Boolean), ...bx.tai_lieu_doi_chu.filter(t => fs.existsSync(path.join(wt, t)))];
   const so = [];
   for (const t of tap) {
     const buf = fs.readFileSync(path.join(wt, t)); if (!laChu(buf)) continue;
     let nd = buf.toString('utf8'); const goc = nd;
     for (const l of L) {
+      if (l.chiTrong && !t.startsWith(`${l.chiTrong}/`)) continue;
       const n = (nd.match(l.re) || []).length;
       if (n) { nd = nd.replace(l.re, l.thay); cong(l.khoa, n); so.push([l.khoa, t, n]); }
     }
@@ -300,7 +315,7 @@ export function buoc6BoKiem(wt, bx, kho, S, dichPlugin) {
   const RE_MANG = new RegExp(`\\[\\s*(?:(['"])[\\w.\\-/]+\\1\\s*,\\s*)*(['"])(?:${G})\\2(?:\\s*,\\s*(['"])[\\w.\\-/]+\\3)*\\s*\\]`, 'g');
   const RE_DOI_SO = new RegExp(`(\\b(?:${BIEN})\\s*,\\s*)(['"])(${G})\\2(\\s*[,)])`, 'g');
   // Cặp phần tử `'<gốc>', '<tên>'` ở mọi chỗ (sau '..', sau biến bản sao kit…): đổi khi <gốc>/<tên> có ở nguồn và không mơ hồ.
-  const RE_CAP = new RegExp(`(['"])(${G})\\1(\\s*,\\s*)(['"])([\\w.\\-]+)\\4`, 'g');
+  const RE_CAP = new RegExp(`(['"])(${G})\\1(\\s*,\\s*|\\s*/\\s*)(['"])([\\w.\\-]+)\\4`, 'g');   // `,` (path.join) hoặc `/` (pathlib)
   // Gốc plugin lõi: ở bố cục cũ gốc kho cũng là gốc plugin lõi (kit tự host); bố cục mới thì là plugins/acceptance-gate.
   const GOC_LOI = path.posix.dirname(path.posix.dirname(bx.tep['.claude-plugin/plugin.json']));
   const RE_GOC_JS = new RegExp(`(['"]--ag-root['"]\\s*,\\s*|CLAUDE_PLUGIN_ROOT:\\s*)(${BIEN})\\b(?!\\s*[.\\[(])`, 'g');
