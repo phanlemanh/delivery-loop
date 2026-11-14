@@ -4,6 +4,8 @@
 //   node thuoc-that.mjs            AC-1, AC-2, AC-3, AC-4, AC-5, AC-7, AC-8
 //   node thuoc-that.mjs --phien    AC-6: chạy thử phiên thật cây cũ so cây mới qua bảng tên (cần lệnh `claude`, 0 token)
 //   node thuoc-that.mjs --lop-do   AC-10: đối chiếu báo cáo ket-qua/lop-do.md với cây dựng lại
+//   node thuoc-that.mjs --bo-kiem  B2 AC-1, AC-2: bước 6 và thước đảo trên nguồn thật
+//   node thuoc-that.mjs --giu-khoa B2 AC-4: báo cáo giữ khoá (ket-qua/giu-khoa.md) so với cây dựng lại
 //
 // Bản kéo Repo Standards: $TMPDIR/delivery-loop-rs-<mã 7> — chưa có thì kéo thẻ của bảng xếp (cần mạng một lần).
 // Kịch bản chạy vào hai nhánh tạm don-nha/thuoc-a, don-nha/thuoc-b; xoá cả hai khi xong.
@@ -140,6 +142,38 @@ function phien(bx, S) {
   } finally { fs.rmSync(cayCu, { recursive: true, force: true }); fs.rmSync(cayMoi, { recursive: true, force: true }); }
 }
 
+// B2 bo-kiem-xanh-o-kho-moi — AC-1 (bước 6) và AC-2 (thước đảo) trên nguồn thật.
+function boKiem(bx, S) {
+  if (!coLenh('python3')) khongDoc('thiếu lệnh python3');
+  const rs = banKeoRs(bx);
+  const a = donNha(NHANH[0], rs); const b = donNha(NHANH[1], rs);
+  if (!a || !b) return;
+  const tieuDe = git(['log', '--reverse', '--format=%s', `${S}..${NHANH[0]}`]).trim().split('\n');
+  const k = bx.bo_kiem;
+  const thuoc = (t) => (t.startsWith(k.tap) && !t.includes(k.tru) && k.duoi.some(d => t.endsWith(d))) || k.tep_goc.some(g => (g.endsWith('/') ? t.startsWith(g) : t === g));
+  const cham = git(['diff', '--name-only', `${NHANH[0]}~1`, NHANH[0]]).trim().split('\n').filter(Boolean);
+  const ngoai = cham.filter(t => !thuoc(t));
+  if (tieuDe.length !== 6 || tieuDe[5] !== 'dọn nhà 6/6: bộ kiểm theo bố cục mới') loi.push(`nhánh đích không có commit 6 bộ kiểm: ${tieuDe.join(' | ')}`);
+  else if (!cham.length) loi.push('commit 6 không chạm tệp nào');
+  else if (ngoai.length) loi.push(`commit 6 chạm tệp ngoài tập bước 6: ${ngoai.join(' · ')}`);
+  else ra(`AC-1 đạt: 6 commit trên ${S}, commit 6 chạm ${cham.length} tệp trong tập bước 6`);
+  const khac = soHaiLan(KHO, NHANH[0], NHANH[1]);
+  if (khac) loi.push(khac);
+  else ra(`AC-1 đạt: hai lần chạy cùng commit ${git(['rev-parse', NHANH[0]]).trim()} cùng cây ${git(['rev-parse', `${NHANH[0]}^{tree}`]).trim()}`);
+  const kq = kiemCho({ kho: KHO, nguon: S, dich: NHANH[0], bangXep: BANG_XEP });
+  for (const d of kq.dong) if (/^AC-(2 \(B2\)|4) đạt/.test(d)) ra(d);
+  loi.push(...kq.loi);
+}
+
+// B2 AC-4: báo cáo giữ khoá (ket-qua/giu-khoa.md + giu-khoa/) so với cây kịch bản dựng trên nguồn lúc chấm.
+async function giuKhoaThat(bx, S) {
+  if (!coLenh('python3')) khongDoc('thiếu lệnh python3');
+  if (!donNha(NHANH[0], banKeoRs(bx))) return;
+  const cay = git(['rev-parse', `${NHANH[0]}^{tree}`]).trim();
+  const { kiemGiuKhoa } = await import('./bao-cao-giu-khoa.mjs');
+  kiemGiuKhoa({ ra: path.join(DAY, 'ket-qua'), nguon: S, cayDung: cay, loi, ra_: ra });
+}
+
 // Ba chế độ chạy lần lượt (khoá trong thư mục git chung): cùng kịch bản, cùng kho, cùng tên chợ.
 function giuKhoa() {
   const khoa = path.join(git(['rev-parse', '--git-common-dir']).trim().replace(/^(?!\/)/, KHO + '/'), 'thuoc-that.lock');
@@ -161,6 +195,8 @@ ra(`nguồn: ${S} (${bx.nguon_mac_dinh})`);
 try {
   if (process.argv.includes('--lop-do')) (await import('./lop-do.mjs')).kiemLopDo({ kho: KHO, S, ra, loi, donNha: (n, nguon) => donNha(n, banKeoRs(bx), nguon), nhanh: NHANH[0] });
   else if (process.argv.includes('--phien')) phien(bx, S);
+  else if (process.argv.includes('--bo-kiem')) boKiem(bx, S);
+  else if (process.argv.includes('--giu-khoa')) await giuKhoaThat(bx, S);
   else chinh(bx, S);
 } finally {
   for (const n of NHANH) spawnSync('git', ['-C', KHO, 'branch', '-D', '-q', n]);

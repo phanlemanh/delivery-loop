@@ -128,3 +128,39 @@ test('BK-AC3-im-tmp', () => {
     chayCay(dungCay({ ka: [['PASS', 'T1 /var/folders/zz/T/q/y ' + 'b'.repeat(40)]] })));
   assert.equal(r.status, 0, r.stdout);
 });
+
+// ── AC-4 — báo cáo giữ khoá và hàm kiểm của thước nguồn thật ─────────────────────────────────────────────────────
+import { ghiBaoCao, kiemGiuKhoa } from './bao-cao-giu-khoa.mjs';
+const S40 = 'a'.repeat(40), C40 = 'b'.repeat(40);
+function baoCaoFixture(cu = {}, moi = {}) {
+  const T = moTam('gk-bc-');
+  fs.mkdirSync(path.join(T, 'out'));
+  fs.cpSync(chayCay(dungCay(cu)), path.join(T, 'out', 'A'), { recursive: true });
+  fs.cpSync(chayCay(dungCay(moi)), path.join(T, 'out', 'B'), { recursive: true });
+  const ra = moTam('gk-ra-');
+  ghiBaoCao({ T, nguon: S40, cay: C40, ra, bo: path.join(moTam('gk-bo-'), 'trong.tsv'), so: null });
+  return ra;
+}
+const kiem = (ra, cay = C40) => { const loi = [], dong = []; kiemGiuKhoa({ ra, nguon: S40, cayDung: cay, loi, ra_: (x) => dong.push(x) }); return { loi, dong }; };
+
+test('BK-AC4-cay-cu', () => {
+  const ra = baoCaoFixture();
+  const lanh = kiem(ra);
+  assert.deepEqual(lanh.loi, [], 'đối chứng dương: báo cáo đúng cây');
+  assert.ok(lanh.dong.some(d => /^AC-4 đạt: báo cáo đo trên nguồn aaaaaaaa, cây mới bbbbbbbb dựng lại khớp; 3 bước thoát 0 ở cả hai cây; giữ đủ 6\/6 khoá, bỏ 0$/.test(d)), lanh.dong.join('\n'));
+  const cu = kiem(ra, 'c'.repeat(40));
+  assert.ok(cu.loi.includes('báo cáo giữ khoá đo trên cây cũ'), cu.loi.join('\n'));
+});
+
+test('BK-AC4-do-sua-bao-cao', () => {
+  const ra = baoCaoFixture();
+  const p = path.join(ra, 'giu-khoa.md');
+  fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replace('tong: 6', 'tong: 7'));
+  assert.ok(kiem(ra).loi.includes('báo cáo giữ khoá lệch túi khoá đã commit'));
+  const ra2 = baoCaoFixture({}, { ka: [['PASS', 'A01 dau'], ['PASS', 'A03 ba']] });
+  const p2 = path.join(ra2, 'giu-khoa.md');
+  fs.writeFileSync(p2, fs.readFileSync(p2, 'utf8').replace('phan_quyet: thieu', 'phan_quyet: giu-du'));
+  const r2 = kiem(ra2);
+  assert.ok(r2.loi.includes('báo cáo giữ khoá lệch túi khoá đã commit'), r2.loi.join('\n'));
+  assert.ok(r2.loi.some(l => l.startsWith('thiếu 1 khoá')), 'phán quyết chạy lại phải nêu thiếu');
+});

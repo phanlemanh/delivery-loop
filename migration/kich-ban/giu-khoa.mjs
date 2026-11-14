@@ -85,8 +85,8 @@ export function docKetQua(thu) {
   return { dat, khongDo, tep, bo };
 }
 
-const docTui = (p) => new Map(fs.readFileSync(p, 'utf8').split('\n').filter(Boolean).map(d => { const [n, ...k] = d.split('\t'); return [k.join('\t'), Number(n)]; }));
-const ghiTui = (p, t) => fs.writeFileSync(p, [...t].sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0).map(([k, n]) => `${n}\t${k}`).join('\n') + '\n');
+export const docTui = (p) => new Map(fs.readFileSync(p, 'utf8').split('\n').filter(Boolean).map(d => { const [n, ...k] = d.split('\t'); return [k.join('\t'), Number(n)]; }));
+export const ghiTui = (p, t) => fs.writeFileSync(p, [...t].sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0).map(([k, n]) => `${n}\t${k}`).join('\n') + '\n');
 
 // So hai túi. `bo` = [{khoa, ma, lyDo}]; `maSo` = Set mã dòng sổ có thật.
 export function soTui(cu, moi, bo = [], maSo = new Set()) {
@@ -100,11 +100,11 @@ export function soTui(cu, moi, bo = [], maSo = new Set()) {
   return { tong, thieu, thua, loi, bo: bo.length };
 }
 
-function docBo(p) {
+export function docBo(p) {
   if (!p || !fs.existsSync(p)) return [];
   return fs.readFileSync(p, 'utf8').split('\n').filter(d => d && !d.startsWith('#')).map(d => { const [khoa, ma, lyDo] = d.split('\t'); return { khoa, ma: (ma || '').trim(), lyDo }; });
 }
-function docMaSo(p) {
+export function docMaSo(p) {
   if (!p || !fs.existsSync(p)) return new Set();
   const s = new Set();
   for (const d of fs.readFileSync(p, 'utf8').split('\n')) { try { const o = JSON.parse(d); if (o.id) s.add(o.id); } catch { /* dòng hỏng không tính */ } }

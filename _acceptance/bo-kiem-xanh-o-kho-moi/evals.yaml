@@ -52,8 +52,8 @@ evals:
     executor: script
     cmd: config:executors.script.bo_kiem_xanh_that
     expected: >
-      Exit 0, có dòng `AC-2 đạt: <n>/<n> tệp bộ kiểm chỉ khác bản gốc ở chỗ luật` với n > 200, và dòng AC-4 của B1
-      `… tệp không phải sản phẩm giống bản gốc` vẫn đạt.
+      Exit 0, có dòng `AC-2 (B2) đạt: <n>/<n> tệp bộ kiểm chỉ khác bản gốc ở đường và tên · <m> chỗ đảo mơ hồ đã khai`
+      với n > 200, và dòng `AC-4 đạt: <a> tệp đúng luật, <b> tệp không phải sản phẩm giữ nguyên` của B1 vẫn in.
     paths: [migration/kich-ban/**]
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
   - id: E3
@@ -82,7 +82,7 @@ evals:
     cmd: config:executors.script.bo_kiem_xanh_giu_khoa
     expected: >
       Exit 0. Dòng đầu `nguồn: <40-hex> (kit-cu/main)`. Có dòng `AC-4 đạt: báo cáo đo trên nguồn <8-hex>, cây mới <8-hex>
-      dựng lại khớp; sáu bước thoát 0 ở cả hai cây; giữ đủ <n>/<n> khoá, bỏ 0` trong đó n BẰNG số khoá đạt của túi cây cũ
+      dựng lại khớp; 6 bước thoát 0 ở cả hai cây; giữ đủ <n>/<n> khoá, bỏ 0` trong đó n BẰNG số khoá đạt của túi cây cũ
       đã commit ở migration/kich-ban/ket-qua/giu-khoa/ (thước đếm lại, không đọc n từ báo cáo), và phán quyết do thước chạy
       lại giu-khoa.mjs trên hai túi đã commit trùng phán quyết của báo cáo. bo-khoa.tsv có dòng → không đạt («bỏ khoá chưa
       duyệt»).
