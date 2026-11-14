@@ -1828,5 +1828,71 @@
   "cu": "replace(/\"\\$AG/g, `\"${kit}`)",
   "moi": "replace(/\"\\$AG/g, `\"${kit}/plugins/acceptance-gate`)",
   "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$HERE/../../scripts\"",
+  "moi": "\"$HERE/../../plugins/acceptance-gate/scripts\"",
+  "so_lan": 4
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$HERE/../../lib\"",
+  "moi": "\"$HERE/../../plugins/acceptance-gate/lib\"",
+  "so_lan": 4
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$MUTD/plugins/acceptance-gate/",
+  "moi": "\"$MUTD/",
+  "so_lan": 12
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$MUTR/plugins/acceptance-gate/",
+  "moi": "\"$MUTR/",
+  "so_lan": 5
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$PMNOLIB/plugins/acceptance-gate/",
+  "moi": "\"$PMNOLIB/",
+  "so_lan": 3
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$PMMUT/plugins/acceptance-gate/",
+  "moi": "\"$PMMUT/",
+  "so_lan": 4
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$PMMUT2/plugins/acceptance-gate/",
+  "moi": "\"$PMMUT2/",
+  "so_lan": 4
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$M42/plugins/acceptance-gate/",
+  "moi": "\"$M42/",
+  "so_lan": 3
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$HERE\"/../../lib/",
+  "moi": "\"$HERE\"/../../plugins/acceptance-gate/lib/",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$G/plugins/acceptance-gate/",
+  "moi": "\"$G/",
+  "so_lan": 2
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$GPFAKE/plugins/acceptance-gate/",
+  "moi": "\"$GPFAKE/",
+  "so_lan": 3
  }
 ]
