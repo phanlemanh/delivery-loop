@@ -5,9 +5,9 @@ slug: bo-kiem-xanh-o-kho-moi
 owner: phanlemanh@gmail.com
 risk_tier: T2      # migration/KE-HOACH.md mục 12, bảng dãy B; vật ở migration/, ngoài t3_paths
 surfaces: [cli]
-status: draft
-approved_by:
-approved_at:
+status: approved
+approved_by: Phan Le Manh
+approved_at: 2026-11-14
 design_doc: migration/kich-ban/THIET-KE-B2.md
 ---
 
