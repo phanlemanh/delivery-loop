@@ -2,3 +2,6 @@
 tests/scripts/moc-chien-dich.test.mjs	// delivery-loop, vòng B1 13/11)	chú thích ở nguồn đã nhắc tên kho mới
 tests/scripts/run-tests.sh	te_repo te7 plugins/acceptance-gate/scripts/x.js	ca TE7 ở nguồn dùng sẵn đường plugins/ làm dữ liệu glob
 tests/scripts/run-tests.sh	te_repo te14 plugins/acceptance-gate/scripts/x.js	ca TE14 ở nguồn dùng sẵn đường plugins/ làm dữ liệu glob
+tests/design-floor/lib/khoa.mjs	'knowledge'	nguồn dựng kho giả có thư mục knowledge, trùng tên plugin mới
+tests/design-floor/moc-s0-s1.mjs	'knowledge'	nguồn dựng kho giả có thư mục knowledge, trùng tên plugin mới
+tests/scripts/run-tests.sh	nothas TE14c "plugins/acceptance-gate"	ca TE14c ở nguồn dùng sẵn đường plugins/ làm dữ liệu glob

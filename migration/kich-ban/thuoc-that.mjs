@@ -150,7 +150,9 @@ function boKiem(bx, S) {
   if (!a || !b) return;
   const tieuDe = git(['log', '--reverse', '--format=%s', `${S}..${NHANH[0]}`]).trim().split('\n');
   const k = bx.bo_kiem;
-  const thuoc = (t) => (t.startsWith(k.tap) && !t.includes(k.tru) && k.duoi.some(d => t.endsWith(d))) || k.tep_goc.some(g => (g.endsWith('/') ? t.startsWith(g) : t === g));
+  // Tập bước 6 = tập luật cộng tệp một mục vá nêu (kịch bản áp vá lên đúng tệp mục ấy nêu, kể cả fixture).
+  const vaTep = new Set(k.va ? JSON.parse(fs.readFileSync(path.resolve(DAY, k.va), 'utf8')).map(v => v.tep) : []);
+  const thuoc = (t) => (t.startsWith(k.tap) && !t.includes(k.tru) && k.duoi.some(d => t.endsWith(d))) || k.tep_goc.some(g => (g.endsWith('/') ? t.startsWith(g) : t === g)) || vaTep.has(t);
   const cham = git(['diff', '--name-only', `${NHANH[0]}~1`, NHANH[0]]).trim().split('\n').filter(Boolean);
   const ngoai = cham.filter(t => !thuoc(t));
   if (tieuDe.length !== 6 || tieuDe[5] !== 'dọn nhà 6/6: bộ kiểm theo bố cục mới') loi.push(`nhánh đích không có commit 6 bộ kiểm: ${tieuDe.join(' | ')}`);
