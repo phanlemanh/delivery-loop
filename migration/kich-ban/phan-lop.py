@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-"""phan-lop.py — tách và chia lớp ca kiểm đỏ do đổi bố cục (vòng B1 kich-ban-chuyen-nha, AC-10).
+"""phan-lop.py — chia lớp ca kiểm thiếu ở cây mới do đổi bố cục (B1 AC-10; tính lại theo TÚI KHOÁ ở B2 AC-5).
 
 Dùng: phan-lop.py <thư mục đo> <mã nguồn> <mã cây mới>  > migration/kich-ban/ket-qua/lop-do.md
-<thư mục đo>/out/{A,B}/<bộ>.log và ketqua.tsv do migration/b0/chay.sh ghi (A = cây cũ, B = cây mới).
-Khoá ca và dòng mẫu: ca_do của migration/b0/tach.py (cùng thước với đo thử B0), thêm che đường thư mục tạm của máy.
-Lớp dấu hiệu đọc trên dòng FAIL cùng phần sau nó; không ra lớp nào thì cùng phần trước nó (tới 12 dòng mỗi phía), theo thứ tự: lich-su · duong-dan · ten-doi · khac;
-bộ thoát khác 0 mà không in ca đỏ nào → một mục lớp bo-chay; ca rơi vào «khac» mà tệp kiểm chứa nó có lỗi đường dẫn →
-lớp cung-tep (thường là ca chạy theo ca đã đỏ — đối chứng dương, ca thông điệp).
+<thư mục đo>/out/{A,B}/ do migration/kich-ban/chay-bo-kiem.sh ghi (A = cây cũ, B = cây mới).
+«Đỏ thêm» = khoá ĐẠT ở cây cũ mà không đạt ở cây mới (giu-khoa.mjs --json — cùng thước giữ đủ khoá ca), cộng một mục
+`bo-chay` cho mỗi bộ chết ngầm (bộ không đo được, hay thoát khác 0 mà không in ca nào) và cho lượt chạy thiếu dòng XONG.
+Ca thiếu có dòng đỏ ở cây mới → lớp theo dấu hiệu, đọc dòng đỏ cùng phần sau nó rồi phần trước nó (tới 12 dòng mỗi phía):
+lich-su · duong-dan · ten-doi · khac; «khac» mà khối/tệp kiểm chứa nó có lỗi đường dẫn → cung-tep. Ca thiếu không có dòng
+nào ở cây mới → khong-chay-toi (ca không chạy tới — B1 không thấy lớp này, Ngoài-3/7). Bước một-khoá thiếu → bo-chay.
 """
-import datetime, json, os, re, sys
+import datetime, json, os, re, subprocess, sys
 
 DAY = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(DAY, '..', 'b0'))
-from tach import ca_do, SUITES  # noqa: E402
 
 TEN_CU = ['acceptance-gate-kit', 'dieu-phoi', 'road-map', 'tri-thuc', 'cat-luot', 'gom-tin-hieu']
 LOP = [
@@ -27,25 +26,6 @@ def che(s):
     for re_, t in CHE:
         s = re_.sub(t, s)
     return s
-
-
-def doc(thu, ban, bo):
-    p = os.path.join(thu, 'out', ban, bo + '.log')
-    if not os.path.exists(p):
-        return None, []
-    nd = open(p, errors='replace').read()
-    return {che(k): v for k, v in ca_do(nd).items()}, nd.splitlines()
-
-
-def rc(thu, ban):
-    m = {}
-    p = os.path.join(thu, 'out', ban, 'ketqua.tsv')
-    if os.path.exists(p):
-        for d in open(p):
-            c = d.rstrip('\n').split('\t')
-            if len(c) >= 2 and c[0] in SUITES:
-                m[c[0]] = int(c[1])
-    return m
 
 
 def boi_canh(dong, mau):
@@ -98,34 +78,74 @@ def doan_tep(dong, mau):
     return '\n'.join(dong[h:j]) if h > 0 or re.match(r'^\s*(===|---) .+ (===|---)\s*$', dong[0] if dong else '') else ''
 
 
+def doc_dong(thu, ban, bo):
+    p = os.path.join(thu, 'out', ban, bo + '.log')
+    return open(p, errors='replace').read().splitlines() if os.path.exists(p) else []
+
+
+LOP_TEN = ['khong-chay-toi', 'duong-dan', 'cung-tep', 'ten-doi', 'lich-su', 'bo-chay', 'khac']
+
+
 def main():
     thu, nguon, cay_moi = sys.argv[1:4]
-    rcA, rcB = rc(thu, 'A'), rc(thu, 'B')
-    so = {'nguon': nguon, 'cay_moi': cay_moi, 'bo': {}, 'lop': {k: 0 for k in ['duong-dan', 'cung-tep', 'ten-doi', 'lich-su', 'bo-chay', 'khac']}, 'mau': {}}
-    for bo in SUITES:
-        a, _ = doc(thu, 'A', bo)
-        b, dongB = doc(thu, 'B', bo)
-        a = a or {}
-        b = b or {}
-        ca_hai = sorted(set(a) & set(b))
-        them = sorted(set(b) - set(a))
+    r = subprocess.run(['node', os.path.join(DAY, 'giu-khoa.mjs'), os.path.join(thu, 'out', 'A'), os.path.join(thu, 'out', 'B'), '--json'],
+                       capture_output=True, text=True)
+    if r.returncode not in (0, 1) or not r.stdout.strip():
+        sys.stderr.write('phan-lop: giu-khoa.mjs không chạy được: ' + r.stderr[-400:] + '\n')
+        sys.exit(2)
+    g = json.loads(r.stdout)
+    bo_cu, bo_moi = g['boCu'], g['boMoi']
+    ten_bo = list(bo_cu) + [b for b in bo_moi if b not in bo_cu]
+    so = {'nguon': nguon, 'cay_moi': cay_moi, 'bo': {}, 'lop': {k: 0 for k in LOP_TEN}}
+    mau = {}
+
+    def them_mau(l, bo, chu):
+        ds = mau.setdefault(l, [])
+        if sum(1 for m in ds if m.startswith(bo + ':')) < 2:
+            ds.append(f'{bo}: ' + ' ⏎ '.join(x.strip() for x in che(chu).split('\n') if x.strip())[:400])
+
+    for bo in ten_bo:
+        a, b = bo_cu.get(bo, {}), bo_moi.get(bo, {})
+        dong_b = doc_dong(thu, 'B', bo)
+        truot_b = {}
+        for k, raw in b.get('truot', []):
+            truot_b.setdefault(k, raw)
+        truot_a = {k for k, _ in a.get('truot', [])}
+        thieu = [k for k in g['thieu'] if (k.split(': ', 1)[0] if ': ' in k else k) == bo]
         lop = {}
-        for k in them:
-            l, chu = lop_ca(dongB, b[k])
-            if l == 'khac' and dict(LOP)['duong-dan'].search(doan_tep(dongB, b[k])):
-                l = 'cung-tep'  # ca không tự in lỗi đường dẫn, nhưng tệp kiểm chứa nó có — thường là ca chạy theo ca đã đỏ
+        khong_toi = 0
+        for k in thieu:
+            if k in truot_b:
+                l, chu = lop_ca(dong_b, truot_b[k])
+                if l == 'khac' and dict(LOP)['duong-dan'].search(doan_tep(dong_b, truot_b[k])):
+                    l = 'cung-tep'
+            elif b.get('loai') == 'mot-khoa' or a.get('loai') == 'mot-khoa':
+                l, chu = 'bo-chay', f'bộ thoát {b.get("rc")}'
+            else:
+                l, chu, khong_toi = 'khong-chay-toi', k, khong_toi + 1
             lop[l] = lop.get(l, 0) + 1
-            so['mau'].setdefault(l, [])
-            if sum(1 for m in so['mau'][l] if m.startswith(bo + ':')) < 2:  # tối đa hai dòng mẫu mỗi lớp trong MỖI bộ
-                so['mau'][l].append(f'{bo}: ' + ' ⏎ '.join(x.strip() for x in chu.split('\n') if x.strip())[:400])
-        if rcB.get(bo, 0) != 0 and not b:
+            them_mau(l, bo, chu)
+        chet = None
+        if bo in g.get('khongDoMoi', []):
+            chet = 'bộ không đo được (thiếu bảng thời gian hay nhật ký)'
+        elif b and b.get('rc', 0) != 0 and b.get('so_dong', 0) == 0 and b.get('loai') != 'mot-khoa':
+            chet = f'bộ thoát {b.get("rc")} mà không in ca nào'
+        elif not b:
+            chet = 'bộ không có ở lượt chạy cây mới'
+        if chet:
             lop['bo-chay'] = lop.get('bo-chay', 0) + 1
-            so['mau'].setdefault('bo-chay', []).append(f'{bo}: bộ thoát {rcB.get(bo)} mà không in ca đỏ nào')
+            mau.setdefault('bo-chay', []).append(f'{bo}: {chet}')
         for l, n in lop.items():
             so['lop'][l] += n
-        so['bo'][bo] = {'rc_cu': rcA.get(bo), 'rc_moi': rcB.get(bo), 'do_cu': len(a), 'do_moi': len(b), 'do_ca_hai': len(ca_hai),
-                        'do_them': len(them) + lop.get('bo-chay', 0), 'chi_do_cu': len(set(a) - set(b)), 'lop': lop,
-                        'ca_hai': ca_hai[:20]}
+        so['bo'][bo] = {'rc_cu': a.get('rc'), 'rc_moi': b.get('rc'), 'dat_cu': a.get('dat', 0), 'dat_moi': b.get('dat', 0),
+                        'khong_chay_toi': khong_toi, 'do_ca_hai': len(truot_a & set(truot_b)),
+                        'do_them': len(thieu) + (1 if chet else 0), 'lop': lop}
+    for x in g.get('khongDoMoi', []):
+        if x not in so['bo'] and x not in ten_bo:
+            so['bo']['luot-chay'] = {'rc_cu': None, 'rc_moi': None, 'dat_cu': 0, 'dat_moi': 0, 'khong_chay_toi': 0, 'do_ca_hai': 0,
+                                     'do_them': 1, 'lop': {'bo-chay': 1}}
+            so['lop']['bo-chay'] += 1
+            mau.setdefault('bo-chay', []).append(f'luot-chay: {x}')
     tong = sum(v['do_them'] for v in so['bo'].values())
     so['tong_do_them'] = tong
     ngay = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -135,53 +155,48 @@ def main():
     p(f'nguon: {nguon}')
     p(f'cay_moi: {cay_moi}')
     p(f'do_luc: {ngay}')
-    p('bo: [' + ', '.join(SUITES) + ']')
+    p('bo: [' + ', '.join(so['bo']) + ']')
     p(f'tong_do_them: {tong}')
     p('---')
     p('')
-    p('# Lớp ca kiểm đỏ do đổi bố cục — đầu vào cho B2')
+    p('# Lớp ca kiểm thiếu ở cây mới do đổi bố cục')
     p('')
-    p('Máy sinh bởi `migration/kich-ban/do-lop-do.sh` → `phan-lop.py` — đừng sửa tay, chạy lại. Cây cũ = nguồn ở trên;')
-    p('cây mới = đỉnh `don-nha/3.0` dựng từ nguồn ấy. Mỗi cây một bản kéo riêng, cùng tên thư mục `delivery-loop`, chạy đúng')
-    p('sáu bước của việc `tests` (`migration/b0/chay.sh`). Khoá ca như đo thử B0. «Đỏ thêm» = đỏ ở cây mới mà không đỏ ở cây cũ;')
-    p('ca đỏ ở cả hai cây là nợ có sẵn hoặc chập chờn, không tính cho đổi bố cục.')
+    p('Máy sinh bởi `migration/kich-ban/do-lop-do.sh` → `ghi-bao-cao.sh` → `phan-lop.py` — đừng sửa tay, chạy lại. Cây cũ =')
+    p('nguồn ở trên; cây mới = đỉnh `don-nha/3.0` dựng từ nguồn ấy. Mỗi cây một bản kéo riêng, cùng tên thư mục `delivery-loop`,')
+    p('chạy các bước kiểm của việc `tests` trong `gate.yml` của chính cây (`chay-bo-kiem.sh`). «Đỏ thêm» tính theo TÚI KHOÁ')
+    p('(`giu-khoa.mjs`): khoá đạt ở cây cũ mà không đạt ở cây mới — ca đỏ, ca SKIP, và ca không chạy tới —, cộng một mục cho mỗi')
+    p('bộ chết ngầm. Ca đỏ ở cả hai cây không tính.')
     p('')
-    p('**Giới hạn:** lớp chia theo CHỮ của nhật ký (dòng FAIL và vài dòng quanh nó), không chạy lại từng ca. «Tên đổi» có thể')
-    p('đếm nhầm ca in danh sách tên hồ sơ có chứa tên cũ; «cùng tệp» là ca không tự in lỗi đường dẫn nhưng tệp kiểm chứa nó có —')
-    p('thường là ca chạy theo ca đã đỏ. Ca không tự in lỗi sau dòng FAIL thì đọc phần trước nó, nên có thể mượn lớp của ca liền')
-    p('trước trong nhật ký kiểu node. Một lượt đo mỗi cây trên một máy.')
+    p('**Giới hạn:** lớp của ca đỏ chia theo CHỮ của nhật ký quanh dòng đỏ, không chạy lại từng ca. «Cùng tệp» là ca không tự in')
+    p('lỗi đường dẫn nhưng khối chứa nó có. Ca không chạy tới không có dòng nào để đọc nên không chia nhỏ hơn. Một lượt mỗi cây.')
     p('')
-    p('| Bộ | Mã thoát cũ | Mã thoát mới | Đỏ cây cũ | Đỏ cây mới | Đỏ cả hai | Đỏ thêm | Chỉ đỏ ở cây cũ |')
-    p('|---|---|---|---|---|---|---|---|')
+    p('| Bộ | Mã thoát cũ | Mã thoát mới | Đạt cây cũ | Đạt cây mới | Không chạy tới | Đỏ thêm |')
+    p('|---|---|---|---|---|---|---|')
     for bo, v in so['bo'].items():
-        p(f"| {bo} | {v['rc_cu']} | {v['rc_moi']} | {v['do_cu']} | {v['do_moi']} | {v['do_ca_hai']} | {v['do_them']} | {v['chi_do_cu']} |")
-    p(f'| **tổng** | | | | | | **{tong}** | |')
+        p(f"| {bo} | {v['rc_cu']} | {v['rc_moi']} | {v['dat_cu']} | {v['dat_moi']} | {v['khong_chay_toi']} | {v['do_them']} |")
+    p(f'| **tổng** | | | | | | **{tong}** |')
     p('')
-    p('## Đỏ thêm theo lớp dấu hiệu')
+    p('## Đỏ thêm theo lớp')
     p('')
-    ten_lop = {'duong-dan': 'đường dẫn không còn', 'cung-tep': 'cùng tệp kiểm có lỗi đường dẫn', 'ten-doi': 'tên đổi', 'lich-su': 'dựng bản cũ từ lịch sử', 'bo-chay': 'bộ chạy không chạy được', 'khac': 'khác'}
-    p('| Lớp | Số ca | ' + ' | '.join(SUITES) + ' |')
-    p('|---|---|' + '---|' * len(SUITES))
+    ten_lop = {'khong-chay-toi': 'không chạy tới', 'duong-dan': 'đường dẫn không còn', 'cung-tep': 'cùng khối có lỗi đường dẫn',
+               'ten-doi': 'tên đổi', 'lich-su': 'dựng bản cũ từ lịch sử', 'bo-chay': 'bộ chết ngầm / bộ chạy không chạy được', 'khac': 'khác'}
+    cot = list(so['bo'])
+    p('| Lớp | Số ca | ' + ' | '.join(cot) + ' |')
+    p('|---|---|' + '---|' * len(cot))
     for l, n in so['lop'].items():
-        p(f'| {ten_lop[l]} (`{l}`) | {n} | ' + ' | '.join(str(so["bo"][b]["lop"].get(l, 0)) for b in SUITES) + ' |')
+        p(f'| {ten_lop[l]} (`{l}`) | {n} | ' + ' | '.join(str(so["bo"][b]["lop"].get(l, 0)) for b in cot) + ' |')
     p('')
-    for l, ds in so['mau'].items():
+    for l, ds in mau.items():
         p(f'**Mẫu — {ten_lop[l]}:**')
         p('')
-        for m in ds:
+        for m in ds[:6]:
             p(f'- `{m.replace("`", "ʼ")}`')
         p('')
-    p('## Ca đỏ ở cả hai cây (tách khỏi «đỏ thêm»)')
-    p('')
-    for bo, v in so['bo'].items():
-        if v['ca_hai']:
-            p(f"- {bo}: " + ' · '.join(f'`{k.replace("`", "ʼ")}`' for k in v['ca_hai']))
-    p('')
     p('## Số liệu máy đọc')
     p('')
     p('<!-- <<<LOP-DO-SO-LIEU -->')
     p('```json')
-    p(json.dumps({k: v for k, v in so.items() if k != 'mau'}, ensure_ascii=False, sort_keys=True))
+    p(json.dumps(so, ensure_ascii=False, sort_keys=True))
     p('```')
     p('<!-- LOP-DO-SO-LIEU>>> -->')
 

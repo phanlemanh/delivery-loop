@@ -14,51 +14,17 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { docGate } from './doc-gate.mjs';
+import { dungCay as _dungCay, chayCay as _chayCay } from './fixture-bo-kiem.mjs';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DAY, '..', '..');
-const CHAY = path.join(DAY, 'chay-bo-kiem.sh');
 const GK = path.join(DAY, 'giu-khoa.mjs');
 const tam = [];
 after(() => { for (const d of tam) fs.rmSync(d, { recursive: true, force: true }); });
 const moTam = (t = 'gk-') => { const d = fs.mkdtempSync(path.join(os.tmpdir(), t)); tam.push(d); return d; };
-const ghi = (goc, p, s) => { fs.mkdirSync(path.dirname(path.join(goc, p)), { recursive: true }); fs.writeFileSync(path.join(goc, p), s); };
 
-const GATE = (them = '') => [
-  'name: gate', 'on: [push]', 'jobs:', '  tests:', '    name: tests', '    runs-on: ubuntu-latest', '    steps:',
-  '      - uses: actions/checkout@v7', '        if: github.event_name == \'push\'',
-  '      - name: cài zsh', '        if: github.event_name == \'push\'', '        run: sudo apt-get install -y zsh',
-  '      - name: ka suite', '        if: github.event_name == \'push\'', '        run: bash tests/ka/run-tests.sh',
-  '      - name: dp suite', '        if: github.event_name == \'push\'', '        run: node --test --test-reporter=tap "tests/dp/**/*.test.mjs"',
-  '      - name: ban do', '        if: github.event_name == \'push\'', '        run: node tests/product-map.mjs --root . --check',
-  them, '  khac:', '    runs-on: ubuntu-latest', '    steps:', '      - run: bash tests/khong-phai.sh', ''].join('\n');
-
-// Bộ bash giả: nạp bo-chay.sh thật (chép vào cây), in mỗi ca một dòng PASS/FAIL. `ca` = mảng [kết, tên].
-const boBash = (ca, chetSau = null) => ['#!/usr/bin/env bash', 'HERE="$(cd "$(dirname "$0")" && pwd)"',
-  '. "$HERE/../bo-chay.sh"', 'bc_tg_mo ka all "$HERE/../.."',
-  ...ca.flatMap(([k, t], i) => [...(chetSau !== null && i === chetSau ? ['exit 1'] : []), `echo "  ${k}: ${t}"`]),
-  'bc_tg_dong', 'exit 0', ''].join('\n');
-// Tệp ca node: `ten` các ca tầng ngoài; một ca có test con; `skip` các tên đánh skip.
-const tepNode = (ten, skip = []) => ["import { test } from 'node:test';",
-  ...ten.map(t => skip.includes(t) ? `test(${JSON.stringify(t)}, { skip: true }, () => {});`
-    : `test(${JSON.stringify(t)}, async (c) => { await c.test('con', () => {}); });`), ''].join('\n');
-
-function dungCay({ ka = [['PASS', 'A01 dau'], ['PASS', 'A02 hai'], ['PASS', 'A03 ba']], dp = ['DP-1 mot', 'DP-2 hai'], skip = [], banDo = 0, chetSau = null, them = '' } = {}) {
-  const c = path.join(moTam('gk-cay-'), 'delivery-loop');
-  ghi(c, '.github/workflows/gate.yml', GATE(them));
-  ghi(c, 'tests/bo-chay.sh', fs.readFileSync(path.join(ROOT, 'tests', 'bo-chay.sh'), 'utf8'));
-  ghi(c, 'tests/ka/run-tests.sh', boBash(ka, chetSau));
-  ghi(c, 'tests/dp/a.test.mjs', tepNode(dp, skip));
-  ghi(c, 'tests/product-map.mjs', `process.exit(${banDo});\n`);
-  ghi(c, 'tests/khong-phai.sh', 'exit 9\n');
-  return c;
-}
-const chayCay = (cay) => {
-  const out = moTam('gk-out-');
-  const r = spawnSync('bash', [CHAY, cay, out], { encoding: 'utf8' });
-  assert.equal(r.status, 0, `chay-bo-kiem.sh hỏng: ${r.stderr}`);
-  return out;
-};
+const dungCay = (o) => _dungCay(moTam, o);
+const chayCay = (c) => _chayCay(moTam, c);
 const giuKhoa = (cu, moi, them = []) => spawnSync(process.execPath, [GK, cu, moi, ...them], { encoding: 'utf8' });
 
 // ── AC-4: bộ đọc việc tests của gate.yml ─────────────────────────────────────────────────────────────────────────
