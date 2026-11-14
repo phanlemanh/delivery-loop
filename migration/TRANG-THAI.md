@@ -168,7 +168,7 @@ Việc 2, 3 và 3b đã xong; B1 còn chờ đúng một điều: chủ kho gọ
 8. ~~Bảo máy nào giữ đợt từ nay~~ — xong 12/11: Mac Studio.
 9. Cài đặt của kho này trên GitHub trước ngày cắt — xem «Kiểm bàn giao 12/11», mục cài đặt.
 11. ~~Bảo gộp PR #503 kho cũ~~ — XONG 15/11 05:56 (`644e9b49`).
-12. **Vòng kho cũ thứ hai cho phần dư B2** (K2–K4, 412 khoá; neo `migration/viec-kho-cu-b2.md` §4): ĐÃ QUYẾT 15/11 «Mở sau khi gộp» — phiên giữ đợt mở ngay sau khi #503 gộp và `main`/`chuyen-nha` đã cập nhật. Còn chờ: chọn một trong ba lối cho K3 (hồ sơ đã ký mang đường cũ), hỏi ở Cổng Đáng của chính vòng đó.
+12. **Vòng kho cũ thứ hai cho phần dư B2** (K2–K4, 412 khoá; neo `migration/viec-kho-cu-b2.md` §4): ĐÃ QUYẾT 15/11 «Mở sau khi gộp». #503 đã gộp và `main`/`chuyen-nha` đã cập nhật 15/11 05:56–06:10; đề bài vòng đã soạn (K1–K4, đọc `viec-kho-cu-b2.md` §2 và §4 ở worktree B2). CHƯA MỞ: app không cho phiên giữ đợt mở phiên ở kho khác trong một lượt do máy đánh thức — cần chủ kho nói một chữ trong phiên giữ đợt. B2 đã được báo đo lại trên nguồn mới (06:10). Còn chờ: chọn một trong ba lối cho K3 (hồ sơ đã ký mang đường cũ), hỏi ở Cổng Đáng của chính vòng đó.
 
 ## Việc lặp lại: cập nhật `main` khi kho cũ đi thêm
 
