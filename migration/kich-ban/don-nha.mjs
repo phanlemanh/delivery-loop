@@ -299,7 +299,9 @@ export function buoc6BoKiem(wt, bx, kho, S, dichPlugin) {
   const RE_DUONG = new RegExp(`(^|[\\s"'\`(=\\[,{]|\\$\\{?\\w+\\}?/|\\$\\([^)]*\\)/|(?:\\.\\./)+|HEAD:)((?:${G})/[A-Za-z0-9_.\\-/]*|(?:${T})(?![\\w.-]))`, 'gm');
   const RE_MANG = new RegExp(`\\[\\s*(?:(['"])[\\w.\\-/]+\\1\\s*,\\s*)*(['"])(?:${G})\\2(?:\\s*,\\s*(['"])[\\w.\\-/]+\\3)*\\s*\\]`, 'g');
   const RE_DOI_SO = new RegExp(`(\\b(?:${BIEN})\\s*,\\s*)(['"])(${G})\\2(\\s*[,)])`, 'g');
-  const L = luatDoiChu(bx);
+  // Luật đổi chữ của bước 3, riêng luật tên chợ thêm neo phía trước: trong bộ kiểm, «…-acceptance-gate-kit/» là tên thư mục
+  // (bản ghi phiên của kho cũ), không phải tên chợ.
+  const L = luatDoiChu(bx).map(l => (l.khoa === bx.cho_moi.ten_cu ? { ...l, re: new RegExp(`(?<![\\w-])(?:${l.re.source})`, 'g') } : l));
   const thuocTap = (t) => (t.startsWith(k.tap) && !t.includes(k.tru) && k.duoi.some(d => t.endsWith(d)))
     || k.tep_goc.some(g => (g.endsWith('/') ? t.startsWith(g) : t === g));
   const so = [];

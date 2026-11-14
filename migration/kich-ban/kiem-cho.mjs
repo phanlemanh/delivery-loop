@@ -26,7 +26,7 @@ const LUAT_XEP = path.join(DAY, '..', 'tra-soat', 'luat-xep.json');
 const git = (kho, args) => execFileSync('git', ['-C', kho, ...args], { encoding: 'utf8', maxBuffer: 1 << 30, stdio: ['ignore', 'pipe', 'pipe'] });
 const lsTree = (kho, ref) => git(kho, ['ls-tree', '-r', '--name-only', '-z', ref]).split('\0').filter(Boolean);
 
-function docBang(tep) {
+export function docBang(tep) {
   const bx = JSON.parse(fs.readFileSync(tep, 'utf8'));
   const dir = path.dirname(path.resolve(tep));
   return { ...bx, _dir: dir, ten: JSON.parse(fs.readFileSync(path.resolve(dir, bx.bang_ten), 'utf8')) };
@@ -66,7 +66,7 @@ function thuocBuoc6(t, k) {
 }
 // Phép đảo: tên mới → tên cũ theo bảng tên đảo, đường mới → đường cũ theo bảng xếp đảo (đổi tên tệp lệnh / thư mục skill
 // trước). KHÔNG đảo bảng vá — mục vá chỉ qua được khi nó chỉ đổi đường và tên.
-function phepDao(bx, dp) {
+export function phepDao(bx, dp) {
   const L = [];
   const neo = '(?=[/\'"`\\s)\\],:;]|$)';
   for (const [a, b] of Object.entries(bx.ten.lenh)) {
@@ -102,7 +102,7 @@ function lichSuBiDoi(sb, bx) {
   for (const m of sb.matchAll(new RegExp(`([^\\s'"\`(=,]*):(?:${moi})(?=[/'"\`\\s]|$)`, 'g'))) if (!/(^|[^\w])HEAD$/.test(m[1])) return true;
   return false;
 }
-function daoTep(t, sb, dao, moHo, bx) {
+export function daoTep(t, sb, dao, moHo, bx) {
   const giu = moHo.filter(x => x.tep === t);
   let s = sb; const loi = [];
   if (bx && lichSuBiDoi(sb, bx)) loi.push(`tệp kiểm lệch luật: ${t}`);
@@ -121,7 +121,7 @@ function giaiNen(kho, ref) {
 }
 
 // Thư mục đích của từng plugin cũ, đọc từ tệp khai của NGUỒN.
-function dichPluginCua(choNguon, bx) {
+export function dichPluginCua(choNguon, bx) {
   const m = {};
   for (const p of choNguon.plugins) {
     const src = path.posix.normalize(p.source).replace(/^\.\/?/, '').replace(/\/$/, '');
