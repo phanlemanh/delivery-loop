@@ -29,7 +29,7 @@ const lsTree = (kho, ref) => git(kho, ['ls-tree', '-r', '--name-only', '-z', ref
 function docBang(tep) {
   const bx = JSON.parse(fs.readFileSync(tep, 'utf8'));
   const dir = path.dirname(path.resolve(tep));
-  return { ...bx, ten: JSON.parse(fs.readFileSync(path.resolve(dir, bx.bang_ten), 'utf8')) };
+  return { ...bx, _dir: dir, ten: JSON.parse(fs.readFileSync(path.resolve(dir, bx.bang_ten), 'utf8')) };
 }
 
 // Đích của một tệp nguồn theo bảng xếp (tính lại ở đây, không hỏi kịch bản).
@@ -56,6 +56,61 @@ function luatRieng(bx) {
   return L;
 }
 const apLuat = (s, L) => L.reduce((x, [, re, thay]) => x.replace(re, thay), s);
+
+// ── B2 AC-2: tệp bộ kiểm chỉ khác bản gốc ở đường và tên (phép ĐẢO, cài lại ở đây) ────────────────────────────────
+// Tập bước 6 (đọc bo_kiem của bảng xếp làm dữ liệu): tệp mã dưới `tap` trừ `tru`, cộng `tep_goc`.
+function thuocBuoc6(t, k) {
+  if (!k) return false;
+  return (t.startsWith(k.tap) && !t.includes(k.tru) && k.duoi.some(d => t.endsWith(d)))
+    || k.tep_goc.some(g => (g.endsWith('/') ? t.startsWith(g) : t === g));
+}
+// Phép đảo: tên mới → tên cũ theo bảng tên đảo, đường mới → đường cũ theo bảng xếp đảo (đổi tên tệp lệnh / thư mục skill
+// trước). KHÔNG đảo bảng vá — mục vá chỉ qua được khi nó chỉ đổi đường và tên.
+function phepDao(bx, dp) {
+  const L = [];
+  const neo = '(?=[/\'"`\\s)\\],:;]|$)';
+  for (const [a, b] of Object.entries(bx.ten.lenh)) {
+    const [pa, la] = a.split(':'); const lb = b.split(':')[1]; const D = dp[pa]; if (!D) continue;
+    L.push([new RegExp(thoat(`${D}/commands/${lb}.md`), 'g'), `${D}/commands/${la}.md`]);
+    L.push([new RegExp(thoat(`${D}/skills/${lb}`) + neo, 'g'), `${D}/skills/${la}`]);
+  }
+  for (const [cu, moi] of Object.entries(bx.tep)) L.push([new RegExp(thoat(moi), 'g'), cu]);
+  for (const [cu, moi] of Object.entries(bx.thu_muc).sort((x, y) => y[1].length - x[1].length)) {
+    L.push([new RegExp('(?<![\\w.-])' + thoat(moi) + neo, 'g'), cu]);
+  }
+  for (const [a, b] of Object.entries(bx.ten.lenh)) L.push([new RegExp('(?<![\\w-])' + thoat(b) + '(?![\\w-])', 'g'), a]);
+  for (const [p, q] of Object.entries(bx.ten.plugin)) {
+    L.push([new RegExp('(?<![\\w-])' + thoat(q) + ':(?=[a-z])', 'g'), p + ':']);
+    L.push([new RegExp('(?<![\\w-])' + thoat(q) + '@', 'g'), p + '@']);
+    L.push([new RegExp('--plugin ' + thoat(q) + '(?![\\w-])', 'g'), '--plugin ' + p]);
+    L.push([new RegExp("plugin: '" + thoat(q) + "'", 'g'), "plugin: '" + p + "'"]);
+    L.push([new RegExp("'" + thoat(q) + "': \\{", 'g'), "'" + p + "': {"]);
+  }
+  L.push([new RegExp('(?<![\\w-])' + thoat(bx.luat_cho.thay) + '(?![\\w-])', 'g'), bx.cho_moi.ten_cu]);
+  return (s) => L.reduce((x, [re, thay]) => x.replace(re, thay), s);
+}
+// Chỗ đảo mơ hồ đã khai: «tệp<TAB>chuỗi<TAB>lý do» — chuỗi ấy ở cây mới vốn có sẵn ở bản gốc, không được đảo.
+function docMoHo(bx) {
+  const p = bx.bo_kiem?.dao_mo_ho ? path.resolve(bx._dir, bx.bo_kiem.dao_mo_ho) : null;
+  if (!p || !fs.existsSync(p)) return [];
+  return fs.readFileSync(p, 'utf8').split('\n').filter(d => d.trim() && !d.startsWith('#')).map(d => { const [tep, chuoi, lyDo] = d.split('\t'); return { tep, chuoi, lyDo }; });
+}
+// Dạng lịch sử `<mã khác HEAD>:<đường>` phải giữ đường CŨ (commit cũ mang bố cục cũ): đường mới đứng sau một mã như thế là
+// một sửa mà phép đảo tự xoá dấu — đo riêng, trước khi đảo.
+function lichSuBiDoi(sb, bx) {
+  const moi = [...Object.values(bx.thu_muc), ...Object.values(bx.tep)].map(thoat).join('|');
+  for (const m of sb.matchAll(new RegExp(`([^\\s'"\`(=,]*):(?:${moi})(?=[/'"\`\\s]|$)`, 'g'))) if (!/(^|[^\w])HEAD$/.test(m[1])) return true;
+  return false;
+}
+function daoTep(t, sb, dao, moHo, bx) {
+  const giu = moHo.filter(x => x.tep === t);
+  let s = sb; const loi = [];
+  if (bx && lichSuBiDoi(sb, bx)) loi.push(`tệp kiểm lệch luật: ${t}`);
+  giu.forEach((x, i) => { if (!s.includes(x.chuoi)) loi.push(`chỗ đảo mơ hồ không còn: ${t}`); s = s.split(x.chuoi).join(`\u0000MOHO${i}\u0000`); });
+  s = dao(s);
+  giu.forEach((x, i) => { s = s.split(`\u0000MOHO${i}\u0000`).join(x.chuoi); });
+  return { s, loi };
+}
 const laChu = (b) => !b.subarray(0, 8192).includes(0);
 const CHUOI_GIU = ['dieu-phoi.mjs', 'cat-luot.mjs', 'acceptance-gate-kit-tri-thuc'];
 
@@ -100,6 +155,7 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
     const skillDoi = new Map(Object.entries(bx.ten.lenh).map(([a, b]) => [a.split(':'), b.split(':')[1]]).filter(([[pa, la]]) => dp[pa]).map(([[pa, la], lb]) => [`${dp[pa]}/skills/${lb}/SKILL.md`, [la, lb]]));
     const cayMoi = new Set(lsTree(kho, dich)); const daCo = new Set();
     const maNguon = git(kho, ['rev-parse', nguon]).trim();
+    const dao = phepDao(bx, dp); const moHo = docMoHo(bx); let n6 = 0, tong6 = 0;
     let n = 0, m = 0; const demGiu = Object.fromEntries(CHUOI_GIU.map(x => [x, [0, 0]]));
     // Số chỗ khớp của từng mục bảng tên: chữ khớp + đổi tên thư mục plugin, tệp lệnh, thư mục skill.
     const demLuat = new Map([...Object.keys(bx.ten.lenh), ...Object.keys(bx.ten.plugin), bx.cho_moi.ten_cu].map(k => [k, 0]));
@@ -116,6 +172,13 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
       const doiChu = (sp.has(t) && d.startsWith('plugins/')) || taiLieu.has(t);
       if (!doiChu) {
         if (t === '.claude-plugin/marketplace.json' || khuonSua.has(t)) continue; // AC-5 và AC-8 đo
+        if (thuocBuoc6(t, bx.bo_kiem) && laChu(a)) { // B2 AC-2: phép đảo thay phép so từng byte
+          tong6++;
+          const { s: daoLai, loi: l6 } = daoTep(t, b.toString('utf8'), dao, moHo, bx);
+          loi.push(...l6);
+          if (daoLai !== a.toString('utf8')) loi.push(`tệp kiểm lệch luật: ${t}`); else if (!l6.length) n6++;
+          continue;
+        }
         if (!a.equals(b)) loi.push(`tệp không phải sản phẩm bị sửa: ${t}`); else m++;
         continue;
       }
@@ -140,6 +203,7 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
     for (const [k, v] of demLuat) if (!v) loi.push(`luật không khớp chỗ nào: ${k}`);
     const dong = loi.length ? [] : [
       `AC-4 đạt: ${n} tệp đúng luật, ${m} tệp không phải sản phẩm giữ nguyên`,
+      ...(bx.bo_kiem ? [`AC-2 (B2) đạt: ${n6}/${tong6} tệp bộ kiểm chỉ khác bản gốc ở đường và tên · ${moHo.length} chỗ đảo mơ hồ đã khai`] : []),
       'chuỗi phải giữ: ' + CHUOI_GIU.map(x => `${x} ${demGiu[x][0]}→${demGiu[x][1]}`).join(' · '),
       `luật đổi chữ: ${demLuat.size}/${demLuat.size} mục bảng tên có chỗ khớp — ` + [...demLuat].map(([k, v]) => `${k} ${v}`).join(' · '),
     ];

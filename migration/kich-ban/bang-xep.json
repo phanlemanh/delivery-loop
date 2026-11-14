@@ -59,5 +59,15 @@
     },
     "bo_tep": [".claude/skills/review-change/SKILL.md"],
     "make_test": "bash tests/scripts/run-tests.sh && bash tests/hooks/run-tests.sh && bash tests/plugins/run-tests.sh && bash tests/workflows/run-tests.sh && node --test \"tests/dieu-phoi/**/*.test.mjs\""
+  },
+  "bo_kiem": {
+    "_ghi_chu": "B2 bo-kiem-xanh-o-kho-moi — bước 6 «bộ kiểm theo bố cục mới» (THIET-KE-B2.md §3). Tập tệp: mọi tệp văn bản dưới `tap` trừ đường chứa `tru`, cộng `tep_goc`. Luật đường dẫn chung đổi `<gốc cũ>/<đoạn>` theo thu_muc khi gốc + đoạn kế có thật ở nguồn và đứng sau một neo (đầu chuỗi, ../, biến gốc kho trong `bien_goc`, HEAD:); sau biến khác thì chỉ đổi khi đường không mơ hồ (không có ở thư mục gốc khác). Mảng toàn tên gốc và đối số ngay sau biến gốc kho cũng đổi. Rồi luật đổi tên của bước 3, rồi bảng vá `va` (mỗi mục ghim so_lan).",
+    "tap": "tests/",
+    "tru": "/fixtures/",
+    "duoi": [".sh", ".mjs", ".js", ".cjs", ".py", ".ts", ".yml", ".yaml"],
+    "tep_goc": [".github/workflows/", "Makefile", "_acceptance/config.yaml"],
+    "bien_goc": ["KIT", "ROOT", "GOC", "SELF_ROOT", "repoRoot", "ROOT_REAL", "ROOT_REAL_GC", "PMROOT", "REPO", "REPO_ROOT"],
+    "va": "va-bo-kiem.json",
+    "dao_mo_ho": "dao-mo-ho.tsv"
   }
 }

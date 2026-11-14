@@ -70,7 +70,8 @@ function ac8(cay, bx, rs) {
   if ((rsj.vars || {}).project_name !== 'delivery-loop') loi.push('.repo-setup.json thiếu project_name delivery-loop');
   for (const t of ['.editorconfig', 'Makefile', 'tools/plugin_lint.py', 'tools/bump_version.py']) if (!fs.existsSync(path.join(cay, t))) loi.push(`thiếu tệp khuôn: ${t}`);
   if (fs.existsSync(path.join(cay, '.claude/skills/review-change'))) loi.push('còn skill review-change của khuôn');
-  const ns = git(['diff', '--name-status', '--no-renames', 'HEAD~1', 'HEAD'], cay).trim().split('\n').map(d => d.split('\t'));
+  // Commit 5 (khuôn) = HEAD~1; commit 6 (HEAD) là bộ kiểm của B2.
+  const ns = git(['diff', '--name-status', '--no-renames', 'HEAD~2', 'HEAD~1'], cay).trim().split('\n').map(d => d.split('\t'));
   const duoc = { A: k.duoc_cham.them, M: k.duoc_cham.sua, D: k.duoc_cham.xoa };
   for (const [l, t] of ns) if (!(duoc[l] || []).includes(t)) loi.push(`commit 5 chạm tệp ngoài danh sách: ${l} ${t}`);
   const mk = spawnSync('make', ['--dry-run', 'test'], { cwd: cay, encoding: 'utf8' }).stdout.trim();
@@ -110,10 +111,10 @@ function chinh(bx, S) {
     return true;
   });
   const tieuDe = git(['log', '--reverse', '--format=%s', `${S}..${NHANH[0]}`]).trim().split('\n');
-  const dungTieuDe = tieuDe.length === 5 && tieuDe.every((t, i) => t.startsWith(`dọn nhà ${i + 1}/5: `)) && git(['rev-parse', `${NHANH[0]}~5`]).trim() === S;
-  if (!dungTieuDe) loi.push(`nhánh đích không phải nguồn + 5 commit dọn nhà: ${tieuDe.join(' | ')}`);
+  const dungTieuDe = tieuDe.length === 6 && tieuDe.every((t, i) => t.startsWith(`dọn nhà ${i + 1}/6: `)) && git(['rev-parse', `${NHANH[0]}~6`]).trim() === S;
+  if (!dungTieuDe) loi.push(`nhánh đích không phải nguồn + 6 commit dọn nhà: ${tieuDe.join(' | ')}`);
   loi.push(...doiRef);
-  if (dungTieuDe && !doiRef.length) ra(`AC-2 đạt: 5 commit trên ${S}, ref khác không đổi`);
+  if (dungTieuDe && !doiRef.length) ra(`AC-2 đạt: 6 commit trên ${S}, ref khác không đổi`);
   const kq = kiemCho({ kho: KHO, nguon: S, dich: NHANH[0], bangXep: BANG_XEP });
   for (const d of kq.dong) ra(d);
   loi.push(...kq.loi);

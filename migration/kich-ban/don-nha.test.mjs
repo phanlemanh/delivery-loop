@@ -83,9 +83,9 @@ test('KB-AC2', () => {
   assert.equal(r.status, 0, r.stderr);
   assert.deepEqual(soChup(truoc, chupKho(f.kho), 'don-nha/3.0'), []);
   const tieuDe = git(f.kho, ['log', '--reverse', '--format=%s', `${f.nguon}..don-nha/3.0`]).trim().split('\n');
-  assert.equal(tieuDe.length, 5, tieuDe.join('\n'));
-  tieuDe.forEach((t, i) => assert.match(t, new RegExp(`^dọn nhà ${i + 1}/5: `)));
-  assert.equal(rev(f.kho, 'don-nha/3.0~5'), f.nguon);
+  assert.equal(tieuDe.length, 6, tieuDe.join('\n'));
+  tieuDe.forEach((t, i) => assert.match(t, new RegExp(`^dọn nhà ${i + 1}/6: `)));
+  assert.equal(rev(f.kho, 'don-nha/3.0~6'), f.nguon);
 });
 
 test('KB-AC2-do', () => {
@@ -103,13 +103,13 @@ test('KB-AC2-nguon-moi', () => {
   const wtTruoc = git(f.kho, ['worktree', 'list', '--porcelain']);
   const r = donNha(f, 'don-nha/3.0', { nguon: s2 });
   assert.equal(r.status, 0, r.stderr);
-  assert.equal(rev(f.kho, 'don-nha/3.0~5'), s2);
+  assert.equal(rev(f.kho, 'don-nha/3.0~6'), s2);
   assert.ok(git(f.kho, ['ls-tree', '-r', '--name-only', 'don-nha/3.0']).split('\n').includes('plugins/dispatch/scripts/moi.mjs'));
   assert.equal(git(f.kho, ['worktree', 'list', '--porcelain']), wtTruoc);
 });
 
 // ── AC-3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-const SAN_PHAM_FIXTURE = Object.keys(TEP_KIT).filter(t => /^(skills|scripts|commands|dieu-phoi|\.claude-plugin)\//.test(t));
+const SAN_PHAM_FIXTURE = Object.keys(TEP_KIT).filter(t => /^(skills|scripts|commands|hooks|dieu-phoi|\.claude-plugin)\//.test(t));
 
 test('KB-AC3', () => {
   const f = moFix();
@@ -326,7 +326,7 @@ test('KB-AC8-danh-sach', () => {
   const f = moFix();
   assert.equal(donNha(f, 'don-nha/a').status, 0);
   const bx = JSON.parse(fs.readFileSync(f.bangXep, 'utf8'));
-  const dong = git(f.kho, ['diff', '--name-status', 'don-nha/a~1', 'don-nha/a']).trim().split('\n').map(d => d.split('\t'));
+  const dong = git(f.kho, ['diff', '--name-status', 'don-nha/a~2', 'don-nha/a~1']).trim().split('\n').map(d => d.split('\t'));
   assert.ok(dong.length > 0);
   for (const [loai, tep] of dong) {
     const duoc = loai === 'A' ? bx.khuon.duoc_cham.them : loai === 'M' ? bx.khuon.duoc_cham.sua : bx.khuon.duoc_cham.xoa;
