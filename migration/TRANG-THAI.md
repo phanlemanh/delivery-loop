@@ -27,7 +27,7 @@ chủ kho.
 | Kế hoạch chốt với chủ kho (phương thức, tên tạm, bốn dãy việc) | `KE-HOACH.md` mục 3, 12, 13 |
 | Đo thử B0 — bỏ lịch sử, hồ sơ, sổ làm việc thì bao nhiêu ca kiểm đỏ | `KE-HOACH.md` mục 13 · `b0/ket-qua/` |
 | Kho `phanlemanh/delivery-loop` tạo trên GitHub, riêng tư, chạy kiểm tự động (Actions) tắt | `gh repo view phanlemanh/delivery-loop` |
-| `main` = nhánh chính kho cũ (lần cập nhật gần nhất 13/11: `0c4e503b`), đủ 31 thẻ chính thức | `git rev-parse origin/main kit-cu/main` |
+| `main` = nhánh chính kho cũ (lần cập nhật gần nhất 14/11: `593e6837`, PR #502 — MC-11 đọc tên kho bằng `tenKho()`), đủ 31 thẻ chính thức | `git rev-parse origin/main kit-cu/main` |
 | Nhánh `chuyen-nha` có thư mục `migration/` và tệp chỉ đường `.claude/rules/chuyen-nha.md` | nhánh này |
 | Thử kéo kho về chỗ trống và làm theo `MO-PHIEN.md` | 11/11, MacBook Pro — xem cuối tệp |
 | Thử plugin `repo-setup` trên kho này (không ghi): chưa có khuôn cho kho plugin, khuôn gần nhất thêm sai loại tệp | `KE-HOACH.md` mục 14 |
@@ -46,7 +46,7 @@ chủ kho.
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| **B1 `kich-ban-chuyen-nha`** (T3) | phiên riêng trên Mac Studio, worktree nhánh `b1-kich-ban-chuyen-nha` cắt từ `chuyen-nha` | Chủ kho gọi tên 13/11: «Mở B1 kiểu này» — một vòng feature-loop, không phiên điều phối, không lộ trình. Đề xuất mang lên Cổng Đáng: hồ sơ trên nhánh của vòng (ngoại lệ luật «chỉ sửa `migration/`»), neo `_acceptance/release-2-39-0/`, commit dọn nhà lên nhánh riêng cắt từ `kit-cu/main`. Mới mở, chưa qua cổng nào. |
+| **B1 `kich-ban-chuyen-nha`** (T3) | phiên riêng trên Mac Studio, worktree nhánh `b1-kich-ban-chuyen-nha` cắt từ `chuyen-nha` | Chủ kho gọi tên 13/11: «Mở B1 kiểu này» — một vòng feature-loop, không phiên điều phối, không lộ trình. Đề xuất mang lên Cổng Đáng: hồ sơ trên nhánh của vòng (ngoại lệ luật «chỉ sửa `migration/`»), neo `_acceptance/release-2-39-0/`, commit dọn nhà lên nhánh riêng cắt từ `kit-cu/main`. **14/11: dừng ở Cổng Bằng chứng.** S4 lượt 3 trên `684a5e30` ra PENDING-JUDGMENT: 17/17 eval máy và 11 lệnh suite xanh, 0 finding trong hợp đồng, E10j (báo cáo lớp đỏ, 1 787 ca đỏ thêm) hội đồng ba lăng kính đề xuất Đạt; 13 finding ngoài hợp đồng (7 medium, 6 low), máy đề xuất ghi Known limits. Nhánh `claude/b1-kich-ban-chuyen-nha-71df60` đã đẩy ở `d9310529`. Lượt 1 BLOCKED (Node 26), lượt 2 REJECT (con trỏ tương đối AC-7; chặn thêm bởi ca MC-11 — sửa ở kho cũ PR #502, gộp `593e6837`). Lượt gọi người: Cổng Bằng chứng là lượt thứ 5, vượt trần T3 = 4 — lượt ngoài thiết kế là câu Node 24 ngày 13/11. |
 
 ## Ghi chú giữ cho B1
 
