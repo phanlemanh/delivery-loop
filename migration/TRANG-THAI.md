@@ -47,7 +47,8 @@ chủ kho.
 
 | Việc | Ở đâu | Còn thiếu |
 |---|---|---|
-| — | — | Không còn vòng nào đang dở. Kế: xem bảng «Kế» (B2, 5b Repo Standards). |
+| **B2 `bo-kiem-xanh-o-kho-moi`** (T2, trần 3 lượt gọi người) | phiên riêng trên Mac Studio, worktree nhánh `b2-bo-kiem-xanh-o-kho-moi` cắt từ `chuyen-nha` `49cc4876` | Chủ kho gọi tên 14/11: «Mở B2 và gọi chéo». Đầu vào: `kich-ban/ket-qua/lop-do.md` (1 787 ca đỏ thêm, 93 % lớp đường dẫn). Mang lên Cổng Phạm vi: kịch bản đổi luôn đường dẫn trong tệp kiểm (chưa đo — bước thiết kế đo trước), sửa Ngoài-1/3/7 của B1, chốt chỗ để tệp trạng thái sống. Mới mở, chưa qua cổng nào. |
+| **Gọi chéo lõi → điều phối** (kho cũ) | phiên riêng trên Mac Studio, worktree ở `~/dev/acceptance-gate-kit`, nhánh `goi-cheo-loi-dieu-phoi` | Chủ kho gọi tên 14/11, cùng lời. Sửa bốn tệp lõi trỏ thẳng thư mục điều phối và ba hằng tên plugin viết cứng (`hat-giong-goi-cheo-loi-dieu-phoi.md`). Dừng ở PR xanh; gộp khi chủ kho bảo. Khi gộp: chạy lệnh cập nhật `main` ở cuối tệp này, B2 đo lại trên nguồn mới. Mới mở. |
 
 ## Ghi chú giữ cho B1
 
