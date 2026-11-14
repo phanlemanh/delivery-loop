@@ -1,7 +1,7 @@
 {
   "feature_plain": "Một lệnh dựng sẵn kho mới delivery-loop từ nhánh chính kho cũ: sản phẩm vào thư mục riêng của từng plugin, tên mới, khuôn chuẩn kho. Chạy lại lúc nào cũng ra đúng cây ấy, và có số đo bộ kiểm đỏ bao nhiêu cho vòng sau.",
   "decisions": [
-    {"id": "E10j", "q": "Báo cáo lớp đỏ đã đủ để vòng B2 chia việc chưa?", "why": "Lượt chấm 2 thấy lớp «khác» chiếm 69 % ở bộ plugins; bản sửa sau lượt ấy hạ còn 13/157 và thêm dòng mẫu cho từng bộ — chưa được chấm lại."}
+    {"id": "E10j", "q": "Báo cáo lớp đỏ đã đủ để vòng B2 chia việc chưa?", "why": "Ba giám khảo đều đề xuất Đạt: mỗi bộ đủ ba số, tổng 1 787 ca đỏ thêm khớp theo bộ và theo lớp, lớp «khác» còn 106 ca (khoảng 6 %), bốn ca đỏ sẵn ở cây cũ được tách riêng. Điểm yếu họ nêu: mẫu của lớp «cùng tệp» và «khác» kém rõ hơn."}
   ],
   "analyst_plain": "Không eval nào có bản trước vòng để so: mọi tệp đo đều mới ở vòng này."
 }
