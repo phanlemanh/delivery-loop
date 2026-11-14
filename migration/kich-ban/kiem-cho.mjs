@@ -74,6 +74,19 @@ export function phepDao(bx, dp) {
     L.push([new RegExp(thoat(`${D}/commands/${lb}.md`), 'g'), `${D}/commands/${la}.md`]);
     L.push([new RegExp(thoat(`${D}/skills/${lb}`) + neo, 'g'), `${D}/skills/${la}`]);
   }
+  // Gốc plugin lõi truyền qua --ag-root / CLAUDE_PLUGIN_ROOT: `${X}/<gốc lõi>` (mã) và "$X/<gốc lõi>" (bash) → X.
+  const lo = path.posix.dirname(path.posix.dirname(bx.tep['.claude-plugin/plugin.json']));
+  if (bx.bo_kiem) {
+    const bien = bx.bo_kiem.bien_goc.map(thoat).join('|');
+    L.push([new RegExp('`\\$\\{(' + bien + ')\\}/' + thoat(lo) + '`', 'g'), '$1']);
+    L.push([new RegExp('"\\$(\\{?)(' + bien + ')(\\}?)/' + thoat(lo) + '"', 'g'), '"$$$1$2$3"']);
+  }
+  // Đổi tên skill / lệnh ở dạng cặp phần tử: '<D>/skills', '<mới>' → '<D>/skills', '<cũ>' (đường đảo tiếp ở dưới).
+  for (const [a, b] of Object.entries(bx.ten.lenh)) {
+    const [pa, la] = a.split(':'); const lb = b.split(':')[1]; const D = dp[pa]; if (!D) continue;
+    L.push([new RegExp(`(['"])(${thoat(D)}/skills)\\1(\\s*,\\s*)(['"])${thoat(lb)}\\4`, 'g'), `$1$2$1$3$4${la}$4`]);
+    L.push([new RegExp(`(['"])(${thoat(D)}/commands)\\1(\\s*,\\s*)(['"])${thoat(lb)}\\.md\\4`, 'g'), `$1$2$1$3$4${la}.md$4`]);
+  }
   for (const [cu, moi] of Object.entries(bx.tep)) L.push([new RegExp(thoat(moi), 'g'), cu]);
   for (const [cu, moi] of Object.entries(bx.thu_muc).sort((x, y) => y[1].length - x[1].length)) {
     L.push([new RegExp('(?<![\\w.-])' + thoat(moi) + neo, 'g'), cu]);

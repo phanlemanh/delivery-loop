@@ -73,6 +73,15 @@ test('BK-AC1', () => {
   assert.match(js, /\['plugins\/acceptance-gate\/scripts', 'plugins\/acceptance-gate\/commands'\]/);
   assert.match(js, /'\/dispatch:open'/);
   assert.match(js, /VUNG = 'plugins\/acceptance-gate\/scripts'/, 'mục bảng vá phải được áp');
+  assert.match(js, /QUA_CHA = path\.join\(HERE, '\.\.', '\.\.', 'plugins\/acceptance-gate\/scripts', 'goi\.mjs'\)/, 'cặp phần tử sau ../..');
+  assert.match(js, /BAN_SAO = \(c\) => path\.join\(c, 'plugins\/acceptance-gate\/scripts', 'goi\.mjs'\)/, 'cặp phần tử sau biến bản sao, không mơ hồ');
+  assert.match(js, /MO_HO = \(DP\) => path\.join\(DP, 'hooks', 'hooks\.json'\)/, 'cặp phần tử mơ hồ giữ nguyên');
+  assert.match(js, /AG = \['--ag-root', `\$\{KIT\}\/plugins\/acceptance-gate`\]/, 'gốc plugin lõi qua --ag-root');
+  assert.match(js, /ENV = \{ CLAUDE_PLUGIN_ROOT: `\$\{KIT\}\/plugins\/acceptance-gate` \}/, 'gốc plugin lõi qua CLAUDE_PLUGIN_ROOT');
+  assert.match(sh, /--ag-root "\$ROOT\/plugins\/acceptance-gate" --slug a/, 'gốc plugin lõi qua --ag-root (bash)');
+  assert.match(js, /--ag-root "\$\{KIT\}\/plugins\/acceptance-gate" --slug b/, 'dạng "${X}" giữ ngoặc (template literal)');
+  assert.match(js, /THU_MUC = path\.join\(KIT, 'plugins\/acceptance-gate\/commands'\)/, 'đối số đơn sau biến gốc kho');
+  assert.match(js, /SKILL_CAP = path\.join\(KIT, 'plugins\/acceptance-gate\/skills', 'scope-slice', 'SKILL\.md'\)/, 'cặp phần tử skill đổi tên');
   assert.match(xem(f, 'don-nha/a', '.github/workflows/gate.yml'), /run: node plugins\/acceptance-gate\/scripts\/goi\.mjs/);
   assert.match(xem(f, 'don-nha/a', '_acceptance/config.yaml'), /goi: node plugins\/acceptance-gate\/scripts\/goi\.mjs/);
   // Hình dạng phải GIỮ.
@@ -82,7 +91,7 @@ test('BK-AC1', () => {
   assert.equal(xem(f, 'don-nha/a', 'tests/fixtures/repo/scripts/verify.sh'), 'node scripts/goi.mjs\n', 'fixtures/ không bị chạm');
   // Sổ đổi bộ kiểm.
   const so = fs.readFileSync(path.join(ra, 'doi-bo-kiem.tsv'), 'utf8');
-  for (const lop of ['duong', 'mang', 'doi-so', 'ten', 'va']) assert.match(so, new RegExp(`^${lop}\\t`, 'm'), `sổ thiếu lớp ${lop}:\n${so}`);
+  for (const lop of ['duong', 'mang', 'doi-so', 'cap', 'goc-plugin', 'ten', 'va']) assert.match(so, new RegExp(`^${lop}\\t`, 'm'), `sổ thiếu lớp ${lop}:\n${so}`);
 });
 
 test('BK-AC1-tat-dinh', () => {

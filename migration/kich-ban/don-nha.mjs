@@ -299,19 +299,25 @@ export function buoc6BoKiem(wt, bx, kho, S, dichPlugin) {
   const RE_DUONG = new RegExp(`(^|[\\s"'\`(=\\[,{]|\\$\\{?\\w+\\}?/|\\$\\([^)]*\\)/|(?:\\.\\./)+|HEAD:)((?:${G})/[A-Za-z0-9_.\\-/]*|(?:${T})(?![\\w.-]))`, 'gm');
   const RE_MANG = new RegExp(`\\[\\s*(?:(['"])[\\w.\\-/]+\\1\\s*,\\s*)*(['"])(?:${G})\\2(?:\\s*,\\s*(['"])[\\w.\\-/]+\\3)*\\s*\\]`, 'g');
   const RE_DOI_SO = new RegExp(`(\\b(?:${BIEN})\\s*,\\s*)(['"])(${G})\\2(\\s*[,)])`, 'g');
+  // Cặp phần tử `'<gốc>', '<tên>'` ở mọi chỗ (sau '..', sau biến bản sao kit…): đổi khi <gốc>/<tên> có ở nguồn và không mơ hồ.
+  const RE_CAP = new RegExp(`(['"])(${G})\\1(\\s*,\\s*)(['"])([\\w.\\-]+)\\4`, 'g');
+  // Gốc plugin lõi: ở bố cục cũ gốc kho cũng là gốc plugin lõi (kit tự host); bố cục mới thì là plugins/acceptance-gate.
+  const GOC_LOI = path.posix.dirname(path.posix.dirname(bx.tep['.claude-plugin/plugin.json']));
+  const RE_GOC_JS = new RegExp(`(['"]--ag-root['"]\\s*,\\s*|CLAUDE_PLUGIN_ROOT:\\s*)(${BIEN})\\b(?!\\s*[.\\[(])`, 'g');
+  const RE_GOC_SH = new RegExp(`(--ag-root[ =]|CLAUDE_PLUGIN_ROOT=)"\\$(\\{?)(${BIEN})(\\}?)"`, 'g');
   // Luật đổi chữ của bước 3, riêng luật tên chợ thêm neo phía trước: trong bộ kiểm, «…-acceptance-gate-kit/» là tên thư mục
   // (bản ghi phiên của kho cũ), không phải tên chợ.
   const L = luatDoiChu(bx).map(l => (l.khoa === bx.cho_moi.ten_cu ? { ...l, re: new RegExp(`(?<![\\w-])(?:${l.re.source})`, 'g') } : l));
   const thuocTap = (t) => (t.startsWith(k.tap) && !t.includes(k.tru) && k.duoi.some(d => t.endsWith(d)))
     || k.tep_goc.some(g => (g.endsWith('/') ? t.startsWith(g) : t === g));
   const so = [];
-  const dem = { duong: 0, mang: 0, 'doi-so': 0, ten: 0, va: 0 };
+  const dem = { duong: 0, mang: 0, 'doi-so': 0, cap: 0, 'goc-plugin': 0, ten: 0, va: 0 };
   const tep = git(wt, ['ls-files', '-z']).split('\0').filter(t => t && thuocTap(t));
   const noiDung = new Map();
   for (const t of tep) {
     const buf = fs.readFileSync(path.join(wt, t)); if (!laChu(buf)) continue;
     let nd = buf.toString('utf8'); const goc0 = nd; const thu = path.dirname(path.join(wt, t));
-    const n = { duong: 0, mang: 0, 'doi-so': 0, ten: 0 };
+    const n = { duong: 0, mang: 0, 'doi-so': 0, cap: 0, 'goc-plugin': 0, ten: 0 };
     nd = nd.replace(RE_DUONG, (m, truoc, p) => {
       const q = bx.tep[p] ? p : tienTo(p);
       if (!q) return m;
@@ -325,12 +331,25 @@ export function buoc6BoKiem(wt, bx, kho, S, dichPlugin) {
       if (!ten.every(x => goc.includes(x) || ['tests', '.claude-plugin', '_acceptance', 'docs'].includes(x) || x.startsWith('_acceptance/'))) return m;
       n.mang++; return m.replace(/(['"])([\w.\-]+)\1/g, (z, q, x) => (goc.includes(x) ? q + bx.thu_muc[x] + q : z));
     });
+    // Cặp phần tử trước (đổi được cả tên skill / lệnh đi kèm), rồi mới tới đối số đơn sau biến gốc kho.
+    nd = nd.replace(RE_CAP, (m, q1, g, sep, q2, ten, off, chuoi) => {
+      const p = `${g}/${ten}`;
+      if (!coCu(p)) return m;
+      const truoc = chuoi.slice(Math.max(0, off - 40), off);
+      const chac = /'\.\.'\s*,\s*$/.test(truoc) || new RegExp(`\\b(?:${BIEN})\\s*,\\s*$`).test(truoc);
+      if (!chac && moHo(p)) return m;
+      const d = dichQ(p); const i = d.lastIndexOf('/');
+      n.cap++; return `${q1}${d.slice(0, i)}${q1}${sep}${q2}${d.slice(i + 1)}${q2}`;
+    });
     nd = nd.replace(RE_DOI_SO, (m, a, q, g, z) => { n['doi-so']++; return `${a}${q}${bx.thu_muc[g]}${q}${z}`; });
+    nd = nd.replace(RE_GOC_JS, (m, a, v) => { n['goc-plugin']++; return a + '`${' + v + '}/' + GOC_LOI + '`'; });
+    // Giữ nguyên dạng ngoặc: "${X}" có thể nằm trong template literal của JS — bỏ ngoặc là biến thành chữ trần.
+    nd = nd.replace(RE_GOC_SH, (m, a, mo, v, dong) => { n['goc-plugin']++; return a + '"$' + mo + v + dong + '/' + GOC_LOI + '"'; });
     for (const l of L) { const c = (nd.match(l.re) || []).length; if (c) { nd = nd.replace(l.re, l.thay); n.ten += c; } }
     for (const [lop, c] of Object.entries(n)) if (c) { dem[lop] += c; so.push([lop, t, c]); }
     if (nd !== goc0) noiDung.set(t, nd);
   }
-  if (!dem.duong && !dem.mang && !dem['doi-so']) dung('luật bộ kiểm không khớp chỗ nào');
+  if (!dem.duong && !dem.mang && !dem['doi-so'] && !dem.cap) dung('luật bộ kiểm không khớp chỗ nào');
   const va = k.va ? JSON.parse(fs.readFileSync(path.resolve(bx._dir, k.va), 'utf8')) : [];
   for (const v of va) {
     const p = path.join(wt, v.tep);
