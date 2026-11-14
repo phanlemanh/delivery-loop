@@ -1155,6 +1155,12 @@ executors:
     kich_ban_chuyen_nha_that: node migration/kich-ban/thuoc-that.mjs
     kich_ban_chuyen_nha_phien: node migration/kich-ban/thuoc-that.mjs --phien
     kich_ban_chuyen_nha_lop_do: node migration/kich-ban/thuoc-that.mjs --lop-do
+    # Hồ sơ bo-kiem-xanh-o-kho-moi (vòng B2 đợt chuyển nhà — chỉ có ở kho delivery-loop, nhánh của vòng). Vật ở
+    # migration/kich-ban/. KHÔNG vào feature_loop.suite_keys, cùng lý do với B1: `_that`, `_giu_khoa` đọc kit-cu/main.
+    bo_kiem_xanh: node --test migration/kich-ban/don-nha.test.mjs migration/kich-ban/bo-kiem.test.mjs migration/kich-ban/giu-khoa.test.mjs migration/kich-ban/lop-do.test.mjs migration/kich-ban/tep-song.test.mjs
+    bo_kiem_xanh_that: node migration/kich-ban/thuoc-that.mjs --bo-kiem
+    bo_kiem_xanh_giu_khoa: node migration/kich-ban/thuoc-that.mjs --giu-khoa
+    bo_kiem_xanh_do_san: node migration/kich-ban/do-san.mjs
 risk_tiers:
   t1_skip_globs:
     # Chỉ docs THẬT. Không dùng "*.md" — xem ghi chú 2 ở đầu file.

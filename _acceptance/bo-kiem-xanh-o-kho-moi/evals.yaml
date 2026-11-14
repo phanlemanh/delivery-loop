@@ -1,0 +1,161 @@
+schema_version: 1
+feature_slug: bo-kiem-xanh-o-kho-moi
+# Hai tầng đo, như B1:
+#  - kho fixture do MÃ SINH trong lượt (migration/kich-ban/*.test.mjs): fixture B1 thêm một thư mục tests/ có tệp kiểm trỏ
+#    đường sản phẩm cũ (chuỗi, phần tử path.join sau biến gốc, mảng tên gốc, dạng <mã cũ>:<đường>), một mục bảng vá; bộ
+#    chạy giả gọi CHÍNH tests/bo-chay.sh để sinh bảng thời gian từng ca (round-trip bên viết thật → bên đọc). Mỗi phép đo
+#    có cặp hai chiều trên CÙNG fixture: vật lành → xanh, bản sao phá → đỏ với thông điệp ghim, và chiều im có tên.
+#    Đường dẫn suy từ vị trí tệp ca.
+#  - nguồn thật (migration/kich-ban/thuoc-that.mjs): kit-cu/main lúc chấm. In mã nguồn ở dòng đầu.
+evals:
+  - id: E1
+    criterion: AC-1
+    executor: script
+    cmd: config:executors.script.bo_kiem_xanh
+    expected: >
+      Exit 0, có dòng `ok` của BK-AC1, BK-AC1-tat-dinh, BK-AC1-do-va, BK-AC1-do-rong. BK-AC1: trên fixture nhánh đích = nguồn
+      + 6 commit tiêu đề `dọn nhà 1/6: …` tới `dọn nhà 6/6: bộ kiểm theo bố cục mới`; `git diff --name-only` của commit 6
+      nằm trọn trong tập bước 6 (tests/ trừ fixtures/, .github/workflows/*.yml, Makefile, _acceptance/config.yaml) và có
+      ít nhất một tệp; sổ doi-bo-kiem.tsv có dòng cho mỗi lớp luật khớp. BK-AC1-tat-dinh: hai lần chạy vào hai nhánh cùng
+      mã commit đỉnh. BK-AC1-do-va: bảng vá fixture có một mục so_lan sai → thoát 1, stderr «vá không khớp: <tệp>: <cu>»,
+      nhánh đích không tồn tại. BK-AC1-do-rong: bảng xếp fixture có khoá bo_kiem trỏ gốc không có → thoát 1 «luật bộ kiểm
+      không khớp chỗ nào».
+    paths: [migration/kich-ban/**]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E1t
+    criterion: AC-1
+    executor: script
+    cmd: config:executors.script.bo_kiem_xanh_that
+    expected: >
+      Exit 0. Dòng đầu `nguồn: <40-hex> (kit-cu/main)`. Có dòng `AC-1 đạt: 6 commit trên <nguồn>, commit 6 chạm <n> tệp
+      trong tập bước 6` với n > 0, và dòng `AC-1 đạt: hai lần chạy cùng commit <40-hex> cùng cây <40-hex>`.
+    paths: [migration/kich-ban/**, migration/tra-soat/**]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E2
+    criterion: AC-2
+    executor: script
+    cmd: config:executors.script.bo_kiem_xanh
+    expected: >
+      Exit 0, có `ok` của BK-AC2, BK-AC2-do-tay, BK-AC2-do-lich-su, BK-AC2-do-va-nghia, BK-AC2-do-mo-ho, BK-AC2-doc-lap.
+      BK-AC2: trên fixture kiem-cho in `<n>/<n> tệp bộ kiểm chỉ khác bản gốc ở đường và tên · <m> chỗ đảo mơ hồ đã khai`
+      với n bằng số tệp kiểm của fixture. BK-AC2-do-tay: bản sao cây mới sửa tay một dòng của một tệp kiểm → đỏ «tệp kiểm
+      lệch luật: <đường đó>». BK-AC2-do-lich-su: bản sao cây mới đổi dạng `<mã cũ>:scripts/…` thành đường mới → đỏ cùng
+      thông điệp. BK-AC2-do-va-nghia: bảng vá fixture thêm mục `assert.equal(n, 3)` → `assert.ok(true)`, kịch bản chạy lại
+      → kiem-cho đỏ «tệp kiểm lệch luật: <tệp của mục>» (đối chứng dương: bảng vá chỉ có mục đổi đường → xanh).
+      BK-AC2-do-mo-ho: dao-mo-ho.tsv fixture khai một chỗ không còn ở cây mới → đỏ «chỗ đảo mơ hồ không còn: <tệp>».
+      BK-AC2-doc-lap: kiem-cho.mjs không import don-nha.mjs (đọc import của chính tệp; đối chứng dương: bản sao thêm import
+      đó → ca này đỏ).
+    paths: [migration/kich-ban/**]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E2t
+    criterion: AC-2
+    executor: script
+    cmd: config:executors.script.bo_kiem_xanh_that
+    expected: >
+      Exit 0, có dòng `AC-2 đạt: <n>/<n> tệp bộ kiểm chỉ khác bản gốc ở chỗ luật` với n > 200, và dòng AC-4 của B1
+      `… tệp không phải sản phẩm giống bản gốc` vẫn đạt.
+    paths: [migration/kich-ban/**]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E3
+    criterion: AC-3
+    executor: script
+    cmd: config:executors.script.bo_kiem_xanh
+    expected: >
+      Exit 0, có `ok` của BK-AC3, BK-AC3-do-xoa, BK-AC3-do-skip, BK-AC3-do-fail, BK-AC3-do-lap, BK-AC3-do-khong-do,
+      BK-AC3-tap, BK-AC3-do-tap, BK-AC3-do-bo-khong-quyet, BK-AC3-im-them, BK-AC3-im-ten, BK-AC3-im-duong, BK-AC3-im-tmp.
+      BK-AC3 (đối chứng dương): hai thư mục đo dựng bằng bộ chạy giả gọi tests/bo-chay.sh, cùng các ca → giu-khoa thoát 0
+      «giữ đủ: <n>/<n> khoá, bỏ 0». BK-AC3-do-xoa: cây mới bỏ một ca → thoát 1, stdout «thiếu 1 khoá» và đúng tên ca bị bỏ.
+      BK-AC3-do-skip / -do-fail: ca ấy in SKIP / FAIL → thoát 1 nêu khoá ấy. BK-AC3-do-lap: một khoá in hai lần ở cây cũ,
+      một lần ở cây mới → thoát 1 nêu khoá ấy. BK-AC3-do-khong-do: xoá tệp thời gian của một bộ, hay bỏ dòng XONG ở
+      ketqua.tsv → thoát 1 «bộ không đo được: <bộ>». BK-AC3-tap: `node --test --test-reporter=tap` THẬT trên hai tệp ca sinh
+      trong lượt (một test có test con, một test skip) → túi khoá điều phối bằng đúng danh sách tên test tầng ngoài đã sinh,
+      skip tính thiếu. BK-AC3-do-tap: xoá một test tầng ngoài ở cây mới → thoát 1 nêu đúng tên. BK-AC3-do-bo-khong-quyet:
+      bo-khoa.tsv có dòng không mang mã dòng sổ → thoát 1 «bỏ khoá không có quyết: <khoá>». BK-AC3-im-them: cây mới thêm một
+      ca → thoát 0, in khoá thừa. BK-AC3-im-ten: khoá cây cũ chứa tên plugin cũ theo bang-ten.json, cây mới chứa tên mới →
+      thoát 0. BK-AC3-im-duong: khoá cũ chứa `scripts/x.sh`, khoá mới chứa `plugins/acceptance-gate/scripts/x.sh` → thoát 0.
+      BK-AC3-im-tmp: khoá khác nhau chỉ ở đường thư mục tạm và mã 40-hex → thoát 0.
+    paths: [migration/kich-ban/**, tests/bo-chay.sh, migration/chay-thu-phien/bang-ten.json]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E4t
+    criterion: AC-4
+    executor: script
+    cmd: config:executors.script.bo_kiem_xanh_giu_khoa
+    expected: >
+      Exit 0. Dòng đầu `nguồn: <40-hex> (kit-cu/main)`. Có dòng `AC-4 đạt: báo cáo đo trên nguồn <8-hex>, cây mới <8-hex>
+      dựng lại khớp; sáu bước thoát 0 ở cả hai cây; giữ đủ <n>/<n> khoá, bỏ 0` trong đó n BẰNG số khoá đạt của túi cây cũ
+      đã commit ở migration/kich-ban/ket-qua/giu-khoa/ (thước đếm lại, không đọc n từ báo cáo), và phán quyết do thước chạy
+      lại giu-khoa.mjs trên hai túi đã commit trùng phán quyết của báo cáo. bo-khoa.tsv có dòng → không đạt («bỏ khoá chưa
+      duyệt»).
+    paths: [migration/kich-ban/**, migration/b0/**]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E4
+    criterion: AC-4
+    executor: script
+    cmd: config:executors.script.bo_kiem_xanh
+    expected: >
+      Exit 0, có `ok` của BK-AC4-cay-cu, BK-AC4-do-sua-bao-cao, BK-AC4-doc-gate. BK-AC4-cay-cu: trên fixture, báo cáo giữ
+      khoá mang mã cây khác cây kịch bản dựng → hàm kiểm của thuoc-that đỏ «báo cáo giữ khoá đo trên cây cũ»; báo cáo mang
+      đúng mã cây → không có dòng ấy. BK-AC4-do-sua-bao-cao: sửa phán quyết hay n trong báo cáo fixture → hàm kiểm đỏ «báo
+      cáo giữ khoá lệch túi khoá đã commit». BK-AC4-doc-gate: gate.yml fixture có việc tests với khối `run: |` nhiều dòng và
+      bảy bước → bộ đọc in đủ bảy lệnh theo thứ tự; gate.yml không có việc tests → dừng «không đọc được việc tests: <lý do>».
+    paths: [migration/kich-ban/**]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E5
+    criterion: AC-5
+    executor: script
+    cmd: config:executors.script.bo_kiem_xanh
+    expected: >
+      Exit 0, có `ok` của BK-AC5, BK-AC5-do-chet, BK-AC5-do-im-lang, BK-AC5-do-ghi-do. BK-AC5: hai thư mục đo (bộ chạy giả)
+      → báo cáo có cột «không chạy tới», «đỏ thêm» = ca đỏ + ca không chạy tới, qua đối chiếu số học của lop-do.mjs.
+      BK-AC5-do-chet: bộ chạy giả cây mới dừng sau ca đầu (N ca ở cây cũ) → «không chạy tới» = N − 1, tổng đỏ thêm ≥ N − 1,
+      không phải 0. BK-AC5-do-im-lang: bộ thoát 1 không in dòng kết quả nào → mục bo-chay gọi tên bộ, tổng ≥ 1.
+      BK-AC5-do-ghi-do: phép viết báo cáo bị tiêm lỗi sau khi mở tệp tạm → lop-do.md cũ còn nguyên (băm trước = sau).
+    paths: [migration/kich-ban/**, migration/b0/**]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E6
+    criterion: AC-6
+    executor: script
+    cmd: config:executors.script.bo_kiem_xanh
+    expected: >
+      Exit 0, có `ok` của BK-AC6 và BK-AC6-do-<tên> cho bốn tên: main, chuyen-nha, kit-cu/main, nhanh-khac. Mỗi ca đỏ: thoát
+      2, stderr «nhánh đích phải là don-nha/<tên>: <tên đã gõ>», ảnh chụp mọi ref + HEAD + `git status --porcelain` trước =
+      sau. BK-AC6 (đối chứng dương, cùng kho): `--nhanh don-nha/thu` thoát 0, ref refs/heads/don-nha/thu có.
+    paths: [migration/kich-ban/**]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E7
+    criterion: AC-7
+    executor: script
+    cmd: config:executors.script.bo_kiem_xanh
+    expected: >
+      Exit 0, có `ok` của BK-AC7-im, BK-AC7-duong, BK-AC7-do. Kho fixture mang t1_skip_globs đọc từ _acceptance/config.yaml
+      THẬT và chạy scripts/pre-merge-check.sh THẬT với --base. BK-AC7-im: commit chỉ sửa migration/TRANG-THAI.md → đầu ra
+      không chứa «evidence is stale». BK-AC7-duong: commit sửa migration/kich-ban/don-nha.mjs → đầu ra chứa «evidence is
+      stale» và tên hồ sơ fixture. BK-AC7-do: cấu hình fixture gỡ dòng migration/TRANG-THAI.md → commit chỉ sửa tệp sống làm
+      đầu ra chứa «evidence is stale».
+    paths: [migration/kich-ban/**, _acceptance/config.yaml, scripts/pre-merge-check.sh]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E8
+    criterion: AC-8
+    executor: script
+    cmd: config:executors.script.kich_ban_chuyen_nha
+    expected: >
+      Exit 0: mọi ca KB-AC* của B1 xanh với số commit sáu (KB-AC2 đọc tiêu đề `dọn nhà <k>/6`).
+    paths: [migration/kich-ban/**]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E8t
+    criterion: AC-8
+    executor: script
+    cmd: config:executors.script.kich_ban_chuyen_nha_that
+    expected: >
+      Exit 0: thước nguồn thật của B1 (AC-1 … AC-8 của B1) đạt trên cây sáu commit.
+    paths: [migration/kich-ban/**, migration/tra-soat/**]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E8s
+    criterion: AC-8
+    executor: script
+    cmd: config:executors.script.bo_kiem_xanh_do_san
+    expected: >
+      Exit 0. Chạy riêng đúng các ca đã gọi tên ở AC-8 (P177, KT-8, P122, P126, RT13) trên cây đang kiểm và in một dòng mỗi
+      ca kèm «xanh»; ca nào đỏ → thoát 1 gọi tên ca. (Suite trọn của nhánh chạy ở mọi lượt chấm qua feature_loop.suite_keys.)
+    paths: [migration/**, docs/research/known-limits-ledger.tsv, PRODUCT-MAP.md, LO-TRINH.html]
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
