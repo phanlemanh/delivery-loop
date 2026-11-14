@@ -16,6 +16,7 @@ chỉ vì plugin lõi mang cả kho.
 | `plugins/acceptance-gate/commands/acceptance-init.md` | 193–195 | `${CLAUDE_PLUGIN_ROOT}/dieu-phoi/scripts/{hinh-dang,cau-hinh,dot}.mjs` |
 | `plugins/acceptance-gate/scripts/tin-hieu.mjs` | 27, 30 | `../dieu-phoi/scripts/{hinh-dang,dot}.mjs` |
 | `plugins/acceptance-gate/scripts/gui-tin-hieu.mjs` | 12–13 | `../dieu-phoi/scripts/{cua-tin-hieu,hinh-dang}.mjs` (sổ nguồn, `tham-chieu-cheo.tsv`) |
+| `plugins/acceptance-gate/scripts/plugin-declare.mjs` | 4 | `../.claude-plugin/marketplace.json` — tệp khai chợ ở GỐC kho; từ thư mục mới phải lên ba cấp (lượt quét vi phân của AC-7, 14/11, trên `593e6837`) |
 
 Đường đúng tầng (chọn ở vòng ấy): tìm plugin điều phối qua `resolve-plugin` như 32 chỗ gọi chéo khác đã làm, hoặc dời bốn
 tệp dùng chung (`hinh-dang`, `cau-hinh`, `dot`, `cua-tin-hieu`) về plugin lõi. Lưu ý: điều phối là plugin bật-theo-lựa-chọn mà

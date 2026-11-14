@@ -183,22 +183,52 @@ function loaiGiu(tep, truoc, giu, toi) {
   return null;
 }
 
+// Tệp sản phẩm → các tệp KHÔNG phải sản phẩm của S mà nó trỏ bằng chuỗi tương đối (../ hay ./) và sổ chưa có.
+const RE_TUONG_DOI = /(?<![\w./@-])((?:\.{1,2}\/)+[\w@.\-/]*[\w@-])/g;
+function conTroNgoaiSo(wt, S, kk, theoTep) {
+  const tepS = git(wt, ['ls-tree', '-r', '--name-only', '-z', S]).split('\0').filter(Boolean);
+  const sp = new Set(kk.hang.filter(h => h.lop === 'san-pham' || h.lop === 'chua-ro').map(h => h.tep));
+  // Đích hợp lệ: tệp của S, hoặc thư mục của S không chứa tệp sản phẩm nào.
+  const thuMuc = (ds) => new Set(ds.flatMap(x => { const r = []; for (let q = path.posix.dirname(x); q !== '.'; q = path.posix.dirname(q)) r.push(q); return r; }));
+  const dirSp = thuMuc([...sp]);
+  const laDich = new Set([...tepS, ...[...thuMuc(tepS)].filter(q => !dirSp.has(q))]);
+  const ra = new Map();
+  for (const tu of [...sp].sort()) {
+    const chu = git(wt, ['show', `${S}:${tu}`]);
+    if (chu.includes('\0')) continue;
+    const co = new Set(theoTep.get(tu) || []);
+    for (const [, s] of chu.matchAll(RE_TUONG_DOI)) {
+      const toi = path.posix.normalize(path.posix.join(path.posix.dirname(tu), s));
+      if (toi.startsWith('..') || !laDich.has(toi) || sp.has(toi) || co.has(toi)) continue;
+      co.add(toi); ra.set(tu, [...(ra.get(tu) || []), toi]);
+    }
+  }
+  return ra;
+}
+
 function buoc4ConTro(wt, bx, S, dichPlugin) {
   const giu = bx.con_tro.giu;
   const kk = kiemKe({ kho: wt, ref: S, luat: LUAT_XEP });
   const ket = { doi: 0, giu: { lenh: 0, 'tu-host': 0, 'du-lieu': 0, 'duong-kho-tieu-thu': 0 } };
   const theoTep = new Map();
   for (const r of kk.con_tro) if (!r.mo_ho) theoTep.set(r.tu, [...(theoTep.get(r.tu) || []), r.toi]);
+  // Con trỏ tương đối ngoài sổ: sổ kiểm kê bỏ qua tên tệp trần (`../GUIDE.md` thành `GUIDE.md`, «mơ hồ») và đường tương
+  // đối trong chú thích mã. Chuỗi có tiền tố ../ hay ./ giải (từ thư mục tệp NGUỒN) ra một tệp không phải sản phẩm của S
+  // là con trỏ rõ — thêm vào, và chỉ đổi các lần xuất hiện CÓ tiền tố của nó.
+  const ngoaiSo = conTroNgoaiSo(wt, S, kk, theoTep);
+  for (const [tu, ds] of ngoaiSo) theoTep.set(tu, [...(theoTep.get(tu) || []), ...ds]);
   for (const [tu, dsToi] of theoTep) {
     const d = dichSau(tu, bx, dichPlugin);
     const p = path.join(wt, d);
     let nd = fs.readFileSync(p, 'utf8');
     for (const toi of dsToi) {
       if (giu.duong_kho_tieu_thu.includes(toi)) { ket.giu['duong-kho-tieu-thu']++; continue; }
+      const chiTuongDoi = ngoaiSo.get(tu)?.includes(toi) ?? false;
       // Cả chuỗi, kể cả tiền tố tương đối ../ hay ./ — chỉ khi chuỗi ấy giải (từ thư mục của tệp NGUỒN) về đúng tệp đích.
-      const re = new RegExp(`(?<![\\w.\\/-])((?:\\.{1,2}\\/)*)${esc(toi)}(?![\\w/-])`, 'g');
+      const re = new RegExp(`(?<![\\w.\\/-])((?:\\.{1,2}\\/)*)${esc(toi)}(?![\\w-]|\\/[\\w-])`, 'g');
       let doi = 0, loai = null;
       nd = nd.split('\n').map(L => L.replace(re, (m, tien, viTri) => {
+        if (chiTuongDoi && !tien) return m; // tên trần của con trỏ ngoài sổ vẫn mơ hồ
         if (tien && path.posix.normalize(path.posix.join(path.posix.dirname(tu), m)) !== toi) return m;
         const k = loaiGiu(d, L.slice(0, viTri), giu, toi);
         if (k) { loai = loai || k; return m; }

@@ -422,7 +422,7 @@ test('KB-AC10-do-so-hoc', () => {
 test('KB-AC7-do-tuong-doi', () => {
   const f = moFix();
   const script = banSaoTiem('don-nha.mjs', "if (tien && path.posix.normalize(path.posix.join(path.posix.dirname(tu), m)) !== toi) return m;", '');
-  const s2 = fs.readFileSync(script, 'utf8').replace("`(?<![\\\\w.\\\\/-])((?:\\\\.{1,2}\\\\/)*)${esc(toi)}(?![\\\\w/-])`", "`(?<![\\\\w.-])(?<!\\\\w\\\\/)()(?:\\\\.\\\\/)?${esc(toi)}(?![\\\\w/-])`");
+  const s2 = fs.readFileSync(script, 'utf8').replace("`(?<![\\\\w.\\\\/-])((?:\\\\.{1,2}\\\\/)*)${esc(toi)}(?![\\\\w-]|\\\\/[\\\\w-])`", "`(?<![\\\\w.-])(?<!\\\\w\\\\/)()(?:\\\\.\\\\/)?${esc(toi)}(?![\\\\w/-])`");
   assert.notEqual(s2, fs.readFileSync(script, 'utf8'), 'kim regex cũ phải khớp');
   fs.writeFileSync(script, s2);
   assert.equal(donNha(f, 'don-nha/a', { script }).status, 0);
@@ -462,4 +462,107 @@ test('KB-AC7-do-bo-tuong-doi', () => {
   assert.ok(skill.includes('](../../docs/reference/ghi-chu.md)'), skill);
   const kq = kiemCho({ kho: f.kho, nguon: f.nguon, dich: 'don-nha/a', bangXep: f.bangXep });
   assert.ok(kq.loi.includes('con trỏ còn treo: plugins/acceptance-gate/skills/scope-slice/SKILL.md → docs/reference/ghi-chu.md'), kq.loi.join('\n'));
+});
+
+// ── AC-7 ma trận con trỏ tương đối (viết TRƯỚC khi chạy — luật dừng-vá sau lượt chấm 2, «hình dạng 5») ──────────────
+// Hàng = dạng con trỏ trong một tệp sản phẩm; cột = cách phép đổi hỏng (không đổi · đổi nửa chừng · giải sai thư mục ·
+// đổi quá tay · bỏ lượt ngoài sổ · đổi cả tên trần ngoài sổ). Mỗi ô một kho fixture riêng; ô mong đợi một trong ba kết
+// cục: xanh (thước im — đột biến không chạm dạng này), dừng (kịch bản tự dừng, ghim thông điệp), đỏ (thước ghim thông điệp).
+const SK = 'plugins/acceptance-gate/skills/ma-tran/SKILL.md', CM = 'plugins/acceptance-gate/commands/ma-tran.md', MJ = 'plugins/acceptance-gate/scripts/ma-tran.mjs';
+const skill = (than) => ({ 'skills/ma-tran/SKILL.md': `---\nname: ma-tran\ndescription: Ma trận.\n---\n\n${than}\n` });
+const DANG = {
+  tran: skill('Xem docs/reference/m1.md.'),
+  'lien-ket-sau-2': skill('Xem [m2](../../docs/reference/m2.md).'),
+  'chu-sau-2': skill('Xem ../../docs/reference/m2.md ở trên.'),
+  'lien-ket-sau-1': { 'commands/ma-tran.md': 'Lệnh.\n\nXem [m3](../docs/reference/m3.md).\n' },
+  'chu-thich-ma': { 'scripts/ma-tran.mjs': '// xem ../docs/reference/m4.md\nexport const m = 1;\n' },
+  'cham-gach': skill('Xem [m5](./../../docs/reference/m5.md).'),
+  'ten-tran-goc': skill('Xem [hướng dẫn](../../README.md#muc) và README.md.'),
+  'du-lieu-ma': { 'scripts/ma-tran.mjs': "export const P = '../docs/reference/m4.md';\n" },
+  'thu-muc': skill('Xem [thư mục](../../docs/reference/).'),
+  bay: skill('Xem docs/reference/m1.md; bẫy [x](../docs/reference/m1.md).'),
+};
+const TAI_LIEU_MT = Object.fromEntries([1, 2, 3, 4, 5].map(i => [`docs/reference/m${i}.md`, `m${i}\n`]));
+const K_GIAI = 'if (tien && path.posix.normalize(path.posix.join(path.posix.dirname(tu), m)) !== toi) return m;';
+const DOT_BIEN = {
+  'bo-tuong-doi': [[K_GIAI, 'if (tien) return m;']],
+  'nua-chung': [["`(?<![\\\\w.\\\\/-])((?:\\\\.{1,2}\\\\/)*)${esc(toi)}(?![\\\\w-]|\\\\/[\\\\w-])`", "`(?<![\\\\w.-])(?<!\\\\w\\\\/)()(?:\\\\.\\\\/)?${esc(toi)}(?![\\\\w/-])`"]],
+  'sai-thu-muc': [['path.posix.dirname(tu), m)) !== toi', 'path.posix.dirname(d), m)) !== toi']],
+  'qua-tay': [[K_GIAI, '']],
+  'bo-ngoai-so': [['const ngoaiSo = conTroNgoaiSo(wt, S, kk, theoTep);', 'const ngoaiSo = new Map();']],
+  'tran-ngoai-so': [['if (chiTuongDoi && !tien) return m; // tên trần của con trỏ ngoài sổ vẫn mơ hồ', '']],
+};
+const dung = (d, toi) => ({ dung: `con trỏ không tìm thấy: ${d} → ${toi}` });
+const XANH = { xanh: true }; const hong = (d) => ({ do: [`con trỏ hỏng: ${d}`] });
+const treo = (d, toi) => ({ do: [`con trỏ còn treo: ${d} → ${toi}`, `nội dung lệch luật: ${d}`] });
+const lech = (d) => ({ do: [`nội dung lệch luật: ${d}`] });
+const KHONG_DOI = {
+  tran: XANH, 'lien-ket-sau-2': dung(SK, 'docs/reference/m2.md'), 'chu-sau-2': dung(SK, 'docs/reference/m2.md'),
+  'lien-ket-sau-1': dung(CM, 'docs/reference/m3.md'), 'chu-thich-ma': dung(MJ, 'docs/reference/m4.md'),
+  'cham-gach': dung(SK, 'docs/reference/m5.md'), 'ten-tran-goc': dung(SK, 'README.md'), 'du-lieu-ma': dung(MJ, 'docs/reference/m4.md'),
+  'thu-muc': dung(SK, 'docs/reference'), bay: XANH,
+};
+const MA_TRAN = {
+  'bo-tuong-doi': KHONG_DOI,
+  'sai-thu-muc': KHONG_DOI,
+  'nua-chung': {
+    // chu-thich-ma: dự đoán viết trước là «hỏng»; chạy ra «dừng» — dòng ngoài sổ chỉ đổi lần có tiền tố, mà regex hỏng
+    // cắt mất tiền tố, nên không lần nào được đổi (sổ quyết định S4-r3 ghi ô sửa này).
+    tran: XANH, 'lien-ket-sau-2': hong(SK), 'chu-sau-2': hong(SK), 'lien-ket-sau-1': hong(CM), 'chu-thich-ma': dung(MJ, 'docs/reference/m4.md'),
+    'cham-gach': hong(SK), 'ten-tran-goc': dung(SK, 'README.md'), 'du-lieu-ma': dung(MJ, 'docs/reference/m4.md'),
+    'thu-muc': dung(SK, 'docs/reference'), bay: hong(SK),
+  },
+  'qua-tay': { ...Object.fromEntries(Object.keys(DANG).map(k => [k, XANH])), bay: lech(SK) },
+  'bo-ngoai-so': { ...Object.fromEntries(Object.keys(DANG).map(k => [k, XANH])),
+    'chu-thich-ma': treo(MJ, 'docs/reference/m4.md'), 'ten-tran-goc': treo(SK, 'README.md'), 'thu-muc': treo(SK, 'docs/reference') },
+  'tran-ngoai-so': { ...Object.fromEntries(Object.keys(DANG).map(k => [k, XANH])), 'ten-tran-goc': lech(SK) },
+};
+
+// Bản sao migration/ có tiêm nhiều kim (mỗi kim khớp đúng một lần) → thư mục kich-ban của bản sao.
+function banSaoKim(dsKim) {
+  const goc = path.join(DAY, '..');
+  const dich = path.join(moTam('kb-ma-tran-'), 'migration');
+  for (const d of ['kich-ban', 'tra-soat', 'chay-thu-phien']) fs.cpSync(path.join(goc, d), path.join(dich, d), { recursive: true });
+  for (const [tep, kim, thay] of dsKim) {
+    const p = path.join(dich, 'kich-ban', tep); const s = fs.readFileSync(p, 'utf8');
+    assert.equal(s.split(kim).length - 1, 1, `kim phải khớp đúng một lần trong ${tep}: ${kim}`);
+    fs.writeFileSync(p, s.replace(kim, thay));
+  }
+  return path.join(dich, 'kich-ban');
+}
+function oMaTran(dang, { script = KB, thuoc = kiemCho } = {}) {
+  const f = moFix();
+  // Kho nền có sẵn một liên kết tương đối trong skill cat-luot — gỡ nó để mỗi ô chỉ đo đúng dạng của hàng.
+  const nen = TEP_KIT['skills/cat-luot/SKILL.md'].replace(', xem [ghi chú](../../docs/reference/ghi-chu.md)', '');
+  assert.notEqual(nen, TEP_KIT['skills/cat-luot/SKILL.md'], 'kim gỡ liên kết nền phải khớp');
+  const nguon = themCommit(f.kho, { 'skills/cat-luot/SKILL.md': nen, ...TAI_LIEU_MT, ...DANG[dang] }, 'ma trận');
+  const r = donNha(f, 'don-nha/a', { nguon, script });
+  if (r.status !== 0) return { status: r.status, stderr: r.stderr };
+  return { status: 0, loi: thuoc({ kho: f.kho, nguon, dich: 'don-nha/a', bangXep: f.bangXep }).loi };
+}
+function soO(ten, ket, mong) {
+  if (mong.xanh) { assert.equal(ket.status, 0, `${ten}: ${ket.stderr}`); assert.deepEqual(ket.loi, [], ten); return; }
+  if (mong.dung) { assert.equal(ket.status, 1, `${ten}: kịch bản phải dừng`); assert.ok(ket.stderr.includes(mong.dung), `${ten}: ${ket.stderr}`); return; }
+  assert.equal(ket.status, 0, `${ten}: ${ket.stderr}`);
+  for (const x of mong.do) assert.ok(ket.loi.includes(x), `${ten}: thiếu «${x}» trong ${JSON.stringify(ket.loi)}`);
+}
+
+test('KB-AC7-ma-tran-doi-chung', () => {
+  for (const dang of Object.keys(DANG)) soO(`đối chứng/${dang}`, oMaTran(dang), XANH);
+});
+for (const [db, kim] of Object.entries(DOT_BIEN)) {
+  test(`KB-AC7-ma-tran-${db}`, () => {
+    const script = path.join(banSaoKim(kim.map(([a, b]) => ['don-nha.mjs', a, b])), 'don-nha.mjs');
+    for (const dang of Object.keys(DANG)) soO(`${db}/${dang}`, oMaTran(dang, { script }), MA_TRAN[db][dang]);
+  });
+}
+// Thước tự đứng được: cả kịch bản lẫn phép tìm ngoài sổ của thước cùng bỏ dạng «thư mục» → phép đối chiếu nội dung (AC-4)
+// mù vì hai bên cùng sai; chỉ lượt quét vi phân (khác cơ chế) còn đỏ.
+test('KB-AC7-ma-tran-quet-vi-phan', async () => {
+  const kb = banSaoKim([['don-nha.mjs', 'const ngoaiSo = conTroNgoaiSo(wt, S, kk, theoTep);', 'const ngoaiSo = new Map();'],
+    ['kiem-cho.mjs', '  const ngoai = timNgoaiSo(kho, nguon, kk);', '  const ngoai = new Map();']]);
+  const { kiemCho: thuocHong } = await import(path.join(kb, 'kiem-cho.mjs'));
+  const ket = oMaTran('thu-muc', { script: path.join(kb, 'don-nha.mjs'), thuoc: thuocHong });
+  assert.equal(ket.status, 0, ket.stderr);
+  assert.deepEqual(ket.loi, [`con trỏ còn treo: ${SK} → docs/reference`]);
 });

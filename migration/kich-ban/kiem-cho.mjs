@@ -86,7 +86,7 @@ function dichDayDu(t, bx, dp) {
   return d;
 }
 
-function ac4(kho, nguon, dich, kk, bx) {
+function ac4(kho, nguon, dich, kk, bx, ngoai) {
   const loi = [];
   const L = luatRieng(bx);
   const A = giaiNen(kho, nguon), B = giaiNen(kho, dich);
@@ -123,7 +123,7 @@ function ac4(kho, nguon, dich, kk, bx) {
       const sa = a.toString('utf8'), sb = b.toString('utf8');
       for (const x of CHUOI_GIU) { demGiu[x][0] += sa.split(x).length - 1; demGiu[x][1] += sb.split(x).length - 1; }
       for (const [k, re] of L) demLuat.set(k, demLuat.get(k) + (sa.match(re) || []).length);
-      let [ky] = doiConTro(t, d, apLuat(sa, L), kk, bx, maNguon);
+      let [ky] = doiConTro(t, d, apLuat(sa, L), kk, bx, maNguon, ngoai);
       if (skillDoi.has(d)) { const [la, lb] = skillDoi.get(d); ky = ky.replace(new RegExp(`^name: ${thoat(la)}$`, 'm'), `name: ${lb}`); }
       if (/(^|\/)\.claude-plugin\/plugin\.json$/.test(d)) {
         const o = JSON.parse(ky);
@@ -157,20 +157,44 @@ function loaiGiuRieng(tep, truoc, giu, toi) {
   if (laMa && !(/^\s*(#|\*|\/\*)/.test(truoc) || truoc.includes('//'))) return 'du-lieu';
   return null;
 }
-const reConTro = (toi) => new RegExp('(?<![\\w./-])((?:\\.\\.?/)*)' + thoat(toi) + '(?![\\w/-])', 'g');
+const reConTro = (toi) => new RegExp('(?<![\\w./-])((?:\\.\\.?/)*)' + thoat(toi) + '(?![\\w-]|/[\\w-])', 'g');
 // Chuỗi khớp có tiền tố tương đối thì chỉ tính khi nó giải (từ thư mục tệp nguồn t) về đúng toi.
 const giaiVe = (t, m, toi) => path.posix.normalize(path.posix.join(path.posix.dirname(t), m)) === toi;
 // Phép kiểm KHÁC cơ chế với phép đổi: một URL kho cũ dính ngay sau ký tự đường dẫn là con trỏ bị đổi nửa chừng.
 const URL_DINH = /[\w.\/-]https:\/\/github\.com\/phanlemanh\/acceptance-gate-kit\//;
 
+// Con trỏ tương đối ngoài sổ (cài lại, không lấy từ kịch bản): chuỗi có tiền tố ../ hay ./ trong tệp sản phẩm, giải từ
+// thư mục tệp NGUỒN ra một tệp không phải sản phẩm của nguồn mà sổ không có dòng rõ (t, tệp ấy) → Map t → [tệp].
+function timNgoaiSo(kho, nguon, kk) {
+  const dsNguon = lsTree(kho, nguon);
+  const sp = new Set(kk.hang.filter(h => h.lop === 'san-pham' || h.lop === 'chua-ro').map(h => h.tep));
+  // Đích: tệp của nguồn, hoặc thư mục của nguồn không chứa tệp sản phẩm nào.
+  const coSp = cayCo([...sp]); const coNguon = cayCo(dsNguon); const tepNguon = new Set(dsNguon);
+  const laDich = (p) => tepNguon.has(p) || (coNguon(p) && !coSp(p));
+  const ro = new Set(kk.con_tro.filter(r => !r.mo_ho).map(r => r.tu + '\0' + r.toi));
+  const ra = new Map();
+  for (const t of sp) {
+    const chu = git(kho, ['show', `${nguon}:${t}`]);
+    if (chu.includes('\0')) continue;
+    for (const m of chu.matchAll(/(?<![\w./@-])(?:\.\.?\/)+[\w@.\-/]*[\w@-]/g)) {
+      const toi = path.posix.normalize(path.posix.join(path.posix.dirname(t), m[0]));
+      if (toi.startsWith('../') || sp.has(toi) || !laDich(toi) || ro.has(t + '\0' + toi)) continue;
+      const ds = ra.get(t) || []; if (!ds.includes(toi)) ra.set(t, [...ds, toi]);
+    }
+  }
+  return ra;
+}
+
 // Đổi con trỏ của một tệp (đường NGUỒN t, đường ĐÍCH d) → [chữ mới, {toi: 'doi' | loại giữ}].
-function doiConTro(t, d, chu, kk, bx, ma) {
+function doiConTro(t, d, chu, kk, bx, ma, ngoai) {
   const giu = bx.con_tro.giu; const ket = {};
-  for (const r of kk.con_tro) {
-    if (r.mo_ho || r.tu !== t) continue;
+  const hang = [...kk.con_tro.filter(r => !r.mo_ho && r.tu === t).map(r => ({ toi: r.toi, chiTien: false })),
+    ...(ngoai.get(t) || []).map(toi => ({ toi, chiTien: true }))];
+  for (const r of hang) {
     if (giu.duong_kho_tieu_thu.includes(r.toi)) { ket[r.toi] = 'duong-kho-tieu-thu'; continue; }
     let doi = 0, loai = null;
     chu = chu.split('\n').map(L => L.replace(reConTro(r.toi), (m, tien, i) => {
+      if (r.chiTien && !tien) return m;
       if (tien && !giaiVe(t, m, r.toi)) return m;
       const k = loaiGiuRieng(d, L.slice(0, i), giu, r.toi); if (k) { loai = loai || k; return m; }
       doi++; return bx.con_tro.url.replace('{ma}', ma).replace('{duong}', r.toi);
@@ -180,13 +204,13 @@ function doiConTro(t, d, chu, kk, bx, ma) {
   return [chu, ket];
 }
 
-function ac7(kho, nguon, dich, kk, bx, dp) {
+function ac7(kho, nguon, dich, kk, bx, dp, ngoai) {
   const loi = []; const ma = git(kho, ['rev-parse', nguon]).trim();
   const dem = { doi: 0, lenh: 0, 'tu-host': 0, 'du-lieu': 0, 'duong-kho-tieu-thu': 0 };
-  const tu = [...new Set(kk.con_tro.filter(r => !r.mo_ho).map(r => r.tu))];
+  const tu = [...new Set([...kk.con_tro.filter(r => !r.mo_ho).map(r => r.tu), ...ngoai.keys()])];
   for (const t of tu) {
     const chu = apLuat(git(kho, ['show', `${nguon}:${t}`]), luatRieng(bx));
-    const [, ket] = doiConTro(t, dichDayDu(t, bx, dp), chu, kk, bx, ma);
+    const [, ket] = doiConTro(t, dichDayDu(t, bx, dp), chu, kk, bx, ma, ngoai);
     for (const [toi, k] of Object.entries(ket)) { if (k === 'khong-thay') loi.push(`con trỏ không tìm thấy trên nguồn: ${t} → ${toi}`); else dem[k]++; }
   }
   // Quét lại cây mới: mọi lần xuất hiện của con trỏ rõ dưới plugins/ phải thuộc một loại giữ.
@@ -211,10 +235,53 @@ function ac7(kho, nguon, dich, kk, bx, dp) {
     const treo = chu.split('\n').some(L => [...L.matchAll(reConTro(r.toi))].some(m => (!m[1] || giaiVe(r.tu, m[0], r.toi)) && !loaiGiuRieng(d, L.slice(0, m.index), giu, r.toi)));
     if (treo) loi.push(`con trỏ còn treo: ${d} → ${r.toi}`);
   }
+  const vp = quetViPhan(kho, nguon, dich, kk, bx, dp, loi);
   loi.splice(0, loi.length, ...new Set(loi));
   const g = dem.lenh + dem['tu-host'] + dem['du-lieu'] + dem['duong-kho-tieu-thu'];
-  const dong = loi.length ? [] : [`AC-7 đạt: ${dem.doi} con trỏ đã đổi, ${g} giữ có lý do (lenh ${dem.lenh} · tu-host ${dem['tu-host']} · du-lieu ${dem['du-lieu']} · duong-kho-tieu-thu ${dem['duong-kho-tieu-thu']}), 0 còn treo trong plugins/`];
+  const dong = loi.length ? [] : [`AC-7 đạt: ${dem.doi} con trỏ đã đổi, ${g} giữ có lý do (lenh ${dem.lenh} · tu-host ${dem['tu-host']} · du-lieu ${dem['du-lieu']} · duong-kho-tieu-thu ${dem['duong-kho-tieu-thu']}), 0 còn treo trong plugins/`,
+    `AC-7 quét vi phân: ${vp.n} đường tương đối còn ở plugins/ và giải được ở nguồn; gãy vì dời — trỏ tệp sản phẩm ${vp.goiCheo.length} (vòng B2), giữ có lý do ${vp.giu}, treo 0`,
+    ...vp.goiCheo.map(x => `  trỏ tệp sản phẩm (B2): ${x}`)];
   return { loi, dong };
+}
+
+// Quét VI PHÂN — khác cơ chế với sổ kiểm kê và với phép đổi: lấy mọi đường tương đối trong tệp sản phẩm ở cây mới
+// (chuỗi có tiền tố ../ ./, hoặc đích liên kết markdown), giải từ thư mục tệp ĐÍCH trên cây mới; không giải được mà cùng
+// chuỗi ấy giải được từ thư mục tệp NGUỒN trên nguồn thì việc dời đã làm gãy nó. Đích không phải sản phẩm, không thuộc
+// loại giữ → «con trỏ còn treo»; đích là tệp sản phẩm (gọi chéo plugin, hay tệp khai chợ ở gốc) → việc của vòng B2 (đếm,
+// in, không đỏ ở đây — AC-7 chỉ hứa về con trỏ sang tệp KHÔNG phải sản phẩm).
+const RE_VP = [/\]\(([^)\s#?]+)(?:[#?][^)\s]*)?\)/g, /(?<![\w./@-])((?:\.\.?\/)+[\w@.\-/]*[\w@-])/g];
+function cayCo(ds) {
+  const tep = new Set(ds); const dir = new Set();
+  for (const x of ds) for (let p = path.posix.dirname(x); p !== '.'; p = path.posix.dirname(p)) dir.add(p);
+  return (p) => tep.has(p) || dir.has(p);
+}
+function quetViPhan(kho, nguon, dich, kk, bx, dp, loi) {
+  const coA = cayCo(lsTree(kho, nguon)), dsB = lsTree(kho, dich), coB = cayCo(dsB), tepB = new Set(dsB);
+  const spDs = kk.hang.filter(h => h.lop === 'san-pham' || h.lop === 'chua-ro').map(h => h.tep);
+  const laSp = cayCo(spDs); const giu = bx.con_tro.giu;
+  const ra = { n: 0, goiCheo: [], giu: 0 };
+  for (const t of spDs) {
+    const d = dichDayDu(t, bx, dp);
+    if (!d.startsWith('plugins/') || !tepB.has(d)) continue;
+    const chu = git(kho, ['show', `${dich}:${d}`]);
+    if (chu.includes('\0')) continue;
+    chu.split('\n').forEach((L, i) => {
+      const thay = new Set();
+      for (const re of RE_VP) for (const m of L.matchAll(re)) {
+        const s = m[1];
+        if (/^(https?:|mailto:|#|\/|~|\$|\{)/.test(s) || thay.has(s)) continue;
+        thay.add(s);
+        const pA = path.posix.normalize(path.posix.join(path.posix.dirname(t), s));
+        if (pA.startsWith('../') || !coA(pA)) continue;
+        ra.n++;
+        if (coB(path.posix.normalize(path.posix.join(path.posix.dirname(d), s)))) continue;
+        if (laSp(pA)) { ra.goiCheo.push(`${d}:${i + 1} → ${pA}`); continue; }
+        if (giu.duong_kho_tieu_thu.includes(pA) || loaiGiuRieng(d, L.slice(0, L.indexOf(s)), giu, pA)) { ra.giu++; continue; }
+        loi.push(`con trỏ còn treo: ${d} → ${pA}`);
+      }
+    });
+  }
+  return ra;
 }
 
 function ac3(kk, cayMoi, bx, dp) {
@@ -265,7 +332,8 @@ export function kiemCho({ kho, nguon, dich, bangXep = path.join(DAY, 'bang-xep.j
   const kk = kiemKe({ kho, ref: nguon, luat });
   const cayMoi = new Set(lsTree(kho, dich));
   const dp = dichPluginCua(JSON.parse(git(kho, ['show', `${nguon}:.claude-plugin/marketplace.json`])), bx);
-  const ket = [ac3(kk, cayMoi, bx, dp), ac4(kho, nguon, dich, kk, bx), ac5(kho, dich, cayMoi, kk, bx), ac7(kho, nguon, dich, kk, bx, dp)];
+  const ngoai = timNgoaiSo(kho, nguon, kk);
+  const ket = [ac3(kk, cayMoi, bx, dp), ac4(kho, nguon, dich, kk, bx, ngoai), ac5(kho, dich, cayMoi, kk, bx), ac7(kho, nguon, dich, kk, bx, dp, ngoai)];
   return { loi: ket.flatMap(k => k.loi), dong: ket.flatMap(k => k.dong), kk };
 }
 
