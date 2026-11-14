@@ -30,6 +30,8 @@
     "QUICKSTART.md", "README.md", "_acceptance", "docs", "tests"
   ],
   "bo": [],
+  "khong_doi_chu": ["diagram-design/skills/"],
+  "_khong_doi_chu": "Cây vendor có băm ghim ở NOTICE (tree-hash.sh): bước 3 không đổi chữ bên trong — đổi một byte là lệch NOTICE (P196, B2 lượt 5).",
   "tai_lieu_doi_chu": ["README.md", "GUIDE.md", "QUICKSTART.md", ".claude/settings.json"],
   "con_tro": {
     "url": "https://github.com/phanlemanh/acceptance-gate-kit/blob/{ma}/{duong}",

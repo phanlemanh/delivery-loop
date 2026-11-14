@@ -158,7 +158,9 @@ function buoc3DoiTen(wt, bx, dichPlugin) {
     }
   }
   const L = [...luatDuongDoiTen(bx, dichPlugin), ...luatDoiChu(bx)];
-  const tap = [...git(wt, ['ls-files', '-z', 'plugins']).split('\0').filter(Boolean), ...bx.tai_lieu_doi_chu.filter(t => fs.existsSync(path.join(wt, t)))];
+  // Cây vendor có băm ghim (khong_doi_chu, đường cũ → đích theo bảng xếp) không đổi chữ: một byte lệch là lệch NOTICE.
+  const giuChu = (bx.khong_doi_chu || []).map(g => { const [d0, ...r] = g.split('/'); return [bx.thu_muc[d0] || d0, ...r].join('/'); });
+  const tap = [...git(wt, ['ls-files', '-z', 'plugins']).split('\0').filter(Boolean).filter(t => !giuChu.some(g => t.startsWith(g))), ...bx.tai_lieu_doi_chu.filter(t => fs.existsSync(path.join(wt, t)))];
   const so = [];
   for (const t of tap) {
     const buf = fs.readFileSync(path.join(wt, t)); if (!laChu(buf)) continue;

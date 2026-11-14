@@ -216,7 +216,8 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
       }
       if (!cayMoi.has(d)) continue; // AC-3 đã báo
       const a = docA(t), b = docB(d);
-      const doiChu = (sp.has(t) && d.startsWith('plugins/')) || taiLieu.has(t);
+      // Cây vendor có băm ghim (khong_doi_chu): dời mà không đổi chữ — so từng byte.
+      const doiChu = ((sp.has(t) && d.startsWith('plugins/')) || taiLieu.has(t)) && !(bx.khong_doi_chu || []).some(g => t.startsWith(g));
       if (!doiChu) {
         if (t === '.claude-plugin/marketplace.json' || khuonSua.has(t)) continue; // AC-5 và AC-8 đo
         if ((thuocBuoc6(t, bx.bo_kiem) || vaTep.has(t)) && laChu(a)) { // B2 AC-2: phép đảo thay phép so từng byte
