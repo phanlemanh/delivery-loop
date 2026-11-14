@@ -5,7 +5,7 @@ slug: kich-ban-chuyen-nha
 owner: phanlemanh@gmail.com
 risk_tier: T3      # chủ kho đặt T3 (migration/KE-HOACH.md mục 12, bảng dãy B); vật ở migration/, ngoài t3_paths — máy tự suy ra T2
 surfaces: [cli]
-status: verified
+status: signed-off
 approved_by: Phan Le Manh
 approved_at: 2026-11-13
 design_doc: migration/kich-ban/THIET-KE.md
@@ -129,3 +129,17 @@ Quét Zwicky (preset test-matrix rút gọn), đủ ở design doc §2–§8.
   tệp được phép chạm của AC-8.
 - **Giới hạn khai trước:** AC-10 đo trên máy này, một lượt mỗi cây; ca chập chờn có thể lẫn vào «đỏ thêm» — báo cáo ghi
   ca nào đỏ ở cả hai cây để tách.
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-14:
+  - Ngoài-1: Nếu người chạy tự gõ tên nhánh trùng nhánh chính hoặc nhánh chuyển nhà, kịch bản sẽ ghi đè nhánh đó mà không cảnh báo.
+  - Ngoài-2: Nếu một lượt đo bị ngắt giữa chừng, các lượt đo sau sẽ đứng chờ 40 phút rồi báo không đọc được, cho tới khi ai đó xoá tay thư mục khoá.
+  - Ngoài-3: Nếu một lượt chạy kiểm chết giữa chừng, báo cáo số ca đỏ thêm có thể ghi 0 và trông như sạch trong khi thực ra chưa đo được.
+  - Ngoài-4: Tài liệu thiết kế hứa có một sổ ghi đổi chữ nhưng chạy bình thường không sinh ra sổ đó, người đọc tài liệu sẽ đi tìm một tệp không có.
+  - Ngoài-5: Trên máy chưa có kho cũ được khai báo, lượt đo báo lỗi đỏ thay vì báo không đọc được ở đây, dễ khiến người ta tưởng sản phẩm hỏng.
+  - Ngoài-6: Nếu sau này đổi thẻ khuôn thì lượt đo lớp đỏ vẫn trỏ khuôn cũ và chỉ dừng sau khi đã bắt đầu chạy.
+  - Ngoài-7: Nếu một lượt chạy kiểm hỏng ngầm, báo cáo lớp đỏ vẫn in ra với số 0 hoặc số thổi phồng, và báo cáo cũ đã chốt có thể bị ghi đè thành rỗng.
+  - Ngoài-8: Sau khi một lượt đo bị ngắt, các lượt đo kế tiếp đứng chờ 40 phút rồi báo không đọc được, nguyên nhân thật bị che.
+  - Ngoài-9: Nếu công cụ kiểm tra plugin tự sập, thước vẫn in rằng nó không báo lỗi, trong khi thực ra chưa kiểm được.
+  - Ngoài-10: Lượt quét phụ tìm con trỏ còn treo có thể bỏ sót con trỏ thứ hai khi hai con trỏ giống nhau nằm trên cùng một dòng.
+  - Ngoài-11: Ca kiểm của bước đối chiếu nội dung chỉ xác nhận có dòng đạt kèm một số bất kỳ, nên nếu thước bỏ sót tệp thì ca vẫn xanh.
+  - Ngoài-12: Việc so danh sách con trỏ với hạt giống chỉ đọc bằng mắt được, không có mã tự kiểm.
+  - Ngoài-13: Ca kiểm xác nhận thước không dùng chung mã với kịch bản có thể xanh dù bộ dò không bắt được một số kiểu nhập mã.

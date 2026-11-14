@@ -1,14 +1,14 @@
 ---
 schema_version: 2
 feature_slug: kich-ban-chuyen-nha
-verdict: PENDING-JUDGMENT
+verdict: PASS
 failed_evals: []
 reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
 verified_commit: 684a5e30d2aa440b8a81d7baef91ee9172b805c7
-human_signoff:
+human_signoff: Phan Le Manh 2026-11-14 — ký lượt chấm 3; Ngoài-1…13 ghi Known limits; E10j Đạt; đồng ý phần cắt/hoãn; phê hết Treo
 ---
 
 # Evidence Report: kich-ban-chuyen-nha
@@ -217,7 +217,7 @@ Round 3. Mọi eval máy và mọi lệnh suite hồi quy đều xanh. Còn mộ
     - domain-correctness: PASS — Mỗi bộ có đủ ba số (đỏ cũ, đỏ mới, đỏ thêm), tổng theo bộ và theo lớp khớp 1787. Lớp «khác» chỉ khoảng 6% (106/1787) và có dòng mẫu nhận ra nguyên nhân. Ca đỏ ở cả hai cây được tách riêng khỏi «đỏ thêm» (GL07, T04 và hai tệp kiểm). Hai chỗ yếu nhỏ không cản việc chia việc: mẫu `got 127` hơi mỏng, và workflows/ban-do có đỏ mới bằng 0 nhưng đỏ thêm bằng 1, đã được lớp «bộ chạy không chạy được» giải thích.
     - operational-feasibility: PASS — Mỗi bộ có đủ ba số (đỏ cũ, đỏ mới, đỏ thêm) và cột đỏ cả hai. Tổng khớp: 1185+71+157+1+372+1 = 1787, và các lớp cộng lại cũng bằng 1787. Lớp «khác» chỉ có 106 ca (khoảng 6%), nên không nuốt phần lớn. Bốn ca đỏ ở cả hai cây (GL07, T04, eval-thay-boi.test.mjs, repin-lane-lop-cu.test.mjs) được liệt kê riêng và đã trừ khỏi «đỏ thêm». Mỗi lớp có tối đa ba dòng mẫu; lớp đường dẫn và tên đổi nhận ra nguyên nhân ngay, còn mẫu của cung-tep và khác kém rõ hơn nhưng phần «Giới hạn» đã khai cách phân lớp nên vẫn đủ để chia việc.
     - spec-alignment: PASS — Bảng đầu cho mỗi bộ đủ ba số (đỏ cũ, đỏ mới, đỏ thêm) và các tổng khớp nhau (1185+71+157+1+372+1 = 1787). Ca đỏ thêm chia theo lớp, mỗi lớp có số theo từng bộ và tối đa ba dòng mẫu cho thấy nguyên nhân (không tìm thấy đường dẫn, ENOENT, tên cũ còn sót). Lớp «khác» chỉ chiếm 106/1787 (khoảng 6%), không nuốt phần lớn. Ca đỏ ở cả hai cây được tách riêng (4 ca ở scripts, cột «Đỏ cả hai» và mục riêng). Một lệch nhỏ: workflows và ban-do có «đỏ mới» = 0 nhưng «đỏ thêm» = 1, do lớp `bo-chay`; báo cáo đã giải thích lớp này nên không làm người chia việc hiểu sai.
-  human_override:  # chi nguoi ghi
+  human_override: Phan Le Manh 2026-11-14 — Đạt
 
 ### Lệnh suite (hồi quy)
 
