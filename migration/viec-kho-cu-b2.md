@@ -60,6 +60,6 @@ Phần «không do kho cũ» còn **1 khoá** (lớp K), dưới ngưỡng 5 % c
 | K3 | hồ sơ đã ký: `release-2-3-0`…`2-8-0`, `lenh-tran-tai-lieu-dau-tay`, `trang-ho-so-mot-viec`, `vao-co-o-ra-co-ten` (verifier `scripts/product-map.mjs`, `scripts/evidence-page.js`) · `cua-veto-sau-chu-ky/fixture.mjs` · `lan-may-song-qua-bo-phan-loai/contract.md` (phạm vi bằng thư mục cũ) · `stop-patching-law/make-record.mjs:81` · `ra-co-ten-lam-va-trao/evals.yaml` | ca quét corpus hồ sơ thật hoặc chạy lại verifier đã khai; hồ sơ đã ký là lịch sử, sửa nó đổi băm chữ ký | CHỌN MỘT (chủ kho): (a) bộ đọc hồ sơ dịch đường cũ → mới cho hồ sơ sinh trước ngày cắt sang (răng: danh sách rút từ `git ls-tree <mốc> _acceptance/`), (b) kịch bản viết lại hồ sơ và ghim lại một lượt, (c) bỏ các khoá này có lý do ở Cổng Bằng chứng |
 | K4 | ~35 tệp kiểm (lớn nhất: `lo-trinh` 44, `doc-jsx-va-ban-do-hong` 43, `lo-trinh-du-lieu-ngay` 26, `khoi-khuon-tren-the-cong` 21, `moc-chien-dich` 15, `kiem-ban-cai-loi-sua` 14, `dieu-phoi/*` 10, `can-cu-s1.ca` 9 …) | một hằng / hàm đường dùng chung cho cây hiện tại VÀ bản `git archive` / `git show` của commit lịch sử (bố cục cũ); hoặc chép vào thư mục tạm thiếu thư mục cha; hoặc danh sách đóng sắp theo tên đã đổi | mỗi bản (lịch sử / hiện tại) mang đường của chính nó — hàm `duongTai(sha, rel)` đọc bố cục của commit ấy; danh sách đóng rút từ vật thay vì chép |
 
-Lớp K (P196, vòng B2 tự gỡ): bước 3 của kịch bản đổi tên chợ ngay trong
-`diagram-design/skills/diagram-design/LOCAL-PATCHES.md`, làm tree-hash lệch NOTICE. Gỡ bằng luật bước 3 bỏ qua cây skill có
-NOTICE ghim băm, hoặc đổi chữ kèm cập nhật NOTICE.
+Lớp K (P196) — ĐÃ GỠ ở B2 (commit `3d011878`): bước 3 của kịch bản từng đổi tên chợ ngay trong
+`diagram-design/skills/diagram-design/LOCAL-PATCHES.md`, làm tree-hash lệch NOTICE; khoá `khong_doi_chu` của bảng xếp nay
+giữ nguyên chữ cả cây `diagram-design/skills/`, thước AC-4 so nó từng byte.
