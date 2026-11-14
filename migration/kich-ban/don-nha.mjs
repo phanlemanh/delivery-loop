@@ -23,6 +23,7 @@ import { kiemKe } from '../tra-soat/kiem-ke.mjs';
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const LUAT_XEP = path.join(DAY, '..', 'tra-soat', 'luat-xep.json');
 
+export const NHANH_DICH = /^don-nha\/[A-Za-z0-9._-]+$/;
 export class Dung extends Error {}
 const dung = (lyDo) => { throw new Dung(lyDo); };
 
@@ -316,6 +317,8 @@ export function chay({ kho, nguon, nhanh, bangXep, rs, ra }) {
 if (process.argv[1] && fs.realpathSync(process.argv[1]) === fs.realpathSync(fileURLToPath(import.meta.url))) {
   const a = doiSo(process.argv.slice(2));
   if (!a) { process.stderr.write('dùng: node don-nha.mjs [--kho <git>] [--nguon <ref>] [--nhanh <tên>] [--bang-xep <tệp>] [--repo-standards <thư mục>]\n'); process.exit(2); }
+  // B2 AC-6 (Ngoài-1 của B1): nhánh đích chỉ được là don-nha/<tên> — gõ nhầm main hay chuyen-nha không ghi đè được.
+  if (a.nhanh !== undefined && !NHANH_DICH.test(a.nhanh)) { process.stderr.write(`don-nha: nhánh đích phải là don-nha/<tên>: ${a.nhanh}\n`); process.exit(2); }
   try {
     const kq = chay(a);
     process.stdout.write(`don-nha: ${kq.nguon} → ${kq.commit} cây ${kq.cay}\n`);

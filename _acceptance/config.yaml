@@ -1199,6 +1199,11 @@ risk_tiers:
     - "PRODUCT-MAP.md"
     # Trang lộ trình — view MÁY SINH cạnh bản đồ (cùng bộ dựng product-map), không phải hành vi.
     - "LO-TRINH.html"
+    # Tệp trạng thái SỐNG của đợt chuyển nhà (chỉ ở kho delivery-loop, nhánh chuyen-nha — hồ sơ bo-kiem-xanh-o-kho-moi
+    # AC-7, chủ kho duyệt Hỏi-4 14/11). Văn xuôi thuần, không mã nào đọc; phiên giữ đợt sửa nó mỗi bước, nên để ngoài
+    # danh sách này thì mọi hồ sơ vòng ở kho này hoá cũ sau mỗi lần cập nhật trạng thái. Liệt ĐÍCH DANH, không glob
+    # `migration/**`: các tệp khác của migration/ là vật của vòng. ĐIỀU KIỆN THU HỒI: ngày có mã đọc tệp này, gỡ dòng.
+    - "migration/TRANG-THAI.md"
     # Bản ghi mốc ĐỊNH TUYẾN (ADR 0019, 15/09 — cùng điều kiện ADR 0007). Nó là
     # view MÁY SINH: `tests/scripts/routing-baseline.mjs --slug <s> --write` dựng
     # dòng bằng chính `gate-card.js --extract`, và ca LM20 canh drift độc lập —
