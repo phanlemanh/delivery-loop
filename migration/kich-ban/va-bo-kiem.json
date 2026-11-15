@@ -1954,5 +1954,137 @@
   "cu": "\"$d/plugins/acceptance-gate/skills/",
   "moi": "\"$d/skills/",
   "so_lan": 2
+ },
+ {
+  "tep": "tests/scripts/cua-tin-hieu-goc-moi-worktree.test.mjs",
+  "cu": "readFileSync(path.join(goc, 'plugins/roadmap', 'commands', 'gui.md'), 'utf8')",
+  "moi": "readFileSync(path.join(goc, 'plugins/roadmap', 'commands', 'suggest.md'), 'utf8')",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/cua-tin-hieu-goc-moi-worktree.test.mjs",
+  "cu": "khoiLenh(goc).replaceAll('$AG', goc)",
+  "moi": "khoiLenh(goc).replaceAll('$AG', `${goc}/plugins/acceptance-gate`)",
+  "so_lan": 2
+ },
+ {
+  "tep": "tests/scripts/kho-moi-cai-goi-road-map.test.mjs",
+  "cu": "path.join(KIT, m.nguon)",
+  "moi": "path.join(`${KIT}/plugins/acceptance-gate`, m.nguon)",
+  "so_lan": 2
+ },
+ {
+  "tep": "tests/scripts/kho-moi-cai-goi-road-map.test.mjs",
+  "cu": "node([path.join(g, 'plugins/acceptance-gate/scripts', 'product-map.mjs'), '--root', '.', '--check'], { cwd: g })",
+  "moi": "node([path.join(g, 'scripts', 'product-map.mjs'), '--root', '.', '--check'], { cwd: g })",
+  "so_lan": 2
+ },
+ {
+  "tep": "tests/scripts/kho-moi-cai-goi-road-map.test.mjs",
+  "cu": "writeFileSync(path.join(x, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs'), lech)",
+  "moi": "writeFileSync(path.join(x, 'scripts', 'lo-trinh.mjs'), lech)",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/kho-moi-cai-goi-road-map.test.mjs",
+  "cu": "readFileSync(path.join(g, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs'), 'utf8') !== lech",
+  "moi": "readFileSync(path.join(g, 'scripts', 'lo-trinh.mjs'), 'utf8') !== lech",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/kho-moi-cai-goi-road-map.test.mjs",
+  "cu": "x.includes('plugins/acceptance-gate/scripts/ho-so-tom-tat.cjs') && x.includes('[only-if-declared: lo_trinh]')",
+  "moi": "x.includes('scripts/ho-so-tom-tat.cjs') && x.includes('[only-if-declared: lo_trinh]')",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/kho-moi-cai-goi-road-map.test.mjs",
+  "cu": "`AG='${KIT}' && `",
+  "moi": "`AG='${KIT}/plugins/acceptance-gate' && `",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/kho-cam-ket-co-lo-trinh.test.mjs",
+  "cu": "existsSync(path.join(kit, m.nguon))",
+  "moi": "existsSync(path.join(`${kit}/plugins/acceptance-gate`, m.nguon))",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/kho-cam-ket-co-lo-trinh.test.mjs",
+  "cu": "cpSync(path.join(kit, m.nguon)",
+  "moi": "cpSync(path.join(`${kit}/plugins/acceptance-gate`, m.nguon)",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/kho-cam-ket-co-lo-trinh.test.mjs",
+  "cu": "spawnSync('bash', [path.join(d, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh')",
+  "moi": "spawnSync('bash', [path.join(d, 'scripts', 'pre-merge-check.sh')",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/kho-cam-ket-co-lo-trinh.test.mjs",
+  "cu": "{ boQua: ['plugins/acceptance-gate/lib/chan-lo-trinh.cjs'] }",
+  "moi": "{ boQua: ['lib/chan-lo-trinh.cjs'] }",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/kho-cam-ket-co-lo-trinh.test.mjs",
+  "cu": "`AG='${kit}' && `",
+  "moi": "`AG='${kit}/plugins/acceptance-gate' && `",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/kho-cam-ket-co-lo-trinh.test.mjs",
+  "cu": "x.includes('plugins/acceptance-gate/lib/chan-lo-trinh.cjs') && x.includes('[only-if-declared: lo_trinh]')).length !== 1) throw new Error('danh sách chép CI thiếu dòng plugins/acceptance-gate/lib/chan-lo-trinh.cjs",
+  "moi": "x.includes('lib/chan-lo-trinh.cjs') && x.includes('[only-if-declared: lo_trinh]')).length !== 1) throw new Error('danh sách chép CI thiếu dòng lib/chan-lo-trinh.cjs",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/tin-hieu.test.mjs",
+  "cu": "env: { ...process.env, AG: kit } }",
+  "moi": "env: { ...process.env, AG: `${kit}/plugins/acceptance-gate` } }",
+  "so_lan": 2
+ },
+ {
+  "tep": "tests/scripts/tin-hieu.test.mjs",
+  "cu": "'node \"$AG/plugins/acceptance-gate/scripts/tin-hieu.mjs\" --root . --rang', 'node \"$AG/plugins/acceptance-gate/scripts/tin-hieu.mjs\" --root . --rangg'",
+  "moi": "'node \"$AG/scripts/tin-hieu.mjs\" --root . --rang', 'node \"$AG/scripts/tin-hieu.mjs\" --root . --rangg'",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/cua-tin-hieu-giua-chien-dich.test.mjs",
+  "cu": "path.join(goc, 'plugins/roadmap', 'commands', 'gui.md')",
+  "moi": "path.join(goc, 'plugins/roadmap', 'commands', 'suggest.md')",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/cua-tin-hieu-giua-chien-dich.test.mjs",
+  "cu": "lenh.replaceAll('$AG', goc)",
+  "moi": "lenh.replaceAll('$AG', `${goc}/plugins/acceptance-gate`)",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/consumer-esm.test.mjs",
+  "cu": "'  verifier: plugins/acceptance-gate/scripts/pre-merge-check.sh'",
+  "moi": "'  verifier: scripts/pre-merge-check.sh'",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/consumer-esm.test.mjs",
+  "cu": "path.join(SIM, 'plugins/acceptance-gate/scripts', ",
+  "moi": "path.join(SIM, 'scripts', ",
+  "so_lan": 3
+ },
+ {
+  "tep": "tests/scripts/consumer-esm.test.mjs",
+  "cu": "path.join(SIM2, 'plugins/acceptance-gate/scripts', ",
+  "moi": "path.join(SIM2, 'scripts', ",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/consumer-esm.test.mjs",
+  "cu": "path.join(SIM, 'plugins/acceptance-gate/lib', ",
+  "moi": "path.join(SIM, 'lib', ",
+  "so_lan": 2
  }
 ]
