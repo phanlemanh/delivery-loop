@@ -130,6 +130,11 @@ export function phepDao(bx, dp) {
     L.push([new RegExp(`(['"])${thoat(q)}\\1`, 'g'), `$1${p}$1`]);
     // Trong một regex literal: `\/dispatch:` → `\/dieu-phoi:` (dấu «/» thoát đứng trước, chữ sau là ngoặc hoặc «/»).
     L.push([new RegExp('(?<=\\\\/)' + thoat(q) + ':(?=[\\[/])', 'g'), p + ':']);
+    // Một nhánh của nhóm lựa chọn tên plugin trong regex: `(acceptance-gate|feature-loop|dispatch):` → `…|dieu-phoi):`
+    // (mục vá moi-cong-khong-qua-nut — chỉ trong nhóm có một nhánh là tên plugin không đổi, để chữ thường không bị đảo).
+    const conGiu = Object.keys(dp).filter(k => !(k in bx.ten.plugin)).map(thoat).join('|');
+    L.push([new RegExp(`(\\((?:[\\w-]+\\|)*(?:${conGiu})(?:\\|[\\w-]+)*\\))`, 'g'),
+      (m) => m.replace(new RegExp(`(?<=[(|])${thoat(q)}(?=[|)])`, 'g'), p)]);
   }
   L.push([new RegExp('(?<![\\w-])' + thoat(bx.luat_cho.thay) + '(?![\\w-])', 'g'), bx.cho_moi.ten_cu]);
   return (s) => L.reduce((x, [re, thay]) => x.replace(re, thay), s);
@@ -155,6 +160,26 @@ export function daoTep(t, sb, dao, moHo, bx) {
   s = dao(s);
   giu.forEach((x, i) => { s = s.split(`\u0000MOHO${i}\u0000`).join(x.chuoi); });
   return { s, loi };
+}
+// ── B2 đổi sót: phép đảo chỉ bắt chỗ đổi SAI; chỗ luật BỎ SÓT tự về đúng bản gốc khi đảo, nên đo riêng trên cây mới ──
+// Một mảng mà phần tử chuỗi trực tiếp (bỏ phần trong ngoặc tròn — đối số path.join…) vừa có đường `plugins/…` vừa có tên
+// thư mục gốc cũ trần là mảng đổi nửa chừng (JI12, 15/11: năm thư mục lõi còn tên cũ, existsSync bỏ qua, ca vẫn xanh).
+// Tên gốc cũ đứng ngay sau đúng một gốc plugin (`'plugins/feature-loop', 'scripts', 'x.mjs'`) là chuỗi đoạn đường, không nêu.
+export function mangDoiSot(s, goc) {
+  const ra = [];
+  for (const m of s.matchAll(/\[([^[\]]*)\]/g)) {
+    let c = m[1], c0;
+    do { c0 = c; c = c.replace(/\([^()]*\)/g, '()'); } while (c !== c0);
+    const el = [...c.matchAll(/(['"`])([^'"`\n]*)\1/g)].map(x => x[2]);
+    if (!el.some(e => e.startsWith('plugins/'))) continue;
+    if (el.some((e, i) => goc.has(e) && !/^plugins\/[\w-]+$/.test(el[i - 1] || ''))) ra.push({ dong: s.slice(0, m.index).split('\n').length, doan: m[0] });
+  }
+  return ra;
+}
+function docDoiSot(bx) {
+  const p = bx.bo_kiem?.doi_sot ? path.resolve(bx._dir, bx.bo_kiem.doi_sot) : null;
+  if (!p || !fs.existsSync(p)) return [];
+  return fs.readFileSync(p, 'utf8').split('\n').filter(d => d.trim() && !d.startsWith('#')).map(d => { const [tep, chuoi, lyDo] = d.split('\t'); return { tep, chuoi, lyDo }; });
 }
 const laChu = (b) => !b.subarray(0, 8192).includes(0);
 const CHUOI_GIU = ['dieu-phoi.mjs', 'cat-luot.mjs', 'acceptance-gate-kit-tri-thuc'];
@@ -201,6 +226,7 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
     const cayMoi = new Set(lsTree(kho, dich)); const daCo = new Set();
     const maNguon = git(kho, ['rev-parse', nguon]).trim();
     const dao = phepDao(bx, dp); const moHo = docMoHo(bx); let n6 = 0, tong6 = 0;
+    const gocCu = new Set(Object.keys(bx.thu_muc)); const doiSot = docDoiSot(bx); const daKhai = new Set();
     // Tệp một mục vá chạm (kể cả fixture ngoài tập luật) cũng là tệp bước 6 — kịch bản áp vá lên bất kỳ tệp nào nó nêu.
     const vaTep = new Set(bx.bo_kiem?.va ? JSON.parse(fs.readFileSync(path.resolve(bx._dir, bx.bo_kiem.va), 'utf8')).map(v => v.tep) : []);
     let n = 0, m = 0; const demGiu = Object.fromEntries(CHUOI_GIU.map(x => [x, [0, 0]]));
@@ -225,6 +251,10 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
           const { s: daoLai, loi: l6 } = daoTep(t, b.toString('utf8'), dao, moHo, bx);
           loi.push(...l6);
           if (daoLai !== a.toString('utf8')) loi.push(`tệp kiểm lệch luật: ${t}`); else if (!l6.length) n6++;
+          for (const r of mangDoiSot(b.toString('utf8'), gocCu)) {
+            const k = doiSot.findIndex(x => x.tep === t && r.doan.includes(x.chuoi));
+            if (k < 0) loi.push(`đổi sót: ${t}:${r.dong}`); else daKhai.add(k);
+          }
           continue;
         }
         if (!a.equals(b)) loi.push(`tệp không phải sản phẩm bị sửa: ${t}`); else m++;
@@ -249,9 +279,11 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
     for (const d of cayMoi) if (!daCo.has(d) && !them.has(d)) loi.push(`tệp lạ ở cây mới: ${d}`);
     for (const [x, [u, v]] of Object.entries(demGiu)) if (u !== v) loi.push(`chuỗi phải giữ đổi số: ${x} ${u}→${v}`);
     for (const [k, v] of demLuat) if (!v) loi.push(`luật không khớp chỗ nào: ${k}`);
+    doiSot.forEach((x, k) => { if (!daKhai.has(k)) loi.push(`chỗ đổi sót đã khai không còn: ${x.tep}`); });
     const dong = loi.length ? [] : [
       `AC-4 đạt: ${n} tệp đúng luật, ${m} tệp không phải sản phẩm giữ nguyên`,
-      ...(bx.bo_kiem ? [`AC-2 (B2) đạt: ${n6}/${tong6} tệp bộ kiểm chỉ khác bản gốc ở đường và tên · ${moHo.length} chỗ đảo mơ hồ đã khai`] : []),
+      ...(bx.bo_kiem ? [`AC-2 (B2) đạt: ${n6}/${tong6} tệp bộ kiểm chỉ khác bản gốc ở đường và tên · ${moHo.length} chỗ đảo mơ hồ đã khai`,
+        `đổi sót (B2): 0 mảng trộn tên gốc cũ với đường mới ngoài ${doiSot.length} chỗ đã khai`] : []),
       'chuỗi phải giữ: ' + CHUOI_GIU.map(x => `${x} ${demGiu[x][0]}→${demGiu[x][1]}`).join(' · '),
       `luật đổi chữ: ${demLuat.size}/${demLuat.size} mục bảng tên có chỗ khớp — ` + [...demLuat].map(([k, v]) => `${k} ${v}`).join(' · '),
     ];
@@ -486,5 +518,5 @@ if (process.argv[1] && fs.realpathSync(process.argv[1]) === fs.realpathSync(file
   const kq = kiemCho(a);
   for (const d of kq.dong) process.stdout.write(d + '\n');
   for (const l of kq.loi) process.stderr.write('kiem-cho: ' + l + '\n');
-  process.exit(kq.loi.length ? 1 : 0);
+  process.exitCode = (kq.loi.length ? 1 : 0); // exitCode, không exit(): ống cắt đầu ra ở 64 KiB khi thoát ngay sau write
 }

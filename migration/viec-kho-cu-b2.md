@@ -60,6 +60,28 @@ Phần «không do kho cũ» còn **1 khoá** (lớp K), dưới ngưỡng 5 % c
 | K3 | hồ sơ đã ký: `release-2-3-0`…`2-8-0`, `lenh-tran-tai-lieu-dau-tay`, `trang-ho-so-mot-viec`, `vao-co-o-ra-co-ten` (verifier `scripts/product-map.mjs`, `scripts/evidence-page.js`) · `cua-veto-sau-chu-ky/fixture.mjs` · `lan-may-song-qua-bo-phan-loai/contract.md` (phạm vi bằng thư mục cũ) · `stop-patching-law/make-record.mjs:81` · `ra-co-ten-lam-va-trao/evals.yaml` | ca quét corpus hồ sơ thật hoặc chạy lại verifier đã khai; hồ sơ đã ký là lịch sử, sửa nó đổi băm chữ ký | CHỌN MỘT (chủ kho): (a) bộ đọc hồ sơ dịch đường cũ → mới cho hồ sơ sinh trước ngày cắt sang (răng: danh sách rút từ `git ls-tree <mốc> _acceptance/`), (b) kịch bản viết lại hồ sơ và ghim lại một lượt, (c) bỏ các khoá này có lý do ở Cổng Bằng chứng |
 | K4 | ~35 tệp kiểm (lớn nhất: `lo-trinh` 44, `doc-jsx-va-ban-do-hong` 43, `lo-trinh-du-lieu-ngay` 26, `khoi-khuon-tren-the-cong` 21, `moc-chien-dich` 15, `kiem-ban-cai-loi-sua` 14, `dieu-phoi/*` 10, `can-cu-s1.ca` 9 …) | một hằng / hàm đường dùng chung cho cây hiện tại VÀ bản `git archive` / `git show` của commit lịch sử (bố cục cũ); hoặc chép vào thư mục tạm thiếu thư mục cha; hoặc danh sách đóng sắp theo tên đã đổi | mỗi bản (lịch sử / hiện tại) mang đường của chính nó — hàm `duongTai(sha, rel)` đọc bố cục của commit ấy; danh sách đóng rút từ vật thay vì chép |
 
+### 4.1 Đo lại trên nguồn có #503 (15/11)
+
+Cây cũ `644e9b49` (= `kit-cu/main` sau khi gộp #503, 5 556 khoá) so cây kịch bản `8d797a91`: thiếu **468** khoá. Từng khoá:
+`migration/kich-ban/ket-qua/phan-du-luot-6.tsv` (lớp giữ theo lượt 5 cho cùng khoá). Bảng vá ghim lại một mục cho khớp
+nguồn mới (khối RT13 của `ra-co-ten.test.mjs`, #503 thêm dòng `OLD_SCAN`); 74 mục khác trỏ tệp #503 sửa vẫn khớp.
+
+| Lớp | Lượt 5 | Về nhờ #503 / B2 | Còn |
+|---|---|---|---|
+| A — gọi chéo | 185 | 98 (`tin-hieu` 38, «(đầu)» 24, `cua-tin-hieu-giua-chien-dich` 14, `kho-moi-cai-goi-road-map` 12, `kho-cam-ket-co-lo-trinh` 7, …) | **87** |
+| B / K2 | 52 | 25 (K2a `carry-plan` 24 — đã về, không cần sửa; «(đầu)» 1) | 27 (`moi-cong-khong-qua-nut` 17, «(đầu)» 7, JI12 3) |
+| C / K3 | 16 | 0 | 16 |
+| C / K1 | 4 | 1 (một khoá RT13 đổi chữ đếm, vẫn đỏ) | 4 |
+| D / K4 | 340 | 6 (`lo-trinh` 3, `ve-lo-trinh-doc-tin-hieu-cua-cay` 3) | 334 |
+| K | 1 | 1 (P196) | 0 |
+
+Ngoài túi cả hai cây: `LT-94`, `LT-94-do` (`tests/scripts/lo-trinh.test.mjs`) đỏ THEO LỊCH ngày 15/11 ở cả cây cũ lẫn cây
+mới — dữ liệu thử mốc `2026-11-15`, ca cấm trang chứa ngày chạy; túi nền 14/11 có hai khoá này xanh. Không thuộc lớp nào.
+
+87 khoá A còn đỏ (`cua-tin-hieu-goc-moi-worktree` 22, `kho-moi-cai-goi-road-map` 20, `kho-cam-ket-co-lo-trinh` 16,
+`tin-hieu` 9, `cua-tin-hieu-giua-chien-dich` 8, `consumer-esm` 7, `ngay-ky` 2, khác 3) đang phân loại ở lượt 6 (cơ học
+→ vòng B2 vá; mã sản phẩm → thêm vào bảng K2 dưới).
+
 Lớp K (P196) — ĐÃ GỠ ở B2 (commit `3d011878`): bước 3 của kịch bản từng đổi tên chợ ngay trong
 `diagram-design/skills/diagram-design/LOCAL-PATCHES.md`, làm tree-hash lệch NOTICE; khoá `khong_doi_chu` của bảng xếp nay
 giữ nguyên chữ cả cây `diagram-design/skills/`, thước AC-4 so nó từng byte.

@@ -143,5 +143,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   for (const k of kq.thua) ra.push(`  thừa: ${k}`);
   if (json) process.stdout.write(JSON.stringify({ ...kq, khongDo, khongDoMoi, boCu, boMoi }) + '\n');
   else process.stdout.write(ra.join('\n') + '\n');
-  process.exit(khongDo.length || kq.loi.length || kq.thieu.length ? 1 : 0);
+  process.exitCode = (khongDo.length || kq.loi.length || kq.thieu.length ? 1 : 0); // exitCode, không exit(): ống cắt đầu ra ở 64 KiB khi thoát ngay sau write
 }

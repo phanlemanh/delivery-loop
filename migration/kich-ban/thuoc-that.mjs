@@ -163,7 +163,7 @@ function boKiem(bx, S) {
   if (khac) loi.push(khac);
   else ra(`AC-1 đạt: hai lần chạy cùng commit ${git(['rev-parse', NHANH[0]]).trim()} cùng cây ${git(['rev-parse', `${NHANH[0]}^{tree}`]).trim()}`);
   const kq = kiemCho({ kho: KHO, nguon: S, dich: NHANH[0], bangXep: BANG_XEP });
-  for (const d of kq.dong) if (/^AC-(2 \(B2\)|4) đạt/.test(d)) ra(d);
+  for (const d of kq.dong) if (/^(AC-(2 \(B2\)|4) đạt|đổi sót \(B2\))/.test(d)) ra(d);
   loi.push(...kq.loi);
 }
 

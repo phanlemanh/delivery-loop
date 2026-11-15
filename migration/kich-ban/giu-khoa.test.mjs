@@ -59,6 +59,16 @@ for (const [ma, ket] of [['skip', 'SKIP'], ['fail', 'FAIL']]) {
   });
 }
 
+// Đầu ra --json lớn hơn bộ đệm ống (64 KiB) phải tới bên đọc trọn vẹn — lượt đo 15/11 thiếu nhiều khoá, phan-lop.py nhận
+// JSON cắt ở đúng 65 536 byte vì bộ thước thoát ngay sau write. Đối chứng: đầu ra thật sự vượt 64 KiB.
+test('BK-AC3-json-lon', () => {
+  const N = 900, ten = i => `A${String(i).padStart(4, '0')} ${'khoa-dai-de-vuot-bo-dem-ong-'.repeat(3)}`;
+  const r = giuKhoa(chayCay(dungCay({ ka: Array.from({ length: N }, (_, i) => ['PASS', ten(i)]) })), chayCay(dungCay({ ka: [['PASS', ten(0)]] })), ['--json']);
+  assert.equal(r.status, 1, r.stderr);
+  assert.ok(Buffer.byteLength(r.stdout) > 65536, `đối chứng: đầu ra chỉ ${Buffer.byteLength(r.stdout)} byte, không vượt bộ đệm ống`);
+  assert.equal(JSON.parse(r.stdout).thieu.length, N - 1);
+});
+
 test('BK-AC3-do-lap', () => {
   const r = giuKhoa(chayCay(dungCay({ ka: [['PASS', 'A01 dau'], ['PASS', 'A01 dau']] })), chayCay(dungCay({ ka: [['PASS', 'A01 dau']] })));
   assert.equal(r.status, 1, r.stdout);

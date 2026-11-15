@@ -607,8 +607,8 @@
  },
  {
   "tep": "tests/plugins/ra-co-ten.test.mjs",
-  "cu": "  for (const rel of ['plugins/acceptance-gate/scripts/start-scan.mjs', 'plugins/acceptance-gate/scripts/trang-thai-ho-so.cjs', 'plugins/acceptance-gate/scripts/khong-can-nguoi.mjs',\n                     'plugins/acceptance-gate/lib/workspace-record.cjs', 'plugins/acceptance-gate/lib/evidence-core.cjs', 'plugins/acceptance-gate/lib/md-section.cjs', 'plugins/acceptance-gate/lib/ac-line.cjs',\n                     'plugins/acceptance-gate/skills/acceptance/references/opportunity-template.md'])\n    W(old, rel, show(rel));\n  let jOld = null;\n  try { jOld = scan(ROOT, path.join(old, 'plugins/acceptance-gate/scripts', 'start-scan.mjs')); }",
-  "moi": "  for (const rel of ['scripts/start-scan.mjs', 'scripts/trang-thai-ho-so.cjs', 'scripts/khong-can-nguoi.mjs',\n                     'lib/workspace-record.cjs', 'lib/evidence-core.cjs', 'lib/md-section.cjs', 'lib/ac-line.cjs',\n                     'skills/acceptance/references/opportunity-template.md'])\n    W(old, rel, show(rel));\n  let jOld = null;\n  try { jOld = scan(ROOT, path.join(old, 'scripts', 'start-scan.mjs')); }",
+  "cu": "  for (const rel of ['plugins/acceptance-gate/scripts/start-scan.mjs', 'plugins/acceptance-gate/scripts/trang-thai-ho-so.cjs', 'plugins/acceptance-gate/scripts/khong-can-nguoi.mjs',\n                     'plugins/acceptance-gate/lib/workspace-record.cjs', 'plugins/acceptance-gate/lib/evidence-core.cjs', 'plugins/acceptance-gate/lib/md-section.cjs', 'plugins/acceptance-gate/lib/ac-line.cjs',\n                     'plugins/acceptance-gate/skills/acceptance/references/opportunity-template.md'])\n    W(old, rel, show(rel));\n  const OLD_SCAN = path.join(old, 'plugins/acceptance-gate/scripts', 'start-scan.mjs');",
+  "moi": "  for (const rel of ['scripts/start-scan.mjs', 'scripts/trang-thai-ho-so.cjs', 'scripts/khong-can-nguoi.mjs',\n                     'lib/workspace-record.cjs', 'lib/evidence-core.cjs', 'lib/md-section.cjs', 'lib/ac-line.cjs',\n                     'skills/acceptance/references/opportunity-template.md'])\n    W(old, rel, show(rel));\n  const OLD_SCAN = path.join(old, 'scripts', 'start-scan.mjs');",
   "so_lan": 1
  },
  {
@@ -1894,5 +1894,65 @@
   "cu": "\"$GPFAKE/plugins/acceptance-gate/",
   "moi": "\"$GPFAKE/",
   "so_lan": 3
+ },
+ {
+  "tep": "tests/scripts/s4-args-judgment-inputs.test.mjs",
+  "cu": "['plugins/feature-loop', 'scripts', 'lib', 'hooks', 'skills', 'commands', path.join('docs', 'findings', 'assets')]",
+  "moi": "['plugins/feature-loop', 'plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/hooks', 'plugins/acceptance-gate/skills', 'plugins/acceptance-gate/commands', path.join('docs', 'findings', 'assets')]",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/moi-cong-khong-qua-nut.test.mjs",
+  "cu": "/^\\s*\\/(acceptance-gate|feature-loop|dieu-phoi):/",
+  "moi": "/^\\s*\\/(acceptance-gate|feature-loop|dispatch):/",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/ngoai-n-tu-dinh-tuyen.test.mjs",
+  "cu": "'--require', 'plugins/acceptance-gate/scripts/dinh-tuyen-may.cjs', '--root', ROOT]",
+  "moi": "'--require', 'scripts/dinh-tuyen-may.cjs', '--root', ROOT]",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/lo-trinh.test.mjs",
+  "cu": "if (existsSync(path.join(r, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs'))) throw new Error('kho fixture không được có plugins/acceptance-gate/scripts/lo-trinh.mjs');",
+  "moi": "if (existsSync(path.join(r, 'scripts', 'lo-trinh.mjs'))) throw new Error('kho fixture không được có scripts/lo-trinh.mjs');",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/lo-trinh.test.mjs",
+  "cu": ".replace(CU, 'node plugins/acceptance-gate/scripts/lo-trinh.mjs')",
+  "moi": ".replace(CU, 'node scripts/lo-trinh.mjs')",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/ra-soat-lo-trinh.test.mjs",
+  "cu": "\"export const LENH_RA_SOAT = 'node plugins/acceptance-gate/scripts/lo-trinh.mjs --root . --ra-soat';\"",
+  "moi": "\"export const LENH_RA_SOAT = 'node scripts/lo-trinh.mjs --root . --ra-soat';\"",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/can-cu-s1.ca.mjs",
+  "cu": "'Không nạp được bộ đọc căn cứ bước thiết kế (plugins/acceptance-gate/scripts/can-cu-s1.cjs)'",
+  "moi": "'Không nạp được bộ đọc căn cứ bước thiết kế (scripts/can-cu-s1.cjs)'",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/can-cu-s1.ca.mjs",
+  "cu": "--require plugins/acceptance-gate/scripts/can-cu-s1.cjs) && node \"$AG/plugins/acceptance-gate/scripts/can-cu-s1.cjs\"', 'node plugins/acceptance-gate/scripts/can-cu-s1.cjs');",
+  "moi": "--require scripts/can-cu-s1.cjs) && node \"$AG/scripts/can-cu-s1.cjs\"', 'node scripts/can-cu-s1.cjs');",
+  "so_lan": 1
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "--require plugins/acceptance-gate/skills/acceptance/references/judge-personas.md",
+  "moi": "--require skills/acceptance/references/judge-personas.md",
+  "so_lan": 4
+ },
+ {
+  "tep": "tests/scripts/run-tests.sh",
+  "cu": "\"$d/plugins/acceptance-gate/skills/",
+  "moi": "\"$d/skills/",
+  "so_lan": 2
  }
 ]

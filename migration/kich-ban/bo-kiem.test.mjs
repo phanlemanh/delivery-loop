@@ -13,7 +13,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dungKhoFixture, git, themCommit, VA_FIXTURE } from './fixture.mjs';
-import { chupKho, soChup, kiemCho } from './kiem-cho.mjs';
+import { chupKho, soChup, kiemCho, mangDoiSot } from './kiem-cho.mjs';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const KB = path.join(DAY, 'don-nha.mjs');
@@ -181,6 +181,46 @@ test('BK-AC2-do-mo-ho', () => {
   bx.bo_kiem = { ...bx.bo_kiem, dao_mo_ho: tsv };
   fs.writeFileSync(f.bangXep, JSON.stringify(bx, null, 2));
   assert.ok(kc(f, 'don-nha/a').loi.includes('chỗ đảo mơ hồ không còn: tests/scripts/ban-sao.test.mjs'));
+});
+
+// ── Đổi sót (lượt 6, chủ kho cho thêm lượt 15/11): chỗ luật BỎ SÓT tự về đúng bản gốc khi đảo — phép đảo mù với nó ──
+const SOT = { tep: 'tests/scripts/ban-sao.test.mjs', cu: "'plugins/acceptance-gate/commands']", moi: "'commands']", so_lan: 1, ly_do: 'đổi nửa mảng' };
+const voiDoiSot = (f, dong) => {
+  const bx = JSON.parse(fs.readFileSync(f.bangXep, 'utf8'));
+  const tsv = path.join(moTam('bk-ds-'), 'doi-sot.tsv'); fs.writeFileSync(tsv, dong);
+  bx.bo_kiem = { ...bx.bo_kiem, doi_sot: tsv }; fs.writeFileSync(f.bangXep, JSON.stringify(bx, null, 2));
+};
+
+test('BK-AC2-do-sot', () => {
+  const lanh = moFix();
+  assert.equal(donNha(lanh, 'don-nha/a').status, 0);
+  const kl = kc(lanh, 'don-nha/a');
+  assert.deepEqual(kl.loi, [], 'đối chứng dương: mảng đổi trọn → im');
+  assert.ok(kl.dong.includes('đổi sót (B2): 0 mảng trộn tên gốc cũ với đường mới ngoài 0 chỗ đã khai'), kl.dong.join('\n'));
+  const f = moFix({ va: [...VA_FIXTURE, SOT] });
+  assert.equal(donNha(f, 'don-nha/a').status, 0, 'kịch bản áp được mục vá trả một phần tử về tên cũ');
+  const kq = kc(f, 'don-nha/a');
+  assert.ok(!kq.loi.includes('tệp kiểm lệch luật: tests/scripts/ban-sao.test.mjs'), 'phép đảo mù với chỗ bỏ sót — đúng lý do cần thước này');
+  assert.ok(kq.loi.some(l => /^đổi sót: tests\/scripts\/ban-sao\.test\.mjs:\d+$/.test(l)), kq.loi.join('\n'));
+});
+
+test('BK-AC2-sot-khai', () => {
+  const f = moFix({ va: [...VA_FIXTURE, SOT] });
+  assert.equal(donNha(f, 'don-nha/a').status, 0);
+  voiDoiSot(f, "tests/scripts/ban-sao.test.mjs\t'plugins/acceptance-gate/scripts', 'commands'\tthử\n");
+  assert.deepEqual(kc(f, 'don-nha/a').loi, [], 'chỗ đã khai → im');
+  const g = moFix();
+  assert.equal(donNha(g, 'don-nha/a').status, 0);
+  voiDoiSot(g, "tests/scripts/ban-sao.test.mjs\t'plugins/acceptance-gate/scripts', 'commands'\tthử\n");
+  assert.ok(kc(g, 'don-nha/a').loi.includes('chỗ đổi sót đã khai không còn: tests/scripts/ban-sao.test.mjs'));
+});
+
+test('BK-AC2-sot-im', () => {
+  const goc = new Set(['scripts', 'lib', 'feature-loop']);
+  assert.deepEqual(mangDoiSot("[path.join(K, 'plugins/feature-loop', 'scripts', 'a.mjs'), '--root', r]", goc), [], 'đối số path.join không phải phần tử');
+  assert.deepEqual(mangDoiSot("['plugins/feature-loop', 'scripts', 's4-args.mjs']", goc), [], 'chuỗi đoạn đường sau một gốc plugin');
+  assert.deepEqual(mangDoiSot("['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib']", goc), [], 'mảng đổi trọn');
+  assert.equal(mangDoiSot("['plugins/feature-loop', 'scripts', 'lib', path.join('docs', 'x')]", goc).length, 1, 'JI12: «lib» không đứng sau gốc plugin');
 });
 
 test('BK-AC2-doc-lap', () => {

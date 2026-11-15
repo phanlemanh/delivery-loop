@@ -1,0 +1,503 @@
+---
+nguon: 644e9b49af3d24de3fe284304d765ea388304b89
+cay_moi: 5f1b4286d8fd23a14432bda4712654ca88af672f
+phan_quyet: thieu
+tong: 5556
+bo: 0
+thieu: 468
+---
+
+# Giữ đủ khoá ca — cây cũ so cây mới (B2 AC-4)
+
+Máy sinh bởi `migration/kich-ban/do-lop-do.sh` → `bao-cao-giu-khoa.mjs` — đừng sửa tay; thước `thuoc-that.mjs --giu-khoa` chạy
+lại phép so trên hai túi khoá ở `giu-khoa/` và đối chiếu từng số với tệp này.
+
+## Các bước kiểm (việc `tests` của gate.yml mỗi cây)
+
+| Bước | Loại | Mã thoát cây cũ | Mã thoát cây mới |
+|---|---|---|---|
+| scripts | bash | 1 | 1 |
+| hooks | bash | 0 | 0 |
+| plugins | bash | 0 | 1 |
+| workflows | bash | 0 | 0 |
+| dieu-phoi | tap | 0 | 1 |
+| ban-do | mot-khoa | 0 | 0 |
+
+## Phán quyết: thiếu 468 khoá
+
+## Danh sách bỏ (bo-khoa.tsv, nguyên văn)
+
+rỗng
+
+## Khoá thiếu (468)
+
+- `scripts: L42m`
+- `scripts: DV5 plugins/acceptance-gate/scripts/pre-merge-check.sh: diff so với base <sha> CHỈ THÊM`
+- `scripts: DV5 plugins/acceptance-gate/scripts/recheck-evidence.cjs: diff so với base <sha> CHỈ THÊM`
+- `scripts: additive-only.test.mjs`
+- `scripts: AP-1-khong-bat`
+- `scripts: AP-1-do2`
+- `scripts: AP-7`
+- `scripts: AP-7-lenh`
+- `scripts: AP-7-do2`
+- `scripts: AP-8-khong-bat`
+- `scripts: AP-9-byte`
+- `scripts: AP-9-do`
+- `scripts: AP-10-byte`
+- `scripts: ap-chinh-sach-lo-trinh.test.mjs`
+- `scripts: [RN-1]`
+- `scripts: [RN-1-do]`
+- `scripts: [RN-2]`
+- `scripts: [RN-3]`
+- `scripts: [RN-3-do]`
+- `scripts: [RN-4]`
+- `scripts: [RN-4-do]`
+- `scripts: [RN-6]`
+- `scripts: ban-do-khuon-roi-nhom.test.mjs`
+- `scripts: CL1`
+- `scripts: CL2`
+- `scripts: CL3`
+- `scripts: CL4`
+- `scripts: CL5`
+- `scripts: CL6`
+- `scripts: CL7`
+- `scripts: CL8`
+- `scripts: cham-lai-khong-tu-doi.test.mjs`
+- `scripts: CT0 danh sách chép rút được từ marker, có nhãn tri_thuc, mọi src tồn tại`
+- `scripts: CT1 kho KHÔNG khai tri_thuc, chép đúng nhãn: răng phủ --pham-vi chạy tới bảng phủ, không vỡ nạp mô-đun`
+- `scripts: CT2 kho khai tri_thuc mà thiếu tệp khoá tri thức: răng phủ dừng to`
+- `scripts: CT3 kho khai tri_thuc, chép trọn danh sách: lint tri thức chạy, không vỡ vì thiếu khuôn`
+- `scripts: CT4 --nhip ở kho không khai tri_thuc chạy được`
+- `scripts: chep-tri-thuc-du.test.mjs`
+- `scripts: TV1-do ban-goc 5/5`
+- `scripts: chi-tep-vat-keo-xet-lai.test.mjs`
+- `scripts: AC-1`
+- `scripts: AC-2`
+- `scripts: AC-4`
+- `scripts: AC-6`
+- `scripts: AC-7`
+- `scripts: AC-8`
+- `scripts: CE2 QUAN HỆ đủ-bộ: mọi file plugins/acceptance-gate/scripts/+plugins/acceptance-gate/lib/ mà pre-merge-check.sh và recheck dùng đều nằm trong danh sách chép`
+- `scripts: CE3 recheck`
+- `scripts: CE4 đối chứng chấm-thật: bản tiêm exit_code: 2 → recheck exit 1 ghim "fails the evidence bar"`
+- `scripts: CE5 pre-merge trong consumer type:module: exit 0, rules ran=4, KHÔNG một dòng NOT ENFORCED/fallback`
+- `scripts: CE5b vendored gap-probe CHẤM thật ở consumer: xoá gap-probe.md → pre-merge`
+- `scripts: CE5-map lệnh bản đồ chạy trọn trong consumer type:module từ ĐÚNG danh sách chép; gỡ trang-thai-ho-so.cjs → đỏ gọi tên`
+- `scripts: CE6-ooc không còn tham chiếu đuôi cũ .js của plugins/acceptance-gate/lib/out-of-contract trong bộ máy; bản sao khôi phục một require đuôi cũ → đỏ gọi tên`
+- `scripts: CE6 red: cùng nội dung recheck nhưng đuôi .js trong type:module → ĐỎ đúng "require is not defined"`
+- `scripts: CE7 red: plugins/acceptance-gate/lib/gap-probe đuôi .js chạy classify trong type:module → cùng lớp ReferenceError`
+- `scripts: consumer-esm.test.mjs`
+- `scripts: JR11a plugins/acceptance-gate/lib/** + plugins/acceptance-gate/hooks/** KHÔNG đổi TRONG PHẠM VI của judge-required-evidence`
+- `scripts: JR11b recheck strict trên corpus thật == baseline viết-trước`
+- `scripts: core-untouched.test.mjs`
+- `scripts: CT-4`
+- `scripts: CT-4-do`
+- `scripts: CT-4-do2`
+- `scripts: CT-7-lenh`
+- `scripts: CT-8-khong`
+- `scripts: CT-8-do2`
+- `scripts: CT-10-do`
+- `scripts: cua-tin-hieu-giua-chien-dich.test.mjs`
+- `scripts: GW-1`
+- `scripts: GW-1-do`
+- `scripts: GW-1-do2`
+- `scripts: GW-2`
+- `scripts: GW-2-do`
+- `scripts: GW-2-do2`
+- `scripts: GW-2-do3`
+- `scripts: GW-3`
+- `scripts: GW-3-do`
+- `scripts: GW-4`
+- `scripts: GW-4-con`
+- `scripts: GW-4-do`
+- `scripts: GW-4-do2`
+- `scripts: GW-5`
+- `scripts: GW-5-do`
+- `scripts: GW-6`
+- `scripts: GW-6-long`
+- `scripts: GW-6-gom`
+- `scripts: GW-6-do`
+- `scripts: GW-6-do2`
+- `scripts: GW-6-do3`
+- `scripts: cua-tin-hieu-goc-moi-worktree.test.mjs`
+- `scripts: CVS1 hồ sơ làn V ĐÃ KÝ → lưới nói «cửa veto đã đóng bằng chữ ký», không nói «cửa veto mở»`
+- `scripts: CVS2 hồ sơ làn V CHƯA ký → vẫn «cửa veto mở» và vẫn có tên ở dòng tổng`
+- `scripts: CVS3 vetoOpenUnsigned của máy quét BẰNG tập tên dòng tổng của lưới`
+- `scripts: CVS4 chiều đỏ: gỡ nhánh mới → lưới nói lại «cửa veto mở» cho hồ sơ đã ký`
+- `scripts: cua-veto-sau-chu-ky.test.mjs`
+- `scripts: DD-6`
+- `scripts: DD-6-do`
+- `scripts: dai-tom-tat-dem-dung.test.mjs`
+- `scripts: [DJ-1]`
+- `scripts: [DJ-1-do]`
+- `scripts: [DJ-2]`
+- `scripts: [DJ-2-chot]`
+- `scripts: [DJ-2-do]`
+- `scripts: [DJ-2-chuoi]`
+- `scripts: [DJ-2-mau]`
+- `scripts: [DJ-2-cmt]`
+- `scripts: [DJ-2-cmt-the]`
+- `scripts: [DJ-2-regex]`
+- `scripts: [DJ-2-chia]`
+- `scripts: [DJ-2-kieu]`
+- `scripts: [DJ-2-nhay]`
+- `scripts: [DJ-2-le]`
+- `scripts: [DJ-2-cmt2]`
+- `scripts: [DJ-2-url]`
+- `scripts: [DJ-2-cmt2-the]`
+- `scripts: [DJ-2-chuoi-the]`
+- `scripts: [DJ-2-kieu-mui-ten]`
+- `scripts: [DJ-2-regex-lop]`
+- `scripts: [DJ-2-regex-esc]`
+- `scripts: [DJ-2-chuoi-esc]`
+- `scripts: [DJ-2-mau-esc]`
+- `scripts: [DJ-2-mau-long]`
+- `scripts: [DJ-3]`
+- `scripts: [DJ-3-do]`
+- `scripts: [DJ-4]`
+- `scripts: [DJ-4-do]`
+- `scripts: [DJ-4-do2]`
+- `scripts: [DJ-4-do3]`
+- `scripts: [DJ-5]`
+- `scripts: [DJ-5-do]`
+- `scripts: [DJ-6]`
+- `scripts: [DJ-6-chot]`
+- `scripts: [DJ-6-do]`
+- `scripts: [DJ-6-do2]`
+- `scripts: [DJ-7]`
+- `scripts: [DJ-7-chot]`
+- `scripts: [DJ-7-do2]`
+- `scripts: [DJ-7-do]`
+- `scripts: [DJ-8]`
+- `scripts: [DJ-8-do]`
+- `scripts: doc-jsx-va-ban-do-hong.test.mjs`
+- `scripts: NEN-DK6 17 muc khong the khong nap tinh tep mang the; dot bien → «plugins/acceptance-gate/scripts/product-map.mjs:16 nạp tĩnh cat-luot.mjs»`
+- `scripts: AC-9`
+- `scripts: GT7`
+- `scripts: GT9`
+- `scripts: GT4`
+- `scripts: GT5`
+- `scripts: GT-rf4`
+- `scripts: ho-so-da-ky-giu-tuoi.test.mjs`
+- `scripts: HK-AC7-dot-bien`
+- `scripts: HK-AC5-im`
+- `scripts: HK-AC5-note`
+- `scripts: hskt.test.mjs`
+- `scripts: CK-4-lib`
+- `scripts: CK-4`
+- `scripts: CK-4-do`
+- `scripts: CK-4-do2`
+- `scripts: CK-5`
+- `scripts: CK-5-tat`
+- `scripts: CK-5-thieu-lib`
+- `scripts: CK-5-do`
+- `scripts: CK-7`
+- `scripts: CK-7-do`
+- `scripts: CK-8-ky-tu`
+- `scripts: CK-9`
+- `scripts: CK-9-do`
+- `scripts: CK-4-settings-hong`
+- `scripts: CK-4-settings-hong-do`
+- `scripts: kho-cam-ket-co-lo-trinh.test.mjs`
+- `scripts: KM-1`
+- `scripts: KM-1-do`
+- `scripts: KM-1-do2`
+- `scripts: KM-1-do3`
+- `scripts: KM-2-do`
+- `scripts: KM-3-do`
+- `scripts: KM-5-dut-1`
+- `scripts: KM-5-dut-2`
+- `scripts: KM-5-dut-3`
+- `scripts: KM-5-dut-4`
+- `scripts: KM-5-do`
+- `scripts: KM-5-do2`
+- `scripts: KM-6`
+- `scripts: KM-6-lech`
+- `scripts: KM-6-do`
+- `scripts: KM-7-co-viec`
+- `scripts: KM-7-mo-o`
+- `scripts: KM-7-do`
+- `scripts: KM-8-khoi-khac`
+- `scripts: kho-moi-cai-goi-road-map.test.mjs`
+- `scripts: [KK-1]`
+- `scripts: [KK-1-do]`
+- `scripts: [KK-2]`
+- `scripts: [KK-2-do]`
+- `scripts: [KK-2-do2]`
+- `scripts: [KK-3]`
+- `scripts: [KK-3-do]`
+- `scripts: [KK-4]`
+- `scripts: [KK-4-hong]`
+- `scripts: [KK-4-do]`
+- `scripts: [KK-4-do2]`
+- `scripts: [KK-5]`
+- `scripts: [KK-5-do]`
+- `scripts: [KK-6]`
+- `scripts: [KK-6-do]`
+- `scripts: [KK-7]`
+- `scripts: [KK-7-do]`
+- `scripts: [KK-8]`
+- `scripts: [KK-8-do]`
+- `scripts: [KK-8-do2]`
+- `scripts: khoi-khuon-tren-the-cong.test.mjs`
+- `scripts: [KL-8]`
+- `scripts: [KL-8-do]`
+- `scripts: khuon-loi.test.mjs`
+- `scripts: KL-1 doi-chung`
+- `scripts: KL-1`
+- `scripts: KL-2`
+- `scripts: KL-2b`
+- `scripts: KL-3`
+- `scripts: KL-3-khong-remote`
+- `scripts: KL-4`
+- `scripts: KL-4 sao-luu`
+- `scripts: KL-4-dot`
+- `scripts: KL-5`
+- `scripts: KL-7`
+- `scripts: KL-9 bash`
+- `scripts: KL-9 zsh`
+- `scripts: kiem-ban-cai-loi-sua.test.mjs`
+- `scripts: lan-status-not-run.test.mjs`
+- `scripts: ND-1-trang-giu`
+- `scripts: ND-1-nen-tat-do`
+- `scripts: ND-1-do`
+- `scripts: ND-2`
+- `scripts: ND-2-thieu-phan-tram`
+- `scripts: ND-2-do`
+- `scripts: ND-3`
+- `scripts: ND-3-do`
+- `scripts: ND-4`
+- `scripts: ND-4-do`
+- `scripts: ND-4-do lai`
+- `scripts: ND-5`
+- `scripts: ND-5-check`
+- `scripts: ND-5-do`
+- `scripts: ND-6`
+- `scripts: ND-6-xoa-khoa`
+- `scripts: ND-6-trang-moi`
+- `scripts: ND-6-do`
+- `scripts: ND-7-bam`
+- `scripts: ND-7`
+- `scripts: ND-7-do`
+- `scripts: ND-7-do phien-ban`
+- `scripts: ND-8`
+- `scripts: ND-8-do tai-lieu`
+- `scripts: ND-8-do bang-khoa`
+- `scripts: lo-trinh-du-lieu-ngay.test.mjs`
+- `scripts: GM-1-doc-cu`
+- `scripts: GM-1-nang-kit`
+- `scripts: GM-5`
+- `scripts: GM-9`
+- `scripts: GM-9-do2`
+- `scripts: GM-9-do`
+- `scripts: DB-7`
+- `scripts: DB-7-do`
+- `scripts: lo-trinh-gio-may.test.mjs`
+- `scripts: LT-72-do`
+- `scripts: LT-73 khong-truong`
+- `scripts: LT-73-khong-truong-do`
+- `scripts: LT-77 mot-tep-byte`
+- `scripts: LT-77-do`
+- `scripts: LT-80`
+- `scripts: LT-80-do`
+- `scripts: LT-100`
+- `scripts: LT-100-do`
+- `scripts: LT-112`
+- `scripts: LT-112-do`
+- `scripts: LT-113`
+- `scripts: LT-113-do`
+- `scripts: LT-118 dung-khuon`
+- `scripts: LT-118 trang-cu`
+- `scripts: LT-118 json-hong`
+- `scripts: LT-118 khuon-la`
+- `scripts: LT-118 phien-ban-moi`
+- `scripts: LT-118 chep-roi`
+- `scripts: LT-118 bang-khoa`
+- `scripts: LT-118-do`
+- `scripts: LT-118-do chep-roi`
+- `scripts: LT-118-do bang-khoa`
+- `scripts: LT-140`
+- `scripts: LT-141`
+- `scripts: LT-141-do`
+- `scripts: LT-153`
+- `scripts: LT-153-do`
+- `scripts: LT-157 khoa-vang`
+- `scripts: LT-157-do theo-ten`
+- `scripts: LT-157-do nhom-vang`
+- `scripts: LT-157 moi-doc-cu`
+- `scripts: LT-157 cu-doc-moi`
+- `scripts: LT-157 chep-roi`
+- `scripts: LT-147`
+- `scripts: LT-147-do`
+- `scripts: LT-147-do-trang`
+- `scripts: LT-168`
+- `scripts: LT-168-do`
+- `scripts: LT-168-do-them`
+- `scripts: LT-168-do-trang`
+- `scripts: AC-11`
+- `scripts: luot-sua-giu-du.test.mjs`
+- `scripts: MC-2-byte`
+- `scripts: MC-2-byte-do`
+- `scripts: MC-3`
+- `scripts: MC-3-do`
+- `scripts: MC-4`
+- `scripts: MC-4-do`
+- `scripts: MC-4-do2`
+- `scripts: MC-5`
+- `scripts: MC-7 ma-thoat`
+- `scripts: MC-8`
+- `scripts: MC-9`
+- `scripts: MC-9-do`
+- `scripts: MC-9-do2`
+- `scripts: MC-9-do3`
+- `scripts: moc-chien-dich.test.mjs`
+- `scripts: MQ-1`
+- `scripts: MQ-1-do`
+- `scripts: MQ-2`
+- `scripts: MQ-2-do`
+- `scripts: MQ-3`
+- `scripts: MQ-3-do`
+- `scripts: MQ-4`
+- `scripts: MQ-4-do`
+- `scripts: MQ-5`
+- `scripts: MQ-5-gan`
+- `scripts: MQ-5-gan-do`
+- `scripts: MQ-6`
+- `scripts: MQ-7`
+- `scripts: MQ-8`
+- `scripts: MQ-8-do`
+- `scripts: MQ-10`
+- `scripts: moi-cong-khong-qua-nut.test.mjs`
+- `scripts: NK-2-do`
+- `scripts: ngay-ky.test.mjs`
+- `scripts: NT1-do vang-la-bat`
+- `scripts: NT2-do decided-by`
+- `scripts: NT3-do bo-hoi-so`
+- `scripts: NT3-do thoat-som`
+- `scripts: NT4-do bo-T2`
+- `scripts: NT5-do thieu-nhan`
+- `scripts: NT6-do bo-so-tieu-de`
+- `scripts: NT11-do qua-dieu-kien`
+- `scripts: NT14 dem-ghim`
+- `scripts: ngoai-n-tu-dinh-tuyen.test.mjs`
+- `scripts: NS-AC9-cu`
+- `scripts: ntr-trang-thai.test.mjs`
+- `scripts: ON-2`
+- `scripts: ON-3`
+- `scripts: ON-3-thieu-tep`
+- `scripts: ON-6-im`
+- `scripts: o-mo-viec-mang-nguon.test.mjs`
+- `scripts: LK1-do ban-goc`
+- `scripts: LK2 kho-co-lib-chep`
+- `scripts: LK4 lui-ve-goc-kho`
+- `scripts: pre-merge-doc-lib-theo-kit.test.mjs`
+- `scripts: DV4a recheck MỚI trên MỌI evidence-report thật của repo -> 0 fail NGOÀI grandfather`
+- `scripts: premerge-repin.test.mjs`
+- `scripts: RS-4-byte`
+- `scripts: RS-4-do`
+- `scripts: RS-6`
+- `scripts: RS-6-do`
+- `scripts: RS-7`
+- `scripts: RS-7-do`
+- `scripts: RS-8-quet`
+- `scripts: RS-10`
+- `scripts: RS-10-do`
+- `scripts: ra-soat-lo-trinh.test.mjs`
+- `scripts: RD-5-cu-do`
+- `scripts: RD-11-doc-cu`
+- `scripts: RD-9`
+- `scripts: RD-9-do`
+- `scripts: RD-10-mot-moc`
+- `scripts: RD-10-kho`
+- `scripts: RD-10-kho-do`
+- `scripts: RD-tat`
+- `scripts: road-map-de-dung.test.mjs`
+- `scripts: RH5 so-cu-hong`
+- `scripts: run-id-danh-sach-cho-phep.test.mjs`
+- `scripts: JI12 round-trip có đối tượng: script quét chạy được và s4-args chặn đúng hai hồ sơ`
+- `scripts: JI12 script quét báo đúng tập eval s4-args chặn`
+- `scripts: s4-args-judgment-inputs.test.mjs`
+- `scripts: VV8 coverageFiles = đúng tệp trong diff được một eval khai paths; plugins/acceptance-gate/lib/b.js nằm ngoài vùng phủ`
+- `scripts: VV8c gỡ bộ lọc vùng phủ → plugins/acceptance-gate/lib/b.js lọt vào coverageFiles`
+- `scripts: TS-6 thu-muc-rong`
+- `scripts: TS-7 duong-doc-cu`
+- `scripts: TS-7-do lech`
+- `scripts: tep-sinh-khong-chan-gop.test.mjs`
+- `scripts: TN-7`
+- `scripts: TN-7-mutant`
+- `scripts: thiet-ke-nap-tri-thuc.test.mjs`
+- `scripts: TH-9`
+- `scripts: TH-9-do`
+- `scripts: TH-10-ong`
+- `scripts: TH-10-do`
+- `scripts: CN-2`
+- `scripts: CN-2-do`
+- `scripts: CN-8`
+- `scripts: CN-8-do`
+- `scripts: tin-hieu.test.mjs`
+- `scripts: VT-1`
+- `scripts: VT-1-do`
+- `scripts: VT-3`
+- `scripts: VT-3-do`
+- `scripts: VT-3-do2`
+- `scripts: VT-4`
+- `scripts: VT-4-do`
+- `scripts: ve-lo-trinh-doc-tin-hieu-cua-cay.test.mjs`
+- `scripts: TD-9`
+- `scripts: TD-9-mutant`
+- `scripts: vong-don-le-tra-tri-thuc.test.mjs`
+- `scripts: VM5 CHIỀU ĐỎ: bản sao trọn plugins/acceptance-gate/scripts/+plugins/acceptance-gate/lib/ chưa phá cho đúng kết quả VM2; gỡ đúng MỘT chỗ đếm → phán VM2 đỏ gọi tên n và cờ`
+- `scripts: LTT-san`
+- `scripts: LTT-san-do`
+- `scripts: LTT-san-im`
+- `scripts: xem-trang-lo-trinh.test.mjs`
+- `scripts: YC-3-vang`
+- `scripts: yaml-chuan.test.mjs`
+- `scripts: RL2ctrl2`
+- `scripts: RL13fix`
+- `scripts: CC-02 khoi-giu-byte`
+- `scripts: CC-05 vang-mo-dun`
+- `scripts: CC-05-do`
+- `scripts: KK-1-do`
+- `scripts: KK-4-do`
+- `scripts: KK-6 so-that`
+- `scripts: KK-8 ho-so-cu`
+- `scripts: KK-8-do`
+- `scripts: can-cu-s1.ca.mjs`
+- `plugins: P08 every ${CLAUDE_PLUGIN_ROOT} path in plugins/acceptance-gate/commands/skills exists in ITS plugin root`
+- `plugins: P38a gate-card require plugins/acceptance-gate/lib/gap-probe.cjs`
+- `plugins: P39[plugins/acceptance-gate/commands/acceptance-init.md:key]`
+- `plugins: P39[plugins/acceptance-gate/commands/acceptance-init.md:modes]`
+- `plugins: P91 con tro RUT TU file tro vao vat that tren cay nguon, kem dem sanity 8`
+- `plugins: P93 mot-nguon: bang luat khop tung ky tu + than khuon va CAP MARKER duy nhat toan kho`
+- `plugins: P132 pilot block README symlink du moi lenh plugins/acceptance-gate/commands/*.md`
+- `plugins: P161 strip-md giu duong dan + ma tran toan phan`
+- `plugins: P169 dau vao cham hanh vi: sinh trong BAN SAO, ban ghi da ky khong bi sinh de`
+- `plugins: P188 round-trip dieu khoan moi-cong: MOI site nguon khop tung ky tu`
+- `plugins: P193 dieu khoan mot-luot-go: 6 site nguon khop tung ky tu + quan he per-site`
+- `plugins: ca nac phan ung`
+- `plugins: [DP11] moi site dung nguyen van + tong ban chep tron glob khop bang khai`
+- `plugins: [LB1] bảng COMMAND-NAMES ⊆ vật thật`
+- `plugins: ca lenh bam duoc`
+- `plugins: ca ra co ten`
+- `plugins: ca ra co ten`
+- `plugins: [RT13] đọc-cũ: broken rỗng, khác biệt đúng khối; hồ sơ sinh sau mốc: 247`
+- `plugins: [RT18] chống-chép: 5 chuỗi luật LITERAL chỉ sống trong lib`
+- `plugins: [LM1] song anh permissions.allow <-> feature_loop.suite_keys`
+- `plugins: ca lan may qua bo phan loai`
+- `plugins: ca lan may qua bo phan loai`
+- `plugins: ca lan may qua bo phan loai`
+- `plugins: [LM5] duong thoai hoa: 7 ve roi + 1 quan he dem duoc + 10 mutant`
+- `plugins: [LM8b] khuon van pham song dung MOT cho tren TRON pham vi hop dong khai`
+- `dieu-phoi: TC1-06 doc-cu-tung-byte`
+- `dieu-phoi: TC1-08 loi-dan`
+- `dieu-phoi: TC1-08-do bo-mot-buoc`
+- `dieu-phoi: TC1-09 than-ca-doi`
+- `dieu-phoi: TC2-09-do ban-moc`
+- `dieu-phoi: DP6-03 moc-co-dinh`
+- `dieu-phoi: DP2-01 ba-lenh`
+- `dieu-phoi: DP2-01-do khoa-xem`
+- `dieu-phoi: DP2-01-do thu-tu`
+- `dieu-phoi: DP7-06-do merge-base-song`
+
+## Khoá thừa ở cây mới: 12
