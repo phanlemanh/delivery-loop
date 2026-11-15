@@ -15,7 +15,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { docKetQua, doiKhoa, soTui, docTui, ghiTui, docBo, docMaSo } from './giu-khoa.mjs';
+import { docKetQua, doiKhoa, tuiCu, soTui, docTui, ghiTui, docBo, docMaSo } from './giu-khoa.mjs';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DAY, '..', '..');
@@ -29,7 +29,7 @@ const ghiNguyenTu = (p, s) => { const t = `${p}.tam-${process.pid}`; fs.writeFil
 export function ghiBaoCao({ T, nguon, cay, ra, bo = BO_KHOA, so = SO_HO_SO }) {
   const doi = doiKhoa(JSON.parse(fs.readFileSync(path.join(DAY, '..', 'chay-thu-phien', 'bang-ten.json'), 'utf8')), JSON.parse(fs.readFileSync(path.join(DAY, 'bang-xep.json'), 'utf8')));
   const A = docKetQua(path.join(T, 'out', 'A')); const B = docKetQua(path.join(T, 'out', 'B'));
-  const cu = new Map(); for (const [k, n] of A.dat) cu.set(doi(k), (cu.get(doi(k)) || 0) + n);
+  const cu = tuiCu(A.dat, B.dat, doi);
   const khongDo = [...A.khongDo.map(x => `cây cũ — ${x}`), ...B.khongDo];
   const boDs = docBo(bo);
   const kq = soTui(cu, B.dat, boDs, docMaSo(so));

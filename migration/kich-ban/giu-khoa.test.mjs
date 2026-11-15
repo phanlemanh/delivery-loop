@@ -69,6 +69,18 @@ test('BK-AC3-json-lon', () => {
   assert.equal(JSON.parse(r.stdout).thieu.length, N - 1);
 });
 
+// Tên ca mang đường tính từ gốc gói (`… in commands/skills`) không đổi ở cây mới: khoá cũ đổi qua luật đường thành
+// `plugins/…/commands/skills` mà ca nguyên tên vẫn PASS → giữ. Chiều đỏ: ca ấy vắng ở cây mới → vẫn thiếu đúng khoá.
+test('BK-AC3-ten-nguyen', () => {
+  const ca = [['PASS', 'A01 dau'], ['PASS', 'A02 in commands/skills'], ['PASS', 'A03 ba']];
+  const r = giuKhoa(chayCay(dungCay({ ka: ca })), chayCay(dungCay({ ka: ca })));
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /^giữ đủ: 6\/6 khoá, bỏ 0$/m, r.stdout);
+  const d = giuKhoa(chayCay(dungCay({ ka: ca })), chayCay(dungCay({ ka: [ca[0], ca[2]] })));
+  assert.equal(d.status, 1, d.stdout);
+  assert.match(d.stdout, /^ {2}thiếu: ka: A02 in plugins\/acceptance-gate\/commands\/skills$/m, d.stdout);
+});
+
 test('BK-AC3-do-lap', () => {
   const r = giuKhoa(chayCay(dungCay({ ka: [['PASS', 'A01 dau'], ['PASS', 'A01 dau']] })), chayCay(dungCay({ ka: [['PASS', 'A01 dau']] })));
   assert.equal(r.status, 1, r.stdout);

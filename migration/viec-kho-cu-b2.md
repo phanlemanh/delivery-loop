@@ -82,6 +82,27 @@ mới — dữ liệu thử mốc `2026-11-15`, ca cấm trang chứa ngày ch�
 `tin-hieu` 9, `cua-tin-hieu-giua-chien-dich` 8, `consumer-esm` 7, `ngay-ky` 2, khác 3) đang phân loại ở lượt 6 (cơ học
 → vòng B2 vá; mã sản phẩm → thêm vào bảng K2 dưới).
 
+### 4.2 Lượt đo cuối — sửa xanh giả (chủ kho cho thêm một lượt, 15/11)
+
+Cây kịch bản `ff5e5b5d` so cây cũ `644e9b49`: thiếu **415 / 5 556**. Từng khoá: `migration/kich-ban/ket-qua/phan-du-cuoi.tsv`.
+Đổi so với §4.1: 22 mục vá cơ học gỡ 40 khoá A (căn cứ: `migration/kich-ban/ket-qua/va-luot-6/lop-a-con-lai.md`); thước giữ
+khoá thôi đổi đường trong tên ca mang đường tính từ gốc gói (13 khoá vừa «thiếu» vừa «thừa» mà ca vẫn PASS — P08, P39 ×2 và
+10 khoá D); mười mục vá gỡ xanh giả loại (i) làm **NT13** đỏ thật (ca giả định gốc kho = gốc gói — K4).
+
+| Lớp | Khoá | Ai gỡ |
+|---|---|---|
+| A-kho-cu — mã sản phẩm #503 chưa phủ | 4 | kho cũ: `lib/chan-lo-trinh.cjs:50-54` `khoaBat()` tìm marketplace.json cạnh gốc plugin → null (CK-4-lib); `scripts/lo-trinh-khoi-tao.mjs:44-47` nhánh dự phòng của #503 viết cứng `roadmap@delivery-loop` (KM-1-do3); `_acceptance/cua-tin-hieu-gom-nhom/rang/cham-bo-vang.mjs:42` nối `scripts/tin-hieu.mjs` từ gốc kho (TH-10-ong, TH-10-do) |
+| A-ngu-nghia — ca phải đổi nghĩa (K4) | 32 | kho cũ: mảng thư mục dùng chung cho archive lịch sử và bản sao bố cục mới (GW-4, CT-4, CT-8, CK-4, CK-5, KM-7, KM-8, NK-2 — 18); bản sao thiếu `plugins/acceptance-gate/.claude-plugin` (12 ca `kho-moi`); `tin-hieu.mjs` lịch sử import `../dieu-phoi/` (CN-2 ×2) |
+| A-co-hoc-chua-gop | 2 | B2: KM-1, CT-10-do — vá có (`va-ngoai-thuoc`), cần luật đảo mới cho tên plugin trong câu và đường tương đối giữa hai plugin |
+| A-cap-tep | 6 | đi theo ca bên trong tệp |
+| B / K2 | 27 | kho cũ (K2b, K2c, K2d — bảng dưới) |
+| C / K3 | 16 | chủ kho chọn lối K3 |
+| C / K1 | 4 | RT13 — đọc khối khai đường cũ trong hợp đồng đã ký `ra-co-ten-lam-va-trao` (lớp K3) |
+| D / K4 | 324 | kho cũ (gồm NT13) |
+
+Ngoài túi cả hai cây: `LT-94`, `LT-94-do` đỏ theo lịch — và vì thế bước scripts của CÂY CŨ thoát 1 hôm nay (thước
+`--giu-khoa` nêu). Vòng B2 đã hết lượt đo được cho; lượt đo dài kế tiếp phải hỏi chủ kho.
+
 Lớp K (P196) — ĐÃ GỠ ở B2 (commit `3d011878`): bước 3 của kịch bản từng đổi tên chợ ngay trong
 `diagram-design/skills/diagram-design/LOCAL-PATCHES.md`, làm tree-hash lệch NOTICE; khoá `khong_doi_chu` của bảng xếp nay
 giữ nguyên chữ cả cây `diagram-design/skills/`, thước AC-4 so nó từng byte.

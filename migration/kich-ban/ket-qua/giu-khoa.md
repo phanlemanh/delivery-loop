@@ -1,10 +1,10 @@
 ---
 nguon: 644e9b49af3d24de3fe284304d765ea388304b89
-cay_moi: 5f1b4286d8fd23a14432bda4712654ca88af672f
+cay_moi: 939262b6e87ba25723a1282387adf524e31c2003
 phan_quyet: thieu
 tong: 5556
 bo: 0
-thieu: 468
+thieu: 415
 ---
 
 # Giữ đủ khoá ca — cây cũ so cây mới (B2 AC-4)
@@ -23,13 +23,13 @@ lại phép so trên hai túi khoá ở `giu-khoa/` và đối chiếu từng s�
 | dieu-phoi | tap | 0 | 1 |
 | ban-do | mot-khoa | 0 | 0 |
 
-## Phán quyết: thiếu 468 khoá
+## Phán quyết: thiếu 415 khoá
 
 ## Danh sách bỏ (bo-khoa.tsv, nguyên văn)
 
 rỗng
 
-## Khoá thiếu (468)
+## Khoá thiếu (415)
 
 - `scripts: L42m`
 - `scripts: DV5 plugins/acceptance-gate/scripts/pre-merge-check.sh: diff so với base <sha> CHỈ THÊM`
@@ -77,48 +77,19 @@ rỗng
 - `scripts: AC-6`
 - `scripts: AC-7`
 - `scripts: AC-8`
-- `scripts: CE2 QUAN HỆ đủ-bộ: mọi file plugins/acceptance-gate/scripts/+plugins/acceptance-gate/lib/ mà pre-merge-check.sh và recheck dùng đều nằm trong danh sách chép`
-- `scripts: CE3 recheck`
-- `scripts: CE4 đối chứng chấm-thật: bản tiêm exit_code: 2 → recheck exit 1 ghim "fails the evidence bar"`
-- `scripts: CE5 pre-merge trong consumer type:module: exit 0, rules ran=4, KHÔNG một dòng NOT ENFORCED/fallback`
-- `scripts: CE5b vendored gap-probe CHẤM thật ở consumer: xoá gap-probe.md → pre-merge`
-- `scripts: CE5-map lệnh bản đồ chạy trọn trong consumer type:module từ ĐÚNG danh sách chép; gỡ trang-thai-ho-so.cjs → đỏ gọi tên`
-- `scripts: CE6-ooc không còn tham chiếu đuôi cũ .js của plugins/acceptance-gate/lib/out-of-contract trong bộ máy; bản sao khôi phục một require đuôi cũ → đỏ gọi tên`
-- `scripts: CE6 red: cùng nội dung recheck nhưng đuôi .js trong type:module → ĐỎ đúng "require is not defined"`
-- `scripts: CE7 red: plugins/acceptance-gate/lib/gap-probe đuôi .js chạy classify trong type:module → cùng lớp ReferenceError`
-- `scripts: consumer-esm.test.mjs`
-- `scripts: JR11a plugins/acceptance-gate/lib/** + plugins/acceptance-gate/hooks/** KHÔNG đổi TRONG PHẠM VI của judge-required-evidence`
 - `scripts: JR11b recheck strict trên corpus thật == baseline viết-trước`
 - `scripts: core-untouched.test.mjs`
 - `scripts: CT-4`
 - `scripts: CT-4-do`
 - `scripts: CT-4-do2`
-- `scripts: CT-7-lenh`
 - `scripts: CT-8-khong`
 - `scripts: CT-8-do2`
 - `scripts: CT-10-do`
 - `scripts: cua-tin-hieu-giua-chien-dich.test.mjs`
-- `scripts: GW-1`
-- `scripts: GW-1-do`
-- `scripts: GW-1-do2`
-- `scripts: GW-2`
-- `scripts: GW-2-do`
-- `scripts: GW-2-do2`
-- `scripts: GW-2-do3`
-- `scripts: GW-3`
-- `scripts: GW-3-do`
 - `scripts: GW-4`
 - `scripts: GW-4-con`
 - `scripts: GW-4-do`
 - `scripts: GW-4-do2`
-- `scripts: GW-5`
-- `scripts: GW-5-do`
-- `scripts: GW-6`
-- `scripts: GW-6-long`
-- `scripts: GW-6-gom`
-- `scripts: GW-6-do`
-- `scripts: GW-6-do2`
-- `scripts: GW-6-do3`
 - `scripts: cua-tin-hieu-goc-moi-worktree.test.mjs`
 - `scripts: CVS1 hồ sơ làn V ĐÃ KÝ → lưới nói «cửa veto đã đóng bằng chữ ký», không nói «cửa veto mở»`
 - `scripts: CVS2 hồ sơ làn V CHƯA ký → vẫn «cửa veto mở» và vẫn có tên ở dòng tổng`
@@ -171,7 +142,6 @@ rỗng
 - `scripts: [DJ-8]`
 - `scripts: [DJ-8-do]`
 - `scripts: doc-jsx-va-ban-do-hong.test.mjs`
-- `scripts: NEN-DK6 17 muc khong the khong nap tinh tep mang the; dot bien → «plugins/acceptance-gate/scripts/product-map.mjs:16 nạp tĩnh cat-luot.mjs»`
 - `scripts: AC-9`
 - `scripts: GT7`
 - `scripts: GT9`
@@ -187,15 +157,7 @@ rỗng
 - `scripts: CK-4`
 - `scripts: CK-4-do`
 - `scripts: CK-4-do2`
-- `scripts: CK-5`
 - `scripts: CK-5-tat`
-- `scripts: CK-5-thieu-lib`
-- `scripts: CK-5-do`
-- `scripts: CK-7`
-- `scripts: CK-7-do`
-- `scripts: CK-8-ky-tu`
-- `scripts: CK-9`
-- `scripts: CK-9-do`
 - `scripts: CK-4-settings-hong`
 - `scripts: CK-4-settings-hong-do`
 - `scripts: kho-cam-ket-co-lo-trinh.test.mjs`
@@ -211,11 +173,8 @@ rỗng
 - `scripts: KM-5-dut-4`
 - `scripts: KM-5-do`
 - `scripts: KM-5-do2`
-- `scripts: KM-6`
-- `scripts: KM-6-lech`
 - `scripts: KM-6-do`
 - `scripts: KM-7-co-viec`
-- `scripts: KM-7-mo-o`
 - `scripts: KM-7-do`
 - `scripts: KM-8-khoi-khac`
 - `scripts: kho-moi-cai-goi-road-map.test.mjs`
@@ -378,6 +337,7 @@ rỗng
 - `scripts: NT5-do thieu-nhan`
 - `scripts: NT6-do bo-so-tieu-de`
 - `scripts: NT11-do qua-dieu-kien`
+- `scripts: NT13 resolver-thieu`
 - `scripts: NT14 dem-ghim`
 - `scripts: ngoai-n-tu-dinh-tuyen.test.mjs`
 - `scripts: NS-AC9-cu`
@@ -417,8 +377,6 @@ rỗng
 - `scripts: JI12 round-trip có đối tượng: script quét chạy được và s4-args chặn đúng hai hồ sơ`
 - `scripts: JI12 script quét báo đúng tập eval s4-args chặn`
 - `scripts: s4-args-judgment-inputs.test.mjs`
-- `scripts: VV8 coverageFiles = đúng tệp trong diff được một eval khai paths; plugins/acceptance-gate/lib/b.js nằm ngoài vùng phủ`
-- `scripts: VV8c gỡ bộ lọc vùng phủ → plugins/acceptance-gate/lib/b.js lọt vào coverageFiles`
 - `scripts: TS-6 thu-muc-rong`
 - `scripts: TS-7 duong-doc-cu`
 - `scripts: TS-7-do lech`
@@ -426,14 +384,10 @@ rỗng
 - `scripts: TN-7`
 - `scripts: TN-7-mutant`
 - `scripts: thiet-ke-nap-tri-thuc.test.mjs`
-- `scripts: TH-9`
-- `scripts: TH-9-do`
 - `scripts: TH-10-ong`
 - `scripts: TH-10-do`
 - `scripts: CN-2`
 - `scripts: CN-2-do`
-- `scripts: CN-8`
-- `scripts: CN-8-do`
 - `scripts: tin-hieu.test.mjs`
 - `scripts: VT-1`
 - `scripts: VT-1-do`
@@ -446,7 +400,6 @@ rỗng
 - `scripts: TD-9`
 - `scripts: TD-9-mutant`
 - `scripts: vong-don-le-tra-tri-thuc.test.mjs`
-- `scripts: VM5 CHIỀU ĐỎ: bản sao trọn plugins/acceptance-gate/scripts/+plugins/acceptance-gate/lib/ chưa phá cho đúng kết quả VM2; gỡ đúng MỘT chỗ đếm → phán VM2 đỏ gọi tên n và cờ`
 - `scripts: LTT-san`
 - `scripts: LTT-san-do`
 - `scripts: LTT-san-im`
@@ -458,19 +411,13 @@ rỗng
 - `scripts: CC-02 khoi-giu-byte`
 - `scripts: CC-05 vang-mo-dun`
 - `scripts: CC-05-do`
-- `scripts: KK-1-do`
 - `scripts: KK-4-do`
 - `scripts: KK-6 so-that`
 - `scripts: KK-8 ho-so-cu`
 - `scripts: KK-8-do`
 - `scripts: can-cu-s1.ca.mjs`
-- `plugins: P08 every ${CLAUDE_PLUGIN_ROOT} path in plugins/acceptance-gate/commands/skills exists in ITS plugin root`
-- `plugins: P38a gate-card require plugins/acceptance-gate/lib/gap-probe.cjs`
-- `plugins: P39[plugins/acceptance-gate/commands/acceptance-init.md:key]`
-- `plugins: P39[plugins/acceptance-gate/commands/acceptance-init.md:modes]`
 - `plugins: P91 con tro RUT TU file tro vao vat that tren cay nguon, kem dem sanity 8`
 - `plugins: P93 mot-nguon: bang luat khop tung ky tu + than khuon va CAP MARKER duy nhat toan kho`
-- `plugins: P132 pilot block README symlink du moi lenh plugins/acceptance-gate/commands/*.md`
 - `plugins: P161 strip-md giu duong dan + ma tran toan phan`
 - `plugins: P169 dau vao cham hanh vi: sinh trong BAN SAO, ban ghi da ky khong bi sinh de`
 - `plugins: P188 round-trip dieu khoan moi-cong: MOI site nguon khop tung ky tu`
@@ -500,4 +447,4 @@ rỗng
 - `dieu-phoi: DP2-01-do thu-tu`
 - `dieu-phoi: DP7-06-do merge-base-song`
 
-## Khoá thừa ở cây mới: 12
+## Khoá thừa ở cây mới: 0

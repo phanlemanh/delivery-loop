@@ -47,6 +47,15 @@ export function doiKhoa(bangTen, bangXep) {
 
 const tuiThem = (t, k) => t.set(k, (t.get(k) || 0) + 1);
 
+// Túi cây cũ theo tên cây mới. Khoá cũ đổi qua doiKhoa; khoá mà tên ĐÃ ĐỔI không có ở cây mới còn tên NGUYÊN chữ thì có
+// giữ tên nguyên — tên ca in lúc chạy mang đường tính từ gốc gói (`P08 … in commands/skills`, `P39[commands/…]`) không
+// đổi theo bố cục kho, và luật đường của doiKhoa đổi nhầm nó (lượt 15/11: 13 khoá vừa «thiếu» vừa «thừa», ca vẫn PASS).
+export function tuiCu(datA, datB, doi) {
+  const cu = new Map();
+  for (const [k, n] of datA) { const m = doi(k); const t = m !== k && !datB.has(m) && datB.has(k) ? k : m; cu.set(t, (cu.get(t) || 0) + n); }
+  return cu;
+}
+
 // Đọc một thư mục kết quả → { dat: Map<khoá, số lần>, khongDo: [lý do], tep: [đường tệp thô] }.
 export function docKetQua(thu) {
   const dat = new Map(); const khongDo = []; const tep = []; const bo = {};
@@ -125,7 +134,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     for (const x of A.khongDo) khongDo.push(`cây cũ — ${x}`);
     for (const x of B.khongDo) { khongDo.push(x); khongDoMoi.push(x); }
     boCu = A.bo; boMoi = B.bo;
-    cu = new Map(); for (const [k, n] of A.dat) cu.set(doi(k), (cu.get(doi(k)) || 0) + n);
+    cu = tuiCu(A.dat, B.dat, doi);
     moi = B.dat;
     if (ghiP) {
       fs.mkdirSync(ghiP, { recursive: true });

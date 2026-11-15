@@ -753,7 +753,7 @@
 1	plugins: NO-AC11-khoa
 1	plugins: NO-AC11-than
 1	plugins: P07 vendor engine import graph resolves
-1	plugins: P08 every ${CLAUDE_PLUGIN_ROOT} path in plugins/acceptance-gate/commands/skills exists in ITS plugin root
+1	plugins: P08 every ${CLAUDE_PLUGIN_ROOT} path in commands/skills exists in ITS plugin root
 1	plugins: P100 con tro /start giai duoc trong goi Claude
 1	plugins: P101 nap human-facing-language truoc render
 1	plugins: P102 start-scan: loi I/O neu ten file+ma loi; verdict la/vang bi goi ten
@@ -777,7 +777,7 @@
 1	plugins: P129 canh + ten viec doc tu ho so KHONG tieu thu; loi doc o do khong lam hong slug
 1	plugins: P130 configList JS va ban bash cua pre-merge dong ket luan moi hinh dang
 1	plugins: P131 khuon CI: moi loi goi pre-merge-check.sh trong doc mang --base + fetch-depth di kem
-1	plugins: P132 pilot block README symlink du moi lenh plugins/acceptance-gate/commands/*.md
+1	plugins: P132 pilot block README symlink du moi lenh commands/*.md
 1	plugins: P133 chu first-run: recheck-advice khop init + jsdom o 3 diem init
 1	plugins: P134 context-ladder writer: khoa context + giai doan 0 + luat canh + mac-dinh-nac-cao
 1	plugins: P135 context-ladder round-trip: khuon writer -> the render nhan tieng nguoi
@@ -855,10 +855,10 @@
 1	plugins: P32 Claude gate commands locked from model invocation; card stays open
 1	plugins: P33 no source file globs the plugin cache
 1	plugins: P35 CI T1-escape backstop is ON, PR-guarded, and fails loud when skipped
-1	plugins: P38a gate-card require plugins/acceptance-gate/lib/gap-probe.cjs
+1	plugins: P38a gate-card require lib/gap-probe.cjs
 1	plugins: P38b gate-card khong con literal regex descope
-1	plugins: P39[plugins/acceptance-gate/commands/acceptance-init.md:key]
-1	plugins: P39[plugins/acceptance-gate/commands/acceptance-init.md:modes]
+1	plugins: P39[commands/acceptance-init.md:key]
+1	plugins: P39[commands/acceptance-init.md:modes]
 1	plugins: P40 gate.yml: push tat rang T1-escape, PR khong, khong nhanh nao thieu base
 1	plugins: P43 GUIDE noi bump version thuoc S3
 1	plugins: P44 acceptance-init nhac co cho job push
@@ -1257,7 +1257,7 @@
 1	scripts: CC-07-do khuon
 1	scripts: CC-10
 1	scripts: CE1 danh sách chép trích được từ marker
-1	scripts: CE2 QUAN HỆ đủ-bộ: mọi file plugins/acceptance-gate/scripts/+plugins/acceptance-gate/lib/ mà pre-merge-check.sh và recheck dùng đều nằm trong danh sách chép
+1	scripts: CE2 QUAN HỆ đủ-bộ: mọi file scripts/+lib/ mà pre-merge-check.sh và recheck dùng đều nằm trong danh sách chép
 1	scripts: CE2g GUIDE §5.3: cùng writer, cùng tập với INIT-CI-COPY-LIST, con số «đủ N file» neo trong §5.3 và khớp độ dài
 1	scripts: CE2gm sáu mutant SINH TRONG LẦN CHẠY trên chính văn bản GUIDE
 1	scripts: CE2m mutant trong-lần-chạy: bỏ 1 mục khỏi danh-sách-khai → quan hệ phải ĐỎ ghim đúng tên
@@ -1270,8 +1270,8 @@
 1	scripts: CE5-map lệnh bản đồ chạy trọn trong consumer type:module từ ĐÚNG danh sách chép; gỡ trang-thai-ho-so.cjs → đỏ gọi tên
 1	scripts: CE5b vendored gap-probe CHẤM thật ở consumer: xoá gap-probe.md → pre-merge
 1	scripts: CE6 red: cùng nội dung recheck nhưng đuôi .js trong type:module → ĐỎ đúng "require is not defined"
-1	scripts: CE6-ooc không còn tham chiếu đuôi cũ .js của plugins/acceptance-gate/lib/out-of-contract trong bộ máy; bản sao khôi phục một require đuôi cũ → đỏ gọi tên
-1	scripts: CE7 red: plugins/acceptance-gate/lib/gap-probe đuôi .js chạy classify trong type:module → cùng lớp ReferenceError
+1	scripts: CE6-ooc không còn tham chiếu đuôi cũ .js của lib/out-of-contract trong bộ máy; bản sao khôi phục một require đuôi cũ → đỏ gọi tên
+1	scripts: CE7 red: lib/gap-probe đuôi .js chạy classify trong type:module → cùng lớp ReferenceError
 1	scripts: CF01
 1	scripts: CF02
 1	scripts: CH0 module không chép mảng trạng thái
@@ -2292,7 +2292,7 @@
 1	scripts: JI9 exit 2
 1	scripts: JI9 thông điệp là của răng, không phải input vắng
 1	scripts: JI9 đối chứng dương: cùng inputs, câu hỏi về nội dung tệp → sinh args
-1	scripts: JR11a plugins/acceptance-gate/lib/** + plugins/acceptance-gate/hooks/** KHÔNG đổi TRONG PHẠM VI của judge-required-evidence
+1	scripts: JR11a lib/** + hooks/** KHÔNG đổi TRONG PHẠM VI của judge-required-evidence
 1	scripts: JR11b recheck strict trên corpus thật == baseline viết-trước
 1	scripts: JR11c đối chứng dương: tiêm token cấm vào BẢN SAO 1 report → recheck ĐỎ đúng thông điệp
 1	scripts: KK-1 bash
@@ -3059,7 +3059,7 @@
 1	scripts: NEN-DK3 khong khai
 1	scripts: NEN-DK4 go the khoi dong tin-hieu-khoa.cjs trong khoi
 1	scripts: NEN-DK5 chan le voi product-map
-1	scripts: NEN-DK6 17 muc khong the khong nap tinh tep mang the; dot bien → «plugins/acceptance-gate/scripts/product-map.mjs:16 nạp tĩnh cat-luot.mjs»
+1	scripts: NEN-DK6 17 muc khong the khong nap tinh tep mang the; dot bien → «scripts/product-map.mjs:16 nạp tĩnh cat-luot.mjs»
 1	scripts: NEN-ENV1 cong cu chi co trong PATH nguoi goi, profile dat lai PATH
 1	scripts: NEN-ENV2 cong cu vang that
 1	scripts: NEN-ENV3 dot bien -c → -lc
@@ -3971,7 +3971,7 @@
 1	scripts: VM2 HAI vòng mở sau mốc
 1	scripts: VM3 kho tiêu thụ
 1	scripts: VM4 kho kit KHÔNG phải git → «chưa biết»: moc và n là null, không cờ
-1	scripts: VM5 CHIỀU ĐỎ: bản sao trọn plugins/acceptance-gate/scripts/+plugins/acceptance-gate/lib/ chưa phá cho đúng kết quả VM2; gỡ đúng MỘT chỗ đếm → phán VM2 đỏ gọi tên n và cờ
+1	scripts: VM5 CHIỀU ĐỎ: bản sao trọn scripts/+lib/ chưa phá cho đúng kết quả VM2; gỡ đúng MỘT chỗ đếm → phán VM2 đỏ gọi tên n và cờ
 1	scripts: VP1 vi phân base ↔ mới trên hồ sơ kit: 0 lệch ngoài sát lề
 1	scripts: VP2 chiều đỏ: bản sao bộ đọc bỏ mục cuối của mọi danh sách khối → lệch
 1	scripts: VT-1
@@ -4000,9 +4000,9 @@
 1	scripts: VV7b gỡ vế eval.paths → src/a.js rụng khỏi fileDoTrongDiff
 1	scripts: VV7b gỡ vế mã trong thư mục hồ sơ → _acceptance/demo/rang/a.mjs rụng khỏi fileDoTrongDiff
 1	scripts: VV7b gỡ vế tệp ca
-1	scripts: VV8 coverageFiles = đúng tệp trong diff được một eval khai paths; plugins/acceptance-gate/lib/b.js nằm ngoài vùng phủ
+1	scripts: VV8 coverageFiles = đúng tệp trong diff được một eval khai paths; lib/b.js nằm ngoài vùng phủ
 1	scripts: VV8b không eval nào khai paths → coEvalPaths=false + coverageFiles rỗng
-1	scripts: VV8c gỡ bộ lọc vùng phủ → plugins/acceptance-gate/lib/b.js lọt vào coverageFiles
+1	scripts: VV8c gỡ bộ lọc vùng phủ → lib/b.js lọt vào coverageFiles
 1	scripts: XD-1 thẻ Cổng 1 > 64 KB qua pipe bằng bản tệp
 1	scripts: XD-2 --extract Cổng 1 và Cổng 2 > 64 KB qua pipe bằng bản tệp, JSON đọc được
 1	scripts: XD-3 thẻ Cổng 2 chưa-ký-được và ký-được > 64 KB qua pipe bằng bản tệp

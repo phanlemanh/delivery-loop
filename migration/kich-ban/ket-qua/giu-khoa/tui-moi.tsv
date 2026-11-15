@@ -1228,7 +1228,14 @@
 1	scripts: CE2p điểm vào thứ ba rút từ dòng product_map: của khuôn config; bao đóng của nó ⊆ danh sách chép
 1	scripts: CE2p-dot-bien bỏ plugins/acceptance-gate/scripts/trang-thai-ho-so.cjs khỏi danh-sách-khai → quan hệ ĐỎ ghim đúng tên
 1	scripts: CE2w chân writer: tên lib có chữ số/đuôi .mjs vẫn vào tập DÙNG, và mắt xích bắc cầu sống khi gỡ hết lời nhắc trực tiếp
+1	scripts: CE3 recheck
+1	scripts: CE4 đối chứng chấm-thật: bản tiêm exit_code: 2 → recheck exit 1 ghim "fails the evidence bar"
+1	scripts: CE5 pre-merge trong consumer type:module: exit 0, rules ran=4, KHÔNG một dòng NOT ENFORCED/fallback
+1	scripts: CE5-map lệnh bản đồ chạy trọn trong consumer type:module từ ĐÚNG danh sách chép; gỡ trang-thai-ho-so.cjs → đỏ gọi tên
+1	scripts: CE5b vendored gap-probe CHẤM thật ở consumer: xoá gap-probe.md → pre-merge
+1	scripts: CE6 red: cùng nội dung recheck nhưng đuôi .js trong type:module → ĐỎ đúng "require is not defined"
 1	scripts: CE6-ooc không còn tham chiếu đuôi cũ .js của lib/out-of-contract trong bộ máy; bản sao khôi phục một require đuôi cũ → đỏ gọi tên
+1	scripts: CE7 red: lib/gap-probe đuôi .js chạy classify trong type:module → cùng lớp ReferenceError
 1	scripts: CF01
 1	scripts: CF02
 1	scripts: CH0 module không chép mảng trạng thái
@@ -1244,8 +1251,16 @@
 1	scripts: CK-3
 1	scripts: CK-3-do
 1	scripts: CK-4-chinh-sach
+1	scripts: CK-5
+1	scripts: CK-5-do
+1	scripts: CK-5-thieu-lib
+1	scripts: CK-7
+1	scripts: CK-7-do
 1	scripts: CK-8
 1	scripts: CK-8-do
+1	scripts: CK-8-ky-tu
+1	scripts: CK-9
+1	scripts: CK-9-do
 1	scripts: CK-AC1
 1	scripts: CK-AC1-dot-bien
 1	scripts: CK-AC1-khung
@@ -1292,6 +1307,8 @@
 1	scripts: CN-6-do4
 1	scripts: CN-7
 1	scripts: CN-7-do
+1	scripts: CN-8
+1	scripts: CN-8-do
 1	scripts: CN07
 1	scripts: CN08
 1	scripts: CN09
@@ -1337,6 +1354,7 @@
 1	scripts: CT-7
 1	scripts: CT-7-do
 1	scripts: CT-7-khong-cua
+1	scripts: CT-7-lenh
 1	scripts: CT-7-mot-ghi
 1	scripts: CT-7-rong
 1	scripts: CT-7-so-trung
@@ -1923,6 +1941,23 @@
 1	scripts: GT6
 1	scripts: GT6 lưới hoá cũ
 1	scripts: GT6b chiều im: diff chỉ chạm tệp ngoài paths → không hoá cũ
+1	scripts: GW-1
+1	scripts: GW-1-do
+1	scripts: GW-1-do2
+1	scripts: GW-2
+1	scripts: GW-2-do
+1	scripts: GW-2-do2
+1	scripts: GW-2-do3
+1	scripts: GW-3
+1	scripts: GW-3-do
+1	scripts: GW-5
+1	scripts: GW-5-do
+1	scripts: GW-6
+1	scripts: GW-6-do
+1	scripts: GW-6-do2
+1	scripts: GW-6-do3
+1	scripts: GW-6-gom
+1	scripts: GW-6-long
 1	scripts: GX1 doi chung duong
 1	scripts: GX2 ma 3 da khai va bao cao ghi ma 3
 1	scripts: GX3 chieu do cung fixture
@@ -2166,6 +2201,7 @@
 1	scripts: JR11c đối chứng dương: tiêm token cấm vào BẢN SAO 1 report → recheck ĐỎ đúng thông điệp
 1	scripts: KK-1 bash
 1	scripts: KK-1 zsh
+1	scripts: KK-1-do
 1	scripts: KK-10 chon-theo-tinh-chat
 1	scripts: KK-10-do
 1	scripts: KK-2 chua-cai
@@ -2200,7 +2236,10 @@
 1	scripts: KM-5-chiem-cho
 1	scripts: KM-5-lan-hai
 1	scripts: KM-5-trang-cu
+1	scripts: KM-6
 1	scripts: KM-6-chua-chep
+1	scripts: KM-6-lech
+1	scripts: KM-7-mo-o
 1	scripts: KM-7-rong
 1	scripts: KM-7-tu-ap
 1	scripts: KM-8
@@ -2890,7 +2929,6 @@
 1	scripts: NT12 mot-ham
 1	scripts: NT12-do bo-go-nhan
 1	scripts: NT13 khoi-co-nhanh
-1	scripts: NT13 resolver-thieu
 1	scripts: NT2 ba-dong
 1	scripts: NT2 check
 1	scripts: NT2 khong-cham
@@ -3444,6 +3482,8 @@
 1	scripts: TH-8
 1	scripts: TH-8-do
 1	scripts: TH-8-do2
+1	scripts: TH-9
+1	scripts: TH-9-do
 1	scripts: TH1 hồ sơ có danh sách không đọc được → hai thẻ cổng in cờ kèm tên từng <id>.<trường>
 1	scripts: TH2 chiều im: hồ sơ sạch → hai thẻ không có cờ
 1	scripts: TH3 plugins/acceptance-gate/commands/acceptance-card.md có dòng thuật cho cờ
@@ -3846,6 +3886,7 @@
 1	scripts: co-hop-dong.test.mjs
 1	scripts: config-yaml-that.test.mjs
 1	scripts: cong-nguoi-doc-du-nguon.test.mjs
+1	scripts: consumer-esm.test.mjs
 1	scripts: dai-tom-tat.test.mjs
 1	scripts: danh-tinh.test.mjs
 1	scripts: dem LOP: 21 tep cham run-log.jsonl, khop hang khai truoc
