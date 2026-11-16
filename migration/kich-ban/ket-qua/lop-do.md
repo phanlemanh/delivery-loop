@@ -1,9 +1,9 @@
 ---
-nguon: 644e9b49af3d24de3fe284304d765ea388304b89
-cay_moi: 939262b6e87ba25723a1282387adf524e31c2003
-do_luc: 2026-11-15T01:28:14Z
+nguon: d8c42965f49e16c2f4d619ff3ba4d27b5eedf433
+cay_moi: 52ab96ad02a252eda9597483f2e5dbb8d2a1a7e1
+do_luc: 2026-11-16T03:07:13Z
 bo: [scripts, hooks, plugins, workflows, dieu-phoi, ban-do]
-tong_do_them: 415
+tong_do_them: 486
 ---
 
 # Lớp ca kiểm thiếu ở cây mới do đổi bố cục
@@ -19,50 +19,41 @@ lỗi đường dẫn nhưng khối chứa nó có. Ca không chạy tới khôn
 
 | Bộ | Mã thoát cũ | Mã thoát mới | Đạt cây cũ | Đạt cây mới | Không chạy tới | Đỏ thêm |
 |---|---|---|---|---|---|---|
-| scripts | 1 | 1 | 3413 | 3028 | 139 | 385 |
+| scripts | 1 | 1 | 3648 | 3163 | 332 | 485 |
 | hooks | 0 | 0 | 80 | 80 | 0 | 0 |
-| plugins | 0 | 1 | 363 | 343 | 7 | 20 |
+| plugins | 0 | 1 | 363 | 362 | 0 | 1 |
 | workflows | 0 | 0 | 1036 | 1036 | 0 | 0 |
-| dieu-phoi | 0 | 1 | 663 | 653 | 0 | 10 |
+| dieu-phoi | 0 | 0 | 663 | 663 | 0 | 0 |
 | ban-do | 0 | 0 | 1 | 1 | 0 | 0 |
-| **tổng** | | | | | | **415** |
+| **tổng** | | | | | | **486** |
 
 ## Đỏ thêm theo lớp
 
 | Lớp | Số ca | scripts | hooks | plugins | workflows | dieu-phoi | ban-do |
 |---|---|---|---|---|---|---|---|
-| không chạy tới (`khong-chay-toi`) | 146 | 139 | 0 | 7 | 0 | 0 | 0 |
-| đường dẫn không còn (`duong-dan`) | 66 | 62 | 0 | 2 | 0 | 2 | 0 |
-| cùng khối có lỗi đường dẫn (`cung-tep`) | 79 | 79 | 0 | 0 | 0 | 0 | 0 |
-| tên đổi (`ten-doi`) | 20 | 18 | 0 | 0 | 0 | 2 | 0 |
+| không chạy tới (`khong-chay-toi`) | 332 | 332 | 0 | 0 | 0 | 0 | 0 |
+| đường dẫn không còn (`duong-dan`) | 34 | 34 | 0 | 0 | 0 | 0 | 0 |
+| cùng khối có lỗi đường dẫn (`cung-tep`) | 46 | 46 | 0 | 0 | 0 | 0 | 0 |
+| tên đổi (`ten-doi`) | 14 | 14 | 0 | 0 | 0 | 0 | 0 |
 | dựng bản cũ từ lịch sử (`lich-su`) | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | bộ chết ngầm / bộ chạy không chạy được (`bo-chay`) | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| khác (`khac`) | 104 | 87 | 0 | 11 | 0 | 6 | 0 |
-
-**Mẫu — khác:**
-
-- `scripts: FAIL: L42m (dấu hiệu bản sao đã chạy sai: mutant=ERR lành=[]) ⏎ L43 [mobile] -> không W8 (+W1 quét)`
-- `scripts: FAIL: DV5 plugins/acceptance-gate/scripts/pre-merge-check.sh: diff so với base 909dffd CHỈ THÊM (0 dòng luật cũ bị xoá/sửa) ⏎ Command failed: git -C <tmp> show 909dffd8b7df648ffc41625e9582fe9042ae6f89:plugins/acceptance-gate/scripts/pre-merge-check.sh ⏎ fatal: path 'plugins/acceptance-gate/scripts/pre-merge-check.sh' exists on disk, but not in '909dffd8b7df648ffc41625e9582fe9042ae6f89' ⏎ fatal: pa`
-- `plugins: FAIL: P91 con tro RUT TU file tro vao vat that tren cay nguon, kem dem sanity 8 (E6) ⏎ P93 mot-nguon: bang luat khop tung ky tu + than khuon va CAP MARKER duy nhat toan kho (E8, E11) ⏎ Traceback (most recent call last): ⏎ File "<stdin>", line 80, in <module> ⏎ AssertionError: thu muc nguon khong gop file nao (doi ten? xoa?): ['plugins/acceptance-gate/skills', 'plugins/acceptance-gate/commands', 'p`
-- `plugins: FAIL: P93 mot-nguon: bang luat khop tung ky tu + than khuon va CAP MARKER duy nhat toan kho (E8, E11) ⏎ P94 quyen tra lai tai cong + tien to so tren the (E13)`
-- `dieu-phoi: not ok 13 - TC1-06 doc-cu-tung-byte ⏎ --- ⏎ duration_ms: 10663.321667 ⏎ type: 'test' ⏎ location: '<tmp> ⏎ failureType: 'testCodeFailure' ⏎ error: |- ⏎ Expected values to be strictly deep-equal: ⏎ + actual - expected ⏎ + [ ⏎ +   'danh-thuc b', ⏎ +   'danh-thuc d',`
-- `dieu-phoi: not ok 18 - TC1-09 than-ca-doi ⏎ --- ⏎ duration_ms: 671.542792 ⏎ type: 'test' ⏎ location: '<tmp> ⏎ failureType: 'testCodeFailure' ⏎ error: |- ⏎ Expected values to be strictly deep-equal: ⏎ + actual - expected ⏎ [ ⏎ +   '(đầu bang.test.mjs)', ⏎ +   '(đầu bien.test.mjs)',`
+| khác (`khac`) | 60 | 59 | 0 | 1 | 0 | 0 | 0 |
 
 **Mẫu — tên đổi:**
 
+- `scripts: FAIL: DV5 plugins/acceptance-gate/scripts/pre-merge-check.sh: diff so với base 909dffd CHỈ THÊM (0 dòng luật cũ bị xoá/sửa) ⏎ additive-only: existing rule line removed/modified trong scripts/pre-merge-check.sh: ⏎ # cổng không cờ (ca AC-8 của tests/scripts/hang-pr.test.mjs canh). ⏎ elif grep -qs '"road-map@' "$ROOT/.claude/settings.json" && grep -qs '^  chan:' "$ACC/config.yaml"; then ⏎ + actual - `
 - `scripts: FAIL: AP-1-khong-bat — Error: Command failed: git -C <tmp> archive --format=tar d01df558cfb6d75246d860824864343caf57583d plugins/acceptance-gate/scripts lib skills commands road-map | fatal: pathspec 'plugins/acceptance-gate/scripts' did not match any files |  |     at genericNodeError (node:internal/errors:985:15) ⏎ fatal: pathspec 'plugins/acceptance-gate/scripts' did not match any files`
-- `scripts: FAIL: AP-1-do2 — Error: Command failed: git -C <tmp> archive --format=tar d01df558cfb6d75246d860824864343caf57583d plugins/acceptance-gate/scripts lib skills commands road-map | fatal: pathspec 'plugins/acceptance-gate/scripts' did not match any files |  |     at genericNodeError (node:internal/errors:985:15)`
-- `dieu-phoi: not ok 341 - DP6-03 moc-co-dinh ⏎ --- ⏎ duration_ms: 185.703291 ⏎ type: 'test' ⏎ location: '<tmp> ⏎ failureType: 'testCodeFailure' ⏎ error: |- ⏎ Command failed: git archive ff5e5b5d2ef811d78f015941a573745f13eececb dieu-phoi ⏎ fatal: pathspec 'dieu-phoi' did not match any files ⏎ code: 'ERR_TEST_FAILURE' ⏎ stack: |- ⏎ genericNodeError (node:internal/errors:985:15)`
-- `dieu-phoi: not ok 361 - DP2-01 ba-lenh ⏎ #   lệnh: close.md, handoff.md, open.md, resume.md, status.md ⏎ #   5 lời gọi thiếu đối số, lỗi: 0 ⏎ #   (ma:slug) theo kit: A:hang-a-tu-lo-trinh · B:dong-goi-dieu-phoi-tho-vao · C:hang-c ⏎ #   số hàng ma trận: 7 · chờ Cổng Đáng: hang-c, hang-d, hang-f ⏎ #   8 hình frontmatter, lệch: 0 ⏎ #   giá trị so: tam-dung · s4 · P2 · P1 · Ký giúp lượt này? · hang-a-tu-lo-trinh `
+
+**Mẫu — khác:**
+
+- `scripts: FAIL: additive-only.test.mjs (expected exit 0, got 1) ⏎ Results: 4 passed, 1 failed`
+- `scripts: FAIL: ban-do-khuon-roi-nhom.test.mjs (expected exit 0, got 1) ⏎ stderr: Buffer(74) [Uint8Array] [ ⏎ 102,  97, 116,  97, 108,  58,  32, 112,  97, 116, 104, 115, ⏎ 112, 101,  99,  32,  39, 112, 108, 117, 103, 105, 110, 115, ⏎ 47,  97,  99,  99, 101, 112, 116,  97, 110,  99, 101,  45, ⏎ 103,  97, 116, 101,  47, 115,  99, 114, 105, 112, 116, 115, ⏎ 39,  32, 100, 105, 100,  32, 110, 111, 116,  32, 109,`
+- `plugins: FAIL: P161 strip-md giu duong dan + ma tran toan phan ⏎ P165 F-K ve am: cam superpowers:brainstorming truoc Cong Dang trong doan loi (a), mutant per-file (E1) ⏎ P165 OK (2 thân xanh + 2 mutant per-file đỏ đúng tên)`
 
 **Mẫu — đường dẫn không còn:**
 
 - `scripts: FAIL: AP-7 — Error: ENOENT: no such file or directory, open '<tmp> |     at readFileSync (node:fs:441:20) |     at file://<tmp> |     at chayCa (file://<tmp>`
 - `scripts: FAIL: AP-7-lenh — Error: ENOENT: no such file or directory, open '<tmp> |     at readFileSync (node:fs:441:20) |     at file://<tmp> |     at chayCa (file://<tmp>`
-- `plugins: FAIL: P188 round-trip dieu khoan moi-cong: MOI site nguon khop tung ky tu (E5) ⏎ P188 round-trip dieu khoan moi-cong: MOI site nguon khop tung ky tu (E5) ⏎ Traceback (most recent call last): ⏎ File "<stdin>", line 41, in <module> ⏎ File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 787, in read_text ⏎ with self.open(mod`
-- `plugins: FAIL: P193 dieu khoan mot-luot-go: 6 site nguon khop tung ky tu + quan he per-site (E3/E4 mot-luot-go) ⏎ P193 dieu khoan mot-luot-go: 6 site nguon khop tung ky tu + quan he per-site (E3/E4 mot-luot-go) ⏎ Traceback (most recent call last): ⏎ File "<stdin>", line 33, in <module> ⏎ File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.`
-- `dieu-phoi: not ok 15 - TC1-08 loi-dan ⏎ --- ⏎ duration_ms: 0.1445 ⏎ type: 'test' ⏎ location: '<tmp> ⏎ failureType: 'testCodeFailure' ⏎ error: "ENOENT: no such file or directory, open '<tmp> ⏎ code: 'ENOENT' ⏎ stack: |- ⏎ Object.readFileSync (node:fs:441:20) ⏎ file://<tmp> ⏎ Array.map (<anonymous>) ⏎ vanBanHienTai (file://<tmp>`
-- `dieu-phoi: not ok 17 - TC1-08-do bo-mot-buoc ⏎ --- ⏎ duration_ms: 0.113708 ⏎ type: 'test' ⏎ location: '<tmp> ⏎ failureType: 'testCodeFailure' ⏎ error: "ENOENT: no such file or directory, open '<tmp> ⏎ code: 'ENOENT' ⏎ stack: |- ⏎ Object.readFileSync (node:fs:441:20) ⏎ file://<tmp> ⏎ Array.map (<anonymous>) ⏎ vanBanHienTai (file://<tmp>`
 
 **Mẫu — cùng khối có lỗi đường dẫn:**
 
@@ -73,13 +64,11 @@ lỗi đường dẫn nhưng khối chứa nó có. Ca không chạy tới khôn
 
 - `scripts: scripts: [RN-1]`
 - `scripts: scripts: [RN-1-do]`
-- `plugins: plugins: [DP11] moi site dung nguyen van + tong ban chep tron glob khop bang khai`
-- `plugins: plugins: [LB1] bảng COMMAND-NAMES ⊆ vật thật`
 
 ## Số liệu máy đọc
 
 <!-- <<<LOP-DO-SO-LIEU -->
 ```json
-{"bo": {"ban-do": {"dat_cu": 1, "dat_moi": 1, "do_ca_hai": 0, "do_them": 0, "khong_chay_toi": 0, "lop": {}, "rc_cu": 0, "rc_moi": 0}, "dieu-phoi": {"dat_cu": 663, "dat_moi": 653, "do_ca_hai": 0, "do_them": 10, "khong_chay_toi": 0, "lop": {"duong-dan": 2, "khac": 6, "ten-doi": 2}, "rc_cu": 0, "rc_moi": 1}, "hooks": {"dat_cu": 80, "dat_moi": 80, "do_ca_hai": 0, "do_them": 0, "khong_chay_toi": 0, "lop": {}, "rc_cu": 0, "rc_moi": 0}, "plugins": {"dat_cu": 363, "dat_moi": 343, "do_ca_hai": 0, "do_them": 20, "khong_chay_toi": 7, "lop": {"duong-dan": 2, "khac": 11, "khong-chay-toi": 7}, "rc_cu": 0, "rc_moi": 1}, "scripts": {"dat_cu": 3413, "dat_moi": 3028, "do_ca_hai": 3, "do_them": 385, "khong_chay_toi": 139, "lop": {"cung-tep": 79, "duong-dan": 62, "khac": 87, "khong-chay-toi": 139, "ten-doi": 18}, "rc_cu": 1, "rc_moi": 1}, "workflows": {"dat_cu": 1036, "dat_moi": 1036, "do_ca_hai": 0, "do_them": 0, "khong_chay_toi": 0, "lop": {}, "rc_cu": 0, "rc_moi": 0}}, "cay_moi": "939262b6e87ba25723a1282387adf524e31c2003", "lop": {"bo-chay": 0, "cung-tep": 79, "duong-dan": 66, "khac": 104, "khong-chay-toi": 146, "lich-su": 0, "ten-doi": 20}, "nguon": "644e9b49af3d24de3fe284304d765ea388304b89", "tong_do_them": 415}
+{"bo": {"ban-do": {"dat_cu": 1, "dat_moi": 1, "do_ca_hai": 0, "do_them": 0, "khong_chay_toi": 0, "lop": {}, "rc_cu": 0, "rc_moi": 0}, "dieu-phoi": {"dat_cu": 663, "dat_moi": 663, "do_ca_hai": 0, "do_them": 0, "khong_chay_toi": 0, "lop": {}, "rc_cu": 0, "rc_moi": 0}, "hooks": {"dat_cu": 80, "dat_moi": 80, "do_ca_hai": 0, "do_them": 0, "khong_chay_toi": 0, "lop": {}, "rc_cu": 0, "rc_moi": 0}, "plugins": {"dat_cu": 363, "dat_moi": 362, "do_ca_hai": 0, "do_them": 1, "khong_chay_toi": 0, "lop": {"khac": 1}, "rc_cu": 0, "rc_moi": 1}, "scripts": {"dat_cu": 3648, "dat_moi": 3163, "do_ca_hai": 1, "do_them": 485, "khong_chay_toi": 332, "lop": {"cung-tep": 46, "duong-dan": 34, "khac": 59, "khong-chay-toi": 332, "ten-doi": 14}, "rc_cu": 1, "rc_moi": 1}, "workflows": {"dat_cu": 1036, "dat_moi": 1036, "do_ca_hai": 0, "do_them": 0, "khong_chay_toi": 0, "lop": {}, "rc_cu": 0, "rc_moi": 0}}, "cay_moi": "52ab96ad02a252eda9597483f2e5dbb8d2a1a7e1", "lop": {"bo-chay": 0, "cung-tep": 46, "duong-dan": 34, "khac": 60, "khong-chay-toi": 332, "lich-su": 0, "ten-doi": 14}, "nguon": "d8c42965f49e16c2f4d619ff3ba4d27b5eedf433", "tong_do_them": 486}
 ```
 <!-- LOP-DO-SO-LIEU>>> -->

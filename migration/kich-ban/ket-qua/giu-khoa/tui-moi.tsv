@@ -53,6 +53,9 @@
 1	dieu-phoi: DP10-05 tai-lieu
 1	dieu-phoi: DP10-05-do readme-cu
 1	dieu-phoi: DP10-06 ca-da-ky
+1	dieu-phoi: DP2-01 ba-lenh
+1	dieu-phoi: DP2-01-do khoa-xem
+1	dieu-phoi: DP2-01-do thu-tu
 1	dieu-phoi: DP2-02 chay-lai
 1	dieu-phoi: DP2-02 co-goi-thang
 1	dieu-phoi: DP2-02 goi-sai-khuon
@@ -202,6 +205,7 @@
 1	dieu-phoi: DP6-02-do khong-lot-than-la-du-lieu
 1	dieu-phoi: DP6-02-do than-la-du-lieu
 1	dieu-phoi: DP6-03 lech-o-goc
+1	dieu-phoi: DP6-03 moc-co-dinh
 1	dieu-phoi: DP6-03 nguon
 1	dieu-phoi: DP6-03 nguon-thieu-tep
 1	dieu-phoi: DP6-03 tep-ca
@@ -249,6 +253,7 @@
 1	dieu-phoi: DP7-05-do sai-pha
 1	dieu-phoi: DP7-06 ngoai-day
 1	dieu-phoi: DP7-06 trong-day
+1	dieu-phoi: DP7-06-do merge-base-song
 1	dieu-phoi: DP7-07 luat-co-loai
 1	dieu-phoi: DP7-07 mot-danh-sach
 1	dieu-phoi: DP7-07 nhip-hai
@@ -530,9 +535,13 @@
 1	dieu-phoi: TC1-05 hook-chua-nap
 1	dieu-phoi: TC1-05-do bo-bao
 1	dieu-phoi: TC1-05-do bo-thang
+1	dieu-phoi: TC1-06 doc-cu-tung-byte
 1	dieu-phoi: TC1-07 vang-ma-app
+1	dieu-phoi: TC1-08 loi-dan
 1	dieu-phoi: TC1-08-do ban-cu
+1	dieu-phoi: TC1-08-do bo-mot-buoc
 1	dieu-phoi: TC1-09 hai-moi-truong-so
+1	dieu-phoi: TC1-09 than-ca-doi
 1	dieu-phoi: TC2-01 xin-dung-hang
 1	dieu-phoi: TC2-01-do bo-loc-day
 1	dieu-phoi: TC2-01-do gop-bac
@@ -552,6 +561,7 @@
 1	dieu-phoi: TC2-08 doc-cu
 1	dieu-phoi: TC2-08-do doi-su-kien-nghi
 1	dieu-phoi: TC2-09 loi-dan
+1	dieu-phoi: TC2-09-do ban-moc
 1	dieu-phoi: TM-1 khu-hoi
 1	dieu-phoi: TM-1-do noi-luat
 1	dieu-phoi: TM-2 viet-hop-le
@@ -801,6 +811,7 @@
 1	plugins: P166 F-K o cam config: ma tran hinh dang TOAN PHAN + seam khoa viet<->doc + quan he 2 nhanh
 1	plugins: P167 F-K cam hardcode ben-thu-ba: quet PER-CAY + doi chung tiem day du + 2 doan luat spec
 1	plugins: P168 stop-patching-law: noi dung + vi tri + 16 dot bien
+1	plugins: P169 dau vao cham hanh vi: sinh trong BAN SAO, ban ghi da ky khong bi sinh de
 1	plugins: P170 quan he trich-dan giua 4 luot va khoi menh de
 1	plugins: P171 MAP_LABELS quan he 3 ben + 2 dang cay + guard --root
 1	plugins: P172 UAT-COPY-PROCEDURE rut-tu-khuon, chep dung lanh / chep ca rao hong
@@ -819,9 +830,11 @@
 1	plugins: P186 khoi Cong 2 du 4 loai + mau gop
 1	plugins: P186b khoi khong bien mat khi 0 viec-nguoi
 1	plugins: P187 chi-bao khong-can-lam-gi
+1	plugins: P188 round-trip dieu khoan moi-cong: MOI site nguon khop tung ky tu
 1	plugins: P190 the bang chung E7 == ban render that
 1	plugins: P191 ngu phap cau gop GATE-ONESHOT
 1	plugins: P192 round-trip the->SLOTS hai huong
+1	plugins: P193 dieu khoan mot-luot-go: 6 site nguon khop tung ky tu + quan he per-site
 1	plugins: P194 hai nguyen tac may-ganh-nguoi-quyet: neo grammar + 6 than lenh + truong ghi
 1	plugins: P195 moi feature_loop.suite_key resolve ve mot lenh co that
 1	plugins: P196 plugin diagram-design: layout+manifest · tree-hash==NOTICE · marker default · khong symlink
@@ -883,7 +896,9 @@
 1	plugins: P88 version floor 1.29/1.22
 1	plugins: P89 ban luat: neo vao dung vat
 1	plugins: P90 tam cho tro nap ban luat + khuon MOI lan trinh + round-trip cau-ve-hinh
+1	plugins: P91 con tro RUT TU file tro vao vat that tren cay nguon, kem dem sanity 8
 1	plugins: P92 hai khuon trinh bay: marker duy nhat + round-trip bang 3 cot + so do mermaid
+1	plugins: P93 mot-nguon: bang luat khop tung ky tu + than khuon va CAP MARKER duy nhat toan kho
 1	plugins: P94 quyen tra lai tai cong + tien to so tren the
 1	plugins: P95 con tro giai duoc TRONG GOI
 1	plugins: P96 tu dien: rut tu qua marker HFL-GLOSSARY-TERMS roi tra CONTEXT.md
@@ -927,11 +942,13 @@
 1	plugins: [DD6] SKILL S1#4/S1#7: 6 mệnh đề đếm-hit-trong-phạm-vi; tiền tố rút từ SKILL == gate-card; 6 mutant đỏ đúng mệnh đề
 1	plugins: [DD7] CONTEXT.md có term Đường đo
 1	plugins: [DP10] nhanh doi-ho-so + luoi thoat-chuoi CA HAI duong ra the + quan he THOAT-O-BIEN-RENDER tren ma + khoa ke thua ca hai truc
+1	plugins: [DP11] moi site dung nguyen van + tong ban chep tron glob khop bang khai
 1	plugins: [DP12] hai o cam neu du o ca hai file
 1	plugins: [DP13] khong so phien: the dung duoc, khoi vang, khong co nac, khong nhan la
 1	plugins: [DP1] thang bon nac, mot cho duy nhat khai danh sach
 1	plugins: [DP8] khuon so phien giu ba khoa moi, khong liet lai danh sach nac
 1	plugins: [DP9] khop vong 4 nac khuon->the
+1	plugins: [LB1] bảng COMMAND-NAMES ⊆ vật thật
 1	plugins: [LB2] 16 file: 0 trần, 0 uat thiếu tiền tố, 166 lệnh có tiền tố ⊆ bảng; 16 đối chứng dương tiêm; giữ-gân 0; ba chèn → đỏ
 1	plugins: [LB3] một câu luật: dùng cột Lệnh bấm được của COMMAND-NAMES, không dạng trần; gỡ → đỏ
 1	plugins: [LB4] Analyst n-a có lý do → không đỏ; n-a trần/ngắn → đỏ ghim; nội dung thật → đỏ như cũ; ba hồ sơ thật 0 cờ baseline
@@ -940,10 +957,13 @@
 1	plugins: [LB7] _Avoid_ của Đường đo: tracking, không metric; uat-session lấy số từ đường đo đã khai; thêm lại metric → đỏ
 1	plugins: [LB8] START-HIEU-KET nằm trong bullet «Bắt đầu việc mới», trước
 1	plugins: [LB9] lệnh `claude plugin` giữ nguyên số
+1	plugins: [LM1] song anh permissions.allow <-> feature_loop.suite_keys
 1	plugins: [LM2] khong entry cho-phep nao chua ky tu *
 1	plugins: [LM4] khuon khoi tao khuyen kho tieu thu
+1	plugins: [LM5] duong thoai hoa: 7 ve roi + 1 quan he dem duoc + 10 mutant
 1	plugins: [LM6] tai lieu van hanh
 1	plugins: [LM8] van pham luat quyen + entry nam dung cho
+1	plugins: [LM8b] khuon van pham song dung MOT cho tren TRON pham vi hop dong khai
 1	plugins: [LNT10] lệnh đo kho: kho tổng hợp đổi 1 = dự kiến 1, đủ ảnh 2/2 không đổi; không khai kho thoát 2; tiêm du-kien đỏ
 1	plugins: [LNT1] lib một nguồn: vị từ 8 giá trị, alias, round-trip khuôn, mutant ba bộ đọc + dấu hiệu bản sao đã chạy
 1	plugins: [LNT3] thẻ Cổng Phạm vi: cờ + extract ui_observed sáu nhánh + seam + token lạ
@@ -973,9 +993,11 @@
 1	plugins: [RT10] hai tiền tố
 1	plugins: [RT11] ui/mobile + khai không-đo-được → cờ đỏ trên thẻ + cờ ở bộ quét, hồ sơ vẫn ở ô của nó; cli → không cờ
 1	plugins: [RT12] archived → đã đóng có hồ sơ; timebox hai dạng ngày; nghi thức nghiệm thu có mệnh đề sinh ra trạng thái đó
+1	plugins: [RT13] đọc-cũ: broken rỗng, khác biệt đúng khối; hồ sơ sinh sau mốc: 248
 1	plugins: [RT14] hồ sơ treo thoát bằng lối «không đo được» có vết; decision/người ký/ngày giữ nguyên
 1	plugins: [RT15] machine-cleared × chữ ký: hook hai chiều + lưới + bộ quét gọi hỏng; LỐI KÝ chạy thật theo thứ tự thân lệnh dạy
 1	plugins: [RT16] bản đồ ⇔ bộ quét đồng ô trên 8 fixture + hồ sơ thật; gỡ nhánh khong-do-duoc → phép so đỏ
+1	plugins: [RT18] chống-chép: 5 chuỗi luật LITERAL chỉ sống trong lib
 1	plugins: [RT1] enum 7 giá trị round-trip khuôn↔lib; usesUat/usesEvidence; khối xanh-sạch ba đầu; chiều đỏ nêu mục
 1	plugins: [RT2] lưới: machine-cleared xanh-sạch qua; UNCERTAIN/mục-có-nội-dung/T3/không-veto/thiếu-báo-cáo chặn ghim câu
 1	plugins: [RT3] hook: làn V qua; T3/không-vết/draft-nhảy-thẳng chặn ghim câu; khối lifecycle IN RA khớp enum AC-1, bản sao gỡ → đỏ
@@ -995,47 +1017,48 @@
 7	plugins: ca duong do
 18	plugins: ca khai plugin
 6	plugins: ca lan V
-4	plugins: ca lan may qua bo phan loai
-8	plugins: ca lenh bam duoc
+7	plugins: ca lan may qua bo phan loai
+9	plugins: ca lenh bam duoc
 8	plugins: ca lop nhin thay
-6	plugins: ca nac phan ung
-13	plugins: ca ra co ten
+7	plugins: ca nac phan ung
+15	plugins: ca ra co ten
 1	plugins: ca thao tac cong nguoi thu bay observed
 7	plugins: ca vao co o
 1	scripts: A01
 1	scripts: A01-msg
 1	scripts: A02
 1	scripts: A02-note
-2	scripts: AC-1
+3	scripts: AC-1
 1	scripts: AC-1-do
 1	scripts: AC-1-hong
 2	scripts: AC-10
 1	scripts: AC-10-do
-2	scripts: AC-2
+1	scripts: AC-11
+3	scripts: AC-2
 2	scripts: AC-2-do
 1	scripts: AC-2-vong
 2	scripts: AC-3
 2	scripts: AC-3-do
 1	scripts: AC-3-do-rut
 1	scripts: AC-3-im
-2	scripts: AC-4
+3	scripts: AC-4
 2	scripts: AC-4-do
 1	scripts: AC-4-kho-that
 2	scripts: AC-5
 1	scripts: AC-5-do-khoa
 1	scripts: AC-5-do-nghia
-2	scripts: AC-6
+3	scripts: AC-6
 1	scripts: AC-6-do
 1	scripts: AC-6-do-khoi
 1	scripts: AC-6-do-lop
-2	scripts: AC-7
+3	scripts: AC-7
 1	scripts: AC-7-do
 1	scripts: AC-7-do-ngay-ky
-2	scripts: AC-8
+3	scripts: AC-8
 2	scripts: AC-8-do
 1	scripts: AC-8-lich-su
 1	scripts: AC-8-lich-su-do
-1	scripts: AC-9
+2	scripts: AC-9
 1	scripts: AC-9-do
 1	scripts: AP-1
 1	scripts: AP-1-cung-ngay
@@ -1191,6 +1214,7 @@
 1	scripts: CB2 chiều im: hồ sơ sạch
 1	scripts: CB3 chiều đỏ: bản sao lib gỡ nhánh cờ → dòng cờ biến mất
 1	scripts: CB4 giá trị mở bằng «[» mà không tách được → cờ không-phải-danh-sách, không thành glob rác
+1	scripts: CC-02 khoi-giu-byte
 1	scripts: CC-02-do
 1	scripts: CC-03 bash
 1	scripts: CC-03 zsh
@@ -1210,6 +1234,8 @@
 1	scripts: CC-05 do
 1	scripts: CC-05 khong-goc
 1	scripts: CC-05 the
+1	scripts: CC-05 vang-mo-dun
+1	scripts: CC-05-do
 1	scripts: CC-06 bo-doc
 1	scripts: CC-06 kho-that
 1	scripts: CC-06 the-cu
@@ -1250,9 +1276,16 @@
 1	scripts: CK-2-do
 1	scripts: CK-3
 1	scripts: CK-3-do
+1	scripts: CK-4
 1	scripts: CK-4-chinh-sach
+1	scripts: CK-4-do
+1	scripts: CK-4-do2
+1	scripts: CK-4-lib
+1	scripts: CK-4-settings-hong
+1	scripts: CK-4-settings-hong-do
 1	scripts: CK-5
 1	scripts: CK-5-do
+1	scripts: CK-5-tat
 1	scripts: CK-5-thieu-lib
 1	scripts: CK-7
 1	scripts: CK-7-do
@@ -1364,7 +1397,12 @@
 1	scripts: CT-9
 1	scripts: CT-9-do
 1	scripts: CT-9-luat
+1	scripts: CT0 danh sách chép rút được từ marker, có nhãn tri_thuc, mọi src tồn tại
+1	scripts: CT1 kho KHÔNG khai tri_thuc, chép đúng nhãn: răng phủ --pham-vi chạy tới bảng phủ, không vỡ nạp mô-đun
 1	scripts: CT1 «#» nằm TRONG nháy không phải chú thích
+1	scripts: CT2 kho khai tri_thuc mà thiếu tệp khoá tri thức: răng phủ dừng to
+1	scripts: CT3 kho khai tri_thuc, chép trọn danh sách: lint tri thức chạy, không vỡ vì thiếu khuôn
+1	scripts: CT4 --nhip ở kho không khai tri_thuc chạy được
 1	scripts: CV-1
 1	scripts: CV-1-do
 1	scripts: CV-2
@@ -1377,8 +1415,13 @@
 1	scripts: CV-3-do
 1	scripts: CV-4
 1	scripts: CV-4-do
+1	scripts: CVS-BAN bản ở tests/fixtures/ chỉ khác bản trong hồ sơ đúng các dòng viết trước
+1	scripts: CVS1 hồ sơ làn V ĐÃ KÝ → lưới nói «cửa veto đã đóng bằng chữ ký», không nói «cửa veto mở»
+1	scripts: CVS2 hồ sơ làn V CHƯA ký → vẫn «cửa veto mở» và vẫn có tên ở dòng tổng
+1	scripts: CVS3 vetoOpenUnsigned của máy quét BẰNG tập tên dòng tổng của lưới
+1	scripts: CVS4 chiều đỏ: gỡ nhánh mới → lưới nói lại «cửa veto mở» cho hồ sơ đã ký
 1	scripts: CY1 _acceptance/config.yaml la YAML hop le voi bo doc chuan
-1	scripts: CY2 766 khoa executors: bo doc cua kit va bo doc chuan noi CUNG mot chuyen
+1	scripts: CY2 776 khoa executors: bo doc cua kit va bo doc chuan noi CUNG mot chuyen
 1	scripts: CY3 doi chung hai chieu: ban lanh XANH, ban tiem
 1	scripts: D01
 1	scripts: D02
@@ -1566,8 +1609,10 @@
 1	scripts: DV2p-9 `Run_id:` viết hoa
 1	scripts: DV3 fixture sạch trong git repo: repin hợp lệ tại HEAD -> exit 0
 1	scripts: DV3 fraud: commit code MỚI sau khi ký -> luật stale hiện hành bắn, không cần luật mới
+1	scripts: DV4a recheck MỚI trên MỌI evidence-report thật của repo -> 0 fail NGOÀI grandfather
 1	scripts: DV4b sanity: detector NHÌN THẤY section Re-pin cũ trên corpus thật
 1	scripts: DV4m mutant retro-enforce
+1	scripts: DV5 plugins/acceptance-gate/scripts/recheck-evidence.cjs: diff so với base <sha> CHỈ THÊM
 1	scripts: DV5m mutant: bản sao sửa 1 dòng VIOLATION cũ → phép đo phải ĐỎ đích danh
 1	scripts: DV5u-mutant: một mục miễn trừ mơ hồ phải ĐỎ đích danh
 1	scripts: DV5u: không mục ALLOWED_REMOVALS nào MƠ HỒ
@@ -1909,6 +1954,7 @@
 1	scripts: GT-rf1
 1	scripts: GT-rf2
 1	scripts: GT-rf3
+1	scripts: GT-rf4
 1	scripts: GT0-bam
 1	scripts: GT0-diem-tach
 1	scripts: GT0-dong-hong
@@ -1930,9 +1976,11 @@
 1	scripts: GT3 chieu do
 1	scripts: GT3 làn ghim lại, khối paths nguyên văn crm E1, diff không chạm apps/ → không gắn touched
 1	scripts: GT3b làn ghim lại, diff chạm tệp trong [slug] thật → touched đúng ["E1"]
+1	scripts: GT4
 1	scripts: GT4 carry-plan đọc evals.yaml văn bản; diff chạm [slug] thật → chạy lại «diff-fix chạm»
 1	scripts: GT4 dong bao khong thanh o hoi
 1	scripts: GT4b đối chứng: diff không chạm → mang sang
+1	scripts: GT5
 1	scripts: GT5a gỡ thành ngữ ở pathGlobToRe → làn ghim lại gắn oan
 1	scripts: GT5b gỡ thành ngữ ở globToRe → mang sang eval đã chạm
 1	scripts: GT5c gỡ nhánh «thành ngữ là glob» ở phanLoaiMucPaths → mục không * bị từ chối
@@ -1941,6 +1989,8 @@
 1	scripts: GT6
 1	scripts: GT6 lưới hoá cũ
 1	scripts: GT6b chiều im: diff chỉ chạm tệp ngoài paths → không hoá cũ
+1	scripts: GT7
+1	scripts: GT9
 1	scripts: GW-1
 1	scripts: GW-1-do
 1	scripts: GW-1-do2
@@ -2047,6 +2097,8 @@
 1	scripts: HK-AC4-dot-bien
 1	scripts: HK-AC4-ma-tran
 1	scripts: HK-AC4-the
+1	scripts: HK-AC5-im
+1	scripts: HK-AC5-note
 1	scripts: HK-AC6-baseline
 1	scripts: HK-AC6-nghi
 1	scripts: HK-AC6-song
@@ -2167,6 +2219,8 @@
 2	scripts: JI12 khuôn bộ dò chỉ ở một module
 1	scripts: JI12 mảnh khuôn «bảo chạy lệnh» có trong module
 1	scripts: JI12 mảnh khuôn «hỏi diff» có trong module
+1	scripts: JI12 round-trip có đối tượng: script quét chạy được và s4-args chặn đúng hai hồ sơ
+1	scripts: JI12 script quét báo đúng tập eval s4-args chặn
 1	scripts: JI2 KHÔNG sinh tệp args
 1	scripts: JI2 exit 2
 1	scripts: JI2 thông điệp nêu đường dẫn NGUYÊN VĂN
@@ -2198,6 +2252,7 @@
 1	scripts: JI9 thông điệp là của răng, không phải input vắng
 1	scripts: JI9 đối chứng dương: cùng inputs, câu hỏi về nội dung tệp → sinh args
 1	scripts: JR11a lib/** + hooks/** KHÔNG đổi TRONG PHẠM VI của judge-required-evidence
+1	scripts: JR11b recheck strict trên corpus thật == baseline viết-trước
 1	scripts: JR11c đối chứng dương: tiêm token cấm vào BẢN SAO 1 report → recheck ĐỎ đúng thông điệp
 1	scripts: KK-1 bash
 1	scripts: KK-1 zsh
@@ -2207,6 +2262,7 @@
 1	scripts: KK-2 chua-cai
 1	scripts: KK-2 so-do
 1	scripts: KK-4 quet-lop
+1	scripts: KK-4-do
 1	scripts: KK-5 the-hoi
 1	scripts: KK-5-do
 1	scripts: KK-6 the-may-quyet
@@ -2215,18 +2271,38 @@
 1	scripts: KK-7 ban-rut
 1	scripts: KK-7 thieu-gia
 1	scripts: KK-7-do
+1	scripts: KK-8 ho-so-cu
+1	scripts: KK-8-do
+1	scripts: KL-1
+1	scripts: KL-1 doi-chung
+1	scripts: KL-2
+1	scripts: KL-2b
 1	scripts: KL-2b-dot
 1	scripts: KL-2b-mau
+1	scripts: KL-3
+1	scripts: KL-3-khong-remote
 1	scripts: KL-3-sha
+1	scripts: KL-4
+1	scripts: KL-4 sao-luu
+1	scripts: KL-4-dot
+1	scripts: KL-5
 1	scripts: KL-6
+1	scripts: KL-7
 1	scripts: KL-7 sao-luu
 1	scripts: KL-7-dot
 1	scripts: KL-8
 1	scripts: KL-8-nhay
+1	scripts: KL-9 bash
+1	scripts: KL-9 zsh
+1	scripts: KM-1-do
+1	scripts: KM-1-do2
+1	scripts: KM-1-do3
 1	scripts: KM-2
+1	scripts: KM-2-do
 1	scripts: KM-2-worktree
 1	scripts: KM-3
 1	scripts: KM-3-append-trung
+1	scripts: KM-3-do
 1	scripts: KM-3-glob-rong
 1	scripts: KM-3-khong-khoi
 1	scripts: KM-4
@@ -2234,11 +2310,19 @@
 1	scripts: KM-4-do
 1	scripts: KM-4-truoc
 1	scripts: KM-5-chiem-cho
+1	scripts: KM-5-do
+1	scripts: KM-5-do2
+1	scripts: KM-5-dut-1
+1	scripts: KM-5-dut-2
+1	scripts: KM-5-dut-3
+1	scripts: KM-5-dut-4
 1	scripts: KM-5-lan-hai
 1	scripts: KM-5-trang-cu
 1	scripts: KM-6
 1	scripts: KM-6-chua-chep
+1	scripts: KM-6-do
 1	scripts: KM-6-lech
+1	scripts: KM-7-do
 1	scripts: KM-7-mo-o
 1	scripts: KM-7-rong
 1	scripts: KM-7-tu-ap
@@ -2330,6 +2414,7 @@
 1	scripts: L41
 1	scripts: L42
 1	scripts: L42b
+1	scripts: L42m
 1	scripts: L43
 1	scripts: L44
 1	scripts: L45
@@ -2371,10 +2456,13 @@
 1	scripts: LH3
 1	scripts: LH4
 1	scripts: LK1 kho-khong-lib
+1	scripts: LK1-do ban-goc
 1	scripts: LK1-do chi-goc-kho
 1	scripts: LK1-do ooc-goc-kho
+1	scripts: LK2 kho-co-lib-chep
 1	scripts: LK3 kho-lib-chep-hong
 1	scripts: LK3-do dao-thu-tu
+1	scripts: LK4 lui-ve-goc-kho
 1	scripts: LK5 quet-lop
 1	scripts: LK5-do hinh-dang
 1	scripts: LKN-AC1
@@ -2721,6 +2809,8 @@
 1	scripts: LT-92-do
 1	scripts: LT-93
 1	scripts: LT-93-do
+1	scripts: LT-94
+1	scripts: LT-94-do
 1	scripts: LT-95
 1	scripts: LT-95-do
 1	scripts: LT-96
@@ -2777,6 +2867,22 @@
 1	scripts: MN1 evalListsOf rỗng trong bản sao lib → lượt chấm mất paths VÀ lượt sửa «thiếu paths»
 1	scripts: MN2 lib không có evalListsOf → lượt chấm và lượt sửa thoát 2 gọi tên evalListsOf, không sinh tệp
 1	scripts: MN2b chiều đỏ: bản sao s4-args ghi tệp args TRƯỚC khi dừng → phép kiểm MN2 bắt «sinh tệp dù thoát 2»
+1	scripts: MQ-1
+1	scripts: MQ-1-do
+1	scripts: MQ-10
+1	scripts: MQ-2
+1	scripts: MQ-2-do
+1	scripts: MQ-3
+1	scripts: MQ-3-do
+1	scripts: MQ-4
+1	scripts: MQ-4-do
+1	scripts: MQ-5
+1	scripts: MQ-5-gan
+1	scripts: MQ-5-gan-do
+1	scripts: MQ-6
+1	scripts: MQ-7
+1	scripts: MQ-8
+1	scripts: MQ-8-do
 1	scripts: MS-AC1-lib-im
 1	scripts: MS-AC1-recipe
 1	scripts: MS-AC2-ba-khoi
@@ -2877,6 +2983,7 @@
 1	scripts: NK-1
 1	scripts: NK-1-do
 1	scripts: NK-2
+1	scripts: NK-2-do
 1	scripts: NK-2-giu
 1	scripts: NL-AC1-sach
 1	scripts: NL-AC10-khoa
@@ -2920,34 +3027,44 @@
 1	scripts: NT1 khoa-sai
 1	scripts: NT1 khoa-true
 1	scripts: NT1 khoa-vang
+1	scripts: NT1-do vang-la-bat
 1	scripts: NT10 guide
 1	scripts: NT10-do doi-chu
 1	scripts: NT11 guide-lenh
 1	scripts: NT11 soat-lech
 1	scripts: NT11 soat-sach
+1	scripts: NT11-do qua-dieu-kien
 1	scripts: NT12 ma-tran
 1	scripts: NT12 mot-ham
 1	scripts: NT12-do bo-go-nhan
 1	scripts: NT13 khoi-co-nhanh
+1	scripts: NT13 resolver-thieu
+1	scripts: NT14 dem-ghim
 1	scripts: NT2 ba-dong
 1	scripts: NT2 check
 1	scripts: NT2 khong-cham
 1	scripts: NT2 notes
 1	scripts: NT2 notes-vang
 1	scripts: NT2 stdout
+1	scripts: NT2-do decided-by
 1	scripts: NT3 chay-lai
 1	scripts: NT3 khong-co-tep
 1	scripts: NT3 ma-tran
 1	scripts: NT3 muoi-mot-muc
+1	scripts: NT3-do bo-hoi-so
 1	scripts: NT3-do chuoi-con
+1	scripts: NT3-do thoat-som
 1	scripts: NT4 ma-tran
 1	scripts: NT4 mot-nguon
 1	scripts: NT4 vi-phan
+1	scripts: NT4-do bo-T2
 1	scripts: NT5 sau-a
 1	scripts: NT5 sau-b
 1	scripts: NT5 truoc
+1	scripts: NT5-do thieu-nhan
 1	scripts: NT6 lech
 1	scripts: NT6 the
+1	scripts: NT6-do bo-so-tieu-de
 1	scripts: NT7 dao
 1	scripts: NT7 extract
 1	scripts: NT7 html
@@ -3122,6 +3239,7 @@
 1	scripts: RH2 dong-suite
 1	scripts: RH3 khu-hoi
 1	scripts: RH4 loc-mang-sang
+1	scripts: RH5 so-cu-hong
 1	scripts: RH6 mot-nguon
 1	scripts: RL-EE1 eval khai 2, lệnh trả 2: làn XANH, evals_exit giữ mã thật
 1	scripts: RL-EE2 cùng fixture
@@ -3168,6 +3286,7 @@
 1	scripts: RL13d
 1	scripts: RL13e
 1	scripts: RL13f
+1	scripts: RL13fix
 1	scripts: RL14a
 1	scripts: RL14a2
 1	scripts: RL14a3
@@ -3214,6 +3333,7 @@
 1	scripts: RL2b
 1	scripts: RL2c
 1	scripts: RL2ctrl
+1	scripts: RL2ctrl2
 1	scripts: RL2d
 1	scripts: RL3a1
 1	scripts: RL3a2
@@ -3412,6 +3532,8 @@
 1	scripts: TD-7-mutant
 1	scripts: TD-8
 1	scripts: TD-8-mutant
+1	scripts: TD-9
+1	scripts: TD-9-mutant
 1	scripts: TE1
 1	scripts: TE14a
 1	scripts: TE14b
@@ -3465,7 +3587,9 @@
 1	scripts: TE7b
 1	scripts: TH-1
 1	scripts: TH-1-do
+1	scripts: TH-10-do
 1	scripts: TH-10-do2
+1	scripts: TH-10-ong
 1	scripts: TH-2
 1	scripts: TH-2-do
 1	scripts: TH-2-do-khoa
@@ -3484,6 +3608,7 @@
 1	scripts: TH-8-do2
 1	scripts: TH-9
 1	scripts: TH-9-do
+1	scripts: TH-BAN
 1	scripts: TH1 hồ sơ có danh sách không đọc được → hai thẻ cổng in cờ kèm tên từng <id>.<trường>
 1	scripts: TH2 chiều im: hồ sơ sạch → hai thẻ không có cờ
 1	scripts: TH3 plugins/acceptance-gate/commands/acceptance-card.md có dòng thuật cho cờ
@@ -3505,6 +3630,8 @@
 1	scripts: TN-5
 1	scripts: TN-5-mutant
 1	scripts: TN-6
+1	scripts: TN-7
+1	scripts: TN-7-mutant
 1	scripts: TN-8
 1	scripts: TN-8-mutant
 1	scripts: TS-1 gop-khong-dung
@@ -3516,9 +3643,12 @@
 1	scripts: TS-4-do nuot-nguon
 1	scripts: TS-5 kit-tu-bat
 1	scripts: TS-5-do thieu-dong-kit
+1	scripts: TS-6 thu-muc-rong
 1	scripts: TS-6-do loc-ban-do
 1	scripts: TS-6-do loc-quet
 1	scripts: TS-6-do loc-trang
+1	scripts: TS-7 duong-doc-cu
+1	scripts: TS-7-do lech
 1	scripts: TV1 chi-tep-chu 5/5
 1	scripts: TV1 doi chung duong
 1	scripts: TV1-do go-ve-chu ban tiem do
@@ -3729,6 +3859,7 @@
 1	scripts: YC-1-do
 1	scripts: YC-3
 1	scripts: YC-3-do
+1	scripts: YC-3-vang
 1	scripts: YC-4
 1	scripts: YC-4-2
 1	scripts: YC-4-re
@@ -3878,6 +4009,7 @@
 1	scripts: bo-qua-dinh-nghia-phep-do.test.mjs
 1	scripts: cat-luot-vung.test.mjs
 1	scripts: cay-doi-trong-luot.test.mjs
+1	scripts: chep-tri-thuc-du.test.mjs
 1	scripts: chup-ho-so-da-thong.test.mjs
 1	scripts: ckdl-cham.test.mjs
 1	scripts: ckdl-do.test.mjs
@@ -3887,6 +4019,8 @@
 1	scripts: config-yaml-that.test.mjs
 1	scripts: cong-nguoi-doc-du-nguon.test.mjs
 1	scripts: consumer-esm.test.mjs
+1	scripts: core-untouched.test.mjs
+1	scripts: cua-veto-sau-chu-ky.test.mjs
 1	scripts: dai-tom-tat.test.mjs
 1	scripts: danh-tinh.test.mjs
 1	scripts: dem LOP: 21 tep cham run-log.jsonl, khop hang khai truoc
@@ -3915,12 +4049,16 @@
 1	scripts: ghi-tri-thuc.test.mjs
 1	scripts: glob-thoat-ngoac.test.mjs
 1	scripts: hang-pr.test.mjs
+1	scripts: ho-so-da-ky-giu-tuoi.test.mjs
 1	scripts: ho-so-nghi.test.mjs
 1	scripts: htkd.test.mjs
+1	scripts: kho-cam-ket-co-lo-trinh.test.mjs
 1	scripts: kho-tri-thuc-va-lint.test.mjs
 1	scripts: khuon-doc-ban-do-that.test.mjs
+1	scripts: kiem-ban-cai-loi-sua.test.mjs
 1	scripts: l1-khoi.test.mjs
 1	scripts: label-occlusion.test.mjs
+1	scripts: lan-status-not-run.test.mjs
 1	scripts: lmtl-the.test.mjs
 1	scripts: lnt-no.test.mjs
 1	scripts: loi-khai-rong-KHONG-ngo
@@ -3928,13 +4066,17 @@
 1	scripts: loop-health: so CO dong finding cho ket qua Y HET so khong co
 1	scripts: luat-san-pham.ca.mjs
 1	scripts: luot-kiem-nhe.test.mjs
+1	scripts: luot-sua-giu-du.test.mjs
 1	scripts: md-section.test.mjs
+1	scripts: moi-cong-khong-qua-nut.test.mjs
 1	scripts: mot-nguon-ten-va-hop-thu.test.mjs
 1	scripts: msbv-cau-noi.test.mjs
 1	scripts: msbv-so.test.mjs
 1	scripts: msbv-the.test.mjs
 1	scripts: muc-rong-that-KHONG-ngo
 1	scripts: mutant code-sinh -> do dung thong diep
+1	scripts: ngay-ky.test.mjs
+1	scripts: ngoai-n-tu-dinh-tuyen.test.mjs
 1	scripts: nlvh-the.test.mjs
 1	scripts: ntr-hieu-chuan.test.mjs
 1	scripts: ntr-luoi.test.mjs
@@ -3942,6 +4084,8 @@
 1	scripts: ntr-thuoc.test.mjs
 1	scripts: out-of-contract.test.mjs
 1	scripts: phan-loai.test.mjs
+1	scripts: pre-merge-doc-lib-theo-kit.test.mjs
+1	scripts: premerge-repin.test.mjs
 1	scripts: quet-het-han-khong-moi-ky.test.mjs
 1	scripts: recheck-evidence doi chung duong: run_id bia bi chan DUNG LY DO
 1	scripts: recheck-evidence: so CO dong finding cho ket qua Y HET so khong co
@@ -3960,9 +4104,11 @@
 1	scripts: round-tally-read doi chung duong: dong tally HONG van bi keu
 1	scripts: round-tally-read: so CO dong finding cho ket qua Y HET so khong co
 1	scripts: routing-baseline-t1.test.mjs
+1	scripts: run-id-danh-sach-cho-phep.test.mjs
 1	scripts: s4-args-delta.test.mjs
 1	scripts: s4-args-dev-server.test.mjs
 1	scripts: s4-args-expected-exit.test.mjs
+1	scripts: s4-args-judgment-inputs.test.mjs
 1	scripts: s4-args-lenh-dai-chay-rieng.test.mjs
 1	scripts: s4-args-main-branch.test.mjs
 1	scripts: s4-args-not-run.test.mjs
@@ -3972,6 +4118,8 @@
 1	scripts: stale-by-paths.test.mjs
 1	scripts: t3-can-ho-so-arm.test.mjs
 1	scripts: ten-ca-qua-tien-to.test.mjs
+1	scripts: tep-sinh-khong-chan-gop.test.mjs
+1	scripts: thiet-ke-nap-tri-thuc.test.mjs
 1	scripts: thuoc-vat loop-health: so CO dong finding cho ket qua Y HET so khong co
 1	scripts: thuoc-vat recheck-evidence: so CO dong finding cho ket qua Y HET so khong co
 1	scripts: thuoc-vat round-tally-read: so CO dong finding cho ket qua Y HET so khong co
@@ -3981,9 +4129,11 @@
 1	scripts: tong nhan phat hien >= 218
 1	scripts: van-xuoi-0-finding-NGO
 1	scripts: vat-da-o-nhanh-goc.test.mjs
+1	scripts: vong-don-le-tra-tri-thuc.test.mjs
 1	scripts: vong-meta-dang-mo.test.mjs
 1	scripts: w6-w8-pham-vi.test.mjs
 1	scripts: xuat-du-qua-pipe.test.mjs
+1	scripts: yaml-chuan.test.mjs
 1	workflows: AC-12
 1	workflows: AC-3
 1	workflows: AC-5
@@ -4154,7 +4304,7 @@
 1	workflows: CTN-AC5 mot dong run-log kind chot-truong-nguoi, bon so bang dem doc lap
 1	workflows: CTN-AC5-im khong doi gi -> khong dong run-log nao
 1	workflows: CTN-AC6-dot-bien ban sao cham dong verdict -> phep im bao «cham dong ngoai bon khoa»
-1	workflows: CTN-AC6-kit chieu im tren 233 bao cao kit: chi dong bon khoa o vi tri truong doi
+1	workflows: CTN-AC6-kit chieu im tren 234 bao cao kit: chi dong bon khoa o vi tri truong doi
 1	workflows: CTN-AC7-can-vang ho so goc vang o moi ref -> ma rieng + «khong doc duoc o day»
 1	workflows: CTN-AC7-khong-git goc khong phai kho git -> ma rieng + «khong doc duoc o day»
 1	workflows: CTN-AC7-lanh doi chung duong: du ref, du hs goc -> thoat 0

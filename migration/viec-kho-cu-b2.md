@@ -106,3 +106,42 @@ Ngoài túi cả hai cây: `LT-94`, `LT-94-do` đỏ theo lịch — và vì th�
 Lớp K (P196) — ĐÃ GỠ ở B2 (commit `3d011878`): bước 3 của kịch bản từng đổi tên chợ ngay trong
 `diagram-design/skills/diagram-design/LOCAL-PATCHES.md`, làm tree-hash lệch NOTICE; khoá `khong_doi_chu` của bảng xếp nay
 giữ nguyên chữ cả cây `diagram-design/skills/`, thước AC-4 so nó từng byte.
+
+### 4.3 Đo lại sau #505 (chủ kho cho «Cho B2 đo lại», 16/11)
+
+Nguồn `d8c42965` (kit-cu/main, có vòng sửa thứ hai `phan-du-bo-cuc-moi`). Kịch bản ở commit `86669ccd`: bước 6 bỏ qua 42
+tệp tự đúng đường của khối GUI-B2-TU-DUNG (trừ `tests/scripts/tin-hieu.test.mjs` — vòng hai tự đo bỏ bước 6 làm cả tệp
+sập), `.claude/settings.json` vào tập bước 6, bảng vá 348 → 267 (bỏ 74 mục trên tệp tự đúng đường + 7 mục không còn
+khớp, ghim lại hai mục `run-tests.sh` 4 → 3 lần — khớp đủ 84 mục vòng hai báo thừa, trừ 1 mục của `tin-hieu`).
+
+Cây kịch bản `9eed5714` (cây `52ab96ad`) so cây cũ `d8c42965`: thiếu **486 / 5 791** — số ĐO. Từng khoá, kèm cụm:
+`migration/kich-ban/ket-qua/phan-du-luot-7.tsv`. Thước bộ kiểm trên nguồn thật: AC-2 304/304, AC-4 đạt, đổi sót 0 ngoài
+5 chỗ đã khai. 415 khoá của lượt §4.2 (cụm theo `khoa-dich.tsv` của vòng hai): **160 về** (đo — mỗi khoá có mặt và đạt
+trong túi cây mới), **255 còn thiếu**; thêm **231 khoá mới thiếu**, đều là ca vòng hai thêm.
+
+| Cụm | Còn thiếu | Về | Đo / ước | Ai gỡ |
+|---|---|---|---|---|
+| K2 | 0 | 27/27 | đo | — |
+| K3 | 0 | 20/20 | đo | — |
+| SP | 0 | 4/4 | đo | — |
+| K4-SC | 0 | 71/71 | đo | — |
+| K4-PL | 1 | 12/13 | đo | B2 hoặc kho cũ: **P161** — chốt «assert chỉ được thêm» thấy hai assert của `tests/plugins/run-tests.sh` mà hai mục vá B2 đổi `root` → `root / "plugins/acceptance-gate"` (`check_claude`, con trỏ khuôn); bộ dịch ngược của vòng hai không đảo được biểu thức Python. Lối: khai hai dòng ở `tests/plugins/asserts-da-go.txt` bằng mục vá, hoặc vá dạng khác — chưa thử |
+| K4-LT | 155 | 20/174 | đo | vòng ba kho cũ (chưa mở); gồm 1 khoá cấp tệp `lo-trinh.test.mjs` mới thiếu vì cây cũ nay xanh trọn tệp (LT-94 đã dời ngày) |
+| K4-TB | 92 | 6/98 | đo | vòng ba kho cũ (chưa mở) |
+| K4-DN | 6 | 0/6 | đo | chưa có chủ (đổi nghĩa) |
+| B2 | 2 | 0/2 | đo | B2: KM-1, CT-10-do — luật đảo mới (§4.2) |
+| **K4-MP** (mới) | 225 | — | đo | kho cũ: `tests/scripts/bo-cuc.test.mjs` (218 khoá) và `tests/scripts/bang-ten-lo-trinh.test.mjs` (7 khoá SP) dựng kho bố cục mới TỪ CÂY ĐANG CHẠY bằng `dungKhoMoi` của `_acceptance/goi-cheo-loi-dieu-phoi/rang/luat-doi-chu.mjs`; ở cây mới cây đang chạy đã là bố cục mới → «HẠ TẦNG: dựng fixture hỏng — mục chợ acceptance-gate có source lạ: ./plugins/acceptance-gate», mã 3, không ca nào in. Cả hai tệp tự đúng đường; bước 6 không chạm |
+| **K4-RG** (mới) | 5 | — | đo | kho cũ: `tests/scripts/recheck-goc-goi-loi.test.mjs` khai tự đúng đường mà vẫn đường phẳng (`path.join(ROOT, 'scripts', …)`, `cpSync` `scripts`/`lib`). Thử trả nó về bước 6 (dựng riêng, chạy riêng tệp — không phải lượt đo): RG-1 xanh nhưng nhiều khả năng xanh giả (bước 6 đổi cả hằng `VERIFIER`, đường tính từ gốc gói), RG-2 so `git archive` merge-base lịch sử, RG-3 chép bản tiêm theo đường phẳng → giữ trong danh sách như vòng hai khai |
+| **Cộng** | **486** | 160/415 | | |
+
+Ước (chưa đo): gỡ K4-MP + K4-RG + P161 ở kho cũ thì phần dư về 255 − 1 = 254 (K4-LT 155 + K4-TB 92 + K4-DN 6 + B2 2 − cấp
+tệp đi theo). Số này giả định các ca khác trong cùng tệp không đổi màu.
+
+Ngoài túi cả hai cây — lỗi thật ở nhánh chính kho cũ: `tests/scripts/bang-ten-lo-trinh.test.mjs` đỏ 4 ca SP ở CHÍNH cây
+cũ (`SP chan-lo-trinh · mới · có`, `SP lo-trinh-khoi-tao · cũ · thiếu`, `· mới · có`, `· mới · thiếu` — «bản gốc in null»):
+tệp lấy bản gốc bằng `merge-base HEAD origin/main` mà cột kỳ vọng viết sẵn theo mốc `644e9b49`; sau gộp, merge-base trên
+nhánh chính là chính đỉnh nhánh. Vì thế bước scripts của cây cũ thoát 1. LT-94 không còn đỏ (vòng hai dời ngày).
+
+Bẫy chữ ký (BOI-CANH «Bẫy đã dẫm ở đoạn ký→gộp»): thước B2 không có phép so `git diff …HEAD` trên `tests/` với danh sách
+viết tay — các phép `--name-only` của B2 so hai commit kịch bản dựng (dọn nhà 5 → 6), và bước 6 loại `/fixtures/`, nơi
+`routing-baseline.txt` nằm. Lượt đo này là lượt chủ kho cho; lượt đo dài kế tiếp phải hỏi lại.

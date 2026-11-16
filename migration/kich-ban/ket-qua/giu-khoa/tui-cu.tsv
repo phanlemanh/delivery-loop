@@ -994,7 +994,7 @@
 1	plugins: [RT10] hai tiền tố
 1	plugins: [RT11] ui/mobile + khai không-đo-được → cờ đỏ trên thẻ + cờ ở bộ quét, hồ sơ vẫn ở ô của nó; cli → không cờ
 1	plugins: [RT12] archived → đã đóng có hồ sơ; timebox hai dạng ngày; nghi thức nghiệm thu có mệnh đề sinh ra trạng thái đó
-1	plugins: [RT13] đọc-cũ: broken rỗng, khác biệt đúng khối; hồ sơ sinh sau mốc: 247
+1	plugins: [RT13] đọc-cũ: broken rỗng, khác biệt đúng khối; hồ sơ sinh sau mốc: 248
 1	plugins: [RT14] hồ sơ treo thoát bằng lối «không đo được» có vết; decision/người ký/ngày giữ nguyên
 1	plugins: [RT15] machine-cleared × chữ ký: hook hai chiều + lưới + bộ quét gọi hỏng; LỐI KÝ chạy thật theo thứ tự thân lệnh dạy
 1	plugins: [RT16] bản đồ ⇔ bộ quét đồng ô trên 8 fixture + hồ sơ thật; gỡ nhánh khong-do-duoc → phép so đỏ
@@ -1191,6 +1191,180 @@
 1	scripts: B04-note
 1	scripts: B05
 1	scripts: B06
+1	scripts: BC .claude-plugin/marketplace.json · HEAD
+1	scripts: BC .claude-plugin/marketplace.json · cây phẳng
+1	scripts: BC .claude-plugin/marketplace.json · kho mới
+1	scripts: BC .claude-plugin/marketplace.json · trước #503
+1	scripts: BC .claude-plugin/plugin.json · HEAD
+1	scripts: BC .claude-plugin/plugin.json · cây phẳng
+1	scripts: BC .claude-plugin/plugin.json · kho mới
+1	scripts: BC .claude-plugin/plugin.json · trước #503
+1	scripts: BC _acceptance/config.yaml · HEAD
+1	scripts: BC _acceptance/config.yaml · cây phẳng
+1	scripts: BC _acceptance/config.yaml · kho mới
+1	scripts: BC _acceptance/config.yaml · trước #503
+1	scripts: BC design-floor · HEAD
+1	scripts: BC design-floor · cây phẳng
+1	scripts: BC design-floor · kho mới
+1	scripts: BC design-floor · trước #503
+1	scripts: BC evals · HEAD
+1	scripts: BC evals · cây phẳng
+1	scripts: BC evals · kho mới
+1	scripts: BC evals · trước #503
+1	scripts: BC plugins/acceptance-gate/.claude-plugin/plugin.json · HEAD
+1	scripts: BC plugins/acceptance-gate/.claude-plugin/plugin.json · cây phẳng
+1	scripts: BC plugins/acceptance-gate/.claude-plugin/plugin.json · kho mới
+1	scripts: BC plugins/acceptance-gate/.claude-plugin/plugin.json · trước #503
+2	scripts: BC plugins/acceptance-gate/commands/approve.md · HEAD
+2	scripts: BC plugins/acceptance-gate/commands/approve.md · cây phẳng
+2	scripts: BC plugins/acceptance-gate/commands/approve.md · kho mới
+2	scripts: BC plugins/acceptance-gate/commands/approve.md · trước #503
+1	scripts: BC plugins/acceptance-gate/design-floor · HEAD
+1	scripts: BC plugins/acceptance-gate/design-floor · cây phẳng
+1	scripts: BC plugins/acceptance-gate/design-floor · kho mới
+1	scripts: BC plugins/acceptance-gate/design-floor · trước #503
+1	scripts: BC plugins/acceptance-gate/evals · HEAD
+1	scripts: BC plugins/acceptance-gate/evals · cây phẳng
+1	scripts: BC plugins/acceptance-gate/evals · kho mới
+1	scripts: BC plugins/acceptance-gate/evals · trước #503
+2	scripts: BC plugins/acceptance-gate/hooks/hooks.json · HEAD
+2	scripts: BC plugins/acceptance-gate/hooks/hooks.json · cây phẳng
+2	scripts: BC plugins/acceptance-gate/hooks/hooks.json · kho mới
+2	scripts: BC plugins/acceptance-gate/hooks/hooks.json · trước #503
+2	scripts: BC plugins/acceptance-gate/lib/ho-goi.cjs · HEAD
+2	scripts: BC plugins/acceptance-gate/lib/ho-goi.cjs · cây phẳng
+2	scripts: BC plugins/acceptance-gate/lib/ho-goi.cjs · kho mới
+2	scripts: BC plugins/acceptance-gate/scripts/lo-trinh.mjs · HEAD
+2	scripts: BC plugins/acceptance-gate/scripts/lo-trinh.mjs · cây phẳng
+2	scripts: BC plugins/acceptance-gate/scripts/lo-trinh.mjs · kho mới
+2	scripts: BC plugins/acceptance-gate/scripts/lo-trinh.mjs · trước #503
+2	scripts: BC plugins/acceptance-gate/skills/acceptance/SKILL.md · HEAD
+2	scripts: BC plugins/acceptance-gate/skills/acceptance/SKILL.md · cây phẳng
+2	scripts: BC plugins/acceptance-gate/skills/acceptance/SKILL.md · kho mới
+2	scripts: BC plugins/acceptance-gate/skills/acceptance/SKILL.md · trước #503
+1	scripts: BC plugins/acceptance-gate/skills/cat-luot/SKILL.md · HEAD
+1	scripts: BC plugins/acceptance-gate/skills/cat-luot/SKILL.md · cây phẳng
+1	scripts: BC plugins/acceptance-gate/skills/cat-luot/SKILL.md · kho mới
+1	scripts: BC plugins/acceptance-gate/skills/cat-luot/SKILL.md · trước #503
+1	scripts: BC plugins/acceptance-gate/skills/scope-slice/SKILL.md · HEAD
+1	scripts: BC plugins/acceptance-gate/skills/scope-slice/SKILL.md · cây phẳng
+1	scripts: BC plugins/acceptance-gate/skills/scope-slice/SKILL.md · kho mới
+1	scripts: BC plugins/acceptance-gate/skills/scope-slice/SKILL.md · trước #503
+1	scripts: BC plugins/acceptance-gate/vendor · HEAD
+1	scripts: BC plugins/acceptance-gate/vendor · cây phẳng
+1	scripts: BC plugins/acceptance-gate/vendor · kho mới
+1	scripts: BC plugins/acceptance-gate/vendor · trước #503
+2	scripts: BC plugins/diagram-design/NOTICE · HEAD
+2	scripts: BC plugins/diagram-design/NOTICE · cây phẳng
+2	scripts: BC plugins/diagram-design/NOTICE · kho mới
+2	scripts: BC plugins/diagram-design/NOTICE · trước #503
+1	scripts: BC plugins/dispatch/commands/mo-dot.md · HEAD
+1	scripts: BC plugins/dispatch/commands/mo-dot.md · cây phẳng
+1	scripts: BC plugins/dispatch/commands/mo-dot.md · kho mới
+1	scripts: BC plugins/dispatch/commands/mo-dot.md · trước #503
+1	scripts: BC plugins/dispatch/commands/open.md · HEAD
+1	scripts: BC plugins/dispatch/commands/open.md · cây phẳng
+1	scripts: BC plugins/dispatch/commands/open.md · kho mới
+1	scripts: BC plugins/dispatch/commands/open.md · trước #503
+2	scripts: BC plugins/dispatch/scripts/dot.mjs · HEAD
+2	scripts: BC plugins/dispatch/scripts/dot.mjs · cây phẳng
+2	scripts: BC plugins/dispatch/scripts/dot.mjs · kho mới
+2	scripts: BC plugins/dispatch/scripts/dot.mjs · trước #503
+2	scripts: BC plugins/feature-loop/scripts/s4-args.mjs · HEAD
+2	scripts: BC plugins/feature-loop/scripts/s4-args.mjs · cây phẳng
+2	scripts: BC plugins/feature-loop/scripts/s4-args.mjs · kho mới
+2	scripts: BC plugins/feature-loop/scripts/s4-args.mjs · trước #503
+1	scripts: BC plugins/knowledge · HEAD
+1	scripts: BC plugins/knowledge · cây phẳng
+1	scripts: BC plugins/knowledge · kho mới
+1	scripts: BC plugins/knowledge · trước #503
+1	scripts: BC plugins/knowledge/commands/ghi.md · HEAD
+1	scripts: BC plugins/knowledge/commands/ghi.md · cây phẳng
+1	scripts: BC plugins/knowledge/commands/ghi.md · kho mới
+1	scripts: BC plugins/knowledge/commands/ghi.md · trước #503
+1	scripts: BC plugins/knowledge/commands/ingest.md · HEAD
+1	scripts: BC plugins/knowledge/commands/ingest.md · cây phẳng
+1	scripts: BC plugins/knowledge/commands/ingest.md · kho mới
+1	scripts: BC plugins/knowledge/commands/ingest.md · trước #503
+2	scripts: BC plugins/roadmap/.claude-plugin/plugin.json · HEAD
+2	scripts: BC plugins/roadmap/.claude-plugin/plugin.json · bản sao gói phẳng
+2	scripts: BC plugins/roadmap/.claude-plugin/plugin.json · bản sao gốc gói
+2	scripts: BC plugins/roadmap/.claude-plugin/plugin.json · cây phẳng
+2	scripts: BC plugins/roadmap/.claude-plugin/plugin.json · kho mới
+2	scripts: BC plugins/roadmap/.claude-plugin/plugin.json · trước #503
+2	scripts: BC plugins/roadmap/README.md · HEAD
+2	scripts: BC plugins/roadmap/README.md · bản sao gói phẳng
+2	scripts: BC plugins/roadmap/README.md · bản sao gốc gói
+2	scripts: BC plugins/roadmap/README.md · cây phẳng
+2	scripts: BC plugins/roadmap/README.md · kho mới
+2	scripts: BC plugins/roadmap/README.md · trước #503
+1	scripts: BC plugins/roadmap/commands/status.md · HEAD
+1	scripts: BC plugins/roadmap/commands/status.md · bản sao gói phẳng
+1	scripts: BC plugins/roadmap/commands/status.md · bản sao gốc gói
+1	scripts: BC plugins/roadmap/commands/status.md · cây phẳng
+1	scripts: BC plugins/roadmap/commands/status.md · kho mới
+1	scripts: BC plugins/roadmap/commands/status.md · trước #503
+1	scripts: BC plugins/roadmap/commands/xem.md · HEAD
+1	scripts: BC plugins/roadmap/commands/xem.md · bản sao gói phẳng
+1	scripts: BC plugins/roadmap/commands/xem.md · bản sao gốc gói
+1	scripts: BC plugins/roadmap/commands/xem.md · cây phẳng
+1	scripts: BC plugins/roadmap/commands/xem.md · kho mới
+1	scripts: BC plugins/roadmap/commands/xem.md · trước #503
+1	scripts: BC tests/scripts/run-tests.sh · HEAD
+1	scripts: BC tests/scripts/run-tests.sh · cây phẳng
+1	scripts: BC tests/scripts/run-tests.sh · kho mới
+1	scripts: BC tests/scripts/run-tests.sh · trước #503
+1	scripts: BC tri-thuc · HEAD
+1	scripts: BC tri-thuc · cây phẳng
+1	scripts: BC tri-thuc · kho mới
+1	scripts: BC tri-thuc · trước #503
+1	scripts: BC vendor · HEAD
+1	scripts: BC vendor · cây phẳng
+1	scripts: BC vendor · kho mới
+1	scripts: BC vendor · trước #503
+1	scripts: BC-B6 tests/bo-cuc.mjs qua luật bước 6 vẫn bằng từng byte
+1	scripts: BC-B6-DOI-CHUNG
+1	scripts: BC-BOPHAN dạng plugins/… → HEAD
+1	scripts: BC-BOPHAN lõi có .claude-plugin → cây phẳng
+1	scripts: BC-BOPHAN lõi có .claude-plugin → kho mới
+1	scripts: BC-BOPHAN lõi không .claude-plugin → HEAD
+1	scripts: BC-BOPHAN lõi không .claude-plugin → kho mới
+1	scripts: BC-BOPHAN-DUNG
+1	scripts: BC-BOPHAN-GOI
+1	scripts: BC-CHO
+1	scripts: BC-CHO-THIEU
+1	scripts: BC-CLI
+1	scripts: BC-CLI-GOI
+1	scripts: BC-CLI-PHU
+1	scripts: BC-DU cây đủ → giải được
+1	scripts: BC-GLOB
+1	scripts: BC-GOC
+1	scripts: BC-LA gói không rõ vai: đường lõi vẫn giải, đường vào gói lạ ném «bo-cuc: <cây> có gói «<tên>» không rõ vai»
+1	scripts: BC-LENH acceptance-gate:scope-slice
+1	scripts: BC-LENH acceptance-gate:signal-intake
+1	scripts: BC-LENH dispatch:close
+1	scripts: BC-LENH dispatch:handoff
+1	scripts: BC-LENH dispatch:open
+1	scripts: BC-LENH dispatch:resume
+1	scripts: BC-LENH dispatch:status
+1	scripts: BC-LENH knowledge:health
+1	scripts: BC-LENH knowledge:ingest
+1	scripts: BC-LENH roadmap:pin
+1	scripts: BC-LENH roadmap:status
+1	scripts: BC-LENH roadmap:suggest
+1	scripts: BC-LENH roadmap:undo
+1	scripts: BC-LENH roadmap:unpin
+1	scripts: BC-LENH-DU 14/14 mục LENH có trong doi_ten_tep
+1	scripts: BC-LUY-DANG 162/162 đường dịch hai lần bằng một lần
+1	scripts: BC-NGOAI-GOI
+1	scripts: BC-RONG
+1	scripts: BC-RONG-DOI-CHUNG
+1	scripts: BC-SO
+1	scripts: BC-TACH
+1	scripts: BC-TACH-DOI-CHUNG
+1	scripts: BC-TEN
+1	scripts: BC-THIEU cây thiếu marketplace.json → bo-cuc: <cây> không có .claude-plugin/marketplace.json
+1	scripts: BC-TUYET
 1	scripts: BC1 ba cách viết cho cùng inputs/paths/evidence_required/mảng bắt buộc
 1	scripts: BC1b chiều đỏ: mô hình bớt một trường → phép đếm lệch con số khai trước
 1	scripts: BC2 base: thụt 4 đúng
@@ -1441,12 +1615,13 @@
 1	scripts: CV-3-do
 1	scripts: CV-4
 1	scripts: CV-4-do
+1	scripts: CVS-BAN bản ở tests/fixtures/ chỉ khác bản trong hồ sơ đúng các dòng viết trước
 1	scripts: CVS1 hồ sơ làn V ĐÃ KÝ → lưới nói «cửa veto đã đóng bằng chữ ký», không nói «cửa veto mở»
 1	scripts: CVS2 hồ sơ làn V CHƯA ký → vẫn «cửa veto mở» và vẫn có tên ở dòng tổng
 1	scripts: CVS3 vetoOpenUnsigned của máy quét BẰNG tập tên dòng tổng của lưới
 1	scripts: CVS4 chiều đỏ: gỡ nhánh mới → lưới nói lại «cửa veto mở» cho hồ sơ đã ký
 1	scripts: CY1 _acceptance/config.yaml la YAML hop le voi bo doc chuan
-1	scripts: CY2 766 khoa executors: bo doc cua kit va bo doc chuan noi CUNG mot chuyen
+1	scripts: CY2 776 khoa executors: bo doc cua kit va bo doc chuan noi CUNG mot chuyen
 1	scripts: CY3 doi chung hai chieu: ban lanh XANH, ban tiem
 1	scripts: D01
 1	scripts: D02
@@ -2895,6 +3070,8 @@
 1	scripts: LT-92-do
 1	scripts: LT-93
 1	scripts: LT-93-do
+1	scripts: LT-94
+1	scripts: LT-94-do
 1	scripts: LT-95
 1	scripts: LT-95-do
 1	scripts: LT-96
@@ -3373,6 +3550,10 @@
 1	scripts: REm1 mutant lib: danh sách executor máy → [] ⇒ ca phủ-thiếu
 1	scripts: REm3 mutant dây nối: recheck bỏ lời gọi checkRepinEvals ⇒ RE1 xanh ở recheck nhưng pre-merge VẪN đỏ
 1	scripts: REm4 mutant dây nối: pre-merge không đếm VIOLATION của luật
+1	scripts: RG-1 lõi ở thư mục con → verifier plugins/acceptance-gate/scripts/product-map.mjs giải trong gốc gói lõi
+1	scripts: RG-2 kho không có marketplace.json → đầu ra bằng bản gốc từng byte
+1	scripts: RG-2b lõi ở gốc kho
+1	scripts: RG-3 chiều đỏ
 1	scripts: RH1 dong-eval
 1	scripts: RH1-do ban-goc-va-dot-bien
 1	scripts: RH2 dong-suite
@@ -3654,6 +3835,13 @@
 1	scripts: SL2 5/5 giá trị sai bị chặn có tên
 1	scripts: SL3 bản sao gỡ kiểm → "long_running sai lọt"
 1	scripts: SL4 kim bước kiểm khớp đúng một lần trong nguồn thật
+1	scripts: SP chan-lo-trinh · cũ · có
+1	scripts: SP chan-lo-trinh · cũ · thiếu
+1	scripts: SP chan-lo-trinh · mới · thiếu
+1	scripts: SP lo-trinh-khoi-tao · cũ · có
+1	scripts: SP mã nguồn hết chữ roadmap@delivery-loop
+1	scripts: SP-NL kho tiêu thụ thiếu plugins/acceptance-gate/lib/ho-goi.cjs → nạp luật chặn thoát êm; chỗ cần bảng tên in «chan-lo-trinh: thiếu plugins/acceptance-gate/lib/ho-goi.cjs cạnh luật chặn»
+1	scripts: SP-NL-DU kho đủ tệp → khoá bật giải được
 3	scripts: T01 nhan
 2	scripts: T02 dang
 3	scripts: T02 ma-tran
@@ -3756,6 +3944,7 @@
 1	scripts: TH-8-do2
 1	scripts: TH-9
 1	scripts: TH-9-do
+1	scripts: TH-BAN
 1	scripts: TH1 hồ sơ có danh sách không đọc được → hai thẻ cổng in cờ kèm tên từng <id>.<trường>
 1	scripts: TH2 chiều im: hồ sơ sạch → hai thẻ không có cờ
 1	scripts: TH3 plugins/acceptance-gate/commands/acceptance-card.md có dòng thuật cho cờ
@@ -4235,6 +4424,7 @@
 1	scripts: ba-token-hop-le
 1	scripts: ban-do-khuon-roi-nhom.test.mjs
 1	scripts: bang-ngoai-n.test.mjs
+1	scripts: bo-cuc.test.mjs
 1	scripts: bo-giai-nhay.test.mjs
 1	scripts: bo-qua-dinh-nghia-phep-do.test.mjs
 1	scripts: can-cu-s1.ca.mjs
@@ -4304,6 +4494,7 @@
 1	scripts: lnt-no.test.mjs
 1	scripts: lo-trinh-du-lieu-ngay.test.mjs
 1	scripts: lo-trinh-gio-may.test.mjs
+1	scripts: lo-trinh.test.mjs
 1	scripts: loi-khai-rong-KHONG-ngo
 1	scripts: loop-health.test.mjs
 1	scripts: loop-health: so CO dong finding cho ket qua Y HET so khong co
@@ -4336,6 +4527,7 @@
 1	scripts: ra-soat-lo-trinh.test.mjs
 1	scripts: recheck-evidence doi chung duong: run_id bia bi chan DUNG LY DO
 1	scripts: recheck-evidence: so CO dong finding cho ket qua Y HET so khong co
+1	scripts: recheck-goc-goi-loi.test.mjs
 1	scripts: recheck-repin.test.mjs
 1	scripts: repin-evals.test.mjs
 1	scripts: repin-lane-chay-lai.test.mjs
@@ -4555,7 +4747,7 @@
 1	workflows: CTN-AC5 mot dong run-log kind chot-truong-nguoi, bon so bang dem doc lap
 1	workflows: CTN-AC5-im khong doi gi -> khong dong run-log nao
 1	workflows: CTN-AC6-dot-bien ban sao cham dong verdict -> phep im bao «cham dong ngoai bon khoa»
-1	workflows: CTN-AC6-kit chieu im tren 233 bao cao kit: chi dong bon khoa o vi tri truong doi
+1	workflows: CTN-AC6-kit chieu im tren 234 bao cao kit: chi dong bon khoa o vi tri truong doi
 1	workflows: CTN-AC7-can-vang ho so goc vang o moi ref -> ma rieng + «khong doc duoc o day»
 1	workflows: CTN-AC7-khong-git goc khong phai kho git -> ma rieng + «khong doc duoc o day»
 1	workflows: CTN-AC7-lanh doi chung duong: du ref, du hs goc -> thoat 0
