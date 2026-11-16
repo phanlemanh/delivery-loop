@@ -145,3 +145,19 @@ nhánh chính là chính đỉnh nhánh. Vì thế bước scripts của cây c�
 Bẫy chữ ký (BOI-CANH «Bẫy đã dẫm ở đoạn ký→gộp»): thước B2 không có phép so `git diff …HEAD` trên `tests/` với danh sách
 viết tay — các phép `--name-only` của B2 so hai commit kịch bản dựng (dọn nhà 5 → 6), và bước 6 loại `/fixtures/`, nơi
 `routing-baseline.txt` nằm. Lượt đo này là lượt chủ kho cho; lượt đo dài kế tiếp phải hỏi lại.
+
+### 4.4 Nhận phần gửi B2 của vòng ba (#506, 17/11) — chưa đo
+
+Nguồn `3341b8dc` (kit-cu/main). Theo `_acceptance/phan-du-bo-cuc-moi-vong-ba/gui-b2.md`:
+- Mục 1: bỏ đúng 38 mục vá vòng ba báo thừa (đối chiếu từng mục `tep` + `cu`: 38/38, không dư, không thiếu).
+- Mục 2: `tu-dung-duong.txt` = hợp khối vòng hai (42, đã trừ `tin-hieu`) và khối vòng ba (27) = 65 tệp; `tin-hieu.test.mjs` và
+  `lo-trinh.test.mjs` nay vào danh sách (vòng ba sửa chúng tự đúng đường thật).
+- Mục 3: giữ bốn mục vá P32 của `tests/plugins/run-tests.sh`; `tests/scripts/tat-rd1.mjs` vẫn đi bước 6 cùng mục vá của nó;
+  cây mới là sáu commit CON của đỉnh nguồn (AC-1), không squash; `luatDuongDoiTen` không đổi từ `86669ccd`.
+- P161 (Hỏi-1 của vòng ba, chủ kho duyệt): một mục vá thêm hai dòng khai vào `tests/plugins/asserts-da-go.txt`, mang trường
+  `ngoai_dao` ghi căn cứ. Thước AC-2 gỡ đúng mục ấy (phải khớp đúng `so_lan`) rồi mới đảo; tệp ngoài tập bước 6 mà chỉ mục
+  `ngoai_dao` chạm thì so từng byte sau khi gỡ. Hai ca mới đỏ ở thước cũ.
+- `doi-sot.tsv`: gỡ ba chỗ khai K4 `git archive` (ba tệp nay tự đúng đường); còn hai chỗ.
+
+Bảng vá 267 → 230 (−38 + 1). Kiểm nhanh, không phải lượt đo: thước bộ kiểm trên `3341b8dc` — AC-1, AC-4 đạt, AC-2 307/307,
+đổi sót 0 ngoài 2 chỗ khai; bộ ca kịch bản 90/90. Số khoá còn thiếu CHƯA đo — lượt đo dài cần lời chủ kho.

@@ -192,6 +192,30 @@ test('BK-AC2-tu-dung-do', () => {
   assert.ok(kc(f, hong).loi.includes(`tệp tự đúng đường lệch luật tên: ${P_BS}`), kc(f, hong).loi.join('\n'));
 });
 
+// ── Mục vá ngoài phép đảo (P161 Hỏi-1 vòng ba): thước gỡ đúng mục đã khai rồi mới đảo ───────────────────────────────
+const VA_THEM = { tep: P_BS, cu: "export const VUNG = 'scripts';", moi: "export const VUNG = 'scripts';\n// khai thêm", so_lan: 1 };
+test('BK-AC2-ngoai-dao', () => {
+  const f = moFix({ va: [{ ...VA_THEM, ngoai_dao: 'thử' }] });
+  assert.equal(donNha(f, 'don-nha/a').status, 0);
+  assert.deepEqual(kc(f, 'don-nha/a').loi, [], 'mục đã khai ngoai_dao → im');
+  const g = moFix({ va: [VA_THEM] });
+  assert.equal(donNha(g, 'don-nha/a').status, 0);
+  assert.ok(kc(g, 'don-nha/a').loi.includes(`tệp kiểm lệch luật: ${P_BS}`), 'đối chứng: cùng mục không khai → đỏ');
+  const goc = git(f.kho, ['show', `don-nha/a:${P_BS}`]);
+  const hong = nhanhHong(f.kho, 'don-nha/a', { [P_BS]: goc.replace('// khai thêm', '// khai khác') }, 'hong-nd');
+  assert.ok(kc(f, hong).loi.includes(`mục vá ngoài phép đảo không khớp (0/1): ${P_BS}`), kc(f, hong).loi.join('\n'));
+});
+
+// Tệp ngoài tập bước 6 (asserts-da-go.txt ở nguồn thật): chỉ mục ngoai_dao chạm → gỡ rồi so từng byte, không phép đảo.
+const P_FX = 'tests/fixtures/repo/scripts/verify.sh';
+test('BK-AC2-ngoai-dao-ngoai-tap', () => {
+  const f = moFix({ va: [...VA_FIXTURE, { tep: P_FX, cu: 'node scripts/goi.mjs\n', moi: 'node scripts/goi.mjs\n# khai plugins/acceptance-gate/x\n', so_lan: 1, ngoai_dao: 'thử' }] });
+  assert.equal(donNha(f, 'don-nha/a').status, 0);
+  assert.deepEqual(kc(f, 'don-nha/a').loi, [], 'gỡ mục đã khai → bằng bản gốc từng byte');
+  const hong = nhanhHong(f.kho, 'don-nha/a', { [P_FX]: git(f.kho, ['show', `don-nha/a:${P_FX}`]).replace('node scripts', 'node lib') }, 'hong-fx');
+  assert.ok(kc(f, hong).loi.includes(`tệp kiểm lệch luật: ${P_FX}`), kc(f, hong).loi.join('\n'));
+});
+
 test('BK-AC2-do-lich-su', () => {
   const f = moFix();
   assert.equal(donNha(f, 'don-nha/a').status, 0);

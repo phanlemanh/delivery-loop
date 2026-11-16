@@ -1,8 +1,8 @@
 # Tệp tự đúng đường — bước 6 chỉ áp luật tên, không luật đường, không bảng vá (bang-xep.json bo_kiem.tu_dung).
 # Nguồn: khối GUI-B2-TU-DUNG của _acceptance/phan-du-bo-cuc-moi/gui-b2.md ở kit-cu/main d8c42965 (vòng sửa thứ hai,
 # PR #505): các tệp kho cũ cho tự giải đường qua tests/bo-cuc.mjs. Chép 16/11 cho lượt đo sau #505.
-# Khác khối gốc, có chủ ý: BỎ tests/scripts/tin-hieu.test.mjs — vòng hai tự đo bỏ bước 6 làm cả tệp sập (0/44 khoá:
-# dòng nạp lib/workspace-record.cjs ở đầu tệp vẫn phẳng); tệp ấy đi bước 6 như trước, cùng hai mục vá của nó.
+# Hợp với khối GUI-B2-TU-DUNG của _acceptance/phan-du-bo-cuc-moi-vong-ba/gui-b2.md (kit-cu/main 3341b8dc, PR #506, chép 17/11):
+# vòng ba sửa tin-hieu.test.mjs và lo-trinh.test.mjs cho tự đúng đường thật nên cả hai vào danh sách; tat-rd1.mjs vẫn đi bước 6.
 tests/bo-cuc.mjs
 tests/dieu-phoi/danh-thuc-ma-phien.test.mjs
 tests/dieu-phoi/lenh-dot-ghi-dung-hang.test.mjs
@@ -12,36 +12,59 @@ tests/dieu-phoi/trong-dot.test.mjs
 tests/fixtures/bo-cuc-phang.json
 tests/fixtures/cham-bo-vang.mjs
 tests/fixtures/cua-veto-sau-chu-ky.mjs
+tests/hai-bo-cuc.mjs
 tests/plugins/design-pass-nac.test.mjs
 tests/plugins/lan-may-classifier.test.mjs
 tests/plugins/lenh-bam-duoc.test.mjs
 tests/plugins/ra-co-ten.test.mjs
 tests/scripts/additive-only.test.mjs
+tests/scripts/ap-chinh-sach-lo-trinh.test.mjs
+tests/scripts/ban-do-khuon-roi-nhom.test.mjs
 tests/scripts/bang-ten-lo-trinh.test.mjs
 tests/scripts/bo-cuc.test.mjs
 tests/scripts/can-cu-s1.ca.mjs
+tests/scripts/cham-lai-khong-tu-doi.test.mjs
 tests/scripts/chep-tri-thuc-du.test.mjs
+tests/scripts/chi-tep-vat-keo-xet-lai.test.mjs
 tests/scripts/core-untouched.test.mjs
+tests/scripts/cua-tin-hieu-giua-chien-dich.test.mjs
+tests/scripts/cua-tin-hieu-goc-moi-worktree.test.mjs
 tests/scripts/cua-veto-sau-chu-ky.test.mjs
+tests/scripts/dai-tom-tat-dem-dung.test.mjs
+tests/scripts/doc-jsx-va-ban-do-hong.test.mjs
 tests/scripts/fixtures/routing-baseline.txt
 tests/scripts/giu-tuoi-fixture.mjs
+tests/scripts/hai-bo-cuc.test.mjs
 tests/scripts/ho-so-da-ky-giu-tuoi.test.mjs
 tests/scripts/hskt.test.mjs
 tests/scripts/kho-cam-ket-co-lo-trinh.test.mjs
 tests/scripts/kho-moi-cai-goi-road-map.test.mjs
+tests/scripts/khoi-khuon-tren-the-cong.test.mjs
+tests/scripts/khuon-loi.test.mjs
 tests/scripts/kiem-ban-cai-loi-sua.test.mjs
 tests/scripts/lan-status-not-run.test.mjs
+tests/scripts/lo-trinh-du-lieu-ngay.test.mjs
+tests/scripts/lo-trinh-gio-may.test.mjs
+tests/scripts/lo-trinh.test.mjs
 tests/scripts/luot-sua-giu-du.test.mjs
+tests/scripts/moc-chien-dich.test.mjs
 tests/scripts/moi-cong-khong-qua-nut.test.mjs
 tests/scripts/ngay-ky.test.mjs
 tests/scripts/ngoai-n-tu-dinh-tuyen.test.mjs
+tests/scripts/ntr-trang-thai.test.mjs
+tests/scripts/o-mo-viec-mang-nguon.test.mjs
 tests/scripts/pre-merge-doc-lib-theo-kit.test.mjs
 tests/scripts/premerge-repin.test.mjs
+tests/scripts/ra-soat-lo-trinh.test.mjs
 tests/scripts/recheck-goc-goi-loi.test.mjs
+tests/scripts/road-map-de-dung.test.mjs
 tests/scripts/run-id-danh-sach-cho-phep.test.mjs
 tests/scripts/s4-args-judgment-inputs.test.mjs
 tests/scripts/tep-sinh-khong-chan-gop.test.mjs
 tests/scripts/thiet-ke-nap-tri-thuc.test.mjs
+tests/scripts/tin-hieu.test.mjs
+tests/scripts/ve-lo-trinh-doc-tin-hieu-cua-cay.test.mjs
 tests/scripts/vong-don-le-tra-tri-thuc.test.mjs
+tests/scripts/xem-trang-lo-trinh.test.mjs
 tests/scripts/yaml-chuan.test.mjs
 tests/workflows/harness.mjs

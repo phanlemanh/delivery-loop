@@ -236,7 +236,20 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
     // Luật tên của bước 6: luật đổi chữ của bước 3 (không luật đường skill), luật tên chợ thêm neo phía trước.
     const L6ten = luatRieng(bx, {}).map(r => (r[0] === bx.cho_moi.ten_cu ? [r[0], new RegExp(`(?<![\\w-])(?:${r[1].source})`, 'g'), r[2]] : r));
     // Tệp một mục vá chạm (kể cả fixture ngoài tập luật) cũng là tệp bước 6 — kịch bản áp vá lên bất kỳ tệp nào nó nêu.
-    const vaTep = new Set(bx.bo_kiem?.va ? JSON.parse(fs.readFileSync(path.resolve(bx._dir, bx.bo_kiem.va), 'utf8')).map(v => v.tep) : []);
+    const vaDs = bx.bo_kiem?.va ? JSON.parse(fs.readFileSync(path.resolve(bx._dir, bx.bo_kiem.va), 'utf8')) : [];
+    const vaTep = new Set(vaDs.map(v => v.tep));
+    // Mục vá khai `ngoai_dao` (đổi không phải đường/tên, có căn cứ quyết định ghi trong mục): thước gỡ ĐÚNG mục ấy — phải
+    // khớp đúng so_lan lần — rồi mới đảo; mọi chỗ khác của tệp vẫn qua phép đảo như thường.
+    const ngoaiDao = new Map();
+    for (const v of vaDs) if (v.ngoai_dao) ngoaiDao.set(v.tep, [...(ngoaiDao.get(v.tep) || []), v]);
+    const goNgoaiDao = (t, s) => {
+      for (const v of ngoaiDao.get(t) || []) {
+        const c = s.split(v.moi).length - 1;
+        if (c !== v.so_lan) { loi.push(`mục vá ngoài phép đảo không khớp (${c}/${v.so_lan}): ${t}`); continue; }
+        s = s.split(v.moi).join(v.cu);
+      }
+      return s;
+    };
     let n = 0, m = 0; const demGiu = Object.fromEntries(CHUOI_GIU.map(x => [x, [0, 0]]));
     // Số chỗ khớp của từng mục bảng tên: chữ khớp + đổi tên thư mục plugin, tệp lệnh, thư mục skill.
     const demLuat = new Map([...Object.keys(bx.ten.lenh), ...Object.keys(bx.ten.plugin), bx.cho_moi.ten_cu].map(k => [k, 0]));
@@ -254,6 +267,12 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
       const doiChu = ((sp.has(t) && d.startsWith('plugins/')) || taiLieu.has(t)) && !(bx.khong_doi_chu || []).some(g => t.startsWith(g));
       const la6 = (thuocBuoc6(t, bx.bo_kiem) || vaTep.has(t)) && laChu(a);
       // Tệp tự đúng đường: bước 6 chỉ áp luật tên — so thẳng với bản gốc qua đúng luật tên ấy, không phép đảo đường.
+      // Tệp ngoài tập bước 6 mà mọi mục vá của nó đều khai ngoai_dao: gỡ các mục ấy rồi so từng byte với bản gốc.
+      if (la6 && !thuocBuoc6(t, bx.bo_kiem) && ngoaiDao.has(t) && vaDs.every(v => v.tep !== t || v.ngoai_dao)) {
+        tong6++;
+        if (goNgoaiDao(t, b.toString('utf8')) !== a.toString('utf8')) loi.push(`tệp kiểm lệch luật: ${t}`); else n6++;
+        continue;
+      }
       if (la6 && tuDung.has(t)) {
         tong6++;
         if (apLuat(a.toString('utf8'), L6ten) !== b.toString('utf8')) loi.push(`tệp tự đúng đường lệch luật tên: ${t}`); else n6++;
@@ -264,7 +283,7 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
         if (t === '.claude-plugin/marketplace.json' || khuonSua.has(t)) continue; // AC-5 và AC-8 đo
         if (la6) { // B2 AC-2: phép đảo thay phép so từng byte
           tong6++;
-          const { s: daoLai, loi: l6 } = daoTep(t, b.toString('utf8'), dao, moHo, bx);
+          const { s: daoLai, loi: l6 } = daoTep(t, goNgoaiDao(t, b.toString('utf8')), dao, moHo, bx);
           loi.push(...l6);
           if (daoLai !== a.toString('utf8')) loi.push(`tệp kiểm lệch luật: ${t}`); else if (!l6.length) n6++;
           for (const r of mangDoiSot(b.toString('utf8'), gocCu)) {
