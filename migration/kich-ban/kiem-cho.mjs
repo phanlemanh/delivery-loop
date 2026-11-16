@@ -181,6 +181,11 @@ function docDoiSot(bx) {
   if (!p || !fs.existsSync(p)) return [];
   return fs.readFileSync(p, 'utf8').split('\n').filter(d => d.trim() && !d.startsWith('#')).map(d => { const [tep, chuoi, lyDo] = d.split('\t'); return { tep, chuoi, lyDo }; });
 }
+function docTuDung(bx) {
+  const p = bx.bo_kiem?.tu_dung ? path.resolve(bx._dir, bx.bo_kiem.tu_dung) : null;
+  if (!p) return new Set();
+  return new Set(fs.readFileSync(p, 'utf8').split('\n').map(s => s.trim()).filter(s => s && !s.startsWith('#')));
+}
 const laChu = (b) => !b.subarray(0, 8192).includes(0);
 const CHUOI_GIU = ['dieu-phoi.mjs', 'cat-luot.mjs', 'acceptance-gate-kit-tri-thuc'];
 
@@ -227,6 +232,9 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
     const maNguon = git(kho, ['rev-parse', nguon]).trim();
     const dao = phepDao(bx, dp); const moHo = docMoHo(bx); let n6 = 0, tong6 = 0;
     const gocCu = new Set(Object.keys(bx.thu_muc)); const doiSot = docDoiSot(bx); const daKhai = new Set();
+    const tuDung = docTuDung(bx);
+    // Luật tên của bước 6: luật đổi chữ của bước 3 (không luật đường skill), luật tên chợ thêm neo phía trước.
+    const L6ten = luatRieng(bx, {}).map(r => (r[0] === bx.cho_moi.ten_cu ? [r[0], new RegExp(`(?<![\\w-])(?:${r[1].source})`, 'g'), r[2]] : r));
     // Tệp một mục vá chạm (kể cả fixture ngoài tập luật) cũng là tệp bước 6 — kịch bản áp vá lên bất kỳ tệp nào nó nêu.
     const vaTep = new Set(bx.bo_kiem?.va ? JSON.parse(fs.readFileSync(path.resolve(bx._dir, bx.bo_kiem.va), 'utf8')).map(v => v.tep) : []);
     let n = 0, m = 0; const demGiu = Object.fromEntries(CHUOI_GIU.map(x => [x, [0, 0]]));
@@ -244,9 +252,17 @@ function ac4(kho, nguon, dich, kk, bx, ngoai) {
       const a = docA(t), b = docB(d);
       // Cây vendor có băm ghim (khong_doi_chu): dời mà không đổi chữ — so từng byte.
       const doiChu = ((sp.has(t) && d.startsWith('plugins/')) || taiLieu.has(t)) && !(bx.khong_doi_chu || []).some(g => t.startsWith(g));
-      if (!doiChu) {
+      const la6 = (thuocBuoc6(t, bx.bo_kiem) || vaTep.has(t)) && laChu(a);
+      // Tệp tự đúng đường: bước 6 chỉ áp luật tên — so thẳng với bản gốc qua đúng luật tên ấy, không phép đảo đường.
+      if (la6 && tuDung.has(t)) {
+        tong6++;
+        if (apLuat(a.toString('utf8'), L6ten) !== b.toString('utf8')) loi.push(`tệp tự đúng đường lệch luật tên: ${t}`); else n6++;
+        continue;
+      }
+      // Tài liệu đổi chữ ở bước 3 mà cũng thuộc tập bước 6 (.claude/settings.json): phép đảo về bản gốc đo cả hai bước.
+      if (!doiChu || (la6 && taiLieu.has(t))) {
         if (t === '.claude-plugin/marketplace.json' || khuonSua.has(t)) continue; // AC-5 và AC-8 đo
-        if ((thuocBuoc6(t, bx.bo_kiem) || vaTep.has(t)) && laChu(a)) { // B2 AC-2: phép đảo thay phép so từng byte
+        if (la6) { // B2 AC-2: phép đảo thay phép so từng byte
           tong6++;
           const { s: daoLai, loi: l6 } = daoTep(t, b.toString('utf8'), dao, moHo, bx);
           loi.push(...l6);

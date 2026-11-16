@@ -67,11 +67,12 @@
     "tap": "tests/",
     "tru": "/fixtures/",
     "duoi": [".sh", ".mjs", ".js", ".cjs", ".py", ".ts", ".yml", ".yaml"],
-    "tep_goc": [".github/workflows/", "Makefile", "_acceptance/config.yaml"],
+    "tep_goc": [".github/workflows/", "Makefile", "_acceptance/config.yaml", ".claude/settings.json"],
     "bien_goc": ["KIT", "ROOT", "GOC", "SELF_ROOT", "repoRoot", "ROOT_REAL", "ROOT_REAL_GC", "PMROOT", "REPO", "REPO_ROOT"],
     "bien_goc_va": ["kit", "goc", "may"],
     "va": "va-bo-kiem.json",
     "dao_mo_ho": "dao-mo-ho.tsv",
-    "doi_sot": "doi-sot.tsv"
+    "doi_sot": "doi-sot.tsv",
+    "tu_dung": "tu-dung-duong.txt"
   }
 }

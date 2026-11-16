@@ -48,7 +48,7 @@ for (const [ma, ten] of [['main', 'main'], ['chuyen-nha', 'chuyen-nha'], ['kit-c
 }
 
 // ── AC-1 — bước 6: bộ kiểm theo bố cục mới ────────────────────────────────────────────────────────────────────────
-const TAP_BUOC6 = (t) => (t.startsWith('tests/') && !t.includes('/fixtures/')) || t.startsWith('.github/workflows/') || t === 'Makefile' || t === '_acceptance/config.yaml';
+const TAP_BUOC6 = (t) => (t.startsWith('tests/') && !t.includes('/fixtures/')) || t.startsWith('.github/workflows/') || t === 'Makefile' || t === '_acceptance/config.yaml' || t === '.claude/settings.json';
 const xem = (f, ref, tep) => git(f.kho, ['show', `${ref}:${tep}`]);
 
 test('BK-AC1', () => {
@@ -108,7 +108,7 @@ test('BK-AC1-do-va', () => {
   const f = moFix({ va: [{ tep: 'tests/scripts/ban-sao.test.mjs', cu: "export const VUNG = 'scripts';", moi: "export const VUNG = 'plugins/acceptance-gate/scripts';", so_lan: 2, ly_do: 'thử' }] });
   const r = donNha(f, 'don-nha/a');
   assert.equal(r.status, 1, r.stderr);
-  assert.match(r.stderr, /vá không khớp: tests\/scripts\/ban-sao\.test\.mjs: export const VUNG = 'scripts';/);
+  assert.match(r.stderr, /vá không khớp \(\d+\/\d+\): tests\/scripts\/ban-sao\.test\.mjs: export const VUNG = 'scripts';/);
   assert.equal(coRef(f.kho, 'refs/heads/don-nha/a'), false, 'nhánh đích không được tạo');
 });
 
@@ -140,7 +140,7 @@ test('BK-AC2', () => {
   assert.deepEqual(kq.loi, []);
   const m = kq.dong.join('\n').match(DONG_AC2);
   assert.ok(m, kq.dong.join('\n'));
-  const soTepKiem = git(f.kho, ['ls-tree', '-r', '--name-only', f.nguon]).split('\n').filter(t => (t.startsWith('tests/') && !t.includes('/fixtures/') && /\.(sh|mjs|js|cjs|py|ts|yml|yaml)$/.test(t)) || t.startsWith('.github/workflows/') || t === '_acceptance/config.yaml').length;
+  const soTepKiem = git(f.kho, ['ls-tree', '-r', '--name-only', f.nguon]).split('\n').filter(t => (t.startsWith('tests/') && !t.includes('/fixtures/') && /\.(sh|mjs|js|cjs|py|ts|yml|yaml)$/.test(t)) || t.startsWith('.github/workflows/') || t === '_acceptance/config.yaml' || t === '.claude/settings.json').length;
   assert.equal(Number(m[1]), soTepKiem); assert.equal(Number(m[2]), soTepKiem); assert.equal(m[3], '0');
 });
 
@@ -150,6 +150,46 @@ test('BK-AC2-do-tay', () => {
   const p = 'tests/scripts/ban-sao.test.mjs';
   const hong = nhanhHong(f.kho, 'don-nha/a', { [p]: git(f.kho, ['show', `don-nha/a:${p}`]).replace('assert.equal(n, 3)', 'assert.equal(n, 4)') }, 'hong-tay');
   assert.ok(kc(f, hong).loi.includes(`tệp kiểm lệch luật: ${p}`));
+});
+
+// ── Tệp tự đúng đường (vòng phan-du-bo-cuc-moi ở kho cũ): bước 6 chỉ áp luật tên, không luật đường, không bảng vá ────
+// Đối chứng dương của «luật đường không áp» là BK-AC1: không khai, cùng tệp này nhận đường plugins/acceptance-gate/scripts.
+const P_BS = 'tests/scripts/ban-sao.test.mjs';
+test('BK-AC1-tu-dung', () => {
+  const f = moFix({ va: [], tuDung: [P_BS] });
+  const r = donNha(f, 'don-nha/a');
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(xem(f, f.nguon, P_BS), /path\.join\(KIT, 'scripts', 'goi\.mjs'\)/, 'đối chứng: bản gốc có đường phẳng');
+  const js = xem(f, 'don-nha/a', P_BS);
+  assert.match(js, /path\.join\(KIT, 'scripts', 'goi\.mjs'\)/, 'luật đường không áp lên tệp đã khai');
+  assert.match(js, /'\/dispatch:open'/, 'luật tên vẫn áp');
+  assert.deepEqual(kc(f, 'don-nha/a').loi, [], 'thước: tệp tự đúng đường chỉ khác bản gốc ở tên');
+});
+
+test('BK-AC1-tu-dung-va', () => {
+  const f = moFix({ tuDung: [P_BS] });
+  const r = donNha(f, 'don-nha/a');
+  assert.equal(r.status, 1, r.stderr);
+  assert.match(r.stderr, /vá trên tệp tự đúng đường: tests\/scripts\/ban-sao\.test\.mjs: export const VUNG = 'scripts';/);
+  assert.equal(coRef(f.kho, 'refs/heads/don-nha/a'), false, 'nhánh đích không được tạo');
+});
+
+test('BK-AC1-tu-dung-thieu', () => {
+  const f = moFix({ va: [], tuDung: ['tests/scripts/khong-co.test.mjs'] });
+  const r = donNha(f, 'don-nha/a');
+  assert.equal(r.status, 1, r.stderr);
+  assert.match(r.stderr, /tệp tự đúng đường đã khai không có ở nguồn: tests\/scripts\/khong-co\.test\.mjs/);
+});
+
+test('BK-AC2-tu-dung-do', () => {
+  const f = moFix({ va: [], tuDung: [P_BS] });
+  assert.equal(donNha(f, 'don-nha/a').status, 0);
+  assert.deepEqual(kc(f, 'don-nha/a').loi, [], 'đối chứng dương: cây đúng luật phải im');
+  const goc = git(f.kho, ['show', `don-nha/a:${P_BS}`]);
+  const kim = "path.join(KIT, 'scripts', 'goi.mjs')";
+  assert.equal(goc.split(kim).length - 1, 1, 'kim phải khớp đúng một lần');
+  const hong = nhanhHong(f.kho, 'don-nha/a', { [P_BS]: goc.replace(kim, "path.join(KIT, 'plugins/acceptance-gate/scripts', 'goi.mjs')") }, 'hong-td');
+  assert.ok(kc(f, hong).loi.includes(`tệp tự đúng đường lệch luật tên: ${P_BS}`), kc(f, hong).loi.join('\n'));
 });
 
 test('BK-AC2-do-lich-su', () => {

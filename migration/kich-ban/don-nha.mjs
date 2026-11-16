@@ -295,6 +295,13 @@ function buoc5Khuon(wt, bx, rs, ngayNguon) {
 // ── Bước 6: bộ kiểm theo bố cục mới (B2 bo-kiem-xanh-o-kho-moi, THIET-KE-B2.md §3) ───────────────────────────────
 // Đổi đường dẫn tới thư mục sản phẩm và tên theo bảng tên trong tệp mã kiểm (tests/ trừ fixtures/) và các tệp chạy bộ
 // kiểm ở gốc; rồi áp bảng vá theo tệp (mỗi mục ghim số lần khớp). Chỉ phép thay cơ học — sửa ý nghĩa ca đi về kho cũ.
+// Danh sách tệp tự đúng đường: một đường mỗi dòng, dòng `#` là chú thích.
+export function docTuDung(bx) {
+  const f = bx.bo_kiem?.tu_dung;
+  if (!f) return new Set();
+  return new Set(fs.readFileSync(path.resolve(bx._dir, f), 'utf8').split('\n').map(s => s.trim()).filter(s => s && !s.startsWith('#')));
+}
+
 export function buoc6BoKiem(wt, bx, kho, S, dichPlugin) {
   const k = bx.bo_kiem;
   if (!k) return [];
@@ -330,11 +337,21 @@ export function buoc6BoKiem(wt, bx, kho, S, dichPlugin) {
   const so = [];
   const dem = { duong: 0, mang: 0, 'doi-so': 0, cap: 0, 'goc-plugin': 0, ten: 0, va: 0 };
   const tep = git(wt, ['ls-files', '-z']).split('\0').filter(t => t && thuocTap(t));
+  // Tệp tự đúng đường (kho cũ đã cho nó tự giải đường qua bộ dịch tests/bo-cuc.mjs): chỉ áp luật tên, không luật đường,
+  // không bảng vá — luật đường viết lại chuỗi bộ dịch đã dịch đúng. Danh sách khai ở `tu_dung` (vòng phan-du-bo-cuc-moi).
+  const tuDung = docTuDung(bx);
+  for (const t of tuDung) if (!tep.includes(t) && !fs.existsSync(path.join(wt, t))) dung(`tệp tự đúng đường đã khai không có ở nguồn: ${t}`);
   const noiDung = new Map();
   for (const t of tep) {
     const buf = fs.readFileSync(path.join(wt, t)); if (!laChu(buf)) continue;
     let nd = buf.toString('utf8'); const goc0 = nd; const thu = path.dirname(path.join(wt, t));
     const n = { duong: 0, mang: 0, 'doi-so': 0, cap: 0, 'goc-plugin': 0, ten: 0 };
+    if (tuDung.has(t)) {
+      for (const l of L) { const c = (nd.match(l.re) || []).length; if (c) { nd = nd.replace(l.re, l.thay); n.ten += c; } }
+      if (n.ten) { dem.ten += n.ten; so.push(['ten', t, n.ten]); }
+      if (nd !== goc0) noiDung.set(t, nd);
+      continue;
+    }
     nd = nd.replace(RE_DUONG, (m, truoc, p) => {
       const q = bx.tep[p] ? p : tienTo(p);
       if (!q) return m;
@@ -368,14 +385,18 @@ export function buoc6BoKiem(wt, bx, kho, S, dichPlugin) {
   }
   if (!dem.duong && !dem.mang && !dem['doi-so'] && !dem.cap) dung('luật bộ kiểm không khớp chỗ nào');
   const va = k.va ? JSON.parse(fs.readFileSync(path.resolve(bx._dir, k.va), 'utf8')) : [];
+  // Mọi mục lệch báo một lượt (không dừng ở mục đầu): một nguồn mới thường làm lệch nhiều mục cùng lúc.
+  const lech = [];
   for (const v of va) {
+    if (tuDung.has(v.tep)) { lech.push(`vá trên tệp tự đúng đường: ${v.tep}: ${v.cu}`); continue; }
     const p = path.join(wt, v.tep);
     const nd = noiDung.get(v.tep) ?? (fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '');
     const c = nd.split(v.cu).length - 1;
-    if (c !== v.so_lan) dung(`vá không khớp: ${v.tep}: ${v.cu}`);
+    if (c !== v.so_lan) { lech.push(`vá không khớp (${c}/${v.so_lan}): ${v.tep}: ${v.cu}`); continue; }
     noiDung.set(v.tep, nd.split(v.cu).join(v.moi));
     dem.va += c; so.push(['va', v.tep, c]);
   }
+  if (lech.length) dung(`${lech.length} mục vá lệch:\n` + lech.join('\n'));
   for (const [t, nd] of noiDung) fs.writeFileSync(path.join(wt, t), nd);
   return so;
 }

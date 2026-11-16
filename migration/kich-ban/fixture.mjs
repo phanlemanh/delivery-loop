@@ -191,10 +191,11 @@ export function dungKhoFixture(thuMuc, tuyChon = {}) {
       scripts: 'plugins/acceptance-gate/scripts', hooks: 'plugins/acceptance-gate/hooks', 'dieu-phoi': 'plugins/dispatch' },
     tep: { '.claude-plugin/plugin.json': 'plugins/acceptance-gate/.claude-plugin/plugin.json' },
     giu: ['.claude-plugin/marketplace.json', '.claude', '.gitignore', 'CLAUDE.md', 'README.md', 'docs', 'tests', '.github', '_acceptance'],
-    bo_kiem: { ...goc.bo_kiem, va: path.join(thuMuc, 'va-bo-kiem.json') },
+    bo_kiem: { ...goc.bo_kiem, va: path.join(thuMuc, 'va-bo-kiem.json'), tu_dung: tuyChon.tuDung ? path.join(thuMuc, 'tu-dung-duong.txt') : undefined },
     khuon: { ...goc.khuon, ma: maRs, trung_duoc_phep: ['CLAUDE.md', 'README.md', '.claude/settings.json'] },
   };
   fs.writeFileSync(path.join(thuMuc, 'va-bo-kiem.json'), json(tuyChon.va || VA_FIXTURE));
+  if (tuyChon.tuDung) fs.writeFileSync(path.join(thuMuc, 'tu-dung-duong.txt'), `# thử\n${tuyChon.tuDung.join('\n')}\n`);
   fs.writeFileSync(bangXep, json(bx));
   return { kho, nguon, rs, bangXep, bangTenTep };
 }
