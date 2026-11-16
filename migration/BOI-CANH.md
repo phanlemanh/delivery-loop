@@ -80,6 +80,37 @@ kia không nói: ai đã quyết gì, luật làm việc của đợt, và các 
 - Ba bản sao đo thử chạy song song mỗi bản một `TMPDIR` riêng — không giẫm nhau (tám tệp kiểm nhắc `/tmp/…` chỉ là giá trị
   giả, không ghi ra đĩa).
 
+## Bẫy đã dẫm ở đoạn ký→gộp (16/11, PR #505 kho cũ, vòng `phan-du-bo-cuc-moi`)
+
+Ca: chủ kho ký 01:10; gộp sớm nhất khoảng 08:30. Hơn bảy giờ máy cho một bản vá một tệp kiểm cộng hai dòng khai, trong
+đó 3 giờ 25 phút (01:19 → 04:44) là một lượt ghim lại đỏ. Không tốn thêm lượt gọi người. Phiên giữ đợt đọc từ mã thước,
+`commands/signoff.md`, `_acceptance/config.yaml`, `evals.yaml` của hồ sơ và giờ CI trên GitHub; chưa sửa gì.
+
+- **Chữ ký được mời khi CI ở đỉnh PR chưa xanh.** Lượt chấm chạy bốn mảnh ở `feature_loop.suite_keys`, không có bộ
+  `tests/dieu-phoi` trọn; CI thì chạy nó. PR mở 01:01, ký 01:10, mảnh `tests · dieu-phoi` ở đỉnh có chữ ký đỏ lúc 01:18
+  (ca `DP3-12-do-lb`). Lệnh ký không có bước nào chờ CI. Hệ quả: bản vá rơi SAU chữ ký nên phải ghim lại. Tìm trong 207
+  hạt giống và `docs/findings/` bằng bốn mẫu chữ thì chưa thấy mục nào nói đúng điều này — chưa thấy, không phải chắc chắn
+  chưa có.
+- **Thước của vòng so một danh sách gõ tay với một tập còn mở.** `rang/giu-khoa.mjs` đòi mọi tệp dưới `tests/` mà
+  `git diff bản gốc..HEAD` chạm phải khai ở đúng một trong hai nhóm; danh sách viết tay trước khi đo, còn `HEAD` đi tiếp
+  sau chữ ký. Bước 7a-bis của lệnh ký tự ghi một dòng vào `tests/scripts/fixtures/routing-baseline.txt`, nên lượt ghim đầu
+  tiên sau chữ ký của hồ sơ này chắc chắn đỏ, có bản vá hay không. Cùng họ với hạt giống
+  `docs/plans/2026-10-03-hat-giong-lan-ky-truoc-ban-do.md` (nghi thức ký tự làm đỏ làn của chính nó).
+- **Luật tĩnh nằm bên trong phép đo dài.** Luật danh sách so trong vài giây nhưng chạy ở đầu từng cụm, nên một nguyên nhân
+  làm đỏ cả chín eval và làn chạy trọn 3 giờ 25 phút mới báo. Trước khi chạy một phép đo dài: chạy luật tĩnh và bộ tự kiểm
+  của thước trước, đỏ thì dừng ngay.
+- **Giá ghim lại không tỉ lệ với cỡ thay đổi — KHÔNG phải phát hiện mới.** Làn chạy mọi eval máy của hồ sơ tại `HEAD`. Đã
+  có vòng `lan-ghim-lai-theo-paths`, phát hiện `docs/findings/2026-10-02-dieu-tra-lan-ghim-lai-va-du-bao.md` và khoá
+  `risk_tiers.stale_scope: paths` trong lõi; `_acceptance/config.yaml` của kho kit không có dòng `stale_scope` (grep, chưa
+  chạy thử). Ở ca này lọc theo `paths` chỉ bớt được khoảng 1,5 trong 3,5 giờ vì hai eval dài nhất khai `tests/**`.
+- **Luật danh sách cũng bắt được lỗi thật** — đừng gỡ nó: vòng lúc đầu xếp nhầm `tests/dieu-phoi/tiep-tuc.test.mjs` vào
+  nhóm «tự đúng đường»; để nguyên thì danh sách vá thừa gửi B2 (83 → 84 mục) sẽ bảo B2 bỏ hai mục vá nó vẫn cần.
+
+Dính tới đợt ở ba chỗ. Vòng thứ ba ở kho cũ (K4-LT, K4-TB) dùng lại chính thước này: hai sửa rẻ — chạy luật tĩnh trước
+phép đo dài, và không để tệp do nghi thức ký ghi rơi vào tập «vòng sửa» — nên đi trong vòng đó. Kho mới cũng tự host kit
+nên bước 7a-bis chạy ở chữ ký của B2: thước của B2 có luật nào quét `tests/` theo `diff …HEAD` thì phải kiểm trước khi
+ký. Còn «không mời ký khi CI chưa xanh» là sửa lệnh ký của kit, mọi kho tiêu thụ chịu: chỉ ghi ở đây, chờ chủ kho gọi tên.
+
 ## Đầu vào cho B1 — sổ tra soát kho cũ (máy sinh, 12/11)
 
 Ba sổ ở `tra-soat/`: kiểm kê từng tệp của kit (sản phẩm thật, chưa rõ, gọi chéo giữa plugin, con trỏ sẽ treo), chỗ hai kho
