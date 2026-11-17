@@ -95,6 +95,10 @@ def main():
         sys.exit(2)
     g = json.loads(r.stdout)
     bo_cu, bo_moi = g['boCu'], g['boMoi']
+    # Bộ chết ngầm ở CÂY CŨ cũng là một mục bo-chay (AC-5 không giới hạn ở cây mới): cây cũ không đo được thì không có đường
+    # nền để so, nên «0 đỏ thêm» là nói dối. giu-khoa.mjs trả chúng trong khongDo với tiền tố «cây cũ — ».
+    TIEN_TO_CU = 'cây cũ — '
+    khong_do_cu = [x[len(TIEN_TO_CU):] for x in g.get('khongDo', []) if x.startswith(TIEN_TO_CU)]
     ten_bo = list(bo_cu) + [b for b in bo_moi if b not in bo_cu]
     so = {'nguon': nguon, 'cay_moi': cay_moi, 'bo': {}, 'lop': {k: 0 for k in LOP_TEN}}
     mau = {}
@@ -132,20 +136,32 @@ def main():
             chet = f'bộ thoát {b.get("rc")} mà không in ca nào'
         elif not b:
             chet = 'bộ không có ở lượt chạy cây mới'
-        if chet:
+        chet_cu = None
+        if bo in khong_do_cu:
+            chet_cu = 'bộ không đo được (thiếu bảng thời gian hay nhật ký)'
+        elif a and a.get('rc', 0) != 0 and a.get('so_dong', 0) == 0 and a.get('loai') != 'mot-khoa':
+            chet_cu = f'bộ thoát {a.get("rc")} mà không in ca nào'
+        for c in [x for x in (chet, f'{TIEN_TO_CU}{chet_cu} (không có đường nền để so)' if chet_cu else None) if x]:
             lop['bo-chay'] = lop.get('bo-chay', 0) + 1
-            mau.setdefault('bo-chay', []).append(f'{bo}: {chet}')
+            mau.setdefault('bo-chay', []).append(f'{bo}: {c}')
         for l, n in lop.items():
             so['lop'][l] += n
         so['bo'][bo] = {'rc_cu': a.get('rc'), 'rc_moi': b.get('rc'), 'dat_cu': a.get('dat', 0), 'dat_moi': b.get('dat', 0),
                         'khong_chay_toi': khong_toi, 'do_ca_hai': len(truot_a & set(truot_b)),
-                        'do_them': len(thieu) + (1 if chet else 0), 'lop': lop}
+                        'do_them': len(thieu) + (1 if chet else 0) + (1 if chet_cu else 0), 'lop': lop}
     for x in g.get('khongDoMoi', []):
         if x not in so['bo'] and x not in ten_bo:
             so['bo']['luot-chay'] = {'rc_cu': None, 'rc_moi': None, 'dat_cu': 0, 'dat_moi': 0, 'khong_chay_toi': 0, 'do_ca_hai': 0,
                                      'do_them': 1, 'lop': {'bo-chay': 1}}
             so['lop']['bo-chay'] += 1
             mau.setdefault('bo-chay', []).append(f'luot-chay: {x}')
+    luot_cu = [x for x in khong_do_cu if x not in ten_bo]
+    if luot_cu:
+        so['bo']['luot-chay-cu'] = {'rc_cu': None, 'rc_moi': None, 'dat_cu': 0, 'dat_moi': 0, 'khong_chay_toi': 0, 'do_ca_hai': 0,
+                                    'do_them': len(luot_cu), 'lop': {'bo-chay': len(luot_cu)}}
+        so['lop']['bo-chay'] += len(luot_cu)
+        for x in luot_cu:
+            mau.setdefault('bo-chay', []).append(f'luot-chay-cu: {x}')
     tong = sum(v['do_them'] for v in so['bo'].values())
     so['tong_do_them'] = tong
     ngay = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')

@@ -79,3 +79,34 @@ test('BK-AC5-do-ghi-do', () => {
   assert.notEqual(hong.status, 0, 'lượt viết hỏng phải thoát khác 0');
   assert.equal(bam(), truoc, 'báo cáo đã chốt phải còn nguyên byte');
 });
+
+// ── Bộ chết ngầm ở CÂY CŨ (Cổng Bằng chứng lượt 1 trả về, finding trong hợp đồng AC-5) ───────────────────────────────
+// AC-5 không giới hạn ở cây mới: cây cũ chết thì không có đường nền để so, báo cáo phải gọi tên, không được in tổng 0.
+test('BK-AC5-do-chet-cu', () => {
+  const r = phanLop(thuMucDo({ ka: BA, imLang: true }, { ka: BA }));
+  assert.equal(r.status, 0, r.stderr);
+  const { loi, so } = kiemSoLieu(r.stdout);
+  assert.deepEqual(loi, [], loi.join('\n'));
+  assert.equal(so.bo.ka.lop['bo-chay'], 1, 'cây cũ thoát 1 không in dòng nào phải là một mục bộ chạy');
+  assert.match(r.stdout, /ka: cây cũ — bộ thoát 1 mà không in ca nào \(không có đường nền để so\)/);
+  assert.ok(so.tong_do_them >= 1, `tổng không được là 0: ${so.tong_do_them}`);
+});
+
+test('BK-AC5-do-khong-do-cu', () => {
+  const T = thuMucDo({ ka: BA }, { ka: BA });
+  const lanh = kiemSoLieu(phanLop(T).stdout);
+  assert.equal(lanh.so.tong_do_them, 0, 'đối chứng dương: hai cây lành → tổng 0');
+  // Đúng hình tái hiện của lượt chấm: ketqua.tsv cây cũ còn dòng ka thoát 1, không XONG, không bảng thời gian.
+  const A = path.join(T, 'out', 'A');
+  fs.writeFileSync(path.join(A, 'ketqua.tsv'), 'ka\t1\t1\tbash\n');
+  fs.rmSync(path.join(A, 'thoi-gian-ca'), { recursive: true, force: true });
+  const r = phanLop(T);
+  assert.equal(r.status, 0, r.stderr);
+  const { loi, so } = kiemSoLieu(r.stdout);
+  assert.deepEqual(loi, [], loi.join('\n'));
+  assert.equal(so.bo.ka.lop['bo-chay'], 1, 'bộ cây cũ thiếu bảng thời gian là một mục bộ chạy');
+  assert.match(r.stdout, /ka: cây cũ — bộ không đo được \(thiếu bảng thời gian hay nhật ký\)/);
+  assert.equal(so.bo['luot-chay-cu']?.lop['bo-chay'], 1, 'lượt cây cũ thiếu XONG là một mục bộ chạy');
+  assert.match(r.stdout, /luot-chay-cu: lượt chạy không có dòng XONG/);
+  assert.ok(so.tong_do_them >= 2, `tổng không được là 0: ${so.tong_do_them}`);
+});
