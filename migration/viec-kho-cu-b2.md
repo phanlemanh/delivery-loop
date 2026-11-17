@@ -312,3 +312,57 @@ B2 không sửa thước, và không sửa ca, vì ca là sản phẩm và chỉ
   thứ hai là sửa kịch bản `migration/`, nằm trong phần B2 được chạm, nhưng nó đổi thước nên phải có lời chủ kho.
 
 Khuyến nghị lối (b), sửa ca ở kho cũ. Lý do: ca đo thời gian sẽ đỏ trên mọi máy CI bận, không riêng đợt chuyển nhà.
+
+### 4.10 Chạy lại bước đỏ ở cả hai cây (chủ kho «Chạy lại bước đỏ», 17/11) — không phải lượt đo dài
+
+Ở phiên giữ đợt, chủ kho chọn «Chạy lại bước đỏ» cho câu «Chọn lối nào để thông AC-4 của B2?». Hai lối kia không được chọn: đo dài
+lại cả lượt, và sửa GT-07 ở kho cũ. Thước đổi sau khi đã thấy số, nên việc đổi có dòng sổ riêng dẫn lời chủ kho.
+
+Luật đặt ở một chỗ, `migration/kich-ban/chay-lai-do.sh`, và `do-lop-do.sh` gọi nó sau lượt song song:
+- Bước có mã khác 0 ở **cả hai** cây được chạy lại **một** lần, **lần lượt** từng cây. `chay-bo-kiem.sh` nhận biến mới
+  `CHI_BUOC` để chạy riêng các bước ấy.
+- Kết quả chạy lại nằm ở `out/<cây>-lai/`. Thư mục ấy đã có thì kịch bản thoát 2 và không chạy lần hai.
+- Bước đỏ ở một cây không bao giờ được chạy lại, vì đó là tín hiệu «dọn nhà làm hỏng».
+
+Bên đọc:
+- `docKetQua` lấy mã và túi khoá của bước được chạy lại từ lần chạy lại, và giữ mã lần đầu.
+- `buoc.tsv` thêm hai cột chạy lại; «-» là không chạy lại. Tệp bốn cột của lượt cũ đọc như không chạy lại.
+- `kiemGiuKhoa` đòi hai điều. Thứ nhất, lần đầu phải đỏ ở cả hai cây, nếu không thì báo `bước … được chạy lại mà không đỏ ở cả hai
+  cây`; khi đó báo cáo ra `khong-do`. Thứ hai, lần chạy lại phải thoát 0 ở cả hai cây, nếu không thì báo `bước … chạy lại vẫn
+  thoát … ở cây …`.
+- `lop-do.md` in thêm một dòng «Chạy lại» với mã lần đầu và mã chạy lại.
+
+Bốn ca mới ở `giu-khoa.test.mjs`, viết trước và đỏ cả bốn trước khi có mã:
+- `BK-AC4-chay-lai`: đỏ ở hai cây → xanh, kèm đối chứng đỏ lúc trước khi chạy lại; lần chạy lại thứ hai bị từ chối.
+- `BK-AC4-chay-lai-mot-cay`: đỏ ở một cây → không chạy lại, thước đỏ.
+- `BK-AC4-chay-lai-van-do`: chạy lại vẫn đỏ → thước đỏ.
+- `BK-AC4-chay-lai-gia`: chạy lại một bước không đỏ → `khong-do`.
+
+Hai mutant trên bản chép, mỗi mutant làm đúng một ca đỏ:
+- Chạy lại bước đỏ ở một cây bất kỳ → `chay-lai-mot-cay` đỏ.
+- Bỏ kiểm mã chạy lại → `chay-lai-van-do` đỏ.
+
+Bộ kiểm nhanh của kịch bản: 96/96.
+
+Chạy trên chính hai bản kéo của lượt §4.9 (`/private/tmp/claude-501/ld4-1347`), không dựng lại và không lượt đo dài: chỉ
+`dieu-phoi`, cây cũ rồi cây mới, khoảng 9 phút. Mã thoát chạy lại là 0 · 0, đạt 663 · 663, và GT-07 xanh ở cả hai. Hai báo cáo
+dựng lại từ cùng thư mục đo.
+
+| Bước | Lần đầu (song song) cũ · mới | Chạy lại (lần lượt) cũ · mới |
+|---|---|---|
+| scripts | 0 · 0 | — |
+| hooks | 0 · 0 | — |
+| plugins | 0 · 0 | — |
+| workflows | 0 · 0 | — |
+| dieu-phoi | 1 · 1 | 0 · 0 |
+| ban-do | 0 · 0 | — |
+
+Kết quả:
+- **Giữ khoá: thiếu 0 / 5 807, thừa 0, bỏ 0.** GT-07 vào túi hai cây.
+- `thuoc-that.mjs --giu-khoa` **thoát 0**: «AC-4 đạt … 6 bước thoát 0 ở cả hai cây, trong đó 1 bước đỏ ở cả hai cây đã chạy lại
+  một lần, lần lượt từng cây (dieu-phoi); giữ đủ 5807/5807 khoá, bỏ 0».
+- `thuoc-that.mjs --lop-do` thoát 0, tổng đỏ thêm 0.
+
+Dữ kiện cho hạt giống `docs/plans/2026-10-20-hat-giong-gt07-chap-chon.md`, ở đó nguyên nhân còn ghi «chưa đo»: chạy song song thì
+chênh 58–87 ms, chạy riêng thì chênh 8–11 ms. Theo đề nghị của phiên giữ đợt, B2 không ghi vào hạt giống bây giờ; việc ấy để sau
+ngày cắt sang.

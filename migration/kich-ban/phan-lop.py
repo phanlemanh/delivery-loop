@@ -176,6 +176,14 @@ def main():
         p(f"| {bo} | {v['rc_cu']} | {v['rc_moi']} | {v['dat_cu']} | {v['dat_moi']} | {v['khong_chay_toi']} | {v['do_them']} |")
     p(f'| **tổng** | | | | | | **{tong}** |')
     p('')
+    lai = [bo for bo in so['bo'] if 'rc_dau' in bo_cu.get(bo, {}) or 'rc_dau' in bo_moi.get(bo, {})]
+    if lai:
+        p('**Chạy lại** (`chay-lai-do.sh`, lời chủ kho «Chạy lại bước đỏ», 17/11): bước đỏ ở CẢ HAI cây khi hai cây chạy song song')
+        p('được chạy lại một lần, lần lượt từng cây; số của bước ấy ở bảng trên lấy từ lần chạy lại.')
+        for bo in lai:
+            a, b = bo_cu.get(bo, {}), bo_moi.get(bo, {})
+            p(f"- `{bo}` — lần đầu {a.get('rc_dau', a.get('rc'))} · {b.get('rc_dau', b.get('rc'))}, chạy lại lần lượt {a.get('rc')} · {b.get('rc')}")
+        p('')
     p('## Đỏ thêm theo lớp')
     p('')
     ten_lop = {'khong-chay-toi': 'không chạy tới', 'duong-dan': 'đường dẫn không còn', 'cung-tep': 'cùng khối có lỗi đường dẫn',

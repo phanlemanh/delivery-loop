@@ -224,3 +224,85 @@ test('BK-AC4-do-sua-bao-cao', () => {
   assert.ok(r2.loi.includes('báo cáo giữ khoá lệch túi khoá đã commit'), r2.loi.join('\n'));
   assert.ok(r2.loi.some(l => l.startsWith('thiếu 1 khoá')), 'phán quyết chạy lại phải nêu thiếu');
 });
+
+// ── AC-4 — chạy lại bước đỏ ở CẢ HAI cây (lời chủ kho «Chạy lại bước đỏ», 17/11, sổ hồ sơ) ─────────────────────────
+// Bước `lc` là bước TAP thật (cùng hình bước dieu-phoi): `nhay` đỏ lần đầu, xanh từ lần thứ hai (dấu ở trong cây);
+// `luon` luôn đỏ; `xanh` luôn xanh. Lượt chạy là CHÍNH chay-bo-kiem.sh, chạy lại là CHÍNH chay-lai-do.sh.
+const CHAY_BK = path.join(DAY, 'chay-bo-kiem.sh');
+const LAI = path.join(DAY, 'chay-lai-do.sh');
+const GATE_LC = ['      - name: lc suite', '        if: github.event_name == \'push\'', '        run: node --test --test-reporter=tap "tests/lc/**/*.test.mjs"'].join('\n');
+const LC = {
+  nhay: "import { test } from 'node:test'; import fs from 'node:fs';\nconst p = new URL('./.da-chay', import.meta.url);\ntest('LC-1 nhay', () => { if (!fs.existsSync(p)) { fs.writeFileSync(p, ''); throw new Error('lần đầu'); } });\n",
+  luon: "import { test } from 'node:test';\ntest('LC-1 nhay', () => { throw new Error('luôn đỏ'); });\n",
+  xanh: "import { test } from 'node:test';\ntest('LC-1 nhay', () => {});\n",
+};
+function dotLai(kieuA, kieuB) {
+  const T = moTam('gk-lai-');
+  for (const [v, k] of [['A', kieuA], ['B', kieuB]]) {
+    const c = path.join(T, v, 'delivery-loop');
+    fs.cpSync(dungCay({ them: GATE_LC }), c, { recursive: true });
+    fs.mkdirSync(path.join(c, 'tests', 'lc'), { recursive: true });
+    fs.writeFileSync(path.join(c, 'tests', 'lc', 'a.test.mjs'), LC[k]);
+    const r = spawnSync('bash', [CHAY_BK, c, path.join(T, 'out', v)], { encoding: 'utf8' });
+    assert.equal(r.status, 0, r.stderr);
+  }
+  return T;
+}
+const chayLai = (T) => spawnSync('bash', [LAI, T], { encoding: 'utf8' });
+const baoCaoLai = (T) => { const ra = moTam('gk-ra-'); ghiBaoCao({ T, nguon: S40, cay: C40, ra, bo: path.join(moTam('gk-bo-'), 'trong.tsv'), so: null }); return ra; };
+const dongBuoc = (ra, ten) => fs.readFileSync(path.join(ra, 'giu-khoa', 'buoc.tsv'), 'utf8').split('\n').find(d => d.startsWith(`${ten}\t`));
+
+test('BK-AC4-chay-lai', () => {
+  const T = dotLai('nhay', 'nhay');
+  const truoc = kiem(baoCaoLai(T)).loi;
+  assert.ok(truoc.includes('bước lc thoát 1 ở cây cũ') && truoc.includes('bước lc thoát 1 ở cây mới'), 'đối chứng: lần đầu đỏ ở cả hai cây — ' + truoc.join(' · '));
+  const r = chayLai(T);
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /^chay-lai-do: lc — lần đầu 1 · 1, chạy lại lần lượt 0 · 0$/m, r.stdout);
+  for (const v of ['A', 'B']) {
+    const d = fs.readFileSync(path.join(T, 'out', `${v}-lai`, 'ketqua.tsv'), 'utf8').split('\n').filter(Boolean).map(x => x.split('\t')[0]);
+    assert.deepEqual(d, ['lc', 'XONG'], `cây ${v}: chỉ chạy lại bước đỏ ở cả hai cây`);
+  }
+  const ra = baoCaoLai(T);
+  assert.equal(dongBuoc(ra, 'lc'), 'lc\ttap\t1\t1\t0\t0', 'buoc.tsv giữ mã lần đầu và mã chạy lại');
+  assert.equal(dongBuoc(ra, 'ka'), 'ka\tbash\t0\t0\t-\t-');
+  const k = kiem(ra);
+  assert.deepEqual(k.loi, [], k.loi.join('\n'));
+  assert.ok(k.dong.some(d => /^AC-4 đạt: báo cáo đo trên nguồn aaaaaaaa, cây mới bbbbbbbb dựng lại khớp; 4 bước thoát 0 ở cả hai cây, trong đó 1 bước đỏ ở cả hai cây đã chạy lại một lần, lần lượt từng cây \(lc\); giữ đủ 7\/7 khoá, bỏ 0$/.test(d)), k.dong.join('\n'));
+  assert.match(fs.readFileSync(path.join(ra, 'giu-khoa.md'), 'utf8'), /^\| lc \| tap \| 1 \| 1 \| 0 \| 0 \|$/m);
+  const r2 = chayLai(T);
+  assert.equal(r2.status, 2, r2.stdout);
+  assert.match(r2.stderr, /^chay-lai-do: đã chạy lại một lần — không chạy lần hai$/m);
+});
+
+test('BK-AC4-chay-lai-mot-cay', () => {
+  const T = dotLai('nhay', 'xanh');
+  const r = chayLai(T);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /^chay-lai-do: không bước nào đỏ ở cả hai cây$/m);
+  assert.ok(!fs.existsSync(path.join(T, 'out', 'A-lai')) && !fs.existsSync(path.join(T, 'out', 'B-lai')), 'bước đỏ ở một cây không bao giờ được chạy lại');
+  const k = kiem(baoCaoLai(T));
+  assert.ok(k.loi.includes('bước lc thoát 1 ở cây cũ'), k.loi.join('\n'));
+});
+
+test('BK-AC4-chay-lai-van-do', () => {
+  const T = dotLai('luon', 'luon');
+  const r = chayLai(T);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /^chay-lai-do: lc — lần đầu 1 · 1, chạy lại lần lượt 1 · 1$/m);
+  const k = kiem(baoCaoLai(T));
+  assert.ok(k.loi.includes('bước lc chạy lại vẫn thoát 1 ở cây cũ') && k.loi.includes('bước lc chạy lại vẫn thoát 1 ở cây mới'), k.loi.join('\n'));
+});
+
+test('BK-AC4-chay-lai-gia', () => {
+  const T = dotLai('xanh', 'xanh');
+  assert.deepEqual(kiem(baoCaoLai(T)).loi, [], 'đối chứng dương: hai cây xanh, không chạy lại');
+  for (const v of ['A', 'B']) {
+    const r = spawnSync('bash', [CHAY_BK, path.join(T, v, 'delivery-loop'), path.join(T, 'out', `${v}-lai`)], { encoding: 'utf8', env: { ...process.env, CHI_BUOC: 'lc' } });
+    assert.equal(r.status, 0, r.stderr);
+  }
+  const ra = baoCaoLai(T);
+  const k = kiem(ra);
+  assert.ok(k.loi.includes('bước lc được chạy lại mà không đỏ ở cả hai cây'), k.loi.join('\n'));
+  assert.match(fs.readFileSync(path.join(ra, 'giu-khoa.md'), 'utf8'), /^phan_quyet: khong-do$/m);
+});

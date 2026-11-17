@@ -6,7 +6,8 @@
 // băm tệp thô (bam-tho.txt); rồi ghi NGUYÊN TỬ <ra>/giu-khoa.md (frontmatter nguon · cay_moi · phan_quyet · tong · bo ·
 // thieu, bảng bước, danh sách bỏ nguyên văn, danh sách thiếu).
 // kiemGiuKhoa: thước của thuoc-that.mjs --giu-khoa — CHẠY LẠI phép so trên hai túi đã commit và đếm lại n (không đọc số từ
-// báo cáo), đối chiếu báo cáo, đòi mọi bước thoát 0 ở cả hai cây, danh sách bỏ rỗng, và mã cây trong báo cáo = mã cây kịch
+// báo cáo), đối chiếu báo cáo, đòi mọi bước thoát 0 ở cả hai cây (bước đỏ ở cả hai cây thì lần chạy lại duy nhất
+// phải thoát 0 ở cả hai), danh sách bỏ rỗng, và mã cây trong báo cáo = mã cây kịch
 // bản dựng trên nguồn lúc chấm.
 //
 // Dòng lệnh: node bao-cao-giu-khoa.mjs --do <T> --nguon <40-hex> --cay <40-hex> --ra <thư mục ket-qua>
@@ -22,6 +23,10 @@ const ROOT = path.resolve(DAY, '..', '..');
 export const BO_KHOA = path.join(DAY, 'bo-khoa.tsv');
 export const SO_HO_SO = path.join(ROOT, '_acceptance', 'bo-kiem-xanh-o-kho-moi', 'decisions.jsonl');
 
+// Một dòng buoc.tsv: ten · loai · mã lần đầu cũ · mới · mã chạy lại cũ · mới («-» khi không chạy lại; tệp bốn cột của lượt
+// trước luật chạy lại đọc như không chạy lại). Chạy lại chỉ hợp lệ khi lần đầu đỏ ở CẢ HAI cây.
+const coLai = ([, , , , la = '-', lb = '-']) => la !== '-' || lb !== '-';
+const laiSai = (r) => coLai(r) && (String(r[2]) === '0' || String(r[3]) === '0');
 const tong = (t) => [...t.values()].reduce((a, b) => a + b, 0);
 const phanQuyet = (khongDo, kq) => (khongDo.length ? 'khong-do' : kq.loi.length || kq.thieu.length ? 'thieu' : 'giu-du');
 const ghiNguyenTu = (p, s) => { const t = `${p}.tam-${process.pid}`; fs.writeFileSync(t, s); fs.renameSync(t, p); };
@@ -30,13 +35,16 @@ export function ghiBaoCao({ T, nguon, cay, ra, bo = BO_KHOA, so = SO_HO_SO }) {
   const doi = doiKhoa(JSON.parse(fs.readFileSync(path.join(DAY, '..', 'chay-thu-phien', 'bang-ten.json'), 'utf8')), JSON.parse(fs.readFileSync(path.join(DAY, 'bang-xep.json'), 'utf8')));
   const A = docKetQua(path.join(T, 'out', 'A')); const B = docKetQua(path.join(T, 'out', 'B'));
   const cu = tuiCu(A.dat, B.dat, doi);
-  const khongDo = [...A.khongDo.map(x => `cây cũ — ${x}`), ...B.khongDo];
+  const buoc = [...new Set([...Object.keys(A.bo), ...Object.keys(B.bo)])].map(ten => {
+    const a = A.bo[ten], b = B.bo[ten]; const lai = a?.rc_dau !== undefined || b?.rc_dau !== undefined;
+    return [ten, (a || b).loai, a ? (a.rc_dau ?? a.rc) : 'vắng', b ? (b.rc_dau ?? b.rc) : 'vắng', ...(lai ? [a?.rc_dau !== undefined ? a.rc : 'vắng', b?.rc_dau !== undefined ? b.rc : 'vắng'] : ['-', '-'])];
+  });
+  const khongDo = [...A.khongDo.map(x => `cây cũ — ${x}`), ...B.khongDo, ...buoc.filter(laiSai).map(([t]) => `bước ${t} được chạy lại mà không đỏ ở cả hai cây`)];
   const boDs = docBo(bo);
   const kq = soTui(cu, B.dat, boDs, docMaSo(so));
   const g = path.join(ra, 'giu-khoa');
   fs.mkdirSync(g, { recursive: true });
   ghiTui(path.join(g, 'tui-cu.tsv'), cu); ghiTui(path.join(g, 'tui-moi.tsv'), B.dat);
-  const buoc = [...new Set([...Object.keys(A.bo), ...Object.keys(B.bo)])].map(ten => [ten, (A.bo[ten] || B.bo[ten]).loai, A.bo[ten]?.rc ?? 'vắng', B.bo[ten]?.rc ?? 'vắng']);
   fs.writeFileSync(path.join(g, 'buoc.tsv'), buoc.map(r => r.join('\t')).join('\n') + '\n');
   fs.writeFileSync(path.join(g, 'khong-do.txt'), khongDo.map(x => x + '\n').join(''));
   const bam = (ds, goc) => ds.map(f => `${crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex')}  ${path.relative(goc, f)}`);
@@ -46,8 +54,11 @@ export function ghiBaoCao({ T, nguon, cay, ra, bo = BO_KHOA, so = SO_HO_SO }) {
     '# Giữ đủ khoá ca — cây cũ so cây mới (B2 AC-4)', '',
     'Máy sinh bởi `migration/kich-ban/do-lop-do.sh` → `bao-cao-giu-khoa.mjs` — đừng sửa tay; thước `thuoc-that.mjs --giu-khoa` chạy',
     'lại phép so trên hai túi khoá ở `giu-khoa/` và đối chiếu từng số với tệp này.', '',
-    '## Các bước kiểm (việc `tests` của gate.yml mỗi cây)', '', '| Bước | Loại | Mã thoát cây cũ | Mã thoát cây mới |', '|---|---|---|---|',
-    ...buoc.map(([t, l, a, b]) => `| ${t} | ${l} | ${a} | ${b} |`), '',
+    '## Các bước kiểm (việc `tests` của gate.yml mỗi cây)', '',
+    'Hai cây chạy song song. Bước đỏ ở CẢ HAI cây được chạy lại một lần, lần lượt từng cây (`chay-lai-do.sh`, lời chủ kho «Chạy',
+    'lại bước đỏ», 17/11); túi khoá của bước ấy lấy từ lần chạy lại. Bước đỏ ở một cây không bao giờ chạy lại. «-» = không chạy lại.', '',
+    '| Bước | Loại | Mã thoát cây cũ | Mã thoát cây mới | Chạy lại cây cũ | Chạy lại cây mới |', '|---|---|---|---|---|---|',
+    ...buoc.map(([t, l, a, b, la, lb]) => `| ${t} | ${l} | ${a} | ${b} | ${la} | ${lb} |`), '',
     `## Phán quyết: ${pq === 'giu-du' ? `giữ đủ ${tong(cu)}/${tong(cu)} khoá, bỏ ${boDs.length}` : pq === 'thieu' ? `thiếu ${kq.thieu.length} khoá` : 'không đo được'}`, '',
     '## Danh sách bỏ (bo-khoa.tsv, nguyên văn)', '', ...(boDs.length ? boDs.map(b => `- \`${b.khoa}\` — ${b.ma || '(không mã)'} — ${b.lyDo || ''}`) : ['rỗng']), '',
     ...(khongDo.length ? ['## Bộ không đo được', '', ...khongDo.map(x => `- ${x}`), ''] : []),
@@ -77,8 +88,16 @@ export function kiemGiuKhoa({ ra, nguon, cayDung, loi, ra_, bo = BO_KHOA, so = S
   if (fm.nguon !== nguon) ra_(`báo cáo đo trên ${fm.nguon}, kit-cu/main nay ${nguon}`);
   if (fm.cay_moi !== cayDung) loi.push('báo cáo giữ khoá đo trên cây cũ');
   const buoc = fs.readFileSync(path.join(g, 'buoc.tsv'), 'utf8').split('\n').filter(Boolean).map(d => d.split('\t'));
-  for (const [t, , a, b] of buoc) { if (a !== '0') loi.push(`bước ${t} thoát ${a} ở cây cũ`); if (b !== '0') loi.push(`bước ${t} thoát ${b} ở cây mới`); }
-  if (loi.length === truoc) ra_(`AC-4 đạt: báo cáo đo trên nguồn ${nguon.slice(0, 8)}, cây mới ${cayDung.slice(0, 8)} dựng lại khớp; ${buoc.length} bước thoát 0 ở cả hai cây; giữ đủ ${n}/${n} khoá, bỏ ${boDs.length}`);
+  for (const r of buoc) {
+    const [t, , a, b, la, lb] = r;
+    if (!coLai(r)) { if (a !== '0') loi.push(`bước ${t} thoát ${a} ở cây cũ`); if (b !== '0') loi.push(`bước ${t} thoát ${b} ở cây mới`); continue; }
+    if (laiSai(r)) { loi.push(`bước ${t} được chạy lại mà không đỏ ở cả hai cây`); continue; }
+    if (la !== '0') loi.push(`bước ${t} chạy lại vẫn thoát ${la} ở cây cũ`);
+    if (lb !== '0') loi.push(`bước ${t} chạy lại vẫn thoát ${lb} ở cây mới`);
+  }
+  const daLai = buoc.filter(coLai).map(([t]) => t);
+  const lai = daLai.length ? `, trong đó ${daLai.length} bước đỏ ở cả hai cây đã chạy lại một lần, lần lượt từng cây (${daLai.join(', ')})` : '';
+  if (loi.length === truoc) ra_(`AC-4 đạt: báo cáo đo trên nguồn ${nguon.slice(0, 8)}, cây mới ${cayDung.slice(0, 8)} dựng lại khớp; ${buoc.length} bước thoát 0 ở cả hai cây${lai}; giữ đủ ${n}/${n} khoá, bỏ ${boDs.length}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

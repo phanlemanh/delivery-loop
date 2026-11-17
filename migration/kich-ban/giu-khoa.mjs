@@ -69,19 +69,31 @@ export function tuiCu(datA, datB, doi) {
 }
 
 // Đọc một thư mục kết quả → { dat: Map<khoá, số lần>, khongDo: [lý do], tep: [đường tệp thô] }.
+// Có thư mục `<thu>-lai/` (chay-lai-do.sh — chạy lại bước đỏ ở CẢ HAI cây, lời chủ kho «Chạy lại bước đỏ», 17/11) thì mỗi
+// bước có ở đó được đọc từ lần chạy lại: mã và túi khoá lấy từ lần chạy lại, mã lần đầu giữ ở `rc_dau`. Việc kiểm «chỉ bước đỏ
+// ở cả hai cây» là của bên so hai cây (bao-cao-giu-khoa.mjs), vì một cây không tự biết cây kia.
+const docDong = (kq) => fs.readFileSync(kq, 'utf8').split('\n').filter(Boolean);
 export function docKetQua(thu) {
   const dat = new Map(); const khongDo = []; const tep = []; const bo = {};
   const kq = path.join(thu, 'ketqua.tsv');
   if (!fs.existsSync(kq)) return { dat, khongDo: ['lượt chạy không có ketqua.tsv'], tep, bo };
   tep.push(kq);
-  const dong = fs.readFileSync(kq, 'utf8').split('\n').filter(Boolean);
+  const dong = docDong(kq);
   if (!dong.includes('XONG')) khongDo.push('lượt chạy không có dòng XONG');
+  const laiThu = `${thu}-lai`; const lai = new Map();
+  if (fs.existsSync(path.join(laiThu, 'ketqua.tsv'))) {
+    const dl = docDong(path.join(laiThu, 'ketqua.tsv')); tep.push(path.join(laiThu, 'ketqua.tsv'));
+    if (!dl.includes('XONG')) khongDo.push('lượt chạy lại không có dòng XONG');
+    for (const d of dl) if (d !== 'XONG') { const [ten, rc] = d.split('\t'); lai.set(ten, rc); }
+    for (const ten of lai.keys()) if (!dong.some(d => d.split('\t')[0] === ten)) khongDo.push(`bước ${ten} chạy lại mà lần đầu không có`);
+  }
   for (const d of dong) {
     if (d === 'XONG') continue;
-    const [ten, rc, , loai = 'mot-khoa'] = d.split('\t');
-    const b = bo[ten] = { rc: Number(rc), loai, so_dong: 0, dat: 0, truot: [] };
+    const [ten, rc0, , loai = 'mot-khoa'] = d.split('\t');
+    const laLai = lai.has(ten); const goc = laLai ? laiThu : thu; const rc = laLai ? lai.get(ten) : rc0;
+    const b = bo[ten] = { rc: Number(rc), loai, so_dong: 0, dat: 0, truot: [], ...(laLai ? { rc_dau: Number(rc0) } : {}) };
     if (loai === 'bash') {
-      const dir = path.join(thu, 'thoi-gian-ca');
+      const dir = path.join(goc, 'thoi-gian-ca');
       const ds = fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.startsWith(`${ten}-`) && f.endsWith('.tsv')).sort() : [];
       if (!ds.length) { khongDo.push(ten); continue; }
       for (const f of ds) {
@@ -92,7 +104,7 @@ export function docKetQua(thu) {
         }
       }
     } else if (loai === 'tap') {
-      const log = path.join(thu, `${ten}.log`);
+      const log = path.join(goc, `${ten}.log`);
       if (!fs.existsSync(log)) { khongDo.push(ten); continue; }
       tep.push(log);
       for (const h of fs.readFileSync(log, 'utf8').split('\n')) {

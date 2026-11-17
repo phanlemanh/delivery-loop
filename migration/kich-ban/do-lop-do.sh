@@ -4,7 +4,8 @@
 # Dựng lại don-nha/3.0 từ kit-cu/main, kéo hai bản riêng cùng tên thư mục `delivery-loop` (A = nguồn, B = đỉnh don-nha/3.0),
 # chạy các bước kiểm của việc `tests` trong gate.yml của chính mỗi cây (chay-bo-kiem.sh — B2; TMPDIR ngắn mỗi cây) song song,
 # rồi ghi nguyên tử migration/kich-ban/ket-qua/lop-do.md (ghi-bao-cao.sh) và báo cáo giữ khoá + hai túi khoá
-# (ket-qua/giu-khoa.md, ket-qua/giu-khoa/ — bao-cao-giu-khoa.mjs). Bản kéo riêng (không phải worktree) để ca kiểm nào ghi
+# (ket-qua/giu-khoa.md, ket-qua/giu-khoa/ — bao-cao-giu-khoa.mjs). Trước báo cáo, chay-lai-do.sh chạy lại một lần, lần lượt
+# từng cây, riêng bước đỏ ở CẢ HAI cây (lời chủ kho «Chạy lại bước đỏ», 17/11). Bản kéo riêng (không phải worktree) để ca kiểm nào ghi
 # ref cũng không chạm kho này.
 # Khoảng 60–80 phút. Chạy dưới Node của .nvmrc (bộ chạy thoát 3 khi lệch).
 set -euo pipefail
@@ -22,6 +23,7 @@ git -C "$T/B/delivery-loop" checkout -q "$B"
 echo "A @ ${S:0:8} · B @ ${B:0:8} — chạy bộ kiểm song song"
 for v in A B; do bash "$DAY/chay-bo-kiem.sh" "$T/$v/delivery-loop" "$T/out/$v" > "$T/out/$v.nohup" 2>&1 & done
 wait
+bash "$DAY/chay-lai-do.sh" "$T"
 CAY="$(git -C "$KHO" rev-parse "$B^{tree}")"
 bash "$DAY/ghi-bao-cao.sh" "$T" "$S" "$CAY" "$DAY/ket-qua/lop-do.md"
 node "$DAY/bao-cao-giu-khoa.mjs" --do "$T" --nguon "$S" --cay "$CAY" --ra "$DAY/ket-qua"

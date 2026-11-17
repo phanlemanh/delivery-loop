@@ -5,6 +5,7 @@
 # Kết quả: <bộ>.log, thoi-gian-ca/<bộ>-tron.tsv (bộ bash ghi qua THOI_GIAN_CA_DIR), ketqua.tsv «ten<TAB>mã<TAB>giây<TAB>loại»
 # rồi dòng XONG. TMPDIR là một thư mục NGẮN riêng cho lượt (mktemp -d /tmp/b2-…): ca GL07 cắt đầu ra ở 240 ký tự, đường tạm
 # dài đẩy thông điệp ghim ra ngoài (đo 14/11, sổ B2). Không đọc được việc tests → thoát 2, không chạy gì.
+# CHI_BUOC=<tên,tên> chỉ chạy các bước có tên ấy (chay-lai-do.sh dùng để chạy lại bước đỏ ở cả hai cây).
 set -u
 V="${1:?cần thư mục cây}"; OUT="${2:?cần thư mục kết quả}"
 DAY="$(cd "$(dirname "$0")" && pwd)"
@@ -20,6 +21,7 @@ unset NODE_TEST_CONTEXT
 cd "$V" || exit 2
 while IFS=$'\t' read -r ten loai lenh; do
   [ -n "$ten" ] || continue
+  if [ -n "${CHI_BUOC:-}" ]; then case ",$CHI_BUOC," in *",$ten,"*) ;; *) continue ;; esac; fi
   lenh="${lenh//⏎/$'\n'}"
   t0=$(date +%s)
   bash -c "$lenh" < /dev/null > "$OUT/$ten.log" 2>&1   # stdin là danh sách bước — bước không được nuốt nó
