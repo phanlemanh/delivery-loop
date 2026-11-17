@@ -161,3 +161,37 @@ Nguồn `3341b8dc` (kit-cu/main). Theo `_acceptance/phan-du-bo-cuc-moi-vong-ba/g
 
 Bảng vá 267 → 230 (−38 + 1). Kiểm nhanh, không phải lượt đo: thước bộ kiểm trên `3341b8dc` — AC-1, AC-4 đạt, AC-2 307/307,
 đổi sót 0 ngoài 2 chỗ khai; bộ ca kịch bản 90/90. Số khoá còn thiếu CHƯA đo — lượt đo dài cần lời chủ kho.
+
+### 4.5 Lượt đo trên nguồn `3341b8dc` (chủ kho cho «Cho B2 đo», 17/11) — một lượt
+
+Cây kịch bản `32a5506f` (cây `7b66ff84`, sáu commit CON của nguồn) so cây cũ `3341b8dc`: **thiếu 57 / 5 802 khoá — số ĐO**
+(`ket-qua/giu-khoa.md`); bảng theo cụm ở `ket-qua/phan-du-luot-8.tsv`. Lần khởi động đầu tiên dừng ở bước dựng (bản kéo Repo
+Standards ở thư mục tạm hệ thống đã bị dọn) trước khi chạy ca nào — không tính là lượt; lượt này dùng bản kéo `4dc53e07` ở
+`/private/tmp/claude-501/`. Năm bước khác xanh cả hai cây; bước `scripts` cây mới 968 qua · 6 đỏ, cây cũ xanh.
+
+Đối chiếu 477 khoá của vòng ba (đếm theo lần xuất hiện, số ĐO trên hai túi khoá):
+
+| Cụm | Vòng ba nhận | Đã về | Còn thiếu | Không còn ở cây cũ |
+|---|---|---|---|---|
+| K4-LT | 155 | 153 | 2 | 0 |
+| K4-TB | 92 | 86 | 6 | 0 |
+| K4-MP | 225 | 149 | 43 | 33 |
+| K4-RG | 5 | 4 | 0 | 1 |
+| **Cộng** | **477** | **392** | **51** | **34** |
+
+«Không còn ở cây cũ» = ca vòng ba đổi tên hoặc gỡ ở chính kho cũ (BC/BC-LENH của `bo-cuc.test.mjs`, RG-1 của
+`recheck-goc-goi-loi.test.mjs`) — không vào mẫu số nào. Ngoài 477: K4-PL (P161) 1/1 đã về; K4-DN 4 và B2 2 còn thiếu (ngoài
+vòng ba). 0 khoá thiếu nằm ngoài bảng vòng ba.
+
+Nguyên nhân từng nhóm còn thiếu (đọc từ nhật ký cây mới; nguyên nhân là ĐỌC, chưa thử sửa):
+- **K4-MP 43 — chỉ là TÊN ca, không mất ca.** `bo-cuc.test.mjs`: 174 lần BC ở cả hai cây, 0 đỏ. Ở cây cũ 43 tên
+  `BC plugins/<x> · <nhãn>` xuất hiện hai lần; ở cây mới một lần giữ `plugins/<x>`, lần kia in dạng phẳng `BC <x> · <nhãn>`
+  — nhãn ca in đường đã qua bộ dịch theo bố cục của cây đang chạy. Sửa đúng tầng ở kho cũ: nhãn ca in đường đầu vào, không
+  in đường đã dịch (hoặc khử trùng hai lần lặp). Không sửa ở bảng luật tên: đổi tên một nửa số lần là che, không phải dịch.
+- **K4-TB 6 — đổi nghĩa.** KK-6/KK-6-do (`khoi-khuon-tren-the-cong`) và KL-8/KL-8-do (`khuon-loi`) so thẻ với «bản trước
+  vòng» rút từ lịch sử git; trên cây mới thẻ khác vì bố cục khác.
+- **K4-LT 2 + B2 2.** `cua-tin-hieu-giua-chien-dich.test.mjs` CT-10-do: bản sao cục bộ `plugins/dispatch/` nhập
+  `plugins/scripts/tin-hieu-khoa.cjs` — bản sao chép thiếu tệp ở bố cục mới. `kho-moi-cai-goi-road-map.test.mjs` KM-1: thiếu
+  dòng «kho chưa cài road-map ở phạm vi kho — không tạo lộ trình». Mỗi tệp một khoá cấp tệp (K4-LT) và một khoá ca (B2).
+- **K4-DN 4 — đổi nghĩa, ngoài vòng.** DV5/`additive-only.test.mjs` so `pre-merge-check.sh` với base lịch sử (dòng chú thích
+  nhắc `tests/scripts/hang-pr.test.mjs` đổi theo luật đường); KK-6 so-that/`can-cu-s1.ca.mjs` đọc sổ thật qua lịch sử.
