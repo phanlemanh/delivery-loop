@@ -966,6 +966,14 @@ executors:
     rel2390_goi_doi: bash _acceptance/release-2-39-0/goi-chi-doi-so.sh 88d31b63
     rel2390_ba_viec: bash _acceptance/release-2-39-0/ba-viec-tru.sh
     rel2390_su_mo_ta: node _acceptance/release-2-39-0/su-mo-ta.mjs
+    # Hồ sơ release-3-0-0 (mốc «Chuyển nhà»). Năm khoá `rel300_*` đọc thứ CI không có (remote kit-cu, bản kéo hai kho tiêu thụ
+    # trên máy, lệnh claude) hoặc dựng cây làm việc tạm — KHÔNG vào feature_loop.suite_keys; thiếu thứ cần thì thoát 2 «không đọc được ở đây».
+    rel300_cua_so: GIT_GLOB_PATHSPECS=1 bash _acceptance/release-2-39-0/cua-so.sh 0c4e503b bo-kiem-xanh-o-kho-moi goi-cheo-loi-dieu-phoi kich-ban-chuyen-nha phan-du-bo-cuc-moi phan-du-bo-cuc-moi-vong-ba phan-du-bo-cuc-moi-vong-bon
+    rel300_cay_kich_ban: bash _acceptance/release-3-0-0/cay-kich-ban.sh
+    rel300_vi_phan: bash _acceptance/release-3-0-0/vi-phan-hai-kho.sh
+    rel300_hang_loi: bash _acceptance/release-3-0-0/hang-loi.sh --hai-chieu 90c3f9f197e18004eb0a8efb7d3d960bb02f5d12
+    rel300_guide_ci: bash _acceptance/release-3-0-0/guide-ci.sh --hai-chieu 90c3f9f197e18004eb0a8efb7d3d960bb02f5d12
+    rel300_don_dau_vet: bash _acceptance/release-3-0-0/don-dau-vet.sh
     lgtp_doc_cu: bash _acceptance/lan-ghim-lai-theo-paths/rang.sh --chan doc-cu
     lgtp_nhay_dac_hieu: bash _acceptance/lan-ghim-lai-theo-paths/rang.sh --chan nhay-dac-hieu
     lgtp_chi_thu: bash _acceptance/lan-ghim-lai-theo-paths/rang.sh --chan chi-thu
@@ -1267,7 +1275,7 @@ risk_tiers:
     - ".github/workflows/gate.yml"
   t3_paths:
     # Lõi cưỡng chế: bug ở đây biến thành false-green im lặng trên MỌI repo tiêu thụ.
-    # Mốc 3.0: hai glob dưới từng là "hooks/**" và "lib/**" — sau dọn nhà không khớp tệp nào, PR chạm lõi tụt T3 → T2
+    # Mốc 3.0: hai glob dưới từng trỏ thư mục móc và thư mục thư viện ở GỐC kho — sau dọn nhà không khớp tệp nào, PR chạm lõi tụt T3 → T2
     # (đo 17/11, migration/vi-phan/README.md). Thước: _acceptance/release-3-0-0/hang-loi.sh.
     - "plugins/acceptance-gate/hooks/**"
     - "plugins/acceptance-gate/lib/**"

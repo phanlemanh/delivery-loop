@@ -108,18 +108,19 @@ live outside `skills/`):
 
 ```bash
 cd <consumer-repo>
-ln -s <kit>/skills/acceptance .claude/skills/acceptance
+# <kit> = a checkout of the kit; since 3.0 the core plugin lives in <kit>/plugins/acceptance-gate
+ln -s <kit>/plugins/acceptance-gate/skills/acceptance .claude/skills/acceptance
 mkdir -p .claude/commands
-ln -s <kit>/commands/acceptance-init.md   .claude/commands/acceptance-init.md
-ln -s <kit>/commands/acceptance-status.md .claude/commands/acceptance-status.md
-ln -s <kit>/commands/acceptance-card.md   .claude/commands/acceptance-card.md
-ln -s <kit>/commands/approve.md           .claude/commands/approve.md
-ln -s <kit>/commands/signoff.md           .claude/commands/signoff.md
-ln -s <kit>/commands/observed.md          .claude/commands/observed.md
-ln -s <kit>/commands/acceptance-report.md .claude/commands/acceptance-report.md
-ln -s <kit>/commands/start.md             .claude/commands/start.md
+ln -s <kit>/plugins/acceptance-gate/commands/acceptance-init.md   .claude/commands/acceptance-init.md
+ln -s <kit>/plugins/acceptance-gate/commands/acceptance-status.md .claude/commands/acceptance-status.md
+ln -s <kit>/plugins/acceptance-gate/commands/acceptance-card.md   .claude/commands/acceptance-card.md
+ln -s <kit>/plugins/acceptance-gate/commands/approve.md           .claude/commands/approve.md
+ln -s <kit>/plugins/acceptance-gate/commands/signoff.md           .claude/commands/signoff.md
+ln -s <kit>/plugins/acceptance-gate/commands/observed.md          .claude/commands/observed.md
+ln -s <kit>/plugins/acceptance-gate/commands/acceptance-report.md .claude/commands/acceptance-report.md
+ln -s <kit>/plugins/acceptance-gate/commands/start.md             .claude/commands/start.md
 # hook: register in .claude/settings.local.json (machine-local, not committed)
-#   PreToolUse Write|Edit -> node "<kit>/hooks/acceptance-evidence-gate.js"
+#   PreToolUse Write|Edit -> node "<kit>/plugins/acceptance-gate/hooks/acceptance-evidence-gate.js"
 ```
 
 Restart the Claude Code session afterwards — skills/commands/hooks are

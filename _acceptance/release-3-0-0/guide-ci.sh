@@ -18,8 +18,10 @@ do_mot() { # <ref GUIDE>
   { git init -q --bare "$t/kit.git" && git -C "$GOC" push -q "$t/kit.git" HEAD:refs/tags/v0.0.0-thu 2>/dev/null; } || { echo "guide-ci: không dựng được kho trần" >&2; don "$t"; return 2; }
   export RUNNER_TEMP="$t/runner"; mkdir -p "$RUNNER_TEMP"
   { git init -q "$RUNNER_TEMP/kit" && git -C "$RUNNER_TEMP/kit" fetch -q --depth 1 "file://$t/kit.git" refs/tags/v0.0.0-thu && git -C "$RUNNER_TEMP/kit" checkout -q FETCH_HEAD; } || { echo "guide-ci: không lấy được kit theo thẻ" >&2; don "$t"; return 2; }
+  kho="$(git -C "$GOC" show "$ref:GUIDE.md" 2>/dev/null | awk 'match($0, /fetch -q --depth 1 https:\/\/github\.com\/phanlemanh\/[A-Za-z0-9._-]+/) { s = substr($0, RSTART, RLENGTH); sub(/.*\//, "", s); print s; exit }')"
   goc="$RUNNER_TEMP$duoi"
-  echo "GUIDE ở $ref dặn gốc plugin = \$RUNNER_TEMP$duoi"
+  echo "GUIDE ở $ref dặn gốc plugin = \$RUNNER_TEMP$duoi · kho lấy kit = ${kho:-không đọc được}"
+  [ "$kho" = delivery-loop ] || { echo "ĐỎ: GUIDE ở $ref lấy kit từ kho «${kho:-không đọc được}», cần delivery-loop"; don "$t"; return 1; }
   if [ ! -f "$goc/scripts/pre-merge-check.sh" ]; then
     echo "ĐỎ: theo GUIDE ở $ref không có bộ chặn gộp tại \$RUNNER_TEMP$duoi/scripts/pre-merge-check.sh"
     don "$t"; return 1
@@ -32,6 +34,8 @@ do_mot() { # <ref GUIDE>
   (cd "$GOC" && node "$goc/scripts/product-map.mjs" --root . --check >/dev/null 2>&1); m=$?
   if [ "$m" != 0 ] && [ "$m" != 1 ]; then echo "ĐỎ: product-map --check thoát $m từ gốc GUIDE dặn"; don "$t"; return 1; fi
   echo "đạt: hai bước của việc gate chạy được theo GUIDE ở $ref (product-map --check thoát $m)"
+  # Vế tài liệu: đường kho tiêu thụ làm theo trong README, GUIDE, QUICKSTART trỏ tệp có thật.
+  node "$GOC/_acceptance/release-3-0-0/tai-lieu-duong.mjs" "$ref" || { echo "ĐỎ: tài liệu ở $ref còn đường chết"; don "$t"; return 1; }
   don "$t"; return 0
 }
 if [ "${1:-}" = "--hai-chieu" ]; then
@@ -39,7 +43,11 @@ if [ "${1:-}" = "--hai-chieu" ]; then
   echo "== GUIDE ở HEAD (phải đạt)"; do_mot HEAD; a=$?
   echo "== GUIDE ở nền $NEN (phải đỏ)"; ra="$(do_mot "$NEN")"; b=$?; printf '%s\n' "$ra"
   [ "$a" = 0 ] || { echo "guide-ci: GUIDE ở HEAD không đạt (mã $a)"; exit 1; }
-  if [ "$b" = 1 ] && printf '%s\n' "$ra" | grep -q '^ĐỎ: theo GUIDE ở .* không có bộ chặn gộp tại \$RUNNER_TEMP/kit/scripts/pre-merge-check.sh$'; then
+  # Vế tài liệu trên nền chạy riêng: vế gốc plugin đã dừng trước nó.
+  td="$(cd "$GOC" && node _acceptance/release-3-0-0/tai-lieu-duong.mjs "$NEN")"; c=$?; printf '%s\n' "$td"
+  if [ "$b" = 1 ] && printf '%s\n' "$ra" | grep -q '^ĐỎ: theo GUIDE ở .* không có bộ chặn gộp tại \$RUNNER_TEMP/kit/scripts/pre-merge-check.sh$' \
+     && [ "$c" = 1 ] && printf '%s\n' "$td" | grep -q '^CHẾT QUICKSTART.md:[0-9]* · feature-loop/README.md$' \
+     && printf '%s\n' "$td" | grep -q '^CHẾT README.md:[0-9]* · <kit>/skills/acceptance$'; then
     echo "guide-ci: hai chiều đạt"; exit 0
   fi
   echo "guide-ci: chiều đỏ không ra đúng thông điệp ghim trên nền $NEN (mã $b)"; exit 1
