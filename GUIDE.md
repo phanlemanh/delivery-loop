@@ -2,7 +2,7 @@
 
 > Đọc nhanh 5 phút → [QUICKSTART.md](QUICKSTART.md). Tài liệu này là **bản đầy đủ**:
 > kiến trúc, cài đặt, vận hành hằng ngày, tra cứu enforcement, xử lý sự cố và tinh chỉnh.
-> Khớp phiên bản: acceptance-gate 2.39.0 · feature-loop 2.39.0 · diagram-design 2.7.1 · dieu-phoi 2.39.0.
+> Khớp phiên bản: acceptance-gate 3.0.0 · feature-loop 3.0.0 · diagram-design 3.0.0 · dieu-phoi 3.0.0.
 
 ## Mục lục
 
@@ -1009,8 +1009,9 @@ Ba bước, mỗi bước một dòng cấu hình của kho:
    mốc — không auto-follow, vì đổi engine dưới chân một vòng đang chạy là điều
    kit cấm (§7.1).
 2. **Trong job CI**, lấy kit về NGOÀI cây repo (để `_acceptance/` của kit không bị
-   quét lẫn với hồ sơ của kho), rồi trỏ `CLAUDE_PLUGIN_ROOT` vào đó — mọi lệnh
-   trong khuôn `_acceptance/config.yaml` vốn đã viết theo biến này:
+   quét lẫn với hồ sơ của kho), rồi trỏ `CLAUDE_PLUGIN_ROOT` vào thư mục plugin lõi
+   `plugins/acceptance-gate` của bản ấy (từ 3.0 gốc kho kit không còn là gốc plugin lõi) —
+   mọi lệnh trong khuôn `_acceptance/config.yaml` vốn đã viết theo biến này:
 
    ```yaml
    acceptance-gate:
@@ -1025,7 +1026,7 @@ Ba bước, mỗi bước một dòng cấu hình của kho:
            git init -q "$RUNNER_TEMP/kit"
            git -C "$RUNNER_TEMP/kit" fetch -q --depth 1 https://github.com/phanlemanh/delivery-loop "$KIT_SHA"
            git -C "$RUNNER_TEMP/kit" checkout -q FETCH_HEAD
-           echo "CLAUDE_PLUGIN_ROOT=$RUNNER_TEMP/kit" >> "$GITHUB_ENV"
+           echo "CLAUDE_PLUGIN_ROOT=$RUNNER_TEMP/kit/plugins/acceptance-gate" >> "$GITHUB_ENV"
        - run: bash "$CLAUDE_PLUGIN_ROOT/scripts/pre-merge-check.sh" . --base "origin/$GITHUB_BASE_REF"
        - run: node "$CLAUDE_PLUGIN_ROOT/scripts/product-map.mjs" --root . --check
    ```
@@ -1052,8 +1053,8 @@ chúng sẽ không tìm thấy cổng, đổi sang `"$CLAUDE_PLUGIN_ROOT/scripts
 hoặc ghi nợ có tên. Kho có hồ sơ `status: machine-cleared` (grep `contract.md`) chờ mốc kế
 vì hai dòng 376/397 nêu dưới.
 
-Chạy ở máy dev: cùng lệnh, với `CLAUDE_PLUGIN_ROOT` = **bản clone marketplace**
-(`~/.claude/plugins/marketplaces/delivery-loop`, chính nơi lấy sha ở bước 1 —
+Chạy ở máy dev: cùng lệnh, với `CLAUDE_PLUGIN_ROOT` = thư mục plugin lõi của **bản clone marketplace**
+(`~/.claude/plugins/marketplaces/delivery-loop/plugins/acceptance-gate`; bản clone là nơi lấy sha ở bước 1 —
 không phải thư mục `cache/…/<phiên bản>`), và phải **`export`** trước: viết
 `CLAUDE_PLUGIN_ROOT=… bash "$CLAUDE_PLUGIN_ROOT/…"` trên một dòng thì shell mở
 rộng `$CLAUDE_PLUGIN_ROOT` TRƯỚC khi gán, lệnh rỗng. Job chạy trên `push` không có
@@ -1564,7 +1565,7 @@ làn re-pin chỉ chạy bốn lệnh suite của kho; dòng `kind:repin` chỉ 
 (kho `crm-onehub`, sổ vấp 07/09): một hồ sơ đã ký mất tiền đề sau lần hợp nhất
 88 commit vẫn ghim lại xanh và đi thẳng nhánh chính, CI xanh suốt — luật
 lệch-cây chỉ so `verified_commit` với cây, còn cái pin thì làn dời được. Nay làn
-là **một script**, không phải lời dặn: `feature-loop/scripts/repin-lane.mjs`
+là **một script**, không phải lời dặn: `plugins/feature-loop/scripts/repin-lane.mjs`
 chạy `feature_loop.suite_keys` **và mọi eval `test`/`script` của từng hồ sơ**
 tại HEAD (lệnh trùng chạy một lần), đỏ thì exit 1 và không ghi gì, xanh thì tự
 ghi dòng repin có `evals_exit` + section Re-pin rồi tự kiểm bằng
@@ -1790,7 +1791,7 @@ có thể làm cũ hồ sơ đã ký của người khác; cái đỏ thường 
 tới PR đã gây ra nó. Lệnh giữ tươi xử lý theo một khoảng gộp:
 
 ```bash
-node <kit>/feature-loop/scripts/giu-tuoi.mjs --root . --tu <sha đầu khoảng> [--write] [--json]
+node <kit>/plugins/feature-loop/scripts/giu-tuoi.mjs --root . --tu <sha đầu khoảng> [--write] [--json]
 ```
 
 - **Khi nào chạy:** sau một đợt gộp, trên cây sạch ở đỉnh nhánh chính (`--den` mặc định là đỉnh).

@@ -32,6 +32,8 @@ const CAY = path.join(TAM, 'cay');
 const CU = path.resolve(a.cu), MOI = path.resolve(a.moi);
 let truot = 0;
 const ca = (ten, dat, chiTiet) => { process.stdout.write(`${dat ? 'PASS' : 'FAIL'}: ${ten} — ${chiTiet}\n`); if (!dat) truot++; };
+// VI_PHAN_AN_TEN=1: không in tên hồ sơ của kho tiêu thụ (kho ấy có thể riêng tư, kho này có thể công khai).
+const ten = (x) => (process.env.VI_PHAN_AN_TEN ? '(ẩn tên)' : x);
 const doc = (s) => fs.readFileSync(s, 'utf8');
 const ghi = (s, c) => fs.writeFileSync(s, c);
 
@@ -53,7 +55,7 @@ try {
   const c0 = [chay(CU), chay(MOI)];
   const k0 = so(c0[0], c0[1]);
   ca('C0 đối chứng dương', !docDuoc(c0[0]) && !docDuoc(c0[1]) && k0.phanQuyet.length === 0 && k0.dem.dc.OK === 4 && k0.dem.ms.OK === 4 && k0.dem.dc.VIOLATION === 0,
-    `cũ OK ${k0.dem.dc.OK} VIOLATION ${k0.dem.dc.VIOLATION} · mới OK ${k0.dem.ms.OK} VIOLATION ${k0.dem.ms.VIOLATION} · lệch ${k0.phanQuyet.length} · hồ sơ: ${ds.join(', ')}`);
+    `cũ OK ${k0.dem.dc.OK} VIOLATION ${k0.dem.dc.VIOLATION} · mới OK ${k0.dem.ms.OK} VIOLATION ${k0.dem.ms.VIOLATION} · lệch ${k0.phanQuyet.length} · hồ sơ: ${process.env.VI_PHAN_AN_TEN ? `${ds.length} hồ sơ đã ký đầu tiên theo tên` : ds.join(', ')}`);
 
   // C1 — tiêm bốn vi phạm vào cây hồ sơ; cả hai bản kit phải cùng bắt.
   const bc = (s) => path.join(CAY, '_acceptance', s, 'evidence-report.md');
@@ -81,7 +83,7 @@ try {
     const c2 = (() => { const c = chup({ kho: CAY, base: a.base, goc: L2, slug: ds }); return { ...c, chu: che(c.chu, o(L2)) }; })();
     const k2 = so(c1[1], c2);
     const dung = k2.phanQuyet.filter(d => d.startsWith('VIOLATION chỉ bên đối chứng') && d.includes(`[${ds[0]}]`) && d.includes('human_signoff is empty'));
-    ca('C2 độ nhạy', k2.phanQuyet.length >= 1 && dung.length === 1, `tắt một luật ở bản sao → lệch ${k2.phanQuyet.length}, trong đó dòng đúng hồ sơ ${ds[0]}: ${dung.length}`);
+    ca('C2 độ nhạy', k2.phanQuyet.length >= 1 && dung.length === 1, `tắt một luật ở bản sao → lệch ${k2.phanQuyet.length}, trong đó dòng đúng hồ sơ ${ten(ds[0])}: ${dung.length}`);
   }
 
   // C3 — độ đặc hiệu: bản sao ở đường khác, chỉ đổi chú thích và thêm tài liệu.

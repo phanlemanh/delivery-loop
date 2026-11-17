@@ -1060,7 +1060,8 @@ if (want('RT13')) {
   // Luật so đặt thành HÀM THUẦN để chiều đỏ tiêm được vào ĐẦU VÀO của chính nó — vòng 1
   // viết chiều đỏ là phép lọc trên một mảng vừa tự nối thêm phần tử, không chạy lại gì
   // (finding S4-r1: «chiều đỏ giả»).
-  const NGOAI = [/^_acceptance\//, /^docs\//, /^PRODUCT-MAP\.md$/, /^CHANGELOG\.md$/, /^README\.md$/, /^GUIDE\.md$/, /^QUICKSTART\.md$/];
+  // `migration/` (mốc 3.0): sử liệu và công cụ của đợt chuyển nhà — không phải bộ đọc của sản phẩm (BOI-CANH.md, bẫy 17/11).
+  const NGOAI = [/^_acceptance\//, /^docs\//, /^migration\//, /^PRODUCT-MAP\.md$/, /^CHANGELOG\.md$/, /^README\.md$/, /^GUIDE\.md$/, /^QUICKSTART\.md$/];
   // Nhận GỐC làm tham số: chiều đỏ (iv-a) phải chạy CHÍNH bước quét này trên cây tiêm,
   // chứ không nối tay tên file vào mảng (S4-r7).
   const grepSignedOff = (root = ROOT) => execFileSync('git', ['-C', root, 'grep', '-l', 'signed-off'], { encoding: 'utf8' })

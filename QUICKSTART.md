@@ -264,4 +264,4 @@ luôn vào gói Cổng 2.
 
 ---
 
-Chi tiết kỹ thuật: [README.md](README.md) · feature-loop: [feature-loop/README.md](feature-loop/README.md) · Thiết kế: [docs/specs/](docs/superpowers/specs/2026-06-10-acceptance-gate-kit-design.md)
+Chi tiết kỹ thuật: [README.md](README.md) · feature-loop: [plugins/feature-loop/README.md](plugins/feature-loop/README.md) · Thiết kế: [docs/specs/](docs/superpowers/specs/2026-06-10-acceptance-gate-kit-design.md)
