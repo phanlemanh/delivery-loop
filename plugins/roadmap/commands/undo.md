@@ -10,7 +10,7 @@ Chỉ chạy khi đối số khớp đúng mẫu `^([A-Za-z0-9][A-Za-z0-9_./-]*:
 một dòng — KHÔNG đưa đối số vào shell. Thay `<mã>` trong khối dưới bằng đối số (nằm trong nháy đơn) rồi chạy đúng dòng ấy.
 Bản chép trong kho (`scripts/lo-trinh.mjs`) thắng bản cài: bộ ghi phải cùng phiên bản với bộ đọc CI của kho. Kho không có
 bản chép thì giải `$AG` bằng `resolve-plugin.mjs` của feature-loop (`--plugin acceptance-gate --require scripts/lo-trinh.mjs`),
-như lệnh `/road-map:xem`. In nguyên văn kết quả; thoát khác 0 thì in nguyên văn dòng lỗi (thoát 3 = mã có ở nhiều lộ trình —
+như lệnh `/roadmap:status`. In nguyên văn kết quả; thoát khác 0 thì in nguyên văn dòng lỗi (thoát 3 = mã có ở nhiều lộ trình —
 gọi lại bằng `<tệp>:<mã>`).
 
 <!-- <<<RM-TRA-LAI-LENH -->

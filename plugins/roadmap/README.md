@@ -6,7 +6,7 @@ Gói «mặt»: chỉ chứa lệnh cho người; mã sống ở lõi `acceptanc
 ## Cài cho một kho
 
 ```
-claude plugin install road-map@acceptance-gate-kit --scope project
+claude plugin install roadmap@delivery-loop --scope project
 ```
 
 `acceptance-init` không tự bật gói này — kho chọn cài. Gói không có hook.
@@ -14,14 +14,14 @@ claude plugin install road-map@acceptance-gate-kit --scope project
 Cài xong (với `--scope project`, để lựa chọn nằm trong `.claude/settings.json` đội commit), chạy
 `/acceptance-gate:acceptance-init` — chạy lại an toàn trên kho đã có cấu hình. Bước 5d của lệnh ấy tạo sẵn lộ trình
 rỗng đúng khuôn ở `docs/plan/lo-trinh.json`, khai `lo_trinh.tep`, miễn trừ `LO-TRINH.html` và vẽ trang — bước kiểm CI
-xanh ngay ở commit đó. Thêm việc bằng `/acceptance-gate:cat-luot`, mở vòng bằng `/feature-loop:feature-loop <mã>`.
+xanh ngay ở commit đó. Thêm việc bằng `/acceptance-gate:scope-slice`, mở vòng bằng `/feature-loop:feature-loop <mã>`.
 
 ## Lệnh
 
-- `/road-map:xem` — bản đồ lộ trình của kho hiện tại: xong · đang dở · kế, rà soát, và các lần tự áp (chỉ đọc).
-- `/road-map:ghim <mã>` · `/road-map:bo-ghim <mã>` — miễn trừ / bỏ miễn trừ một hàng khỏi tự áp (chỉ người gõ).
-- `/road-map:tra-lai <mã>` — trả lại một lần máy tự áp: hàng về đúng chỗ cũ (chỉ người gõ).
-- `/road-map:gui <câu>` — gửi một ý vào cửa tín hiệu của kho; được trả «đã ghi, xử ở mốc khép», không gọi ai giữa
+- `/roadmap:status` — bản đồ lộ trình của kho hiện tại: xong · đang dở · kế, rà soát, và các lần tự áp (chỉ đọc).
+- `/roadmap:pin <mã>` · `/roadmap:unpin <mã>` — miễn trừ / bỏ miễn trừ một hàng khỏi tự áp (chỉ người gõ).
+- `/roadmap:undo <mã>` — trả lại một lần máy tự áp: hàng về đúng chỗ cũ (chỉ người gõ).
+- `/roadmap:suggest <câu>` — gửi một ý vào cửa tín hiệu của kho; được trả «đã ghi, xử ở mốc khép», không gọi ai giữa
   chừng. Kho phải khai `tin_hieu` trong `_acceptance/config.yaml`.
 
 ## Chính sách rà soát (tuỳ chọn, khai ở đầu tệp lộ trình)

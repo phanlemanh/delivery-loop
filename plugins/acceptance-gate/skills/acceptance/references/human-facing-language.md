@@ -384,13 +384,13 @@ kit in cho người; dạng trần chỉ được xuất hiện ở cột một 
 | acceptance-status | /acceptance-gate:acceptance-status | command |
 | acceptance-report | /acceptance-gate:acceptance-report | command |
 | uat-session | /acceptance-gate:uat-session | skill |
-| cat-luot | /acceptance-gate:cat-luot | skill |
+| cat-luot | /acceptance-gate:scope-slice | skill |
 | feature-loop | /feature-loop:feature-loop | skill |
-| mo-dot | /dieu-phoi:mo-dot | command |
-| dong-dot | /dieu-phoi:dong-dot | command |
-| xem | /dieu-phoi:xem | command |
-| tiep-tuc | /dieu-phoi:tiep-tuc | command |
-| ban-giao | /dieu-phoi:ban-giao | command |
+| mo-dot | /dispatch:open | command |
+| dong-dot | /dispatch:close | command |
+| xem | /dispatch:status | command |
+| tiep-tuc | /dispatch:resume | command |
+| ban-giao | /dispatch:handoff | command |
 | goal | /goal | harness |
 <!-- COMMAND-NAMES>>> -->
 

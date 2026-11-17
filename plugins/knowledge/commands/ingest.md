@@ -4,7 +4,7 @@ argument-hint: "<loại nguồn> <gốc> — phiên chat, artifact, issue, tệp
 ---
 
 Ghi vào gốc tri thức kho đã khai trong `_acceptance/config.yaml` (khối `tri_thuc`; khuôn:
-`skills/acceptance/references/tri-thuc-template.md` của gói acceptance-gate). Giải `$AG` như `/tri-thuc:kiem` (kho tự
+`skills/acceptance/references/tri-thuc-template.md` của gói acceptance-gate). Giải `$AG` như `/knowledge:health` (kho tự
 host kit đặt `AG=.`).
 
 1. **Gom nguồn ra tệp tạm** ở thư mục nháp của phiên — KHÔNG trong kho tiêu thụ: trích đoạn phiên chat nguyên văn, nội
@@ -23,7 +23,7 @@ node "$AG/scripts/tri-thuc-ghi.mjs" --root . --loai <loai> --goc '<goc>' --ten <
 
 Đọc mã thoát:
 - 0 — đã ghi: in nguyên văn các dòng `raw:` và `trang:` (đường trỏ ghim theo băm, dán được vào bản phạm vi hay hồ sơ) và
-  dòng `commit:`. Lệnh KHÔNG đẩy — đẩy kho giữ tri thức là bước riêng, `/tri-thuc:kiem` nhắc khi còn commit chưa đẩy.
+  dòng `commit:`. Lệnh KHÔNG đẩy — đẩy kho giữ tri thức là bước riêng, `/knowledge:health` nhắc khi còn commit chưa đẩy.
 - 2 — đầu vào sai, không chạy được, hay commit hỏng (đã hoàn lại): in nguyên văn câu lỗi, sửa đúng đối số nó gọi tên.
 - 3 — không đọc được ở đây: kho khai kho riêng mà máy này chưa có bản — in nguyên dòng, trong đó có lệnh `git clone`.
 - 4 — câu hỏi khó-đảo cho người về riêng tư: kho công khai chưa có kho riêng, nơi giữ tài liệu thô đang công khai trên

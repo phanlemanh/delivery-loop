@@ -48,7 +48,7 @@ Các bước, đúng thứ tự:
    bỏ cờ `--tu-merge`: phiên thợ đọc là không tự merge (bấm merge là của người).
 6. **Việc của app.** Giăng Monitor (timeout 30′):
    `tail -n0 -F <thư mục đợt>/su-kien.jsonl | grep --line-buffered '"can_phan":true'`. Tạo lịch 30′ theo
-   khuôn dưới — cùng khuôn với `/dieu-phoi:tiep-tuc`, nên đợt mở bằng lệnh này cũng bàn giao chủ động khi gần
+   khuôn dưới — cùng khuôn với `/dispatch:resume`, nên đợt mở bằng lệnh này cũng bàn giao chủ động khi gần
    hết hạn mức.
 <!-- <<<LICH-30 -->
    Mỗi lần lịch 30′ chạy: gọi `get_usage` rồi

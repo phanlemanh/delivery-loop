@@ -141,7 +141,7 @@ quá tải. Khối mang đúng những chữ ấy kèm số: `hang.gio_may`, `mo
 - **Ngày dự kiến là dự báo ĐÓNG BĂNG, không phải dự báo sống.** Kit ghi dự báo của mốc lúc việc đầu tiên của mốc được mở
   (`--mo-o`), rồi giữ nguyên — nên trang và khối không đổi theo ngày. Mốc chưa có việc nào mở từ bản kit có giờ máy thì
   `du_kien` là `null`: hiện «chưa có ngày dự kiến», đừng tự tính từ ngày mục tiêu. Dự báo theo hôm nay có ở lệnh xem lộ
-  trình (`/road-map:xem`), không ở khối.
+  trình (`/roadmap:status`), không ở khối.
 - **Ngày theo mốc, không theo việc.** Trang không in ngày riêng từng việc; việc dùng ngày của mốc chứa nó (`moc.hang`).
 - **Cờ số đo chưa đủ.** `gio_may.co` khác `null` khi giờ máy là máy ước theo bảng luật (chưa đủ 5 vòng đã giao cùng hạng
   có số đo) — hiện nó cạnh giờ máy như trang in «(máy ước)». `gio_may.phan_tram_chu` nói «chưa ước (k/5 vòng đo)» khi phần
@@ -151,7 +151,7 @@ quá tải. Khối mang đúng những chữ ấy kèm số: `hang.gio_may`, `mo
 
 ### Mô hình hiển thị chung (cùng phiên bản 2, hồ sơ road-map-de-dung)
 
-Luật hiển thị lộ trình sống MỘT chỗ — khối dữ liệu mang sẵn kết quả, và trang kit, lệnh xem lộ trình (`/road-map:xem`) lẫn
+Luật hiển thị lộ trình sống MỘT chỗ — khối dữ liệu mang sẵn kết quả, và trang kit, lệnh xem lộ trình (`/roadmap:status`) lẫn
 trang Lộ trình trong sản phẩm của kho CHỈ VẼ từ đó, không tự lọc lại (chủ kho 17/10: «Lộ trình CRM và lộ trình của phiên đọc
 cùng một nguồn; khi Lộ trình CRM đọc đúng thì phiên cũng phải đồng nhất»). Năm khoá, thay đổi CHỈ THÊM nên phiên bản vẫn là 2:
 
@@ -176,7 +176,7 @@ phải mảng rỗng) và giống từng byte bản trước; khoá không nằm
 không đổi, và bộ đọc mẫu `docDuLieu` giữ nó nguyên vẹn như mọi khoá lạ. Bản chiếu coi «không có khoá» là
 «kho chưa mở cửa tín hiệu». Mảng chỉ mang tín hiệu mà tệp ĐÃ ĐƯỢC GIT THEO DÕI trong chính cây vẽ trang (từ
 2.32.1, hồ sơ `ve-lo-trinh-doc-tin-hieu-cua-cay`): trang là vật commit và CI vẽ lại từ bản tải sạch, nên ý chưa
-commit chỉ lên trang khi được commit — nó vẫn hiện ở thẻ khởi động và `/road-map:xem`. Trường của một phần tử:
+commit chỉ lên trang khi được commit — nó vẫn hiện ở thẻ khởi động và `/roadmap:status`. Trường của một phần tử:
 
 <!-- <<<LO-TRINH-DU-LIEU-TUY-CHON -->
 ```

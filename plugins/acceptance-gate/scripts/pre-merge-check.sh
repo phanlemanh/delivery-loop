@@ -1913,7 +1913,7 @@ if command -v node >/dev/null 2>&1 && [ -f "$CLT_LIB" ]; then
     [ "$_clt_n" -eq 0 ] && { echo "VIOLATION [chan-lo-trinh]: bộ đọc chặn lộ trình thoát $_clt_rc mà không gọi tên hồ sơ — xem dòng trên"; _clt_n=1; }
     violations=$((violations + _clt_n))
   fi
-elif grep -qs '"road-map@' "$ROOT/.claude/settings.json" && grep -qs '^  chan:' "$ACC/config.yaml"; then
+elif grep -qs '"roadmap@' "$ROOT/.claude/settings.json" && grep -qs '^  chan:' "$ACC/config.yaml"; then
   echo "NOTE: luật chặn lộ trình NOT ENFORCED — thiếu node hoặc lib/chan-lo-trinh.cjs (chép lại lớp CI theo đợt phát hành)"
 fi
 

@@ -4,7 +4,7 @@
 // trang, bản chép CI và trang — `product-map.mjs --check` xanh ngay ở commit khởi tạo. Thiết kế:
 // docs/superpowers/specs/2026-10-15-kho-moi-cai-goi-road-map-design.md.
 //
-// Bật CHỈ khi `.claude/settings.json` của kho (tệp đội commit) khai `enabledPlugins["road-map@<marketplace>"] === true`;
+// Bật CHỈ khi `.claude/settings.json` của kho (tệp đội commit) khai `enabledPlugins["roadmap@<marketplace>"] === true`;
 // tên gói và tên marketplace rút từ `.claude-plugin/marketplace.json` của gói. `settings.local.json` và phạm vi người
 // dùng là lựa chọn của MỘT người, không phải của kho — không tính. Không bật → một dòng, 0 byte.
 //
@@ -34,13 +34,13 @@ export const DONG_CHI_LOCAL = 'gói chỉ bật ở .claude/settings.local.json 
 export const DONG_DA_SAN = 'lộ trình đã sẵn — không đổi gì';
 export const DONG_LECH = 'bản chép khác bản gói — chép lại theo đợt phát hành';
 export const DONG_CHUA_CHEP_CI = 'kho chưa chép bộ kiểm CI — bỏ bước chép';
-export const GHI_CHU = 'Thêm việc bằng skill cắt lượt (/acceptance-gate:cat-luot), hoặc viết hàng theo khuôn skills/acceptance/references/lo-trinh-template.json của gói acceptance-gate; mở vòng bằng /feature-loop:feature-loop <mã>.';
+export const GHI_CHU = 'Thêm việc bằng skill cắt lượt (/acceptance-gate:scope-slice), hoặc viết hàng theo khuôn skills/acceptance/references/lo-trinh-template.json của gói acceptance-gate; mở vòng bằng /feature-loop:feature-loop <mã>.';
 const DAU_LO_TRINH = '[only-if-declared: lo_trinh]';
 
 const thoat = (ma, m) => { process.stderr.write(`lo-trinh-khoi-tao: ${m}\n`); process.exit(ma); };
 const docTho = p => { try { return readFileSync(p, 'utf8'); } catch { return null; } };
 
-// Khoá bật `road-map@<marketplace>` — rút từ marketplace.json của gói (một nguồn với plugin-declare.mjs).
+// Khoá bật `roadmap@<marketplace>` — rút từ marketplace.json của gói (một nguồn với plugin-declare.mjs).
 const MARKETPLACE_GOI = path.join(GOI, '.claude-plugin', 'marketplace.json');
 export function khoaBat(marketplacePath = MARKETPLACE_GOI) {
   // Bản cài bố cục plugins/<tên>/: gói mang manifest riêng, không mang tệp khai chợ → khoá từ bảng tên.

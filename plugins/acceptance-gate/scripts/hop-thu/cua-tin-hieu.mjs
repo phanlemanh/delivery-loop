@@ -1,5 +1,5 @@
 // Cửa tín hiệu của kho, nhìn từ gói điều phối (hồ sơ cua-tin-hieu-giua-chien-dich, hàng RM3; B′ §10–§11).
-// Ý không chặn giữa đợt (việc phụ, việc mới) và ý người gửi bằng /road-map:gui thành MỘT tệp tín hiệu trong thư mục
+// Ý không chặn giữa đợt (việc phụ, việc mới) và ý người gửi bằng /roadmap:suggest thành MỘT tệp tín hiệu trong thư mục
 // nguồn ĐẦU của `tin_hieu.nguon` — một bộ ghi cho cả hai bên nêu, thân tệp = thân yêu cầu (khuôn tín hiệu = khuôn
 // yêu cầu của gói). Không bao giờ đè: tệp cùng tên khác thân là một ý khác chưa gom.
 //

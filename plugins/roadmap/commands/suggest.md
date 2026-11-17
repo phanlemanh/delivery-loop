@@ -5,7 +5,7 @@ argument-hint: <một câu nói điều anh gặp>
 
 Chạy được ở mọi phiên trong kho, không khoá: gửi một ý không phải là quyết định (hồ sơ `cua-tin-hieu-giua-chien-dich`,
 B′ §11). Giải `$AG` bằng `resolve-plugin.mjs` của feature-loop (`--plugin acceptance-gate --require
-scripts/gui-tin-hieu.mjs`, như `/road-map:xem`; kho tự host kit đặt `AG=.`), rồi chạy đúng khối dưới, thay
+scripts/gui-tin-hieu.mjs`, như `/roadmap:status`; kho tự host kit đặt `AG=.`), rồi chạy đúng khối dưới, thay
 `<câu của người>` bằng NGUYÊN VĂN `$ARGUMENTS`. Câu đi qua heredoc có nháy nên shell không đụng tới backtick hay `$(…)`
 trong câu — đừng chuyển nó vào dấu nháy kép của dòng lệnh.
 

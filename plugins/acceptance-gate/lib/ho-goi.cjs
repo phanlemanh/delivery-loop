@@ -10,15 +10,15 @@
 // Bên đọc: scripts/plugin-declare.mjs, scripts/lo-trinh-khoi-tao.mjs (khi gói không mang marketplace.json cạnh nó),
 // lib/chan-lo-trinh.cjs, scripts/start-scan.mjs. Răng: tests/scripts/mot-nguon-ten-va-hop-thu.test.mjs (GN-1) giữ bảng
 // ≡ .claude-plugin/marketplace.json — cùng tên theo cùng thứ tự, cùng tập bật-theo-lựa-chọn, cùng tên chợ.
-const CHO = 'acceptance-gate-kit';
-const NGUON_CHO = { source: 'github', repo: 'phanlemanh/acceptance-gate-kit' };
+const CHO = 'delivery-loop';
+const NGUON_CHO = { source: 'github', repo: 'phanlemanh/delivery-loop' };
 const GOI = {
   'acceptance-gate': { vai: 'loi' },
   'feature-loop': { vai: 'feature-loop' },
   'diagram-design': { vai: 'diagram-design' },
-  'dieu-phoi': { vai: 'dieu-phoi', luaChon: true },
-  'road-map': { vai: 'lo-trinh', luaChon: true },
-  'tri-thuc': { vai: 'tri-thuc', luaChon: true },
+  'dispatch': { vai: 'dieu-phoi', luaChon: true },
+  'roadmap': { vai: 'lo-trinh', luaChon: true },
+  'knowledge': { vai: 'tri-thuc', luaChon: true },
 };
 
 function tenTheoVai(vai) {

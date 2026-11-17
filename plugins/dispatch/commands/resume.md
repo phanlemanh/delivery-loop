@@ -26,15 +26,15 @@ Các bước, đúng thứ tự:
    Đợt đang bàn giao tài khoản thì kết quả có thể mang:
    - `can_doc_han_muc`: phiên này chưa có lần đọc mức dùng còn hiệu lực — làm lại bước 0 rồi bước 1, một lần.
    - `khuyen_cho`: tài khoản hiện tại đã quá ngưỡng báo trước — báo chủ kho một dòng «tài khoản này đã dùng <pct>%
-     cửa sổ <cua_so>, đặt lại lúc <dat_lai> — chờ đặt lại, hoặc đổi tài khoản khác rồi gõ lại /dieu-phoi:tiep-tuc».
+     cửa sổ <cua_so>, đặt lại lúc <dat_lai> — chờ đặt lại, hoặc đổi tài khoản khác rồi gõ lại /dispatch:resume».
      Không chuyển gì thêm; đi tiếp bước 3.
    - `ban_giao` với `trang_thai: da-tiep-tuc`: đợt đã rời bàn giao về pha trước; nói một dòng kèm mã bàn giao.
    Kết quả có `hook_thieu: true` (cả dạng `--nhe`): phiên này mở trước khi cài hay nâng gói nên hook của gói không nạp —
    đánh thức không thấy nhịp của nó. Nói nguyên `hook_thieu_cau` một dòng cho chủ kho rồi đi tiếp; việc đúng là mở phiên
-   giám sát mới và gõ lại `/dieu-phoi:tiep-tuc`.
+   giám sát mới và gõ lại `/dispatch:resume`.
 3. **Việc của app — chỉ tạo cái còn thiếu.** Giăng Monitor (timeout 30′):
    `tail -n0 -F <thư mục đợt>/su-kien.jsonl | grep --line-buffered '"can_phan":true'`. Lịch 30′ của đợt
-   chưa có thì tạo theo khuôn dưới (cùng khuôn với bước 6 của `/dieu-phoi:mo-dot`).
+   chưa có thì tạo theo khuôn dưới (cùng khuôn với bước 6 của `/dispatch:open`).
 <!-- <<<LICH-30 -->
    Mỗi lần lịch 30′ chạy: gọi `get_usage` rồi
    `node "${CLAUDE_PLUGIN_ROOT}/scripts/dieu-phoi.mjs" han-muc --nguon get-usage --phien <mã phiên ngắn> --doc '<kết quả>'`,

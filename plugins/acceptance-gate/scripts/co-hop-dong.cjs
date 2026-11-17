@@ -17,7 +17,7 @@ const KHOA_CO = ['muc_tieu', 'cho_phep_den', 'tach_tu', 'tran_luot_cham', 'it_du
 // Skill cắt lượt tìm theo khối CAT-LUOT-CO nó mang, không theo tên thư mục (hồ sơ goi-cheo-loi-dieu-phoi: kịch bản chuyển
 // nhà đổi tên thư mục skill); không thấy thì giữ đường cũ.
 const TEP_SKILL = require(path.join(__dirname, 'tim-skill.cjs')).timSkill(path.join(__dirname, '..'), 'CAT-LUOT-CO',
-  path.join(__dirname, '..', 'skills', 'cat-luot', 'SKILL.md'));
+  path.join(__dirname, '..', 'skills', 'scope-slice', 'SKILL.md'));
 const KHOI_CO_RE = /<!-- <<<CAT-LUOT-CO -->\r?\n```[a-z]*\r?\n([\s\S]*?)```\r?\n<!-- CAT-LUOT-CO>>> -->/;
 function docKhoang(txt) {
   const m = String(txt ?? '').match(KHOI_CO_RE);

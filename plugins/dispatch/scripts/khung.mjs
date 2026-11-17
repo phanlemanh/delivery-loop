@@ -146,6 +146,6 @@ export function chuKhung(kq, { bayGio = Number.isFinite(kq?.bay_gio) ? kq.bay_gi
   }
   if (kq.canh_bao) dong.push(`${CO} ${kq.canh_bao}`);
   const t = gio(kq.nhip_cuoi);
-  dong.push(`${t ? `Cập nhật ${t} · ` : ''}chi tiết máy: /dieu-phoi:xem`);
+  dong.push(`${t ? `Cập nhật ${t} · ` : ''}chi tiết máy: /dispatch:status`);
   return dong.join('\n');
 }

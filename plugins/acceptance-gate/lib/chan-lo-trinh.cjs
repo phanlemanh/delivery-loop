@@ -56,7 +56,7 @@ function gocKho(tuThuMuc) {
   return null;
 }
 
-// Khoá bật `road-map@<marketplace>` — rút từ marketplace.json của gói (cùng luật `khoaBat` của RM4, kể cả nhánh dự phòng).
+// Khoá bật `roadmap@<marketplace>` — rút từ marketplace.json của gói (cùng luật `khoaBat` của RM4, kể cả nhánh dự phòng).
 const MARKETPLACE_GOI = path.join(GOI, '.claude-plugin', 'marketplace.json');
 function khoaBat(marketplacePath = MARKETPLACE_GOI) {
   // Bản cài bố cục plugins/<tên>/: gói mang manifest riêng, không mang tệp khai chợ → khoá từ bảng tên. Bản chép CI trong
@@ -74,7 +74,7 @@ function khoaBat(marketplacePath = MARKETPLACE_GOI) {
 
 // → { bat: bool } · ném { ma: 3 } khi .claude/settings.json không phải JSON. Chỉ settings.json (của đội).
 // `khoa` null = bộ đọc chạy từ BẢN CHÉP CI trong kho tiêu thụ (không có marketplace.json của gói): nhận mọi khoá
-// `road-map@<marketplace>` bật trong settings.json của chính kho — tệp ấy là lựa chọn của đội, không phải của một người.
+// `roadmap@<marketplace>` bật trong settings.json của chính kho — tệp ấy là lựa chọn của đội, không phải của một người.
 function docBat(root, khoa) {
   const t = docTho(path.join(root, '.claude', 'settings.json'));
   if (t == null) return { bat: false };

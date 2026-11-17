@@ -138,7 +138,7 @@ worktree/nhánh đọc từ git của `<path>`.
      xác nhận nó là T1 rồi KẾT THÚC `/acceptance-gate:start` — người ra lệnh sửa ở lượt kế,
      ngoài nghi thức này (lệnh `/acceptance-gate:start` không sửa gì, kể cả việc vặt).
    - **Đợt đang chạy** (`dotDangChay` — gói dieu-phoi, hồ sơ dieu-phoi-mo-dot-mot-lenh): khoá vắng →
-     KHÔNG in gì. Có khoá → in đúng một dòng `đợt <dotDangChay.ten> đang chạy → /dieu-phoi:xem`.
+     KHÔNG in gì. Có khoá → in đúng một dòng `đợt <dotDangChay.ten> đang chạy → /dispatch:status`.
      Hàng kế mà một dãy của đợt đang giữ có `hangKe.thamSo` null, nên không thành lựa chọn mở.
    <!-- <<<START-LO-TRINH -->
    - **Lộ trình** (`loTrinh` — ổ cắm `lo_trinh.tep` trong `_acceptance/config.yaml`, một tệp hoặc

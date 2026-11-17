@@ -1,5 +1,5 @@
 ---
-name: cat-luot
+name: scope-slice
 description: Cắt một bản phạm vi (danh sách mã của đội sản phẩm, một khảo sát, hoặc Core của quét hình thái) thành các hàng của lộ trình kho theo sáu luật, kèm mục chờ điều kiện có lý do, việc vận hành của người ra khỏi kho (không vào bản phạm vi, liệt «Ra khỏi kho» ở mô tả PR), và bảng phủ máy sinh — mọi mã phát triển ở đúng một chỗ. Dùng khi kho khai lo_trinh.tep và một đợt phạm vi mới tới: «cắt lượt», «đưa bản phạm vi vào lộ trình», «thêm đợt mới vào kế hoạch», «cắt Core thành hàng». KHÔNG dùng để mở vòng một hàng (đó là feature-loop), KHÔNG để ghi trạng thái vào tệp lộ trình, KHÔNG xếp điểm ưu tiên tự động.
 ---
 

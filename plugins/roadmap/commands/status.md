@@ -14,8 +14,8 @@ nghĩa là ngày dự kiến còn là cận sớm vì chưa vòng nào đo giờ
 chưa từng commit, sổ tự áp hỏng…) — in nguyên văn, đừng bỏ. Thoát 1 thì KHÔNG được nói «không có đề xuất»: hoặc kho chưa
 khai lộ trình (nói đúng một dòng, kèm chỗ khai `lo_trinh.tep` trong `_acceptance/config.yaml`), hoặc một tệp lộ trình không
 đọc được — in nguyên văn dòng lỗi «không đọc được tệp ý định — …» cùng phần bản đồ của các tệp còn lại. Lệnh không ghi tệp
-nào và không đổi kế hoạch. Muốn miễn trừ một hàng khỏi tự áp: `/road-map:ghim <mã>`; trả lại một lần máy đã dời:
-`/road-map:tra-lai <mã>` (hai lệnh chỉ người gõ).
+nào và không đổi kế hoạch. Muốn miễn trừ một hàng khỏi tự áp: `/roadmap:pin <mã>`; trả lại một lần máy đã dời:
+`/roadmap:undo <mã>` (hai lệnh chỉ người gõ).
 
 <!-- <<<RM-XEM-LENH -->
 ```

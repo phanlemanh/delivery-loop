@@ -36,7 +36,7 @@ export function chanDoan(cwd, { mo = null, goi = null, phien = null, chiTiet = f
   const thuMuc = timThuMucDot(cwd);
   const muc = (m, trangThai, viec = '') => ({ muc: m, trang_thai: trangThai, viec });
   if (!thuMuc) {
-    const ra = [muc('co-dot', 'thieu', 'chưa có đợt nào đang chạy — mở bằng /dieu-phoi:mo-dot <tên>'), ...MUC.slice(1).map((m) => muc(m, 'khong-ap'))];
+    const ra = [muc('co-dot', 'thieu', 'chưa có đợt nào đang chạy — mở bằng /dispatch:open <tên>'), ...MUC.slice(1).map((m) => muc(m, 'khong-ap'))];
     if (mo) {
       let dir = null;
       try {
@@ -78,7 +78,7 @@ export function chanDoan(cwd, { mo = null, goi = null, phien = null, chiTiet = f
   const giamSat = vai?.giam_sat?.phien ?? null;
   if (!phien) them('giam-sat', 'khong-ap', 'gọi với --phien để biết phiên này có phải giám sát');
   else if (giamSat === phien) them('giam-sat', 'du', phien);
-  else them('giam-sat', 'thieu', `giám sát hiện tại là ${giamSat ?? '(chưa ai)'} — chạy /dieu-phoi:tiep-tuc để nhận vai`);
+  else them('giam-sat', 'thieu', `giám sát hiện tại là ${giamSat ?? '(chưa ai)'} — chạy /dispatch:resume để nhận vai`);
   // TC1: nhịp của phiên đọc bằng `nhipCuaPhien` — `--phien` mang mã app hay mã CLI đều nối được tệp nhịp.
   const phienCli = phien && giamSat === phien ? vai?.giam_sat?.phien_cli ?? null : null;
   if (!phien) them('hook-phien', 'khong-ap', 'gọi với --phien để kiểm hook của phiên này');
@@ -86,7 +86,7 @@ export function chanDoan(cwd, { mo = null, goi = null, phien = null, chiTiet = f
   else them('hook-phien', 'thieu', 'hook của gói chưa bắn trong phiên này — kiểm gói dieu-phoi đã cài cho kho và phiên đã nạp lại');
   // Đường đọc-cũ (TC1): vai đời trước giữ mã app (`local_…`), tệp nhịp chưa mang `ma_app` → không nối được; nói ra, không chặn.
   if (giamSat?.startsWith('local_') && !vai?.giam_sat?.phien_cli && !nhipCuaPhien(thuMuc, { phien: giamSat }) && docNhipSong(thuMuc).some((n) => !n.ma_app)) {
-    them('vai-ma', 'vang', 'vai giữ mã app nhưng nhịp chưa mang mã app — chạy lại /dieu-phoi:tiep-tuc để vai ghi mã CLI');
+    them('vai-ma', 'vang', 'vai giữ mã app nhưng nhịp chưa mang mã app — chạy lại /dispatch:resume để vai ghi mã CLI');
   }
   let keHoach = [];
   try {

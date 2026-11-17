@@ -1,5 +1,5 @@
 ---
-name: gom-tin-hieu
+name: signal-intake
 description: Gom các tín hiệu mọi người gửi vào cửa của kho thành nhóm đặt tên bằng tiếng sản phẩm theo trục kết quả người dùng — mỗi tín hiệu ở đúng một nhóm, lẻ kèm lý do, hoặc đã phủ bởi việc đã giao — ghi thành một bản gom (cũng là bản phạm vi của cắt lượt), chạy răng phủ tới xanh, và in đường đi tín hiệu → nhóm → việc → hồ sơ cho người gửi. Dùng khi kho khai tin_hieu trong _acceptance/config.yaml và có tín hiệu mới: «gom tín hiệu», «phân loại góp ý», «gom phát sinh thành nhóm», «tín hiệu của tôi tới đâu rồi». KHÔNG dùng để cắt nhóm thành hàng (đó là cat-luot), KHÔNG để mở vòng một hàng (feature-loop), KHÔNG xếp điểm ưu tiên tự động.
 ---
 

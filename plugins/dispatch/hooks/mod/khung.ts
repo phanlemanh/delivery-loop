@@ -6,11 +6,11 @@ import { chuXem } from '../../scripts/mo-hinh.mjs'
 
 // Phần mod khung trạng thái đợt (DP6b, hồ sơ trang-thai-dot-dieu-phoi-tho, thiết kế §2.3). CHỈ ĐỌC: gọi
 // `dieu-phoi.mjs xem --json --khung` theo nhịp, vẽ dải trên ô nhập và pane (khung định vị — hồ sơ khung-dot-dinh-vi),
-// trả lời /dieu-phoi:xem bằng chữ `xem` không qua model. Không
+// trả lời /dispatch:status bằng chữ `xem` không qua model. Không
 // ghi tệp, không nghe sự kiện cổng nào (bảng MOD-SU-KIEN). Hook lệnh cố ý KHÔNG có .catch: CLI lỗi thì hook ném,
-// engine bỏ qua nó và chạy lệnh markdown commands/xem.md như cũ — đường lùi là chính lệnh cũ.
+// engine bỏ qua nó và chạy lệnh markdown commands/status.md như cũ — đường lùi là chính lệnh cũ.
 const PANE = 'dieu-phoi-dot'
-const khung = atom({ plugin: 'dieu-phoi', key: 'khung' } as const, null as KhungDot)
+const khung = atom({ plugin: 'dispatch', key: 'khung' } as const, null as KhungDot)
 
 async function docDot($: any): Promise<NonNullable<KhungDot>> {
   const luc = await $.clock.now()
@@ -59,7 +59,7 @@ export const dangKyKhung = (on: On) => {
     return h(Box, { flexDirection: 'column' }, ...dong.map((d) => h(Text, {}, d)))
   })
 
-  on('command.run', { command: 'dieu-phoi:xem' }, async ($) => {
+  on('command.run', { command: 'dispatch:status' }, async ($) => {
     const moi = await docDot($)
     if (!moi.kq) throw new Error(moi.loi ?? DONG_LOI)
     await update($, khung, () => moi)

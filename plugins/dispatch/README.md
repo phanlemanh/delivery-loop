@@ -7,7 +7,7 @@ Mã này **không** chứa gì riêng của kho. Mọi giá trị riêng nằm t
 ## Cài cho một kho
 
 ```
-claude plugin install dieu-phoi@acceptance-gate-kit --scope project
+claude plugin install dispatch@delivery-loop --scope project
 ```
 
 Gói gắn sáu khối hook qua `hooks/hooks.json` của chính nó (chặn S4 không khoá, nhịp, chờ người ×2, lưới hết hạn
@@ -17,7 +17,7 @@ in gì, không tạo tệp. `acceptance-init` KHÔNG tự bật gói này — kh
 Đường gói (dùng cho mọi lệnh dưới đây):
 
 ```
-GOI=$(node <gói feature-loop>/scripts/resolve-plugin.mjs --plugin dieu-phoi)
+GOI=$(node <gói feature-loop>/scripts/resolve-plugin.mjs --plugin dispatch)
 ```
 
 ## Mở đợt (phiên giám sát làm, sau khi owner duyệt thẻ khởi tạo)
@@ -41,7 +41,7 @@ GOI=$(node <gói feature-loop>/scripts/resolve-plugin.mjs --plugin dieu-phoi)
 
 ## Tiếp tục đợt (sau khi app khởi động lại, hết ngữ cảnh, Monitor hết hạn)
 
-Gõ `/dieu-phoi:tiep-tuc` ở bất kỳ phiên nào trong kho. CLI `tiep-tuc --phien <mã>` nhận vai giám sát, chạy
+Gõ `/dispatch:resume` ở bất kỳ phiên nào trong kho. CLI `tiep-tuc --phien <mã>` nhận vai giám sát, chạy
 lại bộ phát lịch nếu chết, và trả kế hoạch cho từng dãy; lệnh người chỉ làm đúng kế hoạch đó (Monitor, lịch
 30′, nhóm thanh bên, chip cho dãy không còn nhịp sống mà còn hàng để giao). Mỗi lần thức, phiên giám sát chạy
 dạng `--nhe`.
@@ -53,10 +53,10 @@ Thợ ghi vào thư mục đợt bằng lệnh con (`xin`, `nha`, `yeu-cau`) —
 Khai ngưỡng ở khoá `han_muc` của `dieu-phoi.config.json` (khuôn: `{bao_truoc_pct: 80, ban_giao_pct: 90,
 cho_ban_giao_phut: 20, cho_dat_lai_phut: 45}`; không khai thì bộ phát lịch không xét hạn mức). Mức dùng vào
 `han-muc.json` qua lệnh con `han-muc` — từ mod của gói (`hooks/mod/`), từ `get_usage` mỗi lần giám sát thức và
-mỗi lần lịch 30′ chạy. Chạm ngưỡng bàn giao (hoặc gõ `/dieu-phoi:ban-giao`): bộ phát lịch ngừng cấp lượt, thợ
+mỗi lần lịch 30′ chạy. Chạm ngưỡng bàn giao (hoặc gõ `/dispatch:handoff`): bộ phát lịch ngừng cấp lượt, thợ
 nhận lời nhắc trong phiên, commit WIP và chạy `node <thư mục đợt>/loi/dieu-phoi.mjs ban-giao-xong` (kèm `--wip
 "<mô tả>"` để lệnh commit hộ); máy dựng `ban-giao.json` từ git. Đổi tài khoản, mở một phiên trong kho, gõ
-`/dieu-phoi:tiep-tuc`. Lưới cuối: hook `StopFailure` commit WIP khi một thợ chết vì hạn mức.
+`/dispatch:resume`. Lưới cuối: hook `StopFailure` commit WIP khi một thợ chết vì hạn mức.
 
 ## Trong đợt
 
@@ -87,7 +87,7 @@ nhận lời nhắc trong phiên, commit WIP và chạy `node <thư mục đợt
   không ghi câu của chính mình bằng sự kiện mang `can_phan:true`. Câu rỗng hay mã không mở → thoát 2, không ghi gì.
   `xem --json` liệt câu đang mở ở khoá `hoi_chu_kho` — khoá chỉ có khi có câu mở. Không tự đóng câu khi có tin vào
   phiên giám sát (lịch 30′ và tin liên phiên cũng vào đó): quên `hoi-xong` thì khung báo dư kèm tuổi câu.
-  - Giới hạn đã khai: giám sát GỌI `hoi` là chỉ dẫn ở `/dieu-phoi:tiep-tuc`, không có máy giữ. Ngưỡng mở vòng hook
+  - Giới hạn đã khai: giám sát GỌI `hoi` là chỉ dẫn ở `/dispatch:resume`, không có máy giữ. Ngưỡng mở vòng hook
     tự ghi: ≥1 lần trên đợt thật dải báo thiếu một câu giám sát đã hỏi.
 - Mỗi sự kiện `can_phan`: đọc dòng sự kiện. Với yêu cầu, ghi `tra-loi/<id>.json` gồm
   `{ket_qua, boi:"giam-sat", ly_do, luc}` và một dòng Nhật ký. Với `dich:"owner"`: gom lại, push tối
@@ -107,9 +107,9 @@ nhận lời nhắc trong phiên, commit WIP và chạy `node <thư mục đợt
     ngắn từ tệp lộ trình (`ten_ngan`, rồi `ten`, rồi sáu từ đầu câu giao) và mã trong ngoặc — hàng không tra được
     tên mang cờ «chưa có tên trong lộ trình» · giờ địa phương tương đối. Tên tra qua `tep` + `ma` của hàng thi
     công, không có `tep` thì qua `nguon_hang` của gói. Mod đọc `xem --json --khung`; `xem --khung` in cùng khung ra
-    terminal. Dòng `xem`, `xem --json` và lệnh `/dieu-phoi:xem` giữ chữ cho máy đọc như cũ.
+    terminal. Dòng `xem`, `xem --json` và lệnh `/dispatch:status` giữ chữ cho máy đọc như cũ.
   - Dải làm mới mỗi 20″ khi có đợt và mỗi 120″ khi không; kho không có đợt thì không có dải.
-  - `/dieu-phoi:xem` trả lời ngay, không tốn lượt model. Khi mod không chạy hoặc CLI lỗi, lệnh markdown cũ trả lời
+  - `/dispatch:status` trả lời ngay, không tốn lượt model. Khi mod không chạy hoặc CLI lỗi, lệnh markdown cũ trả lời
     qua model như trước.
   - Mod chỉ đọc qua CLI và vẽ: không ghi tệp đợt, không nghe sự kiện cổng nào, không trả lời «cho phép». Răng
     nằm ở `tests/dieu-phoi/kiem-khung.mjs` KH-09.
@@ -194,7 +194,7 @@ Giới hạn đã khai, kèm ngưỡng mở lại:
   (`permission_prompt`) của phiên; hộp quyền bật ra bên trong một tác tử của Workflow (lượt chấm S4 chạy như thế)
   có thể không bắn sự kiện đó ở phiên cha. Chưa đo thì coi là KHÔNG tới: S4 đứng vì hộp quyền có thể không
   có tệp chờ người, giám sát không thức, bảng không hiện. Mọi kho chạy đợt bằng gói **khai trong phần riêng của
-  đợt** (`LUAT-rieng.md` khi mở bằng `/dieu-phoi:mo-dot`) một luật: thợ đứng chờ người — kể cả chờ hộp quyền trong
+  đợt** (`LUAT-rieng.md` khi mở bằng `/dispatch:open`) một luật: thợ đứng chờ người — kể cả chờ hộp quyền trong
   lượt chấm — thì tự ghi yêu cầu `can-nguoi`, không chỉ hỏi bằng chữ trong hội thoại. Khuôn `LUAT.md` của gói
   chưa mang luật này; kho đã có nó trong luật đợt của mình thì giữ nguyên khi chuyển. Giữ cho tới khi phép đo trả
   «tới». Ngưỡng: đợt thử có ≥ 1 lượt S4 đứng vì
@@ -312,9 +312,9 @@ bản cũ làm tệp mẫu). Vắng khoá thì không khai gì. Hàm `kiemChuyen
 
 Thứ tự chuyển, chạy ở quãng lặng (không lượt S4 nào đang chạy):
 
-1. `claude plugin install dieu-phoi@acceptance-gate-kit --scope project` ở cây gốc VÀ mỗi cây phụ có phiên.
+1. `claude plugin install dispatch@delivery-loop --scope project` ở cây gốc VÀ mỗi cây phụ có phiên.
    Bộ đệm gói khoá theo số phiên bản: báo «already at latest» mà `claude plugin list --json` vẫn ghi số cũ thì
-   `claude plugin uninstall dieu-phoi@acceptance-gate-kit --scope project` rồi cài lại.
+   `claude plugin uninstall dispatch@delivery-loop --scope project` rồi cài lại.
 2. `node "$GOI/scripts/dieu-phoi.mjs" xem --kiem-chuyen`, rồi gỡ mọi dòng nó in thuộc nhóm **đang chạy**: khối hook
    trong `.claude/settings*.json` gọi bản cũ, hook git, `package.json`, eval của hồ sơ đang mở, `LUAT.md` của đợt
    đang chạy, import tương đối; eval sống của hồ sơ đã ký thì khai «thay bởi» (`status: not-run` +

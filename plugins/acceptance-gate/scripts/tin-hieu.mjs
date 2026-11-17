@@ -9,7 +9,7 @@
 // Một hộp thư: khuôn tín hiệu = khuôn yêu cầu của gói Điều phối, kiểm bằng CHÍNH `kiemYeuCau` của nó
 // (import, không chép). Bản gom = bản phạm vi của cắt lượt, đọc lại bằng CHÍNH `docPhamVi` (import).
 // Danh sách loại được gom và khuôn mẫu sống ở skills/acceptance/references/tin-hieu-template.md; chính
-// sách trục sống ở khối GOM-TRUC của skills/gom-tin-hieu/SKILL.md — mã không mang giá trị nào của chúng.
+// sách trục sống ở khối GOM-TRUC của skills/signal-intake/SKILL.md — mã không mang giá trị nào của chúng.
 //
 //   node scripts/tin-hieu.mjs --root . --rang                 0 xanh · 1 đỏ · 2 không chạy được
 //   node scripts/tin-hieu.mjs --root . --chua-gom             JSON: tín hiệu chưa có chỗ + việc đã giao
@@ -47,7 +47,7 @@ export const TEP_KHUON = path.join(__dirname, '..', 'skills', 'acceptance', 'ref
 // Skill gom tìm theo khối GOM-TRUC nó mang, không theo tên thư mục (hồ sơ goi-cheo-loi-dieu-phoi: kịch bản chuyển nhà đổi
 // tên thư mục skill); không thấy thì giữ đường cũ.
 export const TEP_SKILL = require(path.join(__dirname, 'tim-skill.cjs')).timSkill(path.join(__dirname, '..'), 'GOM-TRUC',
-  path.join(__dirname, '..', 'skills', 'gom-tin-hieu', 'SKILL.md'));
+  path.join(__dirname, '..', 'skills', 'signal-intake', 'SKILL.md'));
 const DA_GIAO = new Set([...DA_THONG_CONG_2, ...DA_DONG_THUC_TE]);
 const chuoi = v => (v == null ? '' : String(v).trim());
 const doc = p => { try { return readFileSync(p, 'utf8'); } catch { return null; } };

@@ -143,7 +143,7 @@ export function buocBanGiao(thuMuc, { nowMs = null, cuongBuc = false } = {}) {
       dich: 'owner',
       // Đường cưỡng bức là tiep-tuc: người đã có mặt, câu «đổi tài khoản» không phải việc chờ nữa (review M1).
       can_phan: !cuongBuc,
-      tin: `Đã bàn giao đợt ${hv.dot} lúc ${gio}Z. Đổi tài khoản, rồi mở một phiên trong kho và gõ /dieu-phoi:tiep-tuc (lệnh chưa có sau khi đổi → gọi get_usage, rồi ${cli} han-muc --nguon get-usage --phien <mã phiên này> --doc '<kết quả>', rồi ${cli} tiep-tuc --phien <mã phiên này> --json).`,
+      tin: `Đã bàn giao đợt ${hv.dot} lúc ${gio}Z. Đổi tài khoản, rồi mở một phiên trong kho và gõ /dispatch:resume (lệnh chưa có sau khi đổi → gọi get_usage, rồi ${cli} han-muc --nguon get-usage --phien <mã phiên này> --doc '<kết quả>', rồi ${cli} tiep-tuc --phien <mã phiên này> --json).`,
     });
     return { pha: 'cho-tiep-tuc', dung: true, ban_giao: bg };
   }

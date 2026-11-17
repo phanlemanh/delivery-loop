@@ -233,9 +233,9 @@ Omit the `capture` block if the repo has no UI evidence need.
     node "${CLAUDE_PLUGIN_ROOT}/scripts/plugin-declare.mjs" --root <path> --write
     It parses and MERGES: every other key the team keeps in that file survives;
     invalid JSON → exit 3 and nothing is written. It declares:
-    - acceptance-gate@acceptance-gate-kit
-    - feature-loop@acceptance-gate-kit
-    - diagram-design@acceptance-gate-kit
+    - acceptance-gate@delivery-loop
+    - feature-loop@delivery-loop
+    - diagram-design@delivery-loop
     - superpowers@claude-plugins-official
     BRANCH ON THE EXIT CODE — never report success unconditionally:
     - exit 0 → tell the human ONE line: "đã khai plugin trong `.claude/settings.json` —
@@ -262,7 +262,7 @@ Omit the `capture` block if the repo has no UI evidence need.
 5d. Roadmap for a repo that chose the `road-map` package (ADR 0025, rung 2 — hồ sơ
     kho-moi-cai-goi-road-map). Run it every time, after 5b; it decides by itself and
     writes NOTHING unless the repo's committed `.claude/settings.json` enables
-    `road-map@<marketplace>` (a personal `settings.local.json` or user-scope install
+    `roadmap@<marketplace>` (a personal `settings.local.json` or user-scope install
     does not count — the roadmap is the repo's choice):
     <!-- <<<INIT-LO-TRINH -->
     node "${CLAUDE_PLUGIN_ROOT}/scripts/lo-trinh-khoi-tao.mjs" --root <path> --write

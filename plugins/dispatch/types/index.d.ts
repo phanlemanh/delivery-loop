@@ -4,6 +4,6 @@ export type KhungDot = { kq: Record<string, any> | null; loi: string | null; luc
 
 declare module 'claude-code' {
   interface PluginState {
-    'dieu-phoi': { khung: KhungDot }
+    'dispatch': { khung: KhungDot }
   }
 }

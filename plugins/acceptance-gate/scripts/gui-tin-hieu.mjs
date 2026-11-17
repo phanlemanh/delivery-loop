@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// gui-tin-hieu.mjs — người gửi MỘT ý vào cửa tín hiệu của kho (lệnh /road-map:gui; hồ sơ cua-tin-hieu-giua-chien-dich,
+// gui-tin-hieu.mjs — người gửi MỘT ý vào cửa tín hiệu của kho (lệnh /roadmap:suggest; hồ sơ cua-tin-hieu-giua-chien-dich,
 // hàng RM3, B′ §11). Cùng bộ ghi với bộ xét của đợt (`ghiVaoCua` của gói điều phối) — một khuôn tệp cho thợ và người.
 //
 //   node scripts/gui-tin-hieu.mjs --root <kho> --noi-dung "<câu>"     (hoặc --noi-dung - : đọc câu từ stdin)

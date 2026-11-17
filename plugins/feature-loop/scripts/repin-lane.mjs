@@ -155,7 +155,7 @@ const AG_FLOOR = AG_ENGINE.map(r => r.since).reduce((a, b) => (verNum(b) > verNu
 const shq = (s) => (/^[\w@%+=:,./-]+$/.test(s) ? s : `'${String(s).replace(/'/g, `'\\''`)}'`);
 const nguon = flags['ag-root']
   ? `nguồn bộ máy: --ag-root ${flags['ag-root']}`
-  : 'nguồn bộ máy: plugin cache (resolve-plugin.mjs chọn, không có --ag-root) — cập nhật plugin: claude plugin update acceptance-gate@acceptance-gate-kit';
+  : 'nguồn bộ máy: plugin cache (resolve-plugin.mjs chọn, không có --ag-root) — cập nhật plugin: claude plugin update acceptance-gate@delivery-loop';
 // Dòng `lệnh dò:` in đường TUYỆT ĐỐI tới resolve-plugin.mjs: người chạy đứng ở
 // --root, không ở gốc kit. resolve-plugin chỉ kiểm tệp có mặt, không kiểm
 // export — nó có thể chỉ ra một bản đã cài vẫn cũ; lượt kế sẽ dừng lại ở chính

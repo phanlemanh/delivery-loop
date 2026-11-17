@@ -148,7 +148,7 @@ export function tiepTuc(cwd, { phien, nhe = false, nowMs = null, chay = null }) 
 // Hook của gói có nạp trong phiên giám sát không (TC1). Lệnh chạy trong Bash của chính phiên nên `CLAUDE_CODE_SESSION_ID`
 // là mã CLI của nó; lời dặn đặt bước đọc hạn mức (một lời gọi công cụ) trước lệnh này, nên hook đã nạp thì tệp nhịp đã có.
 // Ngoài app (biến vắng) không xét gì.
-export const CAU_HOOK_THIEU = 'hook của gói chưa nạp trong phiên này — mở phiên giám sát mới rồi chạy /dieu-phoi:tiep-tuc';
+export const CAU_HOOK_THIEU = 'hook của gói chưa nạp trong phiên này — mở phiên giám sát mới rồi chạy /dispatch:resume';
 function xetHookPhien(thuMuc, phien, { nowMs = null, phienCli = process.env.CLAUDE_CODE_SESSION_ID } = {}) {
   if (!laMaPhien(phienCli)) return {};
   const gs = docVai(thuMuc)?.giam_sat;

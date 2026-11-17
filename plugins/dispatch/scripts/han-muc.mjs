@@ -163,7 +163,7 @@ export function xetHanMucNhip(thuMuc, { cfg, cu = {}, nowMs = null, pha }) {
         daBao.add(`cho:${k}`).add(`gan:${k}`);
       } else {
         vao ??= `chạm ngưỡng ${w.ten} ${w.pct}% (ngưỡng ${w.nguong_ban_giao}%)`;
-        if (!daBao.has(`cham:${k}`)) ghiSuKien(thuMuc, { loai: 'cham-han-muc', cua_so: w.ten, pct: w.pct, nguong: w.nguong_ban_giao, viec: '/dieu-phoi:ban-giao', can_phan: true });
+        if (!daBao.has(`cham:${k}`)) ghiSuKien(thuMuc, { loai: 'cham-han-muc', cua_so: w.ten, pct: w.pct, nguong: w.nguong_ban_giao, viec: '/dispatch:handoff', can_phan: true });
         daBao.add(`cham:${k}`).add(`gan:${k}`);
       }
     } else if (w.muc === 'gan' && !daBao.has(`gan:${k}`)) {
@@ -177,7 +177,7 @@ export function xetHanMucNhip(thuMuc, { cfg, cu = {}, nowMs = null, pha }) {
   if (!vao && dau.length && !choDatLai) {
     vao = `thợ ${[...new Set(dau.map((x) => x.day))].sort().join(', ')} chết vì hạn mức`;
     const khoa = dau.map((x) => `dau:${x.day}@${x.luc}`);
-    if ((pha === 'dang-chay' || pha === 'tam-dung') && khoa.some((x) => !daBao.has(x))) ghiSuKien(thuMuc, { loai: 'cham-han-muc', ly_do: vao, viec: '/dieu-phoi:ban-giao', can_phan: true });
+    if ((pha === 'dang-chay' || pha === 'tam-dung') && khoa.some((x) => !daBao.has(x))) ghiSuKien(thuMuc, { loai: 'cham-han-muc', ly_do: vao, viec: '/dispatch:handoff', can_phan: true });
     for (const x of khoa) daBao.add(x);
   }
   if (vao && !choDatLai && (pha === 'dang-chay' || pha === 'tam-dung')) {

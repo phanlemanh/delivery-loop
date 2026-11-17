@@ -14,8 +14,8 @@ import { createRequire } from 'node:module';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_MARKETPLACE = path.resolve(HERE, '..', '.claude-plugin', 'marketplace.json');
-export const MARKETPLACE_NAME = 'acceptance-gate-kit';
-export const MARKETPLACE_SOURCE = { source: 'github', repo: 'phanlemanh/acceptance-gate-kit' };
+export const MARKETPLACE_NAME = 'delivery-loop';
+export const MARKETPLACE_SOURCE = { source: 'github', repo: 'phanlemanh/delivery-loop' };
 // Bảng tên của họ plugin (hồ sơ goi-cheo-loi-dieu-phoi) — nguồn tên CHỈ cho bản cài bố cục plugins/<tên>/: gói mang
 // manifest riêng (.claude-plugin/plugin.json) mà không mang marketplace.json. Gói mang tệp khai chợ (bố cục cũ, kể cả chợ
 // fork) → đọc tệp như cũ, từng byte; bản chép lạc thiếu cả hai → thoát 4 như cũ (PD9). Nạp lười: bản chép lạc không có lib/.

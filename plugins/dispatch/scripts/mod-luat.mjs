@@ -92,7 +92,7 @@ export function kiemKhungMod(gocGoi, { suKienValidate = null } = {}) {
 // cũ), và mọi argv viết thẳng của `$.process.run` trong phần khung kết thúc bằng một dạng CHỈ ĐỌC của `xem`:
 // `xem --json`, hay `xem --json --khung` (hồ sơ khung-dot-dinh-vi).
 export const GOI_CAM = ['$.fs.write', '$.fs.remove', '$.store.set', '$.session.send', '$.session.append', '$.prompt.submit', '$.tool.', '$.command.run'];
-export const CONG_DUOC_PHEP = ['command.run{command=dieu-phoi:xem}'];
+export const CONG_DUOC_PHEP = ['command.run{command=dispatch:status}'];
 export const TEP_KHUNG = 'khung.ts';
 export const DUOI_DOC = ["'xem','--json'", "'xem','--json','--khung'"];
 export function kiemChiVe(gocGoi, { notes = [], gatingHooks = [] } = {}) {

@@ -12,7 +12,7 @@ import { viecCho } from './viec-cho.mjs';
 export const DANH_THUC = { khong: 'khong', nhanGiamSat: 'nhan-giam-sat', baoChuKho: 'bao-chu-kho' };
 export const NGUONG_THUC_MS = 40 * PHUT_MS;
 export const NGUONG_THUC_LEO_MS = 2 * NGUONG_THUC_MS;
-const CAU_HOOK = 'phiên giám sát chạy không có hook của gói (mở trước khi cài hay nâng gói) — mở phiên giám sát mới rồi chạy /dieu-phoi:tiep-tuc';
+const CAU_HOOK = 'phiên giám sát chạy không có hook của gói (mở trước khi cài hay nâng gói) — mở phiên giám sát mới rồi chạy /dispatch:resume';
 
 export function danhThuc(cwd, { nowMs = null } = {}) {
   const thuMuc = timThuMucDot(cwd);
@@ -29,7 +29,7 @@ export function danhThuc(cwd, { nowMs = null } = {}) {
     return kq(DANH_THUC.baoChuKho, `${ds.length} việc chờ, giám sát không có hook của gói và không đáp tin đã nhắn`, gs.phien, CAU_HOOK);
   }
   if (!conSong(nhip, nowMs)) {
-    return kq(DANH_THUC.baoChuKho, `${ds.length} việc chờ và giám sát không có nhịp sống — chạy lại vai giám sát`, gs?.phien ?? null, '/dieu-phoi:tiep-tuc');
+    return kq(DANH_THUC.baoChuKho, `${ds.length} việc chờ và giám sát không có nhịp sống — chạy lại vai giám sát`, gs?.phien ?? null, '/dispatch:resume');
   }
-  return kq(DANH_THUC.nhanGiamSat, `${ds.length} việc chờ, giám sát thức cũ hơn 40′`, gs.phien, 'thức: chạy `/dieu-phoi:tiep-tuc --nhe`');
+  return kq(DANH_THUC.nhanGiamSat, `${ds.length} việc chờ, giám sát thức cũ hơn 40′`, gs.phien, 'thức: chạy `/dispatch:resume --nhe`');
 }

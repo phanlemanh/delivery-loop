@@ -34,7 +34,7 @@ export function veXem(m) {
   return dong.join('\n');
 }
 
-// Chữ của `xem` cho một kết quả `xem --json` (DP6b): pane và câu trả lời /dieu-phoi:xem của lớp mod đều là chuỗi
+// Chữ của `xem` cho một kết quả `xem --json` (DP6b): pane và câu trả lời /dispatch:status của lớp mod đều là chuỗi
 // này, nên không ai viết lại chữ của `xem` lần thứ hai. Không đợt: đúng phần sau tiền tố `dieu-phoi: ` mà `xem` in.
 export function chuXem(kq) {
   if (!kq || kq.dot === null) return 'không có đợt nào đang chạy';
