@@ -1,5 +1,5 @@
 {
-  "name": "acceptance-gate-kit",
+  "name": "delivery-loop",
   "owner": {
     "name": "Manh Phan",
     "email": "phanlemanh@gmail.com"
@@ -8,34 +8,34 @@
   "plugins": [
     {
       "name": "acceptance-gate",
-      "source": "./",
+      "source": "./plugins/acceptance-gate",
       "description": "Acceptance gate for AI-generated features: contract, self-generated evals, evidence-backed verification with deterministic hook enforcement."
     },
     {
       "name": "feature-loop",
-      "source": "./feature-loop",
+      "source": "./plugins/feature-loop",
       "description": "Feature development loop on top of acceptance-gate: brainstorm → contract+evals (Gate 1) → plan → execute → multi-agent verify workflow → evidence + human signoff (Gate 2). Requires acceptance-gate + superpowers."
     },
     {
       "name": "diagram-design",
-      "source": "./diagram-design",
+      "source": "./plugins/diagram-design",
       "description": "Editorial diagram skill (43 types, HTML+inline SVG) + /export-diagram + /import-drawio, vendored with pin from the private skill repo (upstream cathrynlavery/diagram-design, MIT). Skin state lives in the consuming repo, so one install serves every repo and teammate. Installable on its own; pairs with the kit's DIAGRAM-RULE."
     },
     {
-      "name": "dieu-phoi",
-      "source": "./dieu-phoi",
+      "name": "dispatch",
+      "source": "./plugins/dispatch",
       "description": "Orchestrator–workers for parallel feature-loop sessions: a scheduler that holds the S4 / baseline / merge locks, a batch CLI with five /dieu-phoi commands, five hook entries (block S4 without a lock, heartbeat, waiting-for-human ×2, out-of-quota safety net) and a usage-reading mod. Opt-in per repo (--scope project); hooks stay silent when the repo has no running batch.",
       "tags": ["bat-theo-lua-chon"]
     },
     {
-      "name": "road-map",
-      "source": "./road-map",
+      "name": "roadmap",
+      "source": "./plugins/roadmap",
       "description": "Outer loop of the roadmap: reviews a repo's plan and flags which rows should move milestone, wait for a condition, or be rejected — with machine-readable grounds. Command shell; code lives in acceptance-gate core. Opt-in per repo (--scope project).",
       "tags": ["bat-theo-lua-chon"]
     },
     {
-      "name": "tri-thuc",
-      "source": "./tri-thuc",
+      "name": "knowledge",
+      "source": "./plugins/knowledge",
       "description": "Knowledge layer after Karpathy's LLM Wiki: a repo-declared knowledge store (immutable raw + wiki pages) that every loop reads. Command shell; code lives in acceptance-gate core. Opt-in per repo (--scope project).",
       "tags": ["bat-theo-lua-chon"]
     }
