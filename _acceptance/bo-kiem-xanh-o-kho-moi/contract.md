@@ -5,7 +5,7 @@ slug: bo-kiem-xanh-o-kho-moi
 owner: phanlemanh@gmail.com
 risk_tier: T2      # migration/KE-HOACH.md mục 12, bảng dãy B; vật ở migration/, ngoài t3_paths
 surfaces: [cli]
-status: verified
+status: signed-off
 approved_by: Phan Le Manh
 approved_at: 2026-11-14
 design_doc: migration/kich-ban/THIET-KE-B2.md
@@ -128,3 +128,12 @@ Quét Zwicky (preset test-matrix rút gọn), đủ ở design doc §2–§7.
   kịch bản dừng to («vá không khớp») và phải vá lại — có tiếng, không im.
 - **Ngưỡng «phình»:** kế hoạch ghi «hơn một phần ba ca đỏ thì dừng, trình chủ kho»; chủ kho được trình 1 787 / ~5 416 ≈ 33 %
   và bảo mở (14/11). Đo theo khoá: thiếu 5 302 / 5 550 ≈ 95 %, phần chênh là ca không chạy tới — lên thẻ Cổng Phạm vi.
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-17:
+  - Ngoài-1: Nếu một bộ kiểm của kho cũ chết giữa chừng sau khi đã chạy được vài ca, báo cáo vẫn có thể ghi «không có ca đỏ thêm» dù một phần ca của bộ ấy chưa được so. Người đọc báo cáo có thể tin nhầm là bộ kiểm sạch.
+  - Ngoài-2: Nếu kho được mở qua một đường tắt (symlink), các bước kiểm có thể chạy rỗng mà vẫn báo thoát bình thường, và có thể in «đạt» dù chưa đo gì.
+  - Ngoài-3: Một mục vá bộ kiểm có thể tự khai được miễn so sánh mà không cần ghi lời chủ kho, nên một thay đổi ngữ nghĩa ca kiểm có thể lọt qua thước mà không ai duyệt.
+  - Ngoài-4: Với bước chạy lại, cột phân loại nguyên nhân đỏ trong báo cáo có thể lệch so với nhật ký chạy lại, dù số đếm vẫn đúng.
+  - Ngoài-6: Ca kiểm bảo vệ tệp báo cáo cũ khi ghi hỏng có thể xanh ngay cả khi bản sao thử bị hỏng vì lý do khác, nên độ tin của nó thấp hơn vẻ ngoài.
+  - Ngoài-7: Dòng xác nhận «đạt» có thể ghi mã nguồn hiện tại thay vì mã nguồn mà báo cáo thật sự đã đo, gây hiểu nhầm về báo cáo cũ.
+  - Ngoài-8: Phép kiểm rằng thước đảo không dùng chung mã với kịch bản chỉ bắt được một cách viết nhập mã, nên sự phụ thuộc ngầm theo cách khác có thể lọt.
+  - Ngoài-9: Lệnh nhiều dòng trong việc kiểm chưa từng được chạy thử qua đường nối thật giữa bộ đọc và trình chạy, nên lỗi ở chỗ nối ấy có thể không bị phát hiện.
