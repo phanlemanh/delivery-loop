@@ -7,7 +7,7 @@ reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
-verified_commit: 393093256c7da59416455160433e1fc5941ff9c6
+verified_commit: 1da75b07805857da131b2144b2cf46b2169e8f57
 human_signoff: Phan Le Manh 2026-11-17
 ---
 
@@ -227,3 +227,7 @@ none — mọi eval nhiều lần chạy đều đồng nhất
 
 Round 1: Máy chạy xong và gói bằng chứng đạt, nhưng Cổng Bằng chứng trả về vì báo cáo lớp đỏ của AC-5 chưa gọi tên bộ chết ngầm ở cây cũ. Quay lại sửa.
 Round 2: Đã thêm hai ca BK-AC5-do-chet-cu và BK-AC5-do-khong-do-cu; toàn bộ eval và lệnh suite đạt trên commit 393093256c7da59416455160433e1fc5941ff9c6.
+
+### Re-pin lần 1 — 2026-11-17, do mốc 3.0: hồ sơ B1, B2 lên nhánh ứng viên bố cục mới (mọi tệp đã dời)
+run_id: repin-20261117T160702Z-10236
+sha: 1da75b07805857da131b2144b2cf46b2169e8f57 · suites: 11 lệnh exit 0 · evals: 13/13 eval máy đạt kỳ vọng

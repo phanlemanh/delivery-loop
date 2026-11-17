@@ -7,7 +7,7 @@ reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
-verified_commit: 684a5e30d2aa440b8a81d7baef91ee9172b805c7
+verified_commit: 1da75b07805857da131b2144b2cf46b2169e8f57
 human_signoff: Phan Le Manh 2026-11-14 — ký lượt chấm 3; Ngoài-1…13 ghi Known limits; E10j Đạt; đồng ý phần cắt/hoãn; phê hết Treo
 ---
 
@@ -301,3 +301,7 @@ none — every multi-run eval is uniform
 Round 1: BLOCKED — tác tử chấm chạy Node 26 thay vì Node 24; sửa 5 finding trong hợp đồng, thước thật chạy lần lượt dưới khoá.
 Round 2: mọi eval máy xanh; ba lệnh suite hồi quy đỏ (mjs:3/3, vung:2 ca P161, vung:3 ca P179) và E10j chưa chốt. Một finding trong hợp đồng (AC-7, phép quét con trỏ tương đối). Verdict REJECT, trả về triển khai.
 Round 3: mọi eval máy và mười một lệnh suite hồi quy xanh trên 684a5e30; E10j đề xuất PASS (ba lăng kính), chờ người chốt human_override ở Cổng 2. Verdict PENDING-JUDGMENT.
+
+### Re-pin lần 1 — 2026-11-17, do mốc 3.0: hồ sơ B1, B2 lên nhánh ứng viên bố cục mới (mọi tệp đã dời)
+run_id: repin-20261117T160702Z-10236
+sha: 1da75b07805857da131b2144b2cf46b2169e8f57 · suites: 11 lệnh exit 0 · evals: 17/17 eval máy đạt kỳ vọng · ngoài làn máy: E10j · diff chạm vật đo ngoài làn máy: E10j — chưa chứng lại, đi vòng S4 delta
