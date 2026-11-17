@@ -14,6 +14,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { docGate } from './doc-gate.mjs';
+import { tuiCu, soTui } from './giu-khoa.mjs';
 import { dungCay as _dungCay, chayCay as _chayCay } from './fixture-bo-kiem.mjs';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
@@ -79,6 +80,43 @@ test('BK-AC3-ten-nguyen', () => {
   const d = giuKhoa(chayCay(dungCay({ ka: ca })), chayCay(dungCay({ ka: [ca[0], ca[2]] })));
   assert.equal(d.status, 1, d.stdout);
   assert.match(d.stdout, /^ {2}thiếu: ka: A02 in plugins\/acceptance-gate\/commands\/skills$/m, d.stdout);
+});
+
+// Hai cây cùng in CẢ tên phẳng lẫn tên gói của một ca (`bo-cuc.test.mjs`: «BC commands/x» và «BC plugins/…/commands/x»,
+// lượt 17/11: 43 khoá K4-MP). Luật so phải xét CHỖ còn lại ở cây mới: tên phẳng đổi thành tên gói chỉ khi tên gói còn chỗ,
+// không thì giữ tên nguyên chữ (gui-b2.md §3.1 của vòng bốn, chủ kho chọn ở Hỏi-1). Chiều đỏ: bỏ từng tên ở cây mới →
+// thiếu đúng tên ấy.
+test('BK-AC3-hai-ten', () => {
+  const ca = [['PASS', 'A01 dau'], ['PASS', 'A02 in commands/x'], ['PASS', 'A02 in plugins/acceptance-gate/commands/x']];
+  const r = giuKhoa(chayCay(dungCay({ ka: ca })), chayCay(dungCay({ ka: ca })));
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /^giữ đủ: (\d+)\/\1 khoá, bỏ 0$/m, r.stdout);
+  assert.doesNotMatch(r.stdout, /thừa:/, r.stdout);
+  const phang = giuKhoa(chayCay(dungCay({ ka: ca })), chayCay(dungCay({ ka: [ca[0], ca[2]] })));
+  assert.equal(phang.status, 1, phang.stdout);
+  assert.match(phang.stdout, /^thiếu 1 khoá$/m, phang.stdout);
+  assert.match(phang.stdout, /^ {2}thiếu: ka: A02 in commands\/x$/m, phang.stdout);
+  const goi = giuKhoa(chayCay(dungCay({ ka: ca })), chayCay(dungCay({ ka: [ca[0], ca[1]] })));
+  assert.equal(goi.status, 1, goi.stdout);
+  assert.match(goi.stdout, /^thiếu 1 khoá$/m, goi.stdout);
+  assert.match(goi.stdout, /^ {2}thiếu: ka: A02 in plugins\/acceptance-gate\/commands\/x$/m, goi.stdout);
+});
+
+// Bốn hình luật cũ đã xử lý cho cùng kết quả dưới luật xét chỗ (bộ thử TK-MP-hinh của vòng bốn, chép thành kỳ vọng).
+test('BK-AC3-hinh', () => {
+  const doi = k => k.replace(/^BC old\//, 'BC new/');
+  const M = o => new Map(Object.entries(o));
+  const X = 'BC old/a'; const Y = 'BC new/a';
+  const thieu = (a, b) => soTui(tuiCu(a, b, doi), b).thieu;
+  assert.deepEqual(thieu(M({ 'BC z': 1 }), M({ 'BC z': 1 })), [], 'không đổi');
+  assert.deepEqual(thieu(M({ [X]: 1 }), M({ [Y]: 1 })), [], 'đổi thường');
+  assert.deepEqual(thieu(M({ [X]: 1 }), M({ [X]: 1 })), [], 'tên nguyên chữ');
+  assert.deepEqual(thieu(M({ [X]: 1 }), M({})), [Y], 'mất thật báo bằng tên mới');
+  assert.deepEqual(thieu(M({ [X]: 1, [Y]: 1 }), M({ [X]: 1, [Y]: 1 })), [], 'hai tên');
+  // Cây mới CÓ tên mới mà chỗ đã bị giữ (bởi bản lặp thứ nhất, hay bởi khoá cây cũ đã mang sẵn tên mới) → báo tên nguyên
+  // chữ: luật vòng bốn, chủ kho phê ở Treo-1 (Cổng Bằng chứng phan-du-bo-cuc-moi-vong-bon).
+  assert.deepEqual(thieu(M({ [X]: 2 }), M({ [Y]: 1 })), [X], 'tên mới hết chỗ do bản lặp → báo tên nguyên chữ');
+  assert.deepEqual(thieu(M({ [X]: 1, [Y]: 1 }), M({ [Y]: 1 })), [X], 'tên mới bị khoá khác giữ → báo tên nguyên chữ');
 });
 
 test('BK-AC3-do-lap', () => {

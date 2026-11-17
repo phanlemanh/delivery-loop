@@ -47,12 +47,24 @@ export function doiKhoa(bangTen, bangXep) {
 
 const tuiThem = (t, k) => t.set(k, (t.get(k) || 0) + 1);
 
-// Túi cây cũ theo tên cây mới. Khoá cũ đổi qua doiKhoa; khoá mà tên ĐÃ ĐỔI không có ở cây mới còn tên NGUYÊN chữ thì có
-// giữ tên nguyên — tên ca in lúc chạy mang đường tính từ gốc gói (`P08 … in commands/skills`, `P39[commands/…]`) không
-// đổi theo bố cục kho, và luật đường của doiKhoa đổi nhầm nó (lượt 15/11: 13 khoá vừa «thiếu» vừa «thừa», ca vẫn PASS).
+// Túi cây cũ theo tên cây mới, xét CHỖ còn lại ở cây mới (luật chủ kho chọn ở Hỏi-1 của phan-du-bo-cuc-moi-vong-bon;
+// mẫu: `_acceptance/phan-du-bo-cuc-moi-vong-bon/rang/tui-cu-suc-chua.mjs` ở kho cũ). Thứ tự:
+//   1. khoá doiKhoa không đổi giữ chỗ của chính nó trước;
+//   2. khoá đổi tên nhận tên mới khi cây mới còn chỗ cho tên ấy; hết chỗ mà tên NGUYÊN chữ còn chỗ thì giữ tên nguyên;
+//   3. hết cả hai: báo bằng tên mới nếu cây mới không có tên mới (mất thật), bằng tên nguyên chữ nếu tên mới đã bị khoá
+//      khác giữ (thứ mất là bản nguyên chữ).
+// Hai lớp đã dẫm: tên ca mang đường tính từ gốc gói (`P08 … in commands/skills`) không đổi theo bố cục kho, luật đường của
+// doiKhoa đổi nhầm nó (lượt 15/11: 13 khoá vừa «thiếu» vừa «thừa»); và `bo-cuc.test.mjs` in CẢ tên phẳng lẫn tên gói ở cả
+// hai cây, luật cũ dồn hai tên vào một rồi đòi tên ấy hai lần (lượt 17/11: 43 khoá K4-MP thiếu + 43 thừa, ca vẫn PASS).
 export function tuiCu(datA, datB, doi) {
-  const cu = new Map();
-  for (const [k, n] of datA) { const m = doi(k); const t = m !== k && !datB.has(m) && datB.has(k) ? k : m; cu.set(t, (cu.get(t) || 0) + n); }
+  const cu = new Map(); const con = new Map(datB);
+  const lay = (t, n) => { cu.set(t, (cu.get(t) || 0) + n); con.set(t, (con.get(t) || 0) - n); };
+  const doiTen = [];
+  for (const [k, n] of datA) { if (doi(k) === k) lay(k, n); else doiTen.push([k, n]); }
+  for (const [k, n] of doiTen) {
+    const m = doi(k);
+    for (let i = 0; i < n; i++) lay((con.get(m) || 0) > 0 ? m : (con.get(k) || 0) > 0 ? k : datB.has(m) ? k : m, 1);
+  }
   return cu;
 }
 

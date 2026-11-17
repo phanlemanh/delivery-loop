@@ -230,3 +230,41 @@ Vòng bốn đo cả túi bằng một luật đổi đi, xét xem chỗ thiếu
 Luật đổi nằm ở `rang/tui-cu-suc-chua.mjs` trong hồ sơ vòng bốn; lời hỏi chủ kho là Hỏi-1 ở Cổng Phạm vi của vòng ấy. **B2 không sửa
 thước ở đây**: đổi luật đếm của phép giữ khoá là đổi thước của chính vòng này, nên phải chờ chủ kho quyết. Nếu chủ kho duyệt Hỏi-1,
 phần dư của B2 còn 14 khoá: K4-TB 6, K4-DN 4 và bốn khoá CT-10-do/KM-1 đã có chủ ở `gui-b2.md` §3.4 của vòng bốn.
+
+### 4.8 Nhận luật so khoá của vòng bốn (#507, 17/11) — đã áp, chưa đo
+
+Vòng bốn đã gộp: PR #507, commit gộp `0fe48c14` trên nhánh chính kho cũ. Thư của vòng gửi B2 là
+`_acceptance/phan-du-bo-cuc-moi-vong-bon/gui-b2.md`.
+
+Ở Cổng Phạm vi vòng bốn, chủ kho chọn lối A của Hỏi-1: dòng sổ `d-20261117T031721Z-11` ghi «duyệt» trần, nhận khuyến nghị của
+cả năm câu. Ở Cổng Bằng chứng, chủ kho phê Treo-1 (dòng `d-20261117T055055Z-21`), tức là luật hành xử khác bản thiết kế khi cây
+mới hết chỗ. Vì vậy B2 đổi thước ở đây theo lời chủ kho, không tự quyết:
+
+- `migration/kich-ban/giu-khoa.mjs`: `tuiCu` giờ xét chỗ còn lại ở cây mới, chép đúng `rang/tui-cu-suc-chua.mjs` của vòng bốn.
+  Chữ ký hàm giữ nguyên, nên `bao-cao-giu-khoa.mjs` dùng luật mới mà không phải sửa.
+- `giu-khoa.test.mjs` thêm hai ca:
+  - `BK-AC3-hai-ten` chạy đầu cuối bằng bộ chạy thật. Hai cây cùng in tên phẳng và tên gói của một ca thì thước báo «giữ đủ».
+    Chiều đỏ: bỏ từng tên ở cây mới thì thước báo thiếu đúng tên ấy, ghim nguyên văn.
+  - `BK-AC3-hinh` có bảy hình: bốn hình `TK-MP-hinh` của vòng bốn, ca «hai tên», và hai ca hết chỗ theo Treo-1.
+  - Viết ca trước: luật cũ cho `BK-AC3-hai-ten` đỏ với `thiếu: ka: A02 in plugins/acceptance-gate/commands/x`.
+- Hai túi đã commit ở `ket-qua/giu-khoa/` không đổi. Chế độ `--tui` so túi đã dịch, nên phán quyết của báo cáo 4.5 vẫn khớp khi
+  so lại. Lượt đo kế sẽ ghi túi mới bằng luật mới.
+
+Tính lại bằng luật mới trên chính hai thư mục kết quả thô của lượt 4.5 (`/private/tmp/claude-501/ld3b-0618/out/{A,B}`). Bước này
+chỉ đọc lại, không chạy bộ kiểm nào: **thiếu 14 / 5 802, thừa 0**. Theo cụm:
+
+| Cụm | Khoá |
+|---|---|
+| K4-TB | 6 |
+| K4-DN | 4 |
+| K4-LT | 2 |
+| B2 (CT-10-do, KM-1) | 2 |
+
+Cả 14 khoá đúng là 14 khoá vòng bốn đã sửa ở kho cũ; con số khớp vòng bốn tự đo. Muốn biết chúng đã về hay chưa phải có một lượt
+đo trên nguồn chứa `0fe48c14`, và lượt ấy cần lời mới của chủ kho. Ngưỡng mở lại vòng bốn đặt: lượt đo kế còn thiếu ≥ 1 trong 14
+khoá.
+
+Ba mục khác của thư:
+- **§3.2:** `origin/main` của hai bản sao đo trỏ `909dffd8`. Không bắt buộc đổi; B2 giữ nguyên `do-lop-do.sh`.
+- **§3.3:** 45 dòng sổ ở 32 hồ sơ đã khép trỏ đường phẳng. Việc này chờ chủ kho chọn lối, ngoài phần của B2.
+- **§1, §2:** không thêm mục vá vào `va-bo-kiem.json` và không thêm tệp tự đúng đường.
