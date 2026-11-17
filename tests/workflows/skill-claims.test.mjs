@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const SKILL = readFileSync(path.join(HERE, '..', '..', 'feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
+const SKILL = readFileSync(path.join(HERE, '..', '..', 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
 const CLAUSES = [

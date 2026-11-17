@@ -13,13 +13,13 @@ import { createRequire } from 'node:module';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const LSP = path.join(ROOT, 'scripts', 'luat-san-pham.cjs');
-const CC = path.join(ROOT, 'scripts', 'can-cu-s1.cjs');
-const GC = path.join(ROOT, 'scripts', 'gate-card.js');
-const KCN = path.join(ROOT, 'scripts', 'khong-can-nguoi.mjs');
-const SKILL = path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
-const KHUON_TEP = path.join(ROOT, 'skills', 'acceptance', 'references', 'product-invariants-template.md');
-const HFL = path.join(ROOT, 'skills', 'acceptance', 'references', 'human-facing-language.md');
+const LSP = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'luat-san-pham.cjs');
+const CC = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'can-cu-s1.cjs');
+const GC = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
+const KCN = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'khong-can-nguoi.mjs');
+const SKILL = path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const KHUON_TEP = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'product-invariants-template.md');
+const HFL = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'human-facing-language.md');
 const require = createRequire(import.meta.url);
 const CHON = process.env.LS_CASES ? new Set(process.env.LS_CASES.split(',').map(s => s.trim())) : null;
 const want = id => !CHON || CHON.has(id);
@@ -104,8 +104,8 @@ const mongMaTran = ds => ds.map(([n, , lop, ma, td]) => [n, lop, ma, td]);
 // Bản sao mô-đun để tiêm: chép can-cu-s1.cjs + luat-san-pham.cjs vào thư mục tạm, sửa đúng một chỗ.
 function banSaoTiem(tep, cu, moi) {
   const d = tam('lsp-tiem-'); mkdirSync(path.join(d, 'scripts'));
-  for (const f of ['can-cu-s1.cjs', 'luat-san-pham.cjs']) cpSync(path.join(ROOT, 'scripts', f), path.join(d, 'scripts', f));
-  cpSync(path.join(ROOT, 'lib'), path.join(d, 'lib'), { recursive: true });
+  for (const f of ['can-cu-s1.cjs', 'luat-san-pham.cjs']) cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts', f), path.join(d, 'scripts', f));
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(d, 'lib'), { recursive: true });
   const p = path.join(d, 'scripts', tep); const t = readFileSync(p, 'utf8');
   if (t.split(cu).length !== 2) die(`tiêm ${tep}: chuỗi cần thay phải xuất hiện đúng một lần`);
   writeFileSync(p, t.replace(cu, moi));
@@ -225,7 +225,7 @@ if (want('LS-04')) {
     // Bản sao maTheoTrich gắn mã luật đầu tiên cho mọi câu trích → dòng ngoài khối mang «theo luật».
     const d = banSaoTiem('luat-san-pham.cjs', 'return l ? l.ma : null;', 'return (luat && luat[0]) ? luat[0].ma : null;');
     const gcCopy = path.join(d, 'gate-card.js'); cpSync(GC, gcCopy);
-    for (const f of readdirSync(path.join(ROOT, 'scripts'))) if (!existsSync(path.join(d, f))) cpSync(path.join(ROOT, 'scripts', f), path.join(d, f), { recursive: true });
+    for (const f of readdirSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'))) if (!existsSync(path.join(d, f))) cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts', f), path.join(d, f), { recursive: true });
     const k = mkKhoLuat({ luat: [SP1, SP2] });
     mkHoSo(k, [S1('t2', { nguon: 'muc-tieu', kho_dao: false, tep: 'PRODUCT-INVARIANTS.md', trich: 'Văn tự do của kho, bộ đọc bỏ qua.' })]);
     const p = spawnSync(process.execPath, [gcCopy, '--root', k.r, '--slug', 'h', '--glossary-base', k.base], { encoding: 'utf8' });
@@ -252,7 +252,7 @@ if (want('LS-05')) {
 
 // ── Hồ sơ đã chấm xanh-sạch + nhánh vòng (LS-07, LS-08, LS-10) ─────────────────────────────────────────
 // Khuôn mục ngoài hợp đồng rút từ bên VIẾT (acceptance-verify.js) — cùng cách tests/scripts/out-of-contract.test.mjs.
-const OOC_TPL = (() => { const wf = readFileSync(path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
+const OOC_TPL = (() => { const wf = readFileSync(path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
   const m = wf.match(/<<<OOC-ITEM-TEMPLATE\\n([\s\S]*?)\\nOOC-ITEM-TEMPLATE>>>/); if (!m) die('không rút được OOC-ITEM-TEMPLATE'); return m[1].replace(/\\n/g, '\n').replace(/\\`/g, '`'); })();
 const oocMuc = (title, plain) => OOC_TPL.replace('{title}', title).replace('{plain}', plain).replace('{file}', 'apps/a.ts').replace('{severity}', 'medium').replace('{proposal}', 'known-limits');
 const oocTep = items => `# Review\n\n## Ngoài hợp đồng\n\nCác lỗi dưới đây là thật, nhưng nằm ngoài phạm vi đã duyệt ở Cổng 1 — người quyết, máy không tự sửa.\n\n${items.join('\n')}\n\n## Known limits\n`;
@@ -404,9 +404,9 @@ if (want('LS-10')) {
   });
   if (process.env.LS_GHI_ANH === '1') {
     const out = path.join(ROOT, '_acceptance', 'bat-bien-san-pham', 'evidence'); mkdirSync(out, { recursive: true });
-    // Chuỗi bọc rút từ CHÍNH lệnh dựng thẻ (commands/acceptance-card.md bước 5) — thẻ chụp là thẻ người nhận.
-    const BOC = (readFileSync(path.join(ROOT, 'commands', 'acceptance-card.md'), 'utf8').match(/Prepend `(<!doctype html>[^`]*)`/) || [])[1];
-    if (!BOC) die('không rút được chuỗi bọc thẻ từ commands/acceptance-card.md');
+    // Chuỗi bọc rút từ CHÍNH lệnh dựng thẻ (plugins/acceptance-gate/commands/acceptance-card.md bước 5) — thẻ chụp là thẻ người nhận.
+    const BOC = (readFileSync(path.join(ROOT, 'plugins/acceptance-gate/commands', 'acceptance-card.md'), 'utf8').match(/Prepend `(<!doctype html>[^`]*)`/) || [])[1];
+    if (!BOC) die('không rút được chuỗi bọc thẻ từ plugins/acceptance-gate/commands/acceptance-card.md');
     writeFileSync(path.join(out, 'card-g1-luat.html'), BOC + the(ho[0][1], ['--glossary-base', ho[0][1].base]));
     writeFileSync(path.join(out, 'card-g2-luat.html'), BOC + the(ho[1][1]));
     console.log('  (đã ghi hai thẻ cho E11 vào ' + out + ')');
@@ -490,7 +490,7 @@ async function soKho(kho, gcGoc, kcnGoc, gcMoi, kcnMoi) {
 if (want('LS-02')) {
   const hd = readFileSync(HD_VONG, 'utf8');
   const st = (hd.match(/^status:\s*(\S+)/m) || [])[1];
-  const W = require(path.join(ROOT, 'lib', 'workspace-record.cjs'));
+  const W = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs'));
   if ([...W.DA_THONG_CONG_2, ...(W.DA_DONG_THUC_TE || [])].includes(st)) console.log('  PASS: LS-02 da-ky (hồ sơ của vòng đã ký — không so)');
   else {
     const goc = (hd.match(/Commit gốc của vòng: `([0-9a-f]{7,40})`/) || [])[1];
@@ -504,20 +504,20 @@ if (want('LS-02')) {
         for (const [ten, kho] of [['kit', ROOT], ['crm', process.env.LS_CRM_ROOT || null]]) {
           if (!kho) { kq.push([ten, 'vang']); continue; }
           if (existsSync(path.join(kho, 'PRODUCT-INVARIANTS.md'))) { kq.push([ten, 'co-tep-luat(bo)']); continue; }
-          kq.push([ten, await soKho(kho, path.join(d, 'scripts', 'gate-card.js'), path.join(d, 'scripts', 'khong-can-nguoi.mjs'), GC, KCN)]);
+          kq.push([ten, await soKho(kho, path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'), path.join(d, 'plugins/acceptance-gate/scripts', 'khong-can-nguoi.mjs'), GC, KCN)]);
         }
       } catch (e) { loi = e.message; }
       try {
-        const nha = tam('lsp-nha-'); for (const t of ['scripts', 'lib', 'skills']) cpSync(path.join(ROOT, t), path.join(nha, t), { recursive: true });
-        const gcT = path.join(nha, 'scripts', 'gate-card.js'); const t = readFileSync(gcT, 'utf8');
+        const nha = tam('lsp-nha-'); for (const t of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(ROOT, t), path.join(nha, t), { recursive: true });
+        const gcT = path.join(nha, 'plugins/acceptance-gate/scripts', 'gate-card.js'); const t = readFileSync(gcT, 'utf8');
         const cu = "if (luatG2) { for (const [c, t] of luatG2.co)"; if (t.split(cu).length !== 2) throw new Error('mũi tiêm thẻ không áp');
         writeFileSync(gcT, t.replace(cu, "P.push('<div class=\"lab\">Luật sản phẩm bị chạm</div>'); if (luatG2) { for (const [c, t] of luatG2.co)"));
         const mau = readdirSync(path.join(ROOT, '_acceptance')).filter(n => existsSync(path.join(ROOT, '_acceptance', n, 'evidence-report.md'))).sort().slice(0, 3);
         const k = tam('lsp-kho-'); mkdirSync(path.join(k, '_acceptance'));
         for (const n of mau) cpSync(path.join(ROOT, '_acceptance', n), path.join(k, '_acceptance', n), { recursive: true });
         cpSync(path.join(ROOT, '_acceptance', 'config.yaml'), path.join(k, '_acceptance', 'config.yaml'));
-        kqDo = { tiem: await soKho(k, path.join(d, 'scripts', 'gate-card.js'), path.join(d, 'scripts', 'khong-can-nguoi.mjs'), gcT, path.join(nha, 'scripts', 'khong-can-nguoi.mjs')),
-                 lanh: await soKho(k, path.join(d, 'scripts', 'gate-card.js'), path.join(d, 'scripts', 'khong-can-nguoi.mjs'), GC, KCN) };
+        kqDo = { tiem: await soKho(k, path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'), path.join(d, 'plugins/acceptance-gate/scripts', 'khong-can-nguoi.mjs'), gcT, path.join(nha, 'plugins/acceptance-gate/scripts', 'khong-can-nguoi.mjs')),
+                 lanh: await soKho(k, path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'), path.join(d, 'plugins/acceptance-gate/scripts', 'khong-can-nguoi.mjs'), GC, KCN) };
       } catch (e) { loiDo = e.message; }
     }
     check('LS-02 vi-phan', () => {
@@ -557,7 +557,7 @@ if (want('LS-09')) {
 // ── LS-12: phạm luật + MỌI Ngoài-n đã được MÁY định tuyến (A3, ngoai-n-tu-dinh-tuyen) → vẫn DỪNG hỏi người ──
 // Rủi ro tin cậy cao nhất giữa hai máy: làn V của A3 mở khi mọi mục ngoài hợp đồng có dòng sổ gate2; luật sản
 // phẩm phải chặn độc lập với đường đó. Dòng máy do CHÍNH bộ ghi của A3 sinh (dinh-tuyen-may.cjs --write).
-const DTM = path.join(ROOT, 'scripts', 'dinh-tuyen-may.cjs');
+const DTM = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'dinh-tuyen-may.cjs');
 function mkVongDinhTuyen(phamLuat) {
   const v = mkVong(r => {
     ghiTep(r, 'apps/app/lib/a.ts', phamLuat ? 'export const tz = "Asia/Ho_Chi_Minh";\n' : 'export const tz = cauHinh.muiGio;\n');
@@ -585,8 +585,8 @@ if (want('LS-12')) {
     const r = rut(vSach); if (!r.one_shot.includes(LAN_V)) die('không phạm luật mà làn V không đi: ' + r.one_shot);
   });
   check('LS-12-do', () => {
-    const nha = tam('lsp-kcn-'); for (const t of ['scripts', 'lib', 'skills']) cpSync(path.join(ROOT, t), path.join(nha, t), { recursive: true });
-    const f = path.join(nha, 'scripts', 'khong-can-nguoi.mjs'); const t = readFileSync(f, 'utf8');
+    const nha = tam('lsp-kcn-'); for (const t of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(ROOT, t), path.join(nha, t), { recursive: true });
+    const f = path.join(nha, 'plugins/acceptance-gate/scripts', 'khong-can-nguoi.mjs'); const t = readFileSync(f, 'utf8');
     const cu = '  if (ctx.luat && luatSP && luatSP.chanLuat(ctx.luat)) return null;\n'; if (t.split(cu).length !== 2) die('mũi tiêm vị từ không áp');
     writeFileSync(f, t.replace(cu, ''));
     const k = spawnSync(process.execPath, [f, '--check', '--root', vPham.r, '--slug', 'h'], { encoding: 'utf8' });
@@ -600,9 +600,9 @@ if (want('LS-12')) {
 // Lời mong đợi viết sẵn ở đây, không rút từ mô-đun.
 const KHONG_NAP = 'còn cần người: kho khai luật sản phẩm (PRODUCT-INVARIANTS.md) nhưng không nạp được scripts/luat-san-pham.cjs — cài lại gói acceptance-gate theo đúng thẻ';
 function nhaKcn(thieuLuat) {
-  const nha = tam('lsp-kcn13-'); for (const t of ['scripts', 'lib', 'skills']) cpSync(path.join(ROOT, t), path.join(nha, t), { recursive: true });
-  if (thieuLuat) { rmSync(path.join(nha, 'scripts', 'luat-san-pham.cjs')); if (existsSync(path.join(nha, 'scripts', 'luat-san-pham.cjs'))) die('không xoá được mô-đun luật ở nhà thử'); }
-  return path.join(nha, 'scripts', 'khong-can-nguoi.mjs');
+  const nha = tam('lsp-kcn13-'); for (const t of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(ROOT, t), path.join(nha, t), { recursive: true });
+  if (thieuLuat) { rmSync(path.join(nha, 'plugins/acceptance-gate/scripts', 'luat-san-pham.cjs')); if (existsSync(path.join(nha, 'plugins/acceptance-gate/scripts', 'luat-san-pham.cjs'))) die('không xoá được mô-đun luật ở nhà thử'); }
+  return path.join(nha, 'plugins/acceptance-gate/scripts', 'khong-can-nguoi.mjs');
 }
 if (want('LS-13')) {
   const vSach = mkVong(r => { ghiTep(r, 'apps/cu.ts', 'export const a = 2;\n'); commit(r, 'vat'); });

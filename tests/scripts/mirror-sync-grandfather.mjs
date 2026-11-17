@@ -69,7 +69,7 @@ export function recheckCorpus(root) {
   const bad = [];
   for (const r of reports) {
     try {
-      execFileSync('node', [path.join(root, 'scripts/recheck-evidence.cjs'), r],
+      execFileSync('node', [path.join(root, 'plugins/acceptance-gate/scripts/recheck-evidence.cjs'), r],
         { stdio: ['ignore', 'ignore', 'pipe'] });
     } catch (e) {
       bad.push({ slug: path.basename(path.dirname(r)), err: String(e.stderr || '') });

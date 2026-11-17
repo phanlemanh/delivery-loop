@@ -19,7 +19,7 @@ import { dungKho, buoc, git, TEP, SLUG } from './thuoc-vat-fixture.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');
-const SCRIPT = path.join(KIT, 'feature-loop', 'scripts', 'thuoc-vat.mjs');
+const SCRIPT = path.join(KIT, 'plugins/feature-loop', 'scripts', 'thuoc-vat.mjs');
 let pass = 0, fail = 0;
 const ok = m => { console.log(`  PASS: ${m}`); pass += 1; };
 const bad = (m, d) => { console.log(`  FAIL: ${m}${d ? ` (${d})` : ''}`); fail += 1; };
@@ -28,17 +28,17 @@ let n = 0;
 const moiKho = kb => dungKho(path.join(TMP, `k-${++n}`), kb);
 
 const chay = (script, d, ...extra) => spawnSync(process.execPath,
-  [script, '--root', d, '--slug', SLUG, '--ag-root', KIT, ...extra], { encoding: 'utf8' });
+  [script, '--root', d, '--slug', SLUG, '--ag-root', `${KIT}/plugins/acceptance-gate`, ...extra], { encoding: 'utf8' });
 const demJson = (script, d) => {
   const r = chay(script, d, '--json');
   if (r.status !== 0) throw new Error(`exit ${r.status}: ${String(r.stderr).trim().split('\n').slice(-2).join(' | ')}`);
   return JSON.parse(r.stdout);
 };
-// Bản sao đột biến: chép TRỌN feature-loop/scripts (script nhập lib/phan-loai.mjs và
+// Bản sao đột biến: chép TRỌN plugins/feature-loop/scripts (script nhập lib/phan-loai.mjs và
 // carry-plan.mjs), kim phải khớp ĐÚNG MỘT lần.
 function banSao(kim, thay) {
   const d = path.join(TMP, `mut-${++n}`);
-  cpSync(path.join(KIT, 'feature-loop', 'scripts'), path.join(d, 'scripts'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/feature-loop', 'scripts'), path.join(d, 'scripts'), { recursive: true });
   const f = path.join(d, 'scripts', 'thuoc-vat.mjs');
   const src = readFileSync(f, 'utf8');
   const k = src.split(kim).length - 1;
@@ -190,7 +190,7 @@ function khoHaiLuot() {
 }
 
 // ── TV9 (S4-r2, finding trong hợp đồng AC-11, owner trả lại 17/09): mốc sàn đọc trường status
-//    bằng CÙNG bộ đọc frontmatter của các cổng (lib/evidence-core.cjs frontmatterField) — hợp đồng
+//    bằng CÙNG bộ đọc frontmatter của các cổng (plugins/acceptance-gate/lib/evidence-core.cjs frontmatterField) — hợp đồng
 //    xuống dòng CRLF, hoặc có dòng trống trước `---`, vẫn cho mốc sàn là commit lật và nhát đúng.
 //    Bộ đọc tự viết của nhát sửa lượt 1 trả «chưa có mốc sàn», nhát 0 — trần im lặng.
 for (const [ten, bienDoi] of [['CRLF', t => t.replace(/\r?\n/g, '\r\n')], ['dong trong dau tep', t => '\n' + t]]) {

@@ -13,7 +13,7 @@ import path from 'node:path';
 import { runWorkflow, check, summary } from './harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const WF = path.join(HERE, '..', '..', 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(HERE, '..', '..', 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const SRC = readFileSync(WF, 'utf8');
 const VC = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2';
 const URL = 'http://localhost:4173';
@@ -33,7 +33,7 @@ function devServerTuS4Args() {
     git('add', '-A'); git('commit', '-qm', 'r1'); git('checkout', '-qb', 'vong');
     writeFileSync(path.join(d, 'src.js'), 'x\n'); git('add', '-A'); git('commit', '-qm', 'vat');
     const out = path.join(d, 'args.json');
-    execFileSync(process.execPath, [path.join(HERE, '..', '..', 'feature-loop', 'scripts', 's4-args.mjs'), '--slug', 'demo', '--root', d, '--ag-root', path.join(HERE, '..', '..'), '--out', out, '--diff-base', 'main'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+    execFileSync(process.execPath, [path.join(HERE, '..', '..', 'plugins/feature-loop', 'scripts', 's4-args.mjs'), '--slug', 'demo', '--root', d, '--ag-root', path.join(HERE, '..', '..', 'plugins/acceptance-gate'), '--out', out, '--diff-base', 'main'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
     return JSON.parse(readFileSync(out, 'utf8')).devServerUrl;
   } catch { return undefined; } finally { rmSync(d, { recursive: true, force: true }); }
 }

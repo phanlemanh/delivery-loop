@@ -19,11 +19,11 @@ import { promisify } from 'node:util';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const GC = path.join(KIT, 'scripts', 'gate-card.js');
-const LAW = path.join(KIT, 'skills', 'acceptance', 'references', 'human-facing-language.md');
-const SIGNOFF = path.join(KIT, 'commands', 'signoff.md');
+const GC = path.join(KIT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
+const LAW = path.join(KIT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'human-facing-language.md');
+const SIGNOFF = path.join(KIT, 'plugins/acceptance-gate/commands', 'signoff.md');
 const SCEN = path.join(KIT, 'tests', 'plugins', 'fixtures', 'viec-cua-anh-scenarios.sh');
-const WR = createRequire(import.meta.url)(path.join(KIT, 'lib', 'workspace-record.cjs'));
+const WR = createRequire(import.meta.url)(path.join(KIT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs'));
 const SLUG_VONG = 'nhan-lan-v-theo-huong';
 const NHAN = 'đi tiếp hay kéo lại';
 const NHAN_CU = 'veto hay để yên';
@@ -57,7 +57,7 @@ const DONG_TT = { type: 'thuc-te', stage: 'thuc-te', ...Object.fromEntries(WR.TH
 const DONG_VETO = { id: 'd-20260922T100000Z-1', type: 'veto', stage: 'gate2', at: '2026-09-22T10:00:00Z', decision: 'loi X', decided_by: 'M', decided_at: '2026-09-22T10:00:00Z' };
 // Mục ngoài hợp đồng: khuôn RÚT từ bên VIẾT (prompt synthesize), cùng cách P55/hskt.
 const OOC_TPL = (() => {
-  const wf = readFileSync(path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
+  const wf = readFileSync(path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
   const m = wf.match(/<<<OOC-ITEM-TEMPLATE\\n([\s\S]*?)OOC-ITEM-TEMPLATE>>>/);
   if (!m) throw new Error('khong rut duoc OOC-ITEM-TEMPLATE tu acceptance-verify.js');
   return m[1].replace(/\\n/g, '\n').replace(/\\`/g, '`');
@@ -193,8 +193,8 @@ CA['NL-AC5-p192'] = gc => kiemP192(gc, LAW);
 
 // ── chiều im (NL-AC3) ───────────────────────────────────────────────────────
 function capCommit() {
-  const shas = git('log', '--format=%H', '-F', `--grep=(${SLUG_VONG})`, '--', 'scripts/gate-card.js').split('\n').filter(Boolean);
-  if (!shas.length) throw new Error(`khong tim duoc commit nao cham scripts/gate-card.js mang dau «(${SLUG_VONG})» (ban sao nong?)`);
+  const shas = git('log', '--format=%H', '-F', `--grep=(${SLUG_VONG})`, '--', 'plugins/acceptance-gate/scripts/gate-card.js').split('\n').filter(Boolean);
+  if (!shas.length) throw new Error(`khong tim duoc commit nao cham plugins/acceptance-gate/scripts/gate-card.js mang dau «(${SLUG_VONG})» (ban sao nong?)`);
   return { dau: shas[shas.length - 1], cuoi: shas[0] };
 }
 function moBan(sha, ten) {
@@ -229,7 +229,7 @@ async function kiemIm(banSauMutate) {
   const truoc = moBan(`${dau}^`, `truoc-${Math.random().toString(36).slice(2)}`);
   const sau = moBan(cuoi, `sau-${Math.random().toString(36).slice(2)}`);
   if (banSauMutate) banSauMutate(sau);
-  const gcT = path.join(truoc, 'scripts', 'gate-card.js'); const gcS = path.join(sau, 'scripts', 'gate-card.js');
+  const gcT = path.join(truoc, 'plugins/acceptance-gate/scripts', 'gate-card.js'); const gcS = path.join(sau, 'plugins/acceptance-gate/scripts', 'gate-card.js');
   // (a) kịch bản fixture
   for (const [ten, mongVe] of [['gate2-4loai', 'mot'], ['gate2-may-di-tiep', 'hai']]) {
     const ws = canh(ten);
@@ -255,7 +255,7 @@ async function kiemIm(banSauMutate) {
 // ── đột biến ────────────────────────────────────────────────────────────────
 function banSao() {
   const d = mkdtempSync(path.join(TMP, 'may-'));
-  for (const x of ['scripts', 'lib', 'skills']) cpSync(path.join(KIT, x), path.join(d, x), { recursive: true });
+  for (const x of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(KIT, x), path.join(d, x), { recursive: true });
   return d;
 }
 function tiem(tep, kim, thay) {
@@ -282,10 +282,10 @@ for (const ten of ['NL-AC1-sach', 'NL-AC2-con-muc', 'NL-AC4-khep', 'NL-AC5-luat'
 for (const [ten, kim, thay, cacCa, cum] of DOT_BIEN_THE) {
   const name = `NL-dot-bien-${ten}`; if (!want(name)) continue;
   try {
-    const d = banSao(); tiem(path.join(d, 'scripts', 'gate-card.js'), kim, thay);
+    const d = banSao(); tiem(path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'), kim, thay);
     const sai = [];
     for (const ca of cacCa) {
-      const s = CA[ca](path.join(d, 'scripts', 'gate-card.js'));
+      const s = CA[ca](path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'));
       if (!s.length) sai.push(`${ca} van XANH tren ban sao da tiem — phep do mu`);
       else if (!s.some(x => x.includes(cum))) sai.push(`${ca} do nhung sai thong diep (can «${cum}»): ${s.join(' ; ')}`);
     }
@@ -323,7 +323,7 @@ if (want('NL-AC3-im')) {
 if (want('NL-dot-bien-lech-the-thuong')) {
   const name = 'NL-dot-bien-lech-the-thuong';
   try {
-    const { s } = await kiemIm(sau => tiem(path.join(sau, 'scripts', 'gate-card.js'), '<button class="b yes">Ký duyệt</button>', '<button class="b yes">Ký</button>'));
+    const { s } = await kiemIm(sau => tiem(path.join(sau, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '<button class="b yes">Ký duyệt</button>', '<button class="b yes">Ký</button>'));
     if (!s.length) bad(name, 'NL-AC3-im van XANH khi ban SAU doi the thuong — phep do mu');
     else if (!s.some(x => x.includes('gate2-4loai'))) bad(name, `NL-AC3-im do nhung khong goi ten gate2-4loai: ${s.slice(0, 3).join(' ; ')}`);
     else ok(name, '— NL-AC3-im do dung «gate2-4loai»');

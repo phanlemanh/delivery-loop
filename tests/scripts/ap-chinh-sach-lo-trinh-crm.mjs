@@ -40,7 +40,7 @@ for (const f of TEP) {
   writeFileSync(path.join(K, f), JSON.stringify(d, null, 2) + '\n');
 }
 const node = (args, today) => spawnSync(process.execPath, args, { encoding: 'utf8', maxBuffer: 1 << 28, env: { ...process.env, ACCEPTANCE_TODAY: today } });
-const LT = path.join(KIT, 'scripts', 'lo-trinh.mjs'); const PMJ = path.join(KIT, 'scripts', 'product-map.mjs');
+const LT = path.join(KIT, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs'); const PMJ = path.join(KIT, 'plugins/acceptance-gate/scripts', 'product-map.mjs');
 const sai = [];
 const VDA = path.join(K, 'docs/plan/lo-trinh-viec-du-an.json'); let vda15 = null;
 for (const ngay of ['2026-10-15', '2026-10-16']) {

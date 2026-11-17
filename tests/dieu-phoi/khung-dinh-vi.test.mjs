@@ -14,7 +14,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(DAY, '..', '..');
-const GOI = path.join(KIT, 'dieu-phoi');
+const GOI = path.join(KIT, 'plugins/dispatch');
 const FIXTURE = path.join(DAY, 'fixtures', 'dot-crm-0910');
 const LO_TRINH_KIT = path.join(KIT, 'docs', 'plans', 'lo-trinh-kit.json');
 // Bản cũ của AC-4 và AC-9: đỉnh nhánh chính khi hồ sơ mở — commit cố định, không merge-base sống.
@@ -609,7 +609,7 @@ async function kiemDocCu(gocGoi) {
   }
   const dong = khung.split('\n');
   for (const tien of ['Đợt ', 'Tiến độ: ', 'CẦN ANH: ', 'Việc:']) if (!dong.some((d) => d.startsWith(tien))) loi.push(`(a) thiếu khối «${tien.trim()}»`);
-  if (!dong.some((d) => d.includes('chi tiết máy: /dieu-phoi:xem'))) loi.push('(a) thiếu dòng cuối');
+  if (!dong.some((d) => d.includes('chi tiết máy: /dispatch:status'))) loi.push('(a) thiếu dòng cuối');
   if (!dong[0]?.includes('⚠ chưa khai mục tiêu đợt')) loi.push('thiếu cờ mục tiêu');
   if (!dong[1]?.startsWith('Tiến độ: xong —/— ⚠')) loi.push(`(a) dòng tiến độ: «${dong[1]}»`);
   if (!dong.some((d) => d.includes('(chưa có tên trong lộ trình)'))) loi.push('(a) dòng việc thiếu cờ tên');

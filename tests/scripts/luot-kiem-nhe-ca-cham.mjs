@@ -71,7 +71,7 @@ const guongLm = (ten, src) => {
   const g = path.join(TMP, `guong-${ten}`);
   mkdirSync(path.join(g, 'tests', 'scripts'), { recursive: true });
   for (const f of ['gate-fixture.mjs', 'routing-baseline.mjs']) copyFileSync(path.join(ROOT, 'tests', 'scripts', f), path.join(g, 'tests', 'scripts', f));
-  for (const d of ['scripts', 'lib']) if (!existsSync(path.join(g, d))) symlinkSync(path.join(ROOT, d), path.join(g, d));
+  for (const d of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib']) if (!existsSync(path.join(g, d))) symlinkSync(path.join(ROOT, d), path.join(g, d));
   const f = path.join(g, 'tests', 'scripts', 'lmcms.mjs');
   writeFileSync(f, src);
   return f;
@@ -114,7 +114,7 @@ await ca('LKN-AC9-do-p161-mot-cong', 'do-p161', async () => {
   const d = path.join(WT, '_acceptance', 'zz-lkn-hong-cong-2'); mkdirSync(d, { recursive: true });
   writeFileSync(path.join(d, 'contract.md'), '---\nschema_version: 1\nfeature: thu\nslug: zz-lkn-hong-cong-2\nrisk_tier: T2\nsurfaces: [cli]\nstatus: verified\napproved_by: X\napproved_at: 2026-11-11\n---\n\n# C\n\n## Criteria\n\n- AC-1: Given a When b Then c\n\n## Out of scope\n\n- a\n- b\n');
   writeFileSync(path.join(d, 'evidence-report.md'), '---\nschema_version: 1\nverdict: PASS\n---\n');
-  const gc = path.join(WT, 'scripts', 'gate-card.js');
+  const gc = path.join(WT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
   const src = readFileSync(gc, 'utf8');
   const kim = "'use strict';\n";
   motLan(src, kim, "'use strict' của gate-card.js");

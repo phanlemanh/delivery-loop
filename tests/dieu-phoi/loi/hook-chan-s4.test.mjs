@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { chayHook, lenhBoc, phanLoai } from '../../../dieu-phoi/scripts/hook-chan-s4.mjs';
+import { chayHook, lenhBoc, phanLoai } from '../../../plugins/dispatch/scripts/hook-chan-s4.mjs';
 import { CFG_BIEN } from './mau-thu.mjs';
 
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp-')));

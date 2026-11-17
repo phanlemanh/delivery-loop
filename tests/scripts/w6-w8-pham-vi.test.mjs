@@ -17,7 +17,7 @@ import { fileFromTemplate } from '../fixtures/from-template.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
-const LINT = path.join(ROOT, 'scripts', 'eval-coverage-lint.js');
+const LINT = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'eval-coverage-lint.js');
 
 const ALL_IDS = ['PV1', 'PV2', 'PV3', 'PV4', 'PV5', 'PV6'];
 if (process.argv.includes('--ids')) { console.log(ALL_IDS.join(' ')); process.exit(0); }
@@ -37,7 +37,7 @@ const CTX = [
 ].join('\n');
 
 // Hợp đồng fixture: ba vùng chữ (Context · Criteria · Notes) để đo PHẠM VI quét.
-const CONTRACT_TPL = path.join(ROOT, 'skills', 'acceptance', 'references', 'contract-template.md');
+const CONTRACT_TPL = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'contract-template.md');
 const contract = ({ ctx = '', crit = '- AC-1: Given a, When b, Then c.', notes = '' }) =>
   fileFromTemplate(CONTRACT_TPL, 'CONTRACT-FRONTMATTER-TEMPLATE',
     { feature: 'f', slug: 'feat-pv', owner: 'o@x', risk_tier: 'T2', surfaces: 'api', status: 'approved' },
@@ -158,7 +158,7 @@ if (want('PV5')) {
 // ─── PV6 — thiếu md-section.cjs → rơi bậc CÓ TIẾNG (không im lặng bỏ W6) ────
 if (want('PV6')) {
   const id = 'PV6'; const before = failures;
-  const g = require(path.join(ROOT, 'lib', 'context-glossary.js'));
+  const g = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'context-glossary.js'));
   const glossary = g.readGlossary(ROOT);
   const doc = '---\na: 1\n---\n\n## Context\n\nspec ở đây.\n\n## Criteria\n\n- AC-1: Given spec, When x, Then y.\n';
   let note = '';
@@ -167,7 +167,7 @@ if (want('PV6')) {
   if (!lanh.length) fail(id, 'bản lành phải bắt alias trong Criteria (phép đo chết?)');
   // bản sao THIẾU md-section.cjs: nạp module từ thư mục chỉ có context-glossary.js
   const m = tmp(); mkdirSync(path.join(m, 'lib'), { recursive: true });
-  writeFileSync(path.join(m, 'lib', 'context-glossary.js'), readFileSync(path.join(ROOT, 'lib', 'context-glossary.js'), 'utf8'));
+  writeFileSync(path.join(m, 'lib', 'context-glossary.js'), readFileSync(path.join(ROOT, 'plugins/acceptance-gate/lib', 'context-glossary.js'), 'utf8'));
   let mod = null; let threw = null;
   try { mod = require(path.join(m, 'lib', 'context-glossary.js')); } catch (e) { threw = e; }
   if (threw) fail(id, `bản thiếu md-section.cjs NÉM lúc nạp (W6 sẽ chết lặng ở cây vendored): ${threw.message}`);

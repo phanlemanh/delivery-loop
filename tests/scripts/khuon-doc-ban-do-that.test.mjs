@@ -12,8 +12,8 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { KIT, taoKhoMau, nhanh, banSaoTiem, ghi, git, chay, BAN_DO } from './khuon-loi-kho-mau.mjs';
 
-const LENH = 'scripts/design-floor-khuon.mjs';
-const DOC = 'scripts/ban-do-khuon.cjs';
+const LENH = 'plugins/acceptance-gate/scripts/design-floor-khuon.mjs';
+const DOC = 'plugins/acceptance-gate/scripts/ban-do-khuon.cjs';
 const CA = ['KD-1', 'KD-2', 'KD-2-do', 'KD-3', 'KD-4', 'KD-4-do', 'KD-5', 'KD-6', 'KD-6-do', 'KD-7', 'KD-7-do'];
 const chon = (process.env.KD_CASES || '').split(',').map(s => s.trim()).filter(Boolean);
 const la = chon.filter(c => !CA.includes(c));
@@ -132,7 +132,7 @@ function kiemKD2(kit) {
 let lanhKD2 = null;
 if (want('KD-2') || want('KD-2-do')) lanhKD2 = kiemKD2(KIT);
 if (want('KD-2')) ket('KD-2', lanhKD2);
-if (want('KD-2-do')) caDo('KD-2-do', kiemKD2, lanhKD2, () => banSaoTiem(['scripts', 'lib'], DOC, ...TIEM_TACH), 'ngoại lệ dạng danh sách không được miễn');
+if (want('KD-2-do')) caDo('KD-2-do', kiemKD2, lanhKD2, () => banSaoTiem(['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib'], DOC, ...TIEM_TACH), 'ngoại lệ dạng danh sách không được miễn');
 if (want('KD-3')) {
   const loi = [];
   for (const h of HANG_KD2) {
@@ -197,7 +197,7 @@ function kiemKD4(kit, inSo = false) {
 let lanhKD4 = null;
 if (want('KD-4') || want('KD-4-do')) lanhKD4 = kiemKD4(KIT, want('KD-4'));
 if (want('KD-4')) ket('KD-4', lanhKD4);
-if (want('KD-4-do')) caDo('KD-4-do', kiemKD4, lanhKD4, () => banSaoTiem(['scripts', 'lib'], DOC, ...TIEM_LOP), 'tệp dựng lớp trình bày bị báo thiếu khuôn');
+if (want('KD-4-do')) caDo('KD-4-do', kiemKD4, lanhKD4, () => banSaoTiem(['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib'], DOC, ...TIEM_LOP), 'tệp dựng lớp trình bày bị báo thiếu khuôn');
 if (want('KD-5')) {
   const loi = [];
   const hang = [
@@ -250,7 +250,7 @@ function kiemKD6(kit) {
 let lanhKD6 = null;
 if (want('KD-6') || want('KD-6-do')) lanhKD6 = kiemKD6(KIT);
 if (want('KD-6')) ket('KD-6', lanhKD6);
-if (want('KD-6-do')) caDo('KD-6-do', kiemKD6, lanhKD6, () => banSaoTiem(['scripts', 'lib'], DOC, ...TIEM_NHAC), 'lời nhắc không nói nhan_dien.tep');
+if (want('KD-6-do')) caDo('KD-6-do', kiemKD6, lanhKD6, () => banSaoTiem(['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib'], DOC, ...TIEM_NHAC), 'lời nhắc không nói nhan_dien.tep');
 
 // ── KD-7: kho mẫu hình dạng thật, đầu-cuối ─────────────────────────────────────────────────────────────────────
 // Hình dạng tệp bản đồ của kho thứ nhất: nhóm khai bằng sổ đăng ký kèm nhan_dien.tep hẹp và danh sách ngoài khuôn lồng,
@@ -367,6 +367,6 @@ function kiemKD7(kit) {
 let lanhKD7 = null;
 if (want('KD-7') || want('KD-7-do')) lanhKD7 = kiemKD7(KIT);
 if (want('KD-7')) ket('KD-7', lanhKD7);
-if (want('KD-7-do')) caDo('KD-7-do', kiemKD7, lanhKD7, () => banSaoTiem(['scripts', 'lib'], DOC, ...TIEM_TACH), 'kho hình dạng thật còn báo oan');
+if (want('KD-7-do')) caDo('KD-7-do', kiemKD7, lanhKD7, () => banSaoTiem(['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib'], DOC, ...TIEM_TACH), 'kho hình dạng thật còn báo oan');
 
 process.exit(hong ? 1 : 0);

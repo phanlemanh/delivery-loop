@@ -10,8 +10,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SHA = 'd9d1f3a6';
-const SKILL = 'feature-loop/skills/feature-loop/SKILL.md';
-const HFL = 'skills/acceptance/references/human-facing-language.md';
+const SKILL = 'plugins/feature-loop/skills/feature-loop/SKILL.md';
+const HFL = 'plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md';
 const KHOI = [[SKILL, 'TRONG-DOT'], [SKILL, 'GOAL-TEMPLATE'], [SKILL, 'S5-SHIP-DEFAULT'], [HFL, 'GATE-ONESHOT-LAN-V']];
 const LOI_GOI = /\s*\(trước đó: khối DINH-TUYEN-MAY\)/g;
 

@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(DAY, '..', '..');
-const GOI = path.join(KIT, 'dieu-phoi');
+const GOI = path.join(KIT, 'plugins/dispatch');
 const SLUG = 'dieu-phoi-on-dinh-r2';
 const NHANH = `vong/${SLUG}`;
 // Mốc so «bản cũ» ghim cứng (gap-probe P0): tag v2.27.0 — bản gói crm đang cài.

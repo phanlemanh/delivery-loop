@@ -13,7 +13,7 @@ import { createRequire } from 'node:module';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const KIT = path.join(HERE, '..', '..');
 export const BASE = '3200ba3a';
-// feature-loop/workflows + skills/acceptance/references: s4-args của base đọc bảng trường bắt buộc của
+// plugins/feature-loop/workflows + plugins/acceptance-gate/skills/acceptance/references: s4-args của base đọc bảng trường bắt buộc của
 // workflow và đòi các tệp luật ở --ag-root — thiếu thì base đỏ vì hạ tầng (ruling Task 2).
 export const BASE_DIRS = ['feature-loop/scripts', 'feature-loop/workflows', 'lib', 'scripts', 'skills/acceptance/references'];
 // Các tệp mà một chiều đỏ gọi trên bản base — vắng là đỏ vì HẠ TẦNG, phải nói ra trước.
@@ -40,11 +40,11 @@ export function dungBase() {
 }
 
 // ── bản sao lib có đột biến (kim phải khớp đúng soLan lần) ───────────────────────
-// Chép TRỌN lib/ và skills/acceptance/references/ (s4-args đòi cả hai ở --ag-root).
+// Chép TRỌN lib/ và plugins/acceptance-gate/skills/acceptance/references/ (s4-args đòi cả hai ở --ag-root).
 export function dungBanSaoLib(kim, thay, soLan = 1) {
   const d = tam('lib');
-  cpSync(path.join(KIT, 'lib'), path.join(d, 'lib'), { recursive: true });
-  cpSync(path.join(KIT, 'skills', 'acceptance', 'references'), path.join(d, 'skills', 'acceptance', 'references'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/acceptance-gate/lib'), path.join(d, 'lib'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/acceptance-gate/skills', 'acceptance', 'references'), path.join(d, 'skills', 'acceptance', 'references'), { recursive: true });
   if (kim != null) {
     const f = path.join(d, 'lib', 'evidence-core.cjs');
     const src = readFileSync(f, 'utf8');
@@ -100,7 +100,7 @@ export function dungKho(evalsText) {
   git(d, 'add', '-A'); git(d, 'commit', '-qm', 'vat');
   return d;
 }
-export function chayS4(d, { agRoot = KIT, s4 = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs') } = {}) {
+export function chayS4(d, { agRoot = path.join(KIT, 'plugins/acceptance-gate'), s4 = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs') } = {}) {
   const out = path.join(d, 'args.json');
   const r = spawnSync(process.execPath, [s4, '--slug', 'demo', '--root', d, '--ag-root', agRoot, '--out', out, '--diff-base', 'main'], { encoding: 'utf8' });
   const args = r.status === 0 && existsSync(out) ? JSON.parse(readFileSync(out, 'utf8')) : null;
@@ -109,7 +109,7 @@ export function chayS4(d, { agRoot = KIT, s4 = path.join(KIT, 'feature-loop', 's
 
 // ── bảng trường bắt buộc rút từ bên đọc (khối EVAL-REQUIRED-FIELDS của workflow) ──
 export function evalRequired() {
-  const src = readFileSync(path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
+  const src = readFileSync(path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
   const m = src.match(/<<<EVAL-REQUIRED-FIELDS([\s\S]*?)EVAL-REQUIRED-FIELDS>>>/);
   if (!m) throw new Error('không rút được EVAL-REQUIRED-FIELDS');
   const out = {};
@@ -165,7 +165,7 @@ export function docLib(root) {
 
 // ── vi phân trên mọi `_acceptance/*/evals.yaml` của các kho ─────────────────────
 export function viPhan({ khos, cu, moi }) {
-  const { parseEvals } = require(path.join(KIT, 'lib', 'eval-yaml.cjs'));
+  const { parseEvals } = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'eval-yaml.cjs'));
   let hoSo = 0, tieuChi = 0; const lech = []; const theoKho = [];
   for (const kho of khos) {
     const acc = path.join(kho, '_acceptance');

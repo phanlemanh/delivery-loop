@@ -1,17 +1,17 @@
 {
   "extraKnownMarketplaces": {
-    "acceptance-gate-kit": {
+    "delivery-loop": {
       "source": {
         "source": "github",
-        "repo": "phanlemanh/acceptance-gate-kit"
+        "repo": "phanlemanh/delivery-loop"
       }
     }
   },
   "enabledPlugins": {
-    "acceptance-gate@acceptance-gate-kit": true,
-    "feature-loop@acceptance-gate-kit": true,
-    "dieu-phoi@acceptance-gate-kit": true,
-    "diagram-design@acceptance-gate-kit": true,
+    "acceptance-gate@delivery-loop": true,
+    "feature-loop@delivery-loop": true,
+    "dispatch@delivery-loop": true,
+    "diagram-design@delivery-loop": true,
     "superpowers@claude-plugins-official": true
   },
   "permissions": {
@@ -25,7 +25,7 @@
       "Bash(bash -c 'set -o pipefail; bash tests/plugins/run-tests.sh --manh vung:2 2>&1 | grep -E \"FAIL|^Results:\" | tail -n 40')",
       "Bash(bash -c 'set -o pipefail; bash tests/plugins/run-tests.sh --manh vung:3 2>&1 | grep -E \"FAIL|^Results:\" | tail -n 40')",
       "Bash(bash tests/workflows/run-tests.sh)",
-      "Bash(node scripts/product-map.mjs --root . --check)",
+      "Bash(node plugins/acceptance-gate/scripts/product-map.mjs --root . --check)",
       "Bash(node tests/scripts/kiem-ban-cai.ca.mjs --chi-luot-moc)"
     ]
   }

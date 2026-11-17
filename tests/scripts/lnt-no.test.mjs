@@ -17,13 +17,13 @@ import { fileFromTemplate } from '../fixtures/from-template.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
 const require = createRequire(import.meta.url);
-const LIB = path.join(ROOT, 'lib', 'lop-nhin-thay.cjs');
-const NG = path.join(ROOT, 'lib', 'nguong-o-co-hoi.cjs');
-const EVYAML = path.join(ROOT, 'lib', 'eval-yaml.cjs');
-const LINT = path.join(ROOT, 'scripts', 'eval-coverage-lint.js');
-const GATE_CARD = path.join(ROOT, 'scripts', 'gate-card.js');
-const CHECK = path.join(ROOT, 'scripts', 'pre-merge-check.sh');
-const CONTRACT_TPL = path.join(ROOT, 'skills', 'acceptance', 'references', 'contract-template.md');
+const LIB = path.join(ROOT, 'plugins/acceptance-gate/lib', 'lop-nhin-thay.cjs');
+const NG = path.join(ROOT, 'plugins/acceptance-gate/lib', 'nguong-o-co-hoi.cjs');
+const EVYAML = path.join(ROOT, 'plugins/acceptance-gate/lib', 'eval-yaml.cjs');
+const LINT = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'eval-coverage-lint.js');
+const GATE_CARD = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
+const CHECK = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh');
+const CONTRACT_TPL = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'contract-template.md');
 // Mốc BẤT BIẾN có `LNT_AVAILABLE` — commit đã thêm nó (`git log -S`), không phải nhánh di động.
 const BASE_HAS_LNT_AVAILABLE = '0d5b2dd8';
 
@@ -58,13 +58,13 @@ if (want('NO1')) {
   const id = 'NO1'; const before = failures;
   const now = readFileSync(NG, 'utf8');
   const hits = (now.match(/LNT_AVAILABLE/g) || []).length;
-  if (hits !== 0) fail(id, `lib/nguong-o-co-hoi.cjs còn ${hits} chỗ nhắc LNT_AVAILABLE (cờ không bộ đọc nào dùng)`);
+  if (hits !== 0) fail(id, `plugins/acceptance-gate/lib/nguong-o-co-hoi.cjs còn ${hits} chỗ nhắc LNT_AVAILABLE (cờ không bộ đọc nào dùng)`);
   const old = spawnSync('git', ['-C', ROOT, 'show', `${BASE_HAS_LNT_AVAILABLE}:lib/nguong-o-co-hoi.cjs`], { encoding: 'utf8' });
   if (old.status !== 0) fail(id, `không đọc được mốc ${BASE_HAS_LNT_AVAILABLE} — đối chứng dương không chạy được`);
   else if (!/LNT_AVAILABLE/.test(old.stdout)) fail(id, `mốc ${BASE_HAS_LNT_AVAILABLE} không có LNT_AVAILABLE — phép đo vắng-mặt không phân biệt được`);
   // vật vẫn sống: bản hiện tại đọc-cũ được khi thiếu lop-nhin-thay.cjs (lý do cờ ra đời)
   const m = tmp(); mkdirSync(path.join(m, 'lib'), { recursive: true });
-  for (const f of ['nguong-o-co-hoi.cjs', 'md-section.cjs']) cpSync(path.join(ROOT, 'lib', f), path.join(m, 'lib', f));
+  for (const f of ['nguong-o-co-hoi.cjs', 'md-section.cjs']) cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib', f), path.join(m, 'lib', f));
   const r = spawnSync(process.execPath, ['-e', `const n=require(${JSON.stringify(path.join(m, 'lib', 'nguong-o-co-hoi.cjs'))}); process.stdout.write(String(n.coNguoiDungCuoi('[ui]')))`], { encoding: 'utf8' });
   if (r.status !== 0 || r.stdout !== 'true') fail(id, `bản thiếu lop-nhin-thay.cjs không đọc-cũ được (exit ${r.status}, out "${r.stdout}", err ${String(r.stderr).split('\n')[0]})`);
   rmSync(m, { recursive: true, force: true });
@@ -88,7 +88,7 @@ if (want('NO2')) {
   git(R, 'add', '-A');
   git(R, 'commit', '-qm', 'evidence');
 
-  const mkKit = () => { const m = tmp(); cpSync(path.join(ROOT, 'lib'), path.join(m, 'lib'), { recursive: true }); cpSync(path.join(ROOT, 'scripts'), path.join(m, 'scripts'), { recursive: true }); return m; };
+  const mkKit = () => { const m = tmp(); cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(m, 'lib'), { recursive: true }); cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(m, 'scripts'), { recursive: true }); return m; };
   const runCheck = (kit, env) => spawnSync('bash', [path.join(kit, 'scripts', 'pre-merge-check.sh'), R], { encoding: 'utf8', env: { ...process.env, ...env } });
   const lntNote = out => (String(out).split('\n').find(l => /NOTE \[x\]:.*(lớp nhìn-thấy|mặt người nhìn)/.test(l)) || '');
 
@@ -145,7 +145,7 @@ if (want('NO3')) {
   //     (nguong-o-co-hoi nhận chuỗi đã cắt). Đây là seam đã lệch: `\s*#` cắt cả `x#y`,
   //     `[ \t]+#` thì không — cùng hồ sơ, hai câu trả lời.
   const L = require(LIB); const N = require(NG); const EY = require(EVYAML);
-  if (typeof EY.stripComment !== 'function') fail(id, 'lib/eval-yaml.cjs chưa xuất stripComment — chưa có MỘT nguồn cắt chú thích');
+  if (typeof EY.stripComment !== 'function') fail(id, 'plugins/acceptance-gate/lib/eval-yaml.cjs chưa xuất stripComment — chưa có MỘT nguồn cắt chú thích');
   for (const [line, expApplicable] of FIX) {
     const raw = line.replace(/^surfaces:\s*/, '');
     const viaLib = L.laMatNguoiNhin(L.frontLine(withSurfaceLine(contractOf('ui'), line), 'surfaces'));
@@ -175,14 +175,14 @@ if (want('NO3')) {
 
   // (c) chiều đỏ CỦA LỚP: bản sao tiêm lại regex cũ `\s*#` vào frontLine → hai đường
   //     bất đồng ở fixture `[ui]#x`; phép đo (b) phải bắt được điều đó.
-  const m = tmp(); cpSync(path.join(ROOT, 'lib'), path.join(m, 'lib'), { recursive: true });
+  const m = tmp(); cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(m, 'lib'), { recursive: true });
   const src = readFileSync(path.join(m, 'lib', 'lop-nhin-thay.cjs'), 'utf8');
   // Tiêm bằng cách ĐỔI LUẬT ở nguồn chung (không đụng call site): nếu lib còn tự viết
   // regex thì mutant vô hiệu và ca đỏ — đó chính là điều cần bắt.
   const MUT_REQ = "Object.assign({}, require('./eval-yaml.cjs'), { stripComment: s => String(s == null ? '' : s).replace(/\\s*#.*$/, '').trim() })";
   const mut = src.replace("require('./eval-yaml.cjs')", MUT_REQ);
   if (mut === src || !/stripComment/.test(src)) {
-    fail(id, 'không tiêm được mutant — lop-nhin-thay.cjs chưa dùng stripComment của lib/eval-yaml.cjs (đường cắt vẫn viết tay)');
+    fail(id, 'không tiêm được mutant — lop-nhin-thay.cjs chưa dùng stripComment của plugins/acceptance-gate/lib/eval-yaml.cjs (đường cắt vẫn viết tay)');
   } else {
     writeFileSync(path.join(m, 'lib', 'lop-nhin-thay.cjs'), mut);
     const LM = require(path.join(m, 'lib', 'lop-nhin-thay.cjs'));

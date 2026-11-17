@@ -14,7 +14,7 @@ import { runWorkflow, check, summary, TOOL_KILL_RULE_LINES } from './harness.mjs
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');
-const WF = path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const SRC = readFileSync(WF, 'utf8');
 const VC = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2';
 const soLan = (hay, kim) => hay.split(kim).length - 1;

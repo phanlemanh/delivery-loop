@@ -12,7 +12,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { detectStatic } from '../../lib/design-detect.mjs';
+import { detectStatic } from '../../plugins/acceptance-gate/lib/design-detect.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const gt = JSON.parse(fs.readFileSync(path.join(DIR, 'ground-truth.json'), 'utf8'));

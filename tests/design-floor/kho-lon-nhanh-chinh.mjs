@@ -46,10 +46,10 @@ function banGoc() {
 // biến được chép rồi sửa. Chuỗi cũ phải có đúng một lần (không thì đột biến hỏng).
 function kitDotBien(tep, ...cap) {
   const K = moi('kit');
-  for (const d of ['lib', 'design-floor']) symlinkSync(join(KIT, d), join(K, d));
+  for (const d of ['plugins/acceptance-gate/lib', 'plugins/acceptance-gate/design-floor']) symlinkSync(join(KIT, d), join(K, d));
   mkdirSync(join(K, 'scripts'));
-  for (const f of readdirSync(join(KIT, 'scripts'))) if (f !== tep) symlinkSync(join(KIT, 'scripts', f), join(K, 'scripts', f));
-  let noi = readFileSync(join(KIT, 'scripts', tep), 'utf8');
+  for (const f of readdirSync(join(KIT, 'plugins/acceptance-gate/scripts'))) if (f !== tep) symlinkSync(join(KIT, 'plugins/acceptance-gate/scripts', f), join(K, 'scripts', f));
+  let noi = readFileSync(join(KIT, 'plugins/acceptance-gate/scripts', tep), 'utf8');
   for (const [cu, thay] of cap) {
     if (noi.split(cu).length !== 2) throw new Error(`đột biến hỏng: «${cu.slice(0, 60)}» không có đúng một lần trong ${tep}`);
     noi = noi.replace(cu, thay);
@@ -349,8 +349,8 @@ const TRAN = 'maxBuffer: 64 * 1024 * 1024';
 // Ma trận đột biến LOP: mỗi lời gọi một đột biến gỡ trần của RIÊNG nó — phải đỏ đúng tệp:dòng của nó.
 function dotTungLoiGoi() {
   const ds = [];
-  for (const f of readdirSync(join(KIT, 'scripts')).filter((t) => /^design-floor-.*\.mjs$/.test(t)).sort()) {
-    const noi = readFileSync(join(KIT, 'scripts', f), 'utf8');
+  for (const f of readdirSync(join(KIT, 'plugins/acceptance-gate/scripts')).filter((t) => /^design-floor-.*\.mjs$/.test(t)).sort()) {
+    const noi = readFileSync(join(KIT, 'plugins/acceptance-gate/scripts', f), 'utf8');
     for (const m of noi.matchAll(RE_GOI)) {
       const loi = loiGoi(noi, m.index + m[0].length - 1);
       const dongSo = noi.slice(0, m.index).split('\n').length;

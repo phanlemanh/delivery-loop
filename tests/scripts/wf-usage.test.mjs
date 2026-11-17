@@ -1,4 +1,4 @@
-// Unit tests for feature-loop/scripts/wf-usage.mjs — fixture transcripts pin:
+// Unit tests for plugins/feature-loop/scripts/wf-usage.mjs — fixture transcripts pin:
 //   U01 dedupe theo message.id (usage snapshot lớn dần → max per field, KHÔNG cộng dồn)
 //   U02 label từ tag [wf-label:] + fallback snippet khi prompt không tag
 //   U03 totals per model + --md shape
@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const SCRIPT = path.join(HERE, '..', '..', 'feature-loop', 'scripts', 'wf-usage.mjs');
+const SCRIPT = path.join(HERE, '..', '..', 'plugins/feature-loop', 'scripts', 'wf-usage.mjs');
 
 let pass = 0, fail = 0;
 const check = (name, cond, extra) => {

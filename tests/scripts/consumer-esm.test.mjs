@@ -6,7 +6,7 @@
 // (floorplanstudio, sổ vấp #23-24) trả giá bằng một pre-merge đỏ chặn merge.
 //
 // Phép đo dựng CONSUMER GIẢ-LẬP bằng code trong chính lần chạy:
-//   1. Danh sách chép round-trip từ commands/acceptance-init.md (marker
+//   1. Danh sách chép round-trip từ plugins/acceptance-gate/commands/acceptance-init.md (marker
 //      INIT-CI-COPY-LIST) — KHÔNG chép tay, để danh-sách-thiếu tự làm test đỏ.
 //   2. QUAN HỆ "mọi lib pre-merge dùng ⊆ danh sách chép" ghim bằng máy — thêm
 //      một lib mới vào pre-merge mà quên khai chép là ĐỎ ngay tại đây.
@@ -29,7 +29,7 @@ let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
 
 // ── 1. Round-trip danh sách chép từ chỉ dẫn thật ────────────────────────────
-const initMd = readFileSync(path.join(ROOT, 'commands', 'acceptance-init.md'), 'utf8');
+const initMd = readFileSync(path.join(ROOT, 'plugins/acceptance-gate/commands', 'acceptance-init.md'), 'utf8');
 const listBlock = (initMd.split('<!-- <<<INIT-CI-COPY-LIST -->')[1] || '').split('<!-- INIT-CI-COPY-LIST>>> -->')[0];
 const COPIES = [];
 for (const m of listBlock.matchAll(/\$\{CLAUDE_PLUGIN_ROOT\}\/([^`]+)`\s*→\s*`([^`]+)\//g)) {
@@ -39,7 +39,7 @@ for (const m of listBlock.matchAll(/\$\{CLAUDE_PLUGIN_ROOT\}\/([^`]+)`\s*→\s*`
 check('CE1 danh sách chép trích được từ marker (sanity ≥ 7 mục, mọi src tồn tại)', () => {
   assert.ok(COPIES.length >= 7, `chỉ trích được ${COPIES.length} mục từ INIT-CI-COPY-LIST — marker/khuôn hỏng`);
   for (const c of COPIES) {
-    assert.ok(existsSync(path.join(ROOT, c.src)), `src trong danh sách chép không tồn tại ở kho: ${c.src}`);
+    assert.ok(existsSync(path.join(`${ROOT}/plugins/acceptance-gate`, c.src)), `src trong danh sách chép không tồn tại ở kho: ${c.src}`);
   }
 });
 
@@ -48,13 +48,13 @@ check('CE1 danh sách chép trích được từ marker (sanity ≥ 7 mục, m�
 //
 // Ba chỗ gap-probe 16/09 bắt được ở bản đầu, vá theo LỚP chứ không vá từng ca:
 //   P1#2 — regex cũ `[a-z-]+\.cjs` chỉ thấy kebab-thường-đuôi-cjs, trong khi lib/ của
-//          chính kho đã có .mjs/.js/.json: thêm `lib/x2.cjs` hay `lib/design-detect.mjs`
+//          chính kho đã có .mjs/.js/.json: thêm `lib/x2.cjs` hay `plugins/acceptance-gate/lib/design-detect.mjs`
 //          vào pre-merge rồi quên khai là XANH. Nay charset rộng + 4 đuôi.
 //   P1#3 — quan hệ chỉ đi MỘT bước: ac-line→md-section, lop-nhin-thay→eval-yaml,
 //          evidence-core→eval-yaml nằm trong danh sách chỉ vì pre-merge TÌNH CỜ cũng
 //          nhắc tên chúng. Nay đóng BAO ĐÓNG require/__dirname, nên gỡ lời nhắc ở
 //          pre-merge cũng không làm mắt xích biến mất.
-//   P2#7 — `scripts/recheck-evidence.cjs` vào tập nhờ một dấu NHÁY KÉP; đổi kiểu nháy
+//   P2#7 — `plugins/acceptance-gate/scripts/recheck-evidence.cjs` vào tập nhờ một dấu NHÁY KÉP; đổi kiểu nháy
 //          là mắt xích biến mất. Nay nhận theo vị trí `$HERE/<file>` (thư mục của chính
 //          script) — cùng thứ shell thật sự chạy.
 const DUOI = String.raw`(?:cjs|mjs|js|json)`;
@@ -63,7 +63,7 @@ const TEN_TEP = new RegExp(String.raw`^[A-Za-z0-9][A-Za-z0-9._-]*\.${DUOI}$`);
 // Các đường nạp mà MỘT tệp JS kéo theo, trả về đường dẫn tính từ gốc kho.
 function nap(relPath) {
   if (!/\.(cjs|mjs|js)$/.test(relPath)) return [];
-  const abs = path.join(ROOT, relPath);
+  const abs = path.join(`${ROOT}/plugins/acceptance-gate`, relPath);
   if (!existsSync(abs)) return [];
   const src = readFileSync(abs, 'utf8');
   const dir = path.dirname(relPath);
@@ -88,7 +88,7 @@ function diemVaoBanDo(initText) {
   return m ? m[1] : null;
 }
 function tapDung(pmText, diemVao = diemVaoBanDo()) {
-  const pm = pmText ?? readFileSync(path.join(ROOT, 'scripts', 'pre-merge-check.sh'), 'utf8');
+  const pm = pmText ?? readFileSync(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), 'utf8');
   const used = new Set(['scripts/pre-merge-check.sh', ...(diemVao ? [diemVao] : [])]);
   // lib/: nhận rộng — mọi tệp lib nhắc trong cổng đều phải theo cổng sang consumer.
   for (const m of pm.matchAll(new RegExp(String.raw`lib\/([A-Za-z0-9][A-Za-z0-9._-]*\.${DUOI})`, 'g'))) used.add(`lib/${m[1]}`);
@@ -120,13 +120,13 @@ check('CE2m mutant trong-lần-chạy: bỏ 1 mục khỏi danh-sách-khai → q
   const mutated = COPIES.map(c => c.src).filter(s => s !== 'lib/gap-probe.cjs');
   assert.equal(mutated.length, COPIES.length - 1, 'mutant không bỏ được mục nào — tên mục trong danh sách đã đổi?');
   const { missing } = usedVsDeclared(mutated);
-  assert.ok(missing.includes('lib/gap-probe.cjs'), `phép đo quan hệ không đỏ khi thiếu lib/gap-probe.cjs (missing=${JSON.stringify(missing)})`);
+  assert.ok(missing.includes('lib/gap-probe.cjs'), `phép đo quan hệ không đỏ khi thiếu plugins/acceptance-gate/lib/gap-probe.cjs (missing=${JSON.stringify(missing)})`);
 });
 
 check('CE2p điểm vào thứ ba rút từ dòng product_map: của khuôn config; bao đóng của nó ⊆ danh sách chép', () => {
   const dv = diemVaoBanDo();
-  assert.ok(dv, 'không rút được dòng product_map: từ khuôn config trong commands/acceptance-init.md');
-  assert.ok(existsSync(path.join(ROOT, dv)), `điểm vào ${dv} không tồn tại ở kho`);
+  assert.ok(dv, 'không rút được dòng product_map: từ khuôn config trong plugins/acceptance-gate/commands/acceptance-init.md');
+  assert.ok(existsSync(path.join(`${ROOT}/plugins/acceptance-gate`, dv)), `điểm vào ${dv} không tồn tại ở kho`);
   const { used, missing } = usedVsDeclared(COPIES.map(c => c.src));
   assert.ok(used.has(dv), `bao đóng không chứa chính điểm vào ${dv}`);
   const chiCuaBanDo = [...tapDung(undefined, dv)].filter(u => !tapDung(undefined, null).has(u));
@@ -134,7 +134,7 @@ check('CE2p điểm vào thứ ba rút từ dòng product_map: của khuôn conf
   assert.deepEqual(missing, [], `danh sách chép thiếu tệp mà lệnh bản đồ nạp: ${missing.join(', ')}`);
 });
 
-check('CE2p-dot-bien bỏ scripts/trang-thai-ho-so.cjs khỏi danh-sách-khai → quan hệ ĐỎ ghim đúng tên', () => {
+check('CE2p-dot-bien bỏ plugins/acceptance-gate/scripts/trang-thai-ho-so.cjs khỏi danh-sách-khai → quan hệ ĐỎ ghim đúng tên', () => {
   const TEN = 'scripts/trang-thai-ho-so.cjs';
   const mutated = COPIES.map(c => c.src).filter(x => x !== TEN);
   assert.equal(mutated.length, COPIES.length - 1, `mutant không bỏ được ${TEN} — tên mục trong danh sách đã đổi?`);
@@ -145,7 +145,7 @@ check('CE2p-dot-bien bỏ scripts/trang-thai-ho-so.cjs khỏi danh-sách-khai �
 // Mutant trên BẢN SAO văn bản pre-merge: chứng minh chân «gắn vào writer» thật sự
 // nhận diện được thứ nó hứa nhận (gap-probe 16/09 P1#2, P1#3).
 check('CE2w chân writer: tên lib có chữ số/đuôi .mjs vẫn vào tập DÙNG, và mắt xích bắc cầu sống khi gỡ hết lời nhắc trực tiếp', () => {
-  const pm = readFileSync(path.join(ROOT, 'scripts', 'pre-merge-check.sh'), 'utf8');
+  const pm = readFileSync(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), 'utf8');
   const that = usedVsDeclared(COPIES.map(c => c.src));
   assert.deepEqual(that.missing, [], 'đối chứng dương hỏng: bản pre-merge thật đã lệch danh sách chép');
 
@@ -157,7 +157,7 @@ check('CE2w chân writer: tên lib có chữ số/đuôi .mjs vẫn vào tập D
     assert.ok(missing.includes(ten), `thấy ${ten} nhưng không báo thiếu khai (missing=${JSON.stringify(missing)})`);
   }
 
-  // Bao đóng: gỡ MỌI lời nhắc trực tiếp `lib/eval-yaml.cjs` khỏi văn bản cổng.
+  // Bao đóng: gỡ MỌI lời nhắc trực tiếp `plugins/acceptance-gate/lib/eval-yaml.cjs` khỏi văn bản cổng.
   // Nó vẫn phải ở trong tập DÙNG, vì evidence-core.cjs và lop-nhin-thay.cjs require nó.
   const khongNhac = pm.split('lib/eval-yaml.cjs').join('lib/KHONG-CON-NHAC.cjs');
   assert.ok(!khongNhac.includes('lib/eval-yaml.cjs'), 'mutant bao đóng không gỡ được lời nhắc nào');
@@ -246,7 +246,7 @@ const git = (...a) => execFileSync('git', ['-C', SIM, '-c', 'user.email=t@t', '-
 writeFileSync(path.join(SIM, 'package.json'), JSON.stringify({ name: 'consumer-sim', type: 'module' }, null, 2) + '\n');
 for (const c of COPIES) {
   mkdirSync(path.join(SIM, c.dstDir), { recursive: true });
-  copyFileSync(path.join(ROOT, c.src), path.join(SIM, c.dstDir, path.basename(c.src)));
+  copyFileSync(path.join(`${ROOT}/plugins/acceptance-gate`, c.src), path.join(SIM, c.dstDir, path.basename(c.src)));
 }
 mkdirSync(path.join(SIM, 'src'), { recursive: true });
 writeFileSync(path.join(SIM, 'src', 'app.js'), 'export const x = 1;\n');
@@ -336,7 +336,7 @@ check('CE5-map lệnh bản đồ chạy trọn trong consumer type:module từ 
 });
 
 check('CE6-ooc không còn tham chiếu đuôi cũ .js của lib/out-of-contract trong bộ máy; bản sao khôi phục một require đuôi cũ → đỏ gọi tên', () => {
-  const DIRS = ['scripts', 'lib', 'skills', 'feature-loop', 'commands', 'tests'];
+  const DIRS = ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills', 'plugins/feature-loop', 'plugins/acceptance-gate/commands', 'tests'];
   const RE = /out-of-contract\.js\b/;
   const quet = (docTep) => {
     const hit = [];
@@ -346,11 +346,11 @@ check('CE6-ooc không còn tham chiếu đuôi cũ .js của lib/out-of-contract
   };
   const doc = p => { try { return readFileSync(p, 'utf8'); } catch { return ''; } };
   assert.deepEqual(quet(doc), [], 'còn tham chiếu đuôi cũ .js của lib/out-of-contract');
-  const GC = path.join(ROOT, 'scripts', 'gate-card.js');
+  const GC = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
   // Chuỗi tiêm GHÉP từ hai mảnh để chính tệp ca này không mang tên đuôi cũ (phép quét sẽ tự bắt nó).
   const tiem = p => p === GC ? doc(p).replace("out-of-contract.cjs')", 'out-of-contract' + ".js')") : doc(p);
   assert.notEqual(tiem(GC), doc(GC), 'mutant không tiêm được — neo require của gate-card đã đổi?');
-  assert.deepEqual(quet(tiem), ['scripts/gate-card.js'], 'phép quét không gọi tên tệp mang require .js vừa tiêm');
+  assert.deepEqual(quet(tiem), ['plugins/acceptance-gate/scripts/gate-card.js'], 'phép quét không gọi tên tệp mang require .js vừa tiêm');
 });
 
 // ── 4. Chiều ĐỎ: đúng layout TRƯỚC vá (.js) phải nổ ReferenceError ──────────

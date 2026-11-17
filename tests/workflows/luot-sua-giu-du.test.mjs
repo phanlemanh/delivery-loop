@@ -20,11 +20,11 @@ import { runWorkflow } from './harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
-const WF = path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const WF_SRC = fs.readFileSync(WF, 'utf8');
 const require_ = createRequire(import.meta.url);
-const ooc = require_(path.join(ROOT, 'lib', 'out-of-contract.cjs'));
-const core = require_(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+const ooc = require_(path.join(ROOT, 'plugins/acceptance-gate/lib', 'out-of-contract.cjs'));
+const core = require_(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
 
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'lsgd-wf-'));
 process.on('exit', () => { try { fs.rmSync(TMP, { recursive: true, force: true }); } catch { /* dọn tạm */ } });
@@ -112,8 +112,8 @@ async function kiemAC3(src) {
     w(d, 'run-log.jsonl', r.runLog.join('\n') + '\n');
     w(d, 'evals.yaml', 'evals:\n  - id: E1\n    criterion: AC-1\n    executor: test\n    cmd: x\n    paths: [lib/**]\n');
     w(d, 'contract.md', '- AC-1: Given x When y Then z\n');
-    const cp = spawnSync(process.execPath, [path.join(ROOT, 'feature-loop', 'scripts', 'carry-plan.mjs'), '--run-log', path.join(d, 'run-log.jsonl'),
-      '--evals', path.join(d, 'evals.yaml'), '--contract', path.join(d, 'contract.md'), '--round', '3', '--ag-root', ROOT, '--no-delta'], { encoding: 'utf8' });
+    const cp = spawnSync(process.execPath, [path.join(ROOT, 'plugins/feature-loop', 'scripts', 'carry-plan.mjs'), '--run-log', path.join(d, 'run-log.jsonl'),
+      '--evals', path.join(d, 'evals.yaml'), '--contract', path.join(d, 'contract.md'), '--round', '3', '--ag-root', `${ROOT}/plugins/acceptance-gate`, '--no-delta'], { encoding: 'utf8' });
     let cf = [];
     try { cf = JSON.parse(cp.stdout).carriedFindings || []; } catch { loi.push(`carry-plan lượt kế không in JSON (exit ${cp.status}): ${cp.stderr}`); }
     const tieuDe = cf.map(x => x.title).sort();
@@ -203,7 +203,7 @@ function hoSoThe(report) {
   // Thẻ chỉ tính ảnh là TỆP có thật dưới evidence/ của hồ sơ (hồ sơ anh-co-that-trong-ho-so); carry thật chỉ giữ khung khi
   // ảnh còn trên đĩa, nên hồ sơ của thẻ mang đúng tệp ấy khi báo cáo khai nó.
   if (String(report).includes(`screenshot: ${KHUNG.screenshot}`)) w(d, `_acceptance/demo/${KHUNG.screenshot}`, '\x89PNG\r\n\x1a\n');
-  const r = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'gate-card.js'), '--root', d, '--slug', 'demo', '--gate', '2', '--extract'], { encoding: 'utf8' });
+  const r = spawnSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '--root', d, '--slug', 'demo', '--gate', '2', '--extract'], { encoding: 'utf8' });
   if (r.status !== 0) throw new Error(`gate-card exit ${r.status}: ${r.stderr}`);
   return JSON.parse(r.stdout).ui_observed;
 }
@@ -239,7 +239,7 @@ async function kiemAC5(src) {
   git(d, 'add', '-A'); git(d, 'commit', '-qm', 'ho so luot 2');
   fs.appendFileSync(path.join(d, 'src/a.js'), 'c\n'); git(d, 'add', '-A'); git(d, 'commit', '-qm', 'sua luot 3');
   const out = path.join(d, 'args.json');
-  const s4 = spawnSync(process.execPath, [path.join(ROOT, 'feature-loop', 'scripts', 's4-args.mjs'), '--slug', 'demo', '--root', d, '--ag-root', ROOT, '--out', out, '--diff-base', 'main', '--carry-anchor', s2], { encoding: 'utf8' });
+  const s4 = spawnSync(process.execPath, [path.join(ROOT, 'plugins/feature-loop', 'scripts', 's4-args.mjs'), '--slug', 'demo', '--root', d, '--ag-root', `${ROOT}/plugins/acceptance-gate`, '--out', out, '--diff-base', 'main', '--carry-anchor', s2], { encoding: 'utf8' });
   if (s4.status !== 0) { loi.push(`s4-args lượt 3 exit ${s4.status}: ${String(s4.stderr).split('\n').filter(Boolean).slice(-2).join(' | ')}`); return loi; }
   const ce = (JSON.parse(fs.readFileSync(out, 'utf8')).carriedEvals || []).find(c => c.id === 'E2');
   if (!ce) loi.push('lượt 3: E2 không được carry');

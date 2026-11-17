@@ -10,7 +10,7 @@
 //   DM7  thẻ Cổng 2: cờ dòng cũ
 //   DM8  khuôn dòng sổ người của signoff — khứ hồi bên viết → bên đọc
 //   DM9  vi phân trên cây _acceptance/ thật của kit, mốc cố định
-// Fixture do CODE SINH trong lượt: mục rút OOC-ITEM-TEMPLATE của feature-loop/workflows/acceptance-verify.js,
+// Fixture do CODE SINH trong lượt: mục rút OOC-ITEM-TEMPLATE của plugins/feature-loop/workflows/acceptance-verify.js,
 // khoá round-tally rút ROUND-TALLY-SCHEMA cùng tệp, hợp đồng rút CONTRACT-FRONTMATTER-TEMPLATE, dòng sổ người
 // rút NGOAI-N-GATE2-LINE của commands/signoff.md. Đường dẫn suy từ vị trí tệp.
 // Chọn ca: đối số dòng lệnh (`node dinh-tuyen-theo-ma-muc.test.mjs DM3 DM1`) hoặc DM_CASES=a,b.
@@ -37,7 +37,7 @@ const git = (d, ...a) => execFileSync('git', ['-C', d, ...a], { encoding: 'utf8'
 const bam = t => createHash('sha256').update(t == null ? '' : t).digest('hex');
 
 // ── Khuôn rút từ bên VIẾT ────────────────────────────────────────────────────
-const AV = readFileSync(path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
+const AV = readFileSync(path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
 const OOC_TPL = (() => {
   const m = AV.match(/<<<OOC-ITEM-TEMPLATE\\n([\s\S]*?)OOC-ITEM-TEMPLATE>>>/);
   if (!m) throw new Error('khong rut duoc OOC-ITEM-TEMPLATE tu acceptance-verify.js');
@@ -53,12 +53,12 @@ const KHOA_TALLY = (() => {
 const tally = (ts, round = 2) => JSON.stringify(Object.fromEntries([['ts', ts], ...KHOA_TALLY.map(k => [k, { round, kind: 'round-tally', verdict: 'PASS', expected: 1, returned: 1, blocked: 0 }[k] ?? 0])]));
 const runLog = (...ts) => ts.map((t, i) => tally(t, i + 1)).join('\n') + '\n';
 const NHAN_SIGNOFF = (() => {
-  const s = readFileSync(path.join(KIT, 'commands', 'signoff.md'), 'utf8');
+  const s = readFileSync(path.join(KIT, 'plugins/acceptance-gate/commands', 'signoff.md'), 'utf8');
   return s;
 })();
 function khuonSignoff(src) {
   const m = src.match(/<!-- <<<NGOAI-N-GATE2-LINE -->([\s\S]*?)<!-- NGOAI-N-GATE2-LINE>>> -->/);
-  if (!m) throw new Error('không rút được khối NGOAI-N-GATE2-LINE từ commands/signoff.md');
+  if (!m) throw new Error('không rút được khối NGOAI-N-GATE2-LINE từ plugins/acceptance-gate/commands/signoff.md');
   const l = m[1].split('\n').map(x => x.trim()).filter(x => x && !x.startsWith('```'));
   if (l.length !== 1) throw new Error(`khối NGOAI-N-GATE2-LINE có ${l.length} dòng nội dung, cần đúng 1`);
   return l[0];
@@ -72,7 +72,7 @@ const dongMa = (n, i, o = {}) => dong(n, { tieu_de: `loi that so ${i}`, tep: `sr
 const so = (...l) => l.join('\n') + '\n';
 const nh = (...n) => n.map(x => `Ngoài-${x}`);
 const range = (a, b) => Array.from({ length: b - a + 1 }, (_, k) => a + k);
-const OOC = require(path.join(KIT, 'lib', 'out-of-contract.cjs'));
+const OOC = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'out-of-contract.cjs'));
 
 // ── DM3: ma trận viết trước. [tên, findingsText, ledgerText, runLogText, chua kỳ vọng] ────────────────────
 const T03 = '2026-10-13T03:00:00Z', T08 = '2026-10-13T08:00:00Z', T09 = '2026-10-13T09:00:00Z';
@@ -108,17 +108,17 @@ function chayMaTran(lib) {
 }
 function banSaoLib(tu, thanh) {
   const d = mkdtempSync(path.join(TMP, 'lib-'));
-  cpSync(path.join(KIT, 'lib'), path.join(d, 'lib'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/acceptance-gate/lib'), path.join(d, 'lib'), { recursive: true });
   const p = path.join(d, 'lib', 'out-of-contract.cjs'); const src = readFileSync(p, 'utf8');
   const k = src.split(tu).length - 1;
-  if (k !== 1) throw new Error(`neo mutant khop ${k} lan trong lib/out-of-contract.cjs: «${tu.slice(0, 70)}»`);
+  if (k !== 1) throw new Error(`neo mutant khop ${k} lan trong plugins/acceptance-gate/lib/out-of-contract.cjs: «${tu.slice(0, 70)}»`);
   writeFileSync(p, src.replace(tu, thanh));
   return require(p);
 }
 // Bản sao scripts + lib + skills (khuôn banSaoMay của hskt): tiêm = [[rel, neo, thay]].
 function banSaoMay(tiem = []) {
   const cp = mkdtempSync(path.join(TMP, 'may-'));
-  for (const d of ['scripts', 'lib', 'skills', 'commands']) cpSync(path.join(KIT, d), path.join(cp, d), { recursive: true });
+  for (const d of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills', 'plugins/acceptance-gate/commands']) cpSync(path.join(KIT, d), path.join(cp, d), { recursive: true });
   for (const [rel, neo, thay] of tiem) {
     const p = path.join(cp, rel); const src = readFileSync(p, 'utf8');
     const k = src.split(neo).length - 1;
@@ -151,7 +151,7 @@ await doMaTran('DM3-do thoi-diem', 'if (m) t.push(', 'if (false) t.push(', ['13 
 
 // ── Kho thử làn V (khuôn khoLanV của hskt) ─────────────────────────────────────────────────────────────
 const { fileFromTemplate } = await import(pathToFileURL(path.join(KIT, 'tests', 'fixtures', 'from-template.mjs')).href);
-const CONTRACT_TPL = path.join(KIT, 'skills', 'acceptance', 'references', 'contract-template.md');
+const CONTRACT_TPL = path.join(KIT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'contract-template.md');
 const hopDongV = (slug, status = 'verified') => {
   const t = fileFromTemplate(CONTRACT_TPL, 'CONTRACT-FRONTMATTER-TEMPLATE',
     { feature: `${slug} — fixture`, slug, owner: 'fixture@example.com', risk_tier: 'T2', surfaces: 'cli', status },
@@ -166,9 +166,9 @@ function khoLanV(slug, { findings, ledger, rl, status = 'verified', ky = '', con
   writeFileSync(path.join(R, '_acceptance', 'config.yaml'), 'schema_version: 1\nrisk_tiers:\n  t1_skip_globs:\n    - "docs/**"\n    - "*.md"\n' + config);
   writeFileSync(path.join(R, 'verify.sh'), '#!/bin/sh\nexit 0\n');
   mkdirSync(path.join(R, 'src'), { recursive: true }); writeFileSync(path.join(R, 'src', 'app.js'), 'v1\n');
-  cpSync(path.join(KIT, 'lib'), path.join(R, 'lib'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/acceptance-gate/lib'), path.join(R, 'lib'), { recursive: true });
   mkdirSync(path.join(R, 'scripts'), { recursive: true });
-  cpSync(path.join(KIT, 'scripts', 'recheck-evidence.cjs'), path.join(R, 'scripts', 'recheck-evidence.cjs'));
+  cpSync(path.join(KIT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), path.join(R, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'));
   git(R, 'add', '-A'); git(R, 'commit', '-qm', 'c1'); git(R, 'branch', 'basepoint');
   writeFileSync(path.join(R, 'src', 'app.js'), 'v2\n');
   const d = path.join(R, '_acceptance', slug);
@@ -182,7 +182,7 @@ function khoLanV(slug, { findings, ledger, rl, status = 'verified', ky = '', con
   git(R, 'add', '-A'); git(R, 'commit', '-qm', 'c3');
   return R;
 }
-const kcn = (R, slug, may = KIT) => { const o = spawnSync(process.execPath, [path.join(may, 'scripts', 'khong-can-nguoi.mjs'), '--check', '--root', R, '--slug', slug], { encoding: 'utf8' }); return { status: o.status, out: (o.stdout || '').trim(), err: (o.stderr || '').trim() }; };
+const kcn = (R, slug, may = KIT) => { const o = spawnSync(process.execPath, [path.join(may, 'plugins/acceptance-gate/scripts', 'khong-can-nguoi.mjs'), '--check', '--root', R, '--slug', slug], { encoding: 'utf8' }); return { status: o.status, out: (o.stdout || '').trim(), err: (o.stderr || '').trim() }; };
 
 // Ca gốc crm them-buoc-bao-dung (origin aa57e00f8): round-tally r3 02:31:28Z, 8 dòng chỉ số 06:07:54Z.
 const R3 = '2026-10-13T02:31:28Z', R4 = '2026-10-13T08:00:00Z';
@@ -212,7 +212,7 @@ await ca('DM1 tuoi', () => {
 });
 await ca('DM1-do theo-so', () => {
   if (kiemDoiSo(MA_9)) return { loi: 'ban lanh do truoc' };
-  const may = banSaoMay([['lib/out-of-contract.cjs', '    if (td) {', '    if (false) {']]);
+  const may = banSaoMay([['plugins/acceptance-gate/lib/out-of-contract.cjs', '    if (td) {', '    if (false) {']]);
   const e = kiemDoiSo(MA_9, may);
   return e ? { msg: `— bỏ mã, khớp theo số: «${e.slice(0, 140)}» (khớp theo số coi mục mới là đã quyết)` } : { loi: 'mutant van xanh' };
 });
@@ -230,14 +230,14 @@ await ca('DM2 doc-cu', () => {
 await ca('DM2 ca-crm', () => { const e = kiemCrm(); return e ? { loi: e } : { msg: '— cả 9 mục chưa định tuyến, nêu «ghi trước lượt chấm»' }; });
 await ca('DM2-do bo-thoi-diem', () => {
   if (kiemCrm()) return { loi: 'ban lanh do truoc' };
-  const may = banSaoMay([['lib/out-of-contract.cjs', 'laCu = cu(e);', 'laCu = false;']]);
+  const may = banSaoMay([['plugins/acceptance-gate/lib/out-of-contract.cjs', 'laCu = cu(e);', 'laCu = false;']]);
   const r = kcn(khoLanV('dm2b', { findings: CRM_9, ledger: CRM_SO, rl: runLog(R3, R4) }), 'dm2b', may);
   return r.status === 2 && r.err.includes('Ngoài-9') && !r.err.includes('ghi trước lượt chấm') ? { msg: '— bỏ phép so giờ: chỉ còn Ngoài-9 (dòng cũ vẫn được tin)' } : { loi: `mutant: thoat ${r.status} ${r.err}` };
 });
 
 // ── DM4: lưới × bộ quét trên 14 hàng AC-3 ──────────────────────────────────────────────────────────────
-const luoi = (R, may = KIT) => { const o = spawnSync('bash', [path.join(may, 'scripts', 'pre-merge-check.sh'), R, '--base', 'basepoint'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }); return { status: o.status, out: (o.stdout || '') + (o.stderr || '') }; };
-const quet = (R, may = KIT) => JSON.parse(execFileSync(process.execPath, [path.join(may, 'scripts', 'start-scan.mjs'), '--root', R], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }));
+const luoi = (R, may = KIT) => { const o = spawnSync('bash', [path.join(may, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), R, '--base', 'basepoint'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }); return { status: o.status, out: (o.stdout || '') + (o.stderr || '') }; };
+const quet = (R, may = KIT) => JSON.parse(execFileSync(process.execPath, [path.join(may, 'plugins/acceptance-gate/scripts', 'start-scan.mjs'), '--root', R], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }));
 await ca('DM4 luoi', () => {
   const sai = []; let chan = 0, qua = 0;
   MA_TRAN.slice(0, SO_HANG_AC3).forEach(([ten, f, l, r, ky], i) => {
@@ -279,27 +279,27 @@ await ca('DM4 dinh-lai-theo-ma', () => {
 await ca('DM4-do dinh-lai-hai-doi-so', () => {
   const R = khoLanV('dm4dl2', DINH_LAI);
   if (/^VIOLATION \[dm4dl2\]/m.test(luoi(R).out)) return { loi: 'ban lanh chan' };
-  const may = banSaoMay([['scripts/pre-merge-check.sh', '      const m=mucChuaDinhTuyen(a[0],a[1],a[2]);', '      const m=mucChuaDinhTuyen(a[0],a[1]);']]);
+  const may = banSaoMay([['plugins/acceptance-gate/scripts/pre-merge-check.sh', '      const m=mucChuaDinhTuyen(a[0],a[1],a[2]);', '      const m=mucChuaDinhTuyen(a[0],a[1]);']]);
   const l = luoi(R, may).out.split('\n').find(x => x.startsWith('VIOLATION [dm4dl2]')) || '';
   return l.includes('chưa người định tuyến: Ngoài-2') ? { msg: `— lưới hai đối số chặn oan: «${l.slice(0, 120)}»` } : { loi: `mutant khong chan dung: ${l}` };
 });
 await ca('DM4-do luoi-khong-truyen-runlog', () => {
   const R = khoLanV('dm4do', { findings: DOI_8, ledger: CRM_SO, rl: runLog(R3, R4) });
   if (!/^VIOLATION \[dm4do\]/m.test(luoi(R).out)) return { loi: 'ban lanh khong chan doi-thu-tu' };
-  const may = banSaoMay([['scripts/pre-merge-check.sh', '"$_cdir/decisions.jsonl" "$_cdir/run-log.jsonl"', '"$_cdir/decisions.jsonl" "$_cdir/khong-co.jsonl"']]);
+  const may = banSaoMay([['plugins/acceptance-gate/scripts/pre-merge-check.sh', '"$_cdir/decisions.jsonl" "$_cdir/run-log.jsonl"', '"$_cdir/decisions.jsonl" "$_cdir/khong-co.jsonl"']]);
   return /^NOTE \[dm4do\]: làn V — máy đi trước/m.test(luoi(R, may).out) ? { msg: '— bỏ truyền run-log: hồ sơ đổi thứ tự thành NOTE làn V (lưới mù dòng cũ)' } : { loi: 'mutant van chan' };
 });
 
 // ── DM5: bên gọi luật xanh-sạch ────────────────────────────────────────────────────────────────────────
 const BEN_GOI_RE = /\b(xanhSach|khongCanNguoi)\(/;
-const benGoi = () => readdirSync(path.join(KIT, 'scripts')).filter(f => /\.(mjs|cjs|js)$/.test(f)).filter(f => BEN_GOI_RE.test(readFileSync(path.join(KIT, 'scripts', f), 'utf8'))).sort();
+const benGoi = () => readdirSync(path.join(KIT, 'plugins/acceptance-gate/scripts')).filter(f => /\.(mjs|cjs|js)$/.test(f)).filter(f => BEN_GOI_RE.test(readFileSync(path.join(KIT, 'plugins/acceptance-gate/scripts', f), 'utf8'))).sort();
 const CA_DM5 = {
   'khong-can-nguoi.mjs': may => { const r = kcn(khoLanV('b5c', { findings: DOI_8, ledger: CRM_SO, rl: runLog(R3, R4) }), 'b5c', may); return r.status === 2 && /chưa người định tuyến/.test(r.err) ? null : `CLI thoat ${r.status}: ${r.err}`; },
   'start-scan.mjs': may => { const j = quet(khoLanV('b5q', { findings: DOI_8, ledger: CRM_SO, rl: runLog(R3, R4) }), may); const d = (j.groups.done || []).find(x => x.slug === 'b5q'); return d && /^may-di-tiep/.test(d.stateKey) ? `bo quet xep ${d.stateKey}` : null; },
-  'product-map.mjs': async may => { const R = khoLanV('b5m', { findings: DOI_8, ledger: CRM_SO, rl: runLog(R3, R4), status: 'machine-cleared' }); const { renderProductMap } = await import(pathToFileURL(path.join(may, 'scripts', 'product-map.mjs')).href + `?v=${Math.random()}`); return /`b5m` — không đọc được hồ sơ/.test(renderProductMap(R)) ? null : 'ban do khong goi b5m la ho so hong'; },
+  'product-map.mjs': async may => { const R = khoLanV('b5m', { findings: DOI_8, ledger: CRM_SO, rl: runLog(R3, R4), status: 'machine-cleared' }); const { renderProductMap } = await import(pathToFileURL(path.join(may, 'plugins/acceptance-gate/scripts', 'product-map.mjs')).href + `?v=${Math.random()}`); return /`b5m` — không đọc được hồ sơ/.test(renderProductMap(R)) ? null : 'ban do khong goi b5m la ho so hong'; },
 };
 await ca('DM5 thieu-khoa', async () => {
-  const KCN = await import(pathToFileURL(path.join(KIT, 'scripts', 'khong-can-nguoi.mjs')).href);
+  const KCN = await import(pathToFileURL(path.join(KIT, 'plugins/acceptance-gate/scripts', 'khong-can-nguoi.mjs')).href);
   try { KCN.xanhSach(hopDongV('x'), baoCaoV('x', '0'.repeat(40)), { findings: null, ledger: null }); } catch (e) { return /runLog/.test(e.message) ? { msg: `— «${e.message.slice(0, 90)}»` } : { loi: `nem sai thong diep: ${e.message}` }; }
   return { loi: 'khong nem khi thieu runLog' };
 });
@@ -313,17 +313,17 @@ await ca('DM5-do', async () => {
   const ds = benGoi().filter(f => CA_DM5[f]); const sai = [];
   for (const f of ds) {
     if (await CA_DM5[f](KIT)) { sai.push(`${f}: ban lanh do truoc`); continue; }
-    const src = readFileSync(path.join(KIT, 'scripts', f), 'utf8');
+    const src = readFileSync(path.join(KIT, 'plugins/acceptance-gate/scripts', f), 'utf8');
     const k = src.split("'run-log.jsonl'").length - 1;
     if (k !== 1) { sai.push(`${f}: chuoi 'run-log.jsonl' xuat hien ${k} lan`); continue; }
-    if (!(await CA_DM5[f](banSaoMay([[`scripts/${f}`, "'run-log.jsonl'", "'khong-co.jsonl'"]])))) sai.push(`${f}: mutant bo truyen runLog ma ca van xanh`);
+    if (!(await CA_DM5[f](banSaoMay([[`plugins/acceptance-gate/scripts/${f}`, "'run-log.jsonl'", "'khong-co.jsonl'"]])))) sai.push(`${f}: mutant bo truyen runLog ma ca van xanh`);
   }
   return sai.length ? { loi: sai.join(' ; ') } : { msg: `— ${ds.length} mutant (mỗi bên gọi bỏ run-log) đều đỏ` };
 });
 
 // ── DM6: máy định tuyến ───────────────────────────────────────────────────────────────────────────────
 const CFG_BAT = 'feature_loop:\n  ngoai_n_tu_dinh_tuyen: true\n';
-const dtm = (R, slug, may = KIT) => { const o = spawnSync(process.execPath, [path.join(may, 'scripts', 'dinh-tuyen-may.cjs'), '--write', '--root', R, '--slug', slug], { encoding: 'utf8' }); return { status: o.status, out: (o.stdout || '').trim(), err: (o.stderr || '').trim() }; };
+const dtm = (R, slug, may = KIT) => { const o = spawnSync(process.execPath, [path.join(may, 'plugins/acceptance-gate/scripts', 'dinh-tuyen-may.cjs'), '--write', '--root', R, '--slug', slug], { encoding: 'utf8' }); return { status: o.status, out: (o.stdout || '').trim(), err: (o.stderr || '').trim() }; };
 const docHs = (R, slug, f) => { try { return readFileSync(path.join(R, '_acceptance', slug, f), 'utf8'); } catch { return null; } };
 await ca('DM6 may-doi-so', () => {
   const dm = JSON.stringify({ id: 'd-20261013T060000Z-1', type: 'revisit', stage: 'gate2', at: '2026-10-13T06:00:00Z', decision: 'Ngoài-1: ghi Known limits', why: 'may', cost_if_wrong: 'x', may: 'dinh-tuyen-ngoai-n', tieu_de: 'loi that so 1', dao: 'x' }) + '\n';
@@ -348,13 +348,13 @@ await ca('DM6 nguoi-cu', () => {
 });
 await ca('DM6-do bo-chan-cu', () => {
   const l = kiemNguoiCu(); if (l.r.status !== 2) return { loi: 'ban lanh khong chan' };
-  const may = banSaoMay([['scripts/dinh-tuyen-may.cjs', 'if (g.soCu.length && chuaCo) return', 'if (false) return']]);
+  const may = banSaoMay([['plugins/acceptance-gate/scripts/dinh-tuyen-may.cjs', 'if (g.soCu.length && chuaCo) return', 'if (false) return']]);
   const { r, giu } = kiemNguoiCu(may);
   return r.status === 0 && !giu ? { msg: '— bỏ chặn: máy ghè lên quyết định theo số cũ (sổ đổi)' } : { loi: `mutant thoat ${r.status} giu=${giu}` };
 });
 
 // ── DM7: thẻ Cổng 2 ────────────────────────────────────────────────────────────────────────────────────
-const the = (R, slug, may = KIT, ex = false) => execFileSync(process.execPath, [path.join(may, 'scripts', 'gate-card.js'), '--root', R, '--slug', slug, ...(ex ? ['--extract'] : [])], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+const the = (R, slug, may = KIT, ex = false) => execFileSync(process.execPath, [path.join(may, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '--root', R, '--slug', slug, ...(ex ? ['--extract'] : [])], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 const kiemCoVang = (may = KIT) => {
   const R = khoLanV('dm7', { findings: CRM_9, ledger: CRM_SO, rl: runLog(R3, R4) });
   const html = the(R, 'dm7', may); const j = JSON.parse(the(R, 'dm7', may, true));
@@ -371,7 +371,7 @@ await ca('DM7 khong-co', () => {
 });
 await ca('DM7-do', () => {
   if (kiemCoVang()) return { loi: 'ban lanh do truoc' };
-  const may = banSaoMay([['scripts/gate-card.js', 'if (dtmCu) P.push(', 'if (false) P.push(']]);
+  const may = banSaoMay([['plugins/acceptance-gate/scripts/gate-card.js', 'if (dtmCu) P.push(', 'if (false) P.push(']]);
   const e = kiemCoVang(may);
   return e ? { msg: `— bỏ cờ: ${e.slice(0, 80)} (thẻ im về dòng cũ)` } : { loi: 'mutant van xanh' };
 });
@@ -440,10 +440,10 @@ await ca('DM9 luoi-cay', () => {
   execFileSync('git', ['init', '-q', '-b', 'main', R]); git(R, 'config', 'user.email', 'x@y.z'); git(R, 'config', 'user.name', 'x');
   mkdirSync(path.join(R, '_acceptance'), { recursive: true });
   writeFileSync(path.join(R, '_acceptance', 'config.yaml'), 'schema_version: 1\nrisk_tiers:\n  t1_skip_globs:\n    - "docs/**"\n');
-  cpSync(path.join(KIT, 'lib'), path.join(R, 'lib'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/acceptance-gate/lib'), path.join(R, 'lib'), { recursive: true });
   for (const s of TAP_KHAI) cpSync(path.join(KIT, '_acceptance', s), path.join(R, '_acceptance', s), { recursive: true });
   git(R, 'add', '-A'); git(R, 'commit', '-qm', 'c');
-  const o = spawnSync('bash', [path.join(KIT, 'scripts', 'pre-merge-check.sh'), R], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  const o = spawnSync('bash', [path.join(KIT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), R], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   const l = ((o.stdout || '') + (o.stderr || '')).split('\n').filter(x => /^VIOLATION \[/.test(x) && x.includes('chưa người định tuyến') && TAP_KHAI.some(s => x.includes(`[${s}]`)));
   return l.length ? { loi: l.join(' | ') } : { msg: `— ${TAP_KHAI.length} hồ sơ tập khai không bị chặn vì «chưa người định tuyến»` };
 });

@@ -18,7 +18,7 @@ let pass = 0; let fail = 0;
 const ok = (name, msg = '') => { pass += 1; console.log(`PASS: ${name} ${msg}`.trimEnd() + ' '); };
 const bad = (name, msg) => { fail += 1; console.log(`FAIL: ${name} — ${msg}`); };
 const loi = e => String((e && (e.stderr || e.message)) || e).split('\n').slice(0, 3).join(' | ');
-const OBS = path.join(KIT, 'commands', 'observed.md');
+const OBS = path.join(KIT, 'plugins/acceptance-gate/commands', 'observed.md');
 const RUN = readFileSync(path.join(KIT, 'tests', 'plugins', 'run-tests.sh'), 'utf8');
 
 // Khối P32 NGUYÊN VĂN từ run-tests.sh (không chép tay).
@@ -32,7 +32,7 @@ const chayP32 = root => spawnSync('python3', ['-', root], { input: khoiP32, enco
 // NO-AC11-khoa
 try {
   const fm = readFileSync(OBS, 'utf8').split('\n---')[0];
-  if (!/^disable-model-invocation: true$/m.test(fm)) bad('NO-AC11-khoa', 'frontmatter commands/observed.md khong co khoa');
+  if (!/^disable-model-invocation: true$/m.test(fm)) bad('NO-AC11-khoa', 'frontmatter plugins/acceptance-gate/commands/observed.md khong co khoa');
   else ok('NO-AC11-khoa', '— frontmatter mang disable-model-invocation: true');
 } catch (e) { bad('NO-AC11-khoa', loi(e)); }
 
@@ -55,8 +55,8 @@ try {
 try {
   const lanh = chayP32(KIT);
   const sao = mkdtempSync(path.join(TMP, 'sao-'));
-  cpSync(path.join(KIT, 'commands'), path.join(sao, 'commands'), { recursive: true });
-  const f = path.join(sao, 'commands', 'observed.md');
+  cpSync(path.join(KIT, 'plugins/acceptance-gate/commands'), path.join(sao, 'plugins/acceptance-gate/commands'), { recursive: true });
+  const f = path.join(sao, 'plugins/acceptance-gate/commands', 'observed.md');
   const src = readFileSync(f, 'utf8');
   writeFileSync(f, src.replace('disable-model-invocation: true\n', ''));
   if (readFileSync(f, 'utf8') === src) throw new Error('go khoa khong doi byte');
@@ -69,7 +69,7 @@ try {
 
 // NO-AC11-than — round-trip khuôn dòng quan sát qua bộ đọc thật
 try {
-  const WR = require(path.join(KIT, 'lib', 'workspace-record.cjs'));
+  const WR = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs'));
   const khuon = t => { const m = String(t).match(/<!-- <<<THUC-TE-LINE -->\n\s*([^\n]+)\n\s*<!-- THUC-TE-LINE>>> -->/); if (!m) throw new Error('khong rut duoc khoi THUC-TE-LINE'); return m[1].trim(); };
   const dien = k => '{"id":"d-20260921T110000Z-1",' + k.replace('<ISO ngày quan sát>', '2026-09-21').replace('<tên>', 'Manh')
     .replace('<40-hex bản dựng đang phục vụ prod>', 'a'.repeat(40)).replace('<một câu người nói>', 'dang chay') + '}';

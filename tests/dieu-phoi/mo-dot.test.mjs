@@ -1245,7 +1245,7 @@ test('DP2-15-do truoc-dp1', () => {
 
 // ---------- DP2-14: từ điển, GUIDE, QUICKSTART, bảng tên lệnh (AC-14, E14) ----------
 const BAY_MUC = ['Đợt (điều phối)', 'Dãy', 'Phiên giám sát · phiên thợ', 'Bộ phát lịch', 'Hàng kế của dãy', 'Bảng đợt', 'Ổ cắm'];
-const BA_TOKEN = ['/dieu-phoi:mo-dot', '/dieu-phoi:xem', '/dieu-phoi:dong-dot'];
+const BA_TOKEN = ['/dispatch:open', '/dispatch:status', '/dispatch:close'];
 export function kiemTuDien(goc) {
   const loi = [];
   const dong = fs.readFileSync(path.join(goc, 'CONTEXT.md'), 'utf8').split('\n');
@@ -1320,5 +1320,5 @@ test('DP2-11 start-md', () => {
   const khoi = /<!-- <<<START-SCAN-KEYS\n([\s\S]*?)START-SCAN-KEYS>>> -->/.exec(md)?.[1] ?? '';
   const khoa = khoi.split(/\s+/).filter((k) => k.startsWith('dotDangChay'));
   assert.deepEqual(khoa, ['dotDangChay.ten', 'dotDangChay.pha']);
-  assert.ok(md.includes('/dieu-phoi:xem'), 'thân start.md phải có dòng /dieu-phoi:xem');
+  assert.ok(md.includes('/dispatch:status'), 'thân start.md phải có dòng /dispatch:status');
 });

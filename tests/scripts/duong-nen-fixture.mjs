@@ -1,5 +1,5 @@
 // duong-nen-fixture.mjs — kho fixture DO CODE SINH cho đường nền hạ tầng
-// (feature-loop/scripts/duong-nen.mjs). Dùng chung: tests/scripts/duong-nen.test.mjs
+// (plugins/feature-loop/scripts/duong-nen.mjs). Dùng chung: tests/scripts/duong-nen.test.mjs
 // (Task 7) và ca thẻ Cổng Phạm vi (Task 9) — mọi `duong-nen.md` các ca ấy đọc
 // đều do chính script ghi trên kho này, không văn viết tay theo khuôn bên đọc.
 //
@@ -15,7 +15,7 @@ import path from 'node:path';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const KIT = path.join(HERE, '..', '..');
-export const DUONG_NEN = path.join(KIT, 'feature-loop', 'scripts', 'duong-nen.mjs');
+export const DUONG_NEN = path.join(KIT, 'plugins/feature-loop', 'scripts', 'duong-nen.mjs');
 
 // Mọi thư mục tạm fixture tạo ra — `donDep()` gỡ hết ở cuối lượt chạy.
 const TAO = [];
@@ -58,8 +58,8 @@ const suite = (ten, giua, cuoi) =>
  *   coSan       danh sách đường tương đối gốc kho commit SẴN ở nhánh gốc (vd thư mục trùng slug —
  *               hồ sơ nen-khong-tinh-tep-cua-vong NEN-TV3)
  *   noLuoiSlug  tên hồ sơ vi phạm của `noLuoi` (mặc định `no-cu`)
- *   thayLuoi    nội dung thay `scripts/pre-merge-check.sh` của bản vendored (lưới giả — NEN-TV5 d)
- *   tuHost      chép thêm commands/acceptance-init.md + khuôn đường nền để kho
+ *   thayLuoi    nội dung thay `plugins/acceptance-gate/scripts/pre-merge-check.sh` của bản vendored (lưới giả — NEN-TV5 d)
+ *   tuHost      chép thêm plugins/acceptance-gate/commands/acceptance-init.md + khuôn đường nền để kho
  *               đóng được vai `--ag-root` của chính nó
  * Trả { dir, dau } — `dau` là thư mục dấu của suite (ngoài cây).
  */
@@ -80,23 +80,23 @@ export function dungKho(opts = {}) {
   // INIT-CI-COPY-LIST (danh sách tay hai tệp từng làm chân engine đỏ oan khi danh sách lên 15
   // tệp ở vòng ho-so-khep-thoi-hoi).
   mkdirSync(path.join(dir, 'scripts'), { recursive: true });
-  const initTxt = readFileSync(path.join(KIT, 'commands', 'acceptance-init.md'), 'utf8');
+  const initTxt = readFileSync(path.join(KIT, 'plugins/acceptance-gate/commands', 'acceptance-init.md'), 'utf8');
   const khoi = (initTxt.split('<<<INIT-CI-COPY-LIST')[1] || '').split('INIT-CI-COPY-LIST>>>')[0];
   const tepScripts = [...khoi.matchAll(/\$\{CLAUDE_PLUGIN_ROOT\}\/scripts\/([^`]+)`/g)].map(m => m[1]);
   if (tepScripts.length < 2) throw new Error(`duong-nen-fixture: rut duoc ${tepScripts.length} tep scripts/ tu INIT-CI-COPY-LIST`);
   for (const f of tepScripts) {
-    cpSync(path.join(KIT, 'scripts', f), path.join(dir, 'scripts', f));
+    cpSync(path.join(KIT, 'plugins/acceptance-gate/scripts', f), path.join(dir, 'scripts', f));
   }
-  cpSync(path.join(KIT, 'lib'), path.join(dir, 'lib'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/acceptance-gate/lib'), path.join(dir, 'lib'), { recursive: true });
   for (const f of opts.bo || []) {
     if (!existsSync(path.join(dir, f))) throw new Error(`duong-nen-fixture: bo ${f} nhung tep khong co trong ban vendored`);
     rmSync(path.join(dir, f));
   }
   if (opts.tuHost) {
     mkdirSync(path.join(dir, 'commands'), { recursive: true });
-    cpSync(path.join(KIT, 'commands', 'acceptance-init.md'), path.join(dir, 'commands', 'acceptance-init.md'));
+    cpSync(path.join(KIT, 'plugins/acceptance-gate/commands', 'acceptance-init.md'), path.join(dir, 'commands', 'acceptance-init.md'));
     mkdirSync(path.join(dir, 'skills', 'acceptance', 'references'), { recursive: true });
-    cpSync(path.join(KIT, 'skills', 'acceptance', 'references', 'duong-nen-template.md'),
+    cpSync(path.join(KIT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'duong-nen-template.md'),
       path.join(dir, 'skills', 'acceptance', 'references', 'duong-nen-template.md'));
   }
   if (opts.noLuoi) {
@@ -130,7 +130,7 @@ export function dungCache() {
   const v = path.join(c, 'kit-mkt', 'acceptance-gate', '9.9.9');
   mkdirSync(v, { recursive: true });
   for (const d of ['scripts', 'lib', 'commands', 'skills']) {
-    cpSync(path.join(KIT, d), path.join(v, d), { recursive: true });
+    cpSync(path.join(KIT, 'plugins/acceptance-gate', d), path.join(v, d), { recursive: true });
   }
   return c;
 }
@@ -145,7 +145,7 @@ export function chayNen(kho, o = {}) {
   const root = o.root || kho.dir;
   const slug = o.slug || 'demo';
   const args = [o.script || DUONG_NEN, '--root', root, '--slug', slug,
-    '--ag-root', o.agRoot || KIT, '--cache-root', o.cache, ...(o.them || [])];
+    '--ag-root', o.agRoot || path.join(KIT, 'plugins/acceptance-gate'), '--cache-root', o.cache, ...(o.them || [])];
   const r = spawnSync(process.execPath, args, {
     encoding: 'utf8', env: { ...process.env, ...(o.env || {}), NEN_DAU: kho.dau }, maxBuffer: 64 * 1024 * 1024, cwd: o.cwd,
   });

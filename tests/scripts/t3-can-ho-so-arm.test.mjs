@@ -34,14 +34,14 @@ const MSG_CU = 'T3 paths (t3_paths) changed but the PR carries NO _acceptance/<s
 const CLEAN = 'pre-merge-check: clean';
 
 const { fileFromTemplate } = await import(pathToFileURL(path.join(KIT, 'tests', 'fixtures', 'from-template.mjs')).href);
-const CONTRACT_TPL = path.join(KIT, 'skills', 'acceptance', 'references', 'contract-template.md');
+const CONTRACT_TPL = path.join(KIT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'contract-template.md');
 const hopDong = (slug, risk_tier, status, them = '') => fileFromTemplate(CONTRACT_TPL, 'CONTRACT-FRONTMATTER-TEMPLATE',
   { feature: `${slug} — fixture`, slug, owner: 'fixture@example.com', risk_tier, surfaces: 'cli', status },
   `# Contract: ${slug}\n\n## Criteria\n\n- AC-1: fixture\n\n## Out of scope\n\n- khong co\n\n## Notes\n`)
   .replace(/^approved_by:.*$/m, 'approved_by: [Tên]')
   .replace(/^approved_at:.*$/m, m => [m, them].filter(Boolean).join('\n'));
 const LAN_V = 'veto_state: mo\nveto_opened_at: 2026-10-31T09:00:00Z';
-const { hoSoNghi } = createRequire(import.meta.url)(path.join(KIT, 'lib', 'workspace-record.cjs'));
+const { hoSoNghi } = createRequire(import.meta.url)(path.join(KIT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs'));
 const DONG_NGHI = JSON.stringify({ id: 'd-20261101T000000Z-1', type: 'nghi', stage: 'gate2', at: '2026-11-01T00:00:00Z', by: '[Tên]', decision: 'tính năng đã gỡ khỏi sản phẩm' });
 const baoCao = (slug, vc, { verdict = 'PASS', signoff = '[Tên] 2026-11-09' } = {}) => `---\nschema_version: 1\nfeature_slug: ${slug}\nverdict: ${verdict}\nverified_commit: ${vc}\nenforcement_mode: strict\nbypass_used: false\nhuman_signoff: ${signoff}\n---\n\n# Evidence Report: ${slug}\n\n## Evidence\n- eval: E1\n  run_id: ${slug}-E1-001\n  exit_code: 0\n  verifier: verify.sh\n  verified_at: 2026-10-31\n\n## Known limits\n\n## Ngoài hợp đồng\n\n`;
 
@@ -65,7 +65,7 @@ function kho({ co = 't3', base, pr, bangChung, cauHinhBase = true, cfg = CFG }) 
   return R;
 }
 const luoi = (R, may = KIT, them = [], env = {}) => {
-  const o = spawnSync('bash', [path.join(may, 'scripts', 'pre-merge-check.sh'), R, '--base', 'basepoint', ...them], { cwd: TMP, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env: { ...process.env, PRE_MERGE_BASE: undefined, ...env } });
+  const o = spawnSync('bash', [path.join(may, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), R, '--base', 'basepoint', ...them], { cwd: TMP, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env: { ...process.env, PRE_MERGE_BASE: undefined, ...env } });
   return { status: o.status, out: (o.stdout || '') + (o.stderr || '') };
 };
 const cuoi = out => out.split('\n').filter(Boolean).slice(-3).join(' | ').slice(0, 400);
@@ -217,13 +217,13 @@ ca('HA16-im', () => {
 });
 
 // ── Đột biến: tiêm đúng một kim, cùng fixture, kết quả phải đổi đúng hướng ───────────────────────────
-const THU_MUC_MAY = ['scripts', 'lib', 'skills', 'commands'];
+const THU_MUC_MAY = ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills', 'plugins/acceptance-gate/commands'];
 function banSaoMay(neo, thay, { boLib = false } = {}) {
   const cp = mkdtempSync(path.join(TMP, 'may-'));
   for (const d of THU_MUC_MAY) cpSync(path.join(KIT, d), path.join(cp, d), { recursive: true });
-  if (boLib) rmSync(path.join(cp, 'lib', 'evidence-core.cjs'));
+  if (boLib) rmSync(path.join(cp, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   if (neo === null) return cp;
-  const p = path.join(cp, 'scripts', 'pre-merge-check.sh'); const src = readFileSync(p, 'utf8');
+  const p = path.join(cp, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'); const src = readFileSync(p, 'utf8');
   const k = src.split(neo).length - 1;
   if (k !== 1) throw new Error(`neo đột biến khớp ${k} lần: «${neo}»`);
   writeFileSync(p, src.replace(neo, thay));
@@ -270,7 +270,7 @@ dotBienLyDo('HA33-mut', F.thieuStatus, 'feat: contract thiếu status\n', 'ly="c
 dotBienLyDo('HA34-mut', F.khongFm, 'feat: contract thiếu status, risk_tier', 'ly="contract thiếu status, risk_tier"');
 dotBienLyDo('HA35-mut', F.t1Verified, 'feat: risk_tier=T1 ngoài signoff.required_for', 'ly="risk_tier=$t ngoài signoff.required_for ($REQUIRED_FOR) — code t3_paths không khai hạng thấp được"');
 // ── Vế chữ ký không chạy được (hồ sơ t3-arm-chu-ky-khong-im) ──────────────────────────────────────────
-// Máy «thiếu lib» là bản sao trọn thư mục bị xoá đúng lib/evidence-core.cjs; máy «thiếu node» là PATH cắt, tự kiểm trong
+// Máy «thiếu lib» là bản sao trọn thư mục bị xoá đúng plugins/acceptance-gate/lib/evidence-core.cjs; máy «thiếu node» là PATH cắt, tự kiểm trong
 // tiến trình mới. Ca -do đo CÙNG một kho thử trên máy đủ công cụ rồi máy thiếu; ca -mut phải về clean, nên bản sao chết
 // sớm không cho xanh giả.
 const CFG_STRICT = `${CFG}recheck: strict\n`;
@@ -372,7 +372,7 @@ dotBienVeSach('HA42-mut', F.t2DaKy, LY_NODE, KIM_LY_NODE, THIEU_NODE);
 
 // Bảng viết trước: mỗi dòng gán lý do trong luật phải có đúng một kim ở trên; thêm lý do mới mà quên kim thì đỏ.
 ca('HA36-bang', () => {
-  const src = readFileSync(path.join(KIT, 'scripts', 'pre-merge-check.sh'), 'utf8');
+  const src = readFileSync(path.join(KIT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), 'utf8');
   const dau = src.indexOf('t3_co_ho_so_arm() {'); const cuoi2 = src.indexOf('\n}\n', dau);
   if (dau < 0 || cuoi2 < 0) return 'không tìm thấy thân luật';
   const than = src.slice(dau, cuoi2);

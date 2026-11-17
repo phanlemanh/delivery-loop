@@ -91,7 +91,7 @@ this file does not repeat them.
 > `lib/*.cjs` files (`evidence-core`, `gap-probe`, `workspace-record`,
 > `ac-line`, `md-section`).
 
-For local development, replace `phanlemanh/acceptance-gate-kit` with the
+For local development, replace `phanlemanh/delivery-loop` with the
 absolute path to this checkout. Source files are used directly — there is no
 packaged copy to regenerate.
 

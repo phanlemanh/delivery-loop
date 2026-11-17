@@ -13,9 +13,9 @@ const require0 = (rel) => createRequire(import.meta.url)(path.join(ROOT_FOR_REQ,
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
 const ROOT_FOR_REQ = ROOT;
-const LIB = path.join(ROOT, 'lib', 'md-section.cjs');
-const GATE_CARD = path.join(ROOT, 'scripts', 'gate-card.js');
-const EVIDENCE_PAGE = path.join(ROOT, 'scripts', 'evidence-page.js');
+const LIB = path.join(ROOT, 'plugins/acceptance-gate/lib', 'md-section.cjs');
+const GATE_CARD = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
+const EVIDENCE_PAGE = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'evidence-page.js');
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
 
@@ -157,8 +157,8 @@ const runCard = (root, slug, script = GATE_CARD, extra = []) =>
   const tree = path.join(root, 'tree');
   mkdirSync(path.join(tree, 'lib'), { recursive: true });
   mkdirSync(path.join(tree, 'scripts'), { recursive: true });
-  cpSync(path.join(ROOT, 'lib'), path.join(tree, 'lib'), { recursive: true });
-  cpSync(path.join(ROOT, 'scripts'), path.join(tree, 'scripts'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(tree, 'lib'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(tree, 'scripts'), { recursive: true });
   const ws = path.join(root, 'ws');
   mkWs(ws, 'ghost', { contract: contractWithSubheading(2), probe: gapProbe({ tail: GHOST_TAIL }) });
   const copyCard = path.join(tree, 'scripts', 'gate-card.js');
@@ -204,7 +204,7 @@ const runCard = (root, slug, script = GATE_CARD, extra = []) =>
   check('FSB9 cờ variance (pass_rate) cũng còn', () =>
     assert.ok(out.includes('pass_rate 3/5'), 'mất nội dung Variance'));
   check('FSB9 đối chứng đột biến: coi h1 là ranh giới → nội dung Analyst biến mất', () => {
-    const { section } = require0('lib/md-section.cjs');
+    const { section } = require0('plugins/acceptance-gate/lib/md-section.cjs');
     const rep = readFileSync(path.join(root, '_acceptance', 'fx', 'evidence-report.md'), 'utf8');
     assert.ok(section(rep, 'Analyst').join('\n').includes('green-on-both'));
     // luật any-heading (dành cho Findings) áp nhầm sẽ cắt ngay tại dòng `#`

@@ -35,7 +35,7 @@ try {
 }
 
 const CSS = fs.readFileSync(path.join(HERE, 'fixtures', 'tailwind4-tai-lap.css'), 'utf8');
-const SCAN = fs.readFileSync(path.join(ROOT, 'scripts', 'design-scan.js'), 'utf8');
+const SCAN = fs.readFileSync(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'design-scan.js'), 'utf8');
 const SCAN_GOC = execFileSync('git', ['-C', ROOT, 'show', `${GOC_SHA}:scripts/design-scan.js`], { encoding: 'utf8', maxBuffer: 1 << 26 });
 // Một nguồn cho bảng điểm ảnh: rút từ chính bộ ca xanh.
 const BANG = [...fs.readFileSync(path.join(HERE, 'mau-lab.test.mjs'), 'utf8').matchAll(/\['((?:lab|lch|oklab|oklch)\([^']+\))', \[(\d+), (\d+), (\d+)\]\]/g)].map((m) => [m[1], [Number(m[2]), Number(m[3]), Number(m[4])]]);

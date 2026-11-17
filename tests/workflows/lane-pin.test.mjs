@@ -11,7 +11,7 @@ import { runWorkflow, check, summary } from './harness.mjs';
 
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const WF = path.join(HERE, '..', '..', 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(HERE, '..', '..', 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const VC = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2';
 
 // Khuôn guard RÚT từ nguồn (khối INFRA-EXIT-CODES của acceptance-verify.js) —

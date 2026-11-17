@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { xetYeuCau } from '../../../dieu-phoi/scripts/yeu-cau.mjs';
+import { xetYeuCau } from '../../../plugins/dispatch/scripts/yeu-cau.mjs';
 
 const CFG = { bao_ve: ['packages/db/prisma/schema.prisma', 'packages/db/prisma/migrations/**'], s4_tran_gom_phut: 60 };
 const HV = {

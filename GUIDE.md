@@ -712,7 +712,7 @@ chạy driver của máy nên trên web PR vẫn báo xung đột ở hai tệp 
 trước khi nhánh có hai dòng vẫn xung đột ở lần gộp đầu. Bật không bớt lần gộp lại khi nhánh chính dời, chỉ bớt phần gỡ tay.
 Kho không khai thì không có gì đổi.
 
-Từ vòng `lo-trinh-cat-luot` (lát 2): **cắt lượt** — skill `/acceptance-gate:cat-luot` biến một bản phạm
+Từ vòng `lo-trinh-cat-luot` (lát 2): **cắt lượt** — skill `/acceptance-gate:scope-slice` biến một bản phạm
 vi (tệp markdown trong git, khuôn `skills/acceptance/references/pham-vi-template.md`) thành hàng và
 chân trời của lộ trình, mỗi hàng mang `dot` và `phu`. Răng `scripts/cat-luot.mjs --pham-vi <tệp>
 --lo-trinh <tệp>` chỉ đọc: mỗi mã ở đúng một chỗ cùng đợt, chân trời có lý do, hàng cùng đợt qua khuôn
@@ -873,17 +873,17 @@ Repo đã chạy `/acceptance-gate:acceptance-init` **khai sẵn bộ plugin** t
 (khoá `extraKnownMarketplaces` + `enabledPlugins`), nên chỉ **máy đầu tiên** của một
 repo phải cài tay đủ để chạy init; **máy sau** mở repo là Claude Code nhắc bật đúng bộ:
 
-- acceptance-gate@acceptance-gate-kit
-- feature-loop@acceptance-gate-kit
-- diagram-design@acceptance-gate-kit
+- acceptance-gate@delivery-loop
+- feature-loop@delivery-loop
+- diagram-design@delivery-loop
 - superpowers@claude-plugins-official
 
 <!-- <<<GUIDE-MAY-DAU -->
 **Máy đầu tiên của repo** (repo chưa có `.claude/settings.json`):
 
 ```bash
-claude plugin marketplace add phanlemanh/acceptance-gate-kit
-claude plugin install acceptance-gate@acceptance-gate-kit
+claude plugin marketplace add phanlemanh/delivery-loop
+claude plugin install acceptance-gate@delivery-loop
 ```
 
 rồi chạy `/acceptance-gate:acceptance-init` — bước 5b của nó ghi file khai plugin; **commit file đó**.
@@ -893,7 +893,7 @@ rồi chạy `/acceptance-gate:acceptance-init` — bước 5b của nó ghi fil
 **Máy sau** (repo đã có file khai):
 
 ```bash
-claude plugin marketplace add phanlemanh/acceptance-gate-kit
+claude plugin marketplace add phanlemanh/delivery-loop
 ```
 
 rồi mở repo trong Claude Code — harness đọc `enabledPlugins` và nhắc bật phần còn thiếu.
@@ -907,9 +907,9 @@ nhau (verifier bị chặn "oan", feature lọt eval). Chạy khi có release ho
 **cả bốn, không bỏ cái nào**:
 
 ```bash
-claude plugin update acceptance-gate@acceptance-gate-kit
-claude plugin update feature-loop@acceptance-gate-kit
-claude plugin update diagram-design@acceptance-gate-kit
+claude plugin update acceptance-gate@delivery-loop
+claude plugin update feature-loop@delivery-loop
+claude plugin update diagram-design@delivery-loop
 claude plugin update superpowers@claude-plugins-official
 ```
 <!-- GUIDE-PLUGIN-DECLARE>>> -->
@@ -1004,7 +1004,7 @@ thư mục của **chính nó**, nên chạy từ bản kit là đủ.
 Ba bước, mỗi bước một dòng cấu hình của kho:
 
 1. **Ghim sha.** Lấy đúng sha mà máy dev đang chạy, để bản ở máy và bản ở CI là
-   một: `git -C ~/.claude/plugins/marketplaces/acceptance-gate-kit rev-parse HEAD`.
+   một: `git -C ~/.claude/plugins/marketplaces/delivery-loop rev-parse HEAD`.
    Nâng kit = đổi một dòng sha này trong tệp workflow, bằng PR có chủ đích mỗi
    mốc — không auto-follow, vì đổi engine dưới chân một vòng đang chạy là điều
    kit cấm (§7.1).
@@ -1023,7 +1023,7 @@ Ba bước, mỗi bước một dòng cấu hình của kho:
        - name: Lấy kit ở sha ghim
          run: |
            git init -q "$RUNNER_TEMP/kit"
-           git -C "$RUNNER_TEMP/kit" fetch -q --depth 1 https://github.com/phanlemanh/acceptance-gate-kit "$KIT_SHA"
+           git -C "$RUNNER_TEMP/kit" fetch -q --depth 1 https://github.com/phanlemanh/delivery-loop "$KIT_SHA"
            git -C "$RUNNER_TEMP/kit" checkout -q FETCH_HEAD
            echo "CLAUDE_PLUGIN_ROOT=$RUNNER_TEMP/kit" >> "$GITHUB_ENV"
        - run: bash "$CLAUDE_PLUGIN_ROOT/scripts/pre-merge-check.sh" . --base "origin/$GITHUB_BASE_REF"
@@ -1053,7 +1053,7 @@ hoặc ghi nợ có tên. Kho có hồ sơ `status: machine-cleared` (grep `cont
 vì hai dòng 376/397 nêu dưới.
 
 Chạy ở máy dev: cùng lệnh, với `CLAUDE_PLUGIN_ROOT` = **bản clone marketplace**
-(`~/.claude/plugins/marketplaces/acceptance-gate-kit`, chính nơi lấy sha ở bước 1 —
+(`~/.claude/plugins/marketplaces/delivery-loop`, chính nơi lấy sha ở bước 1 —
 không phải thư mục `cache/…/<phiên bản>`), và phải **`export`** trước: viết
 `CLAUDE_PLUGIN_ROOT=… bash "$CLAUDE_PLUGIN_ROOT/…"` trên một dòng thì shell mở
 rộng `$CLAUDE_PLUGIN_ROOT` TRƯỚC khi gán, lệnh rỗng. Job chạy trên `push` không có
@@ -1407,18 +1407,18 @@ không tự bật nó; ở kho không có đợt, bốn hook của gói im.
 `goi/dot-{ten}`). Thư mục ấy có `dieu-phoi.config.json`, `hang-viec.json` (các dãy
 và hàng) và `LUAT-rieng.md` (luật riêng của kho cho thợ). Hàng có thể lấy thẳng từ
 lộ trình bằng khoá `nguon_hang` (`<tệp>:<mã>` hoặc `<tệp>@<ngày mốc>`); gói chỉ khai
-phần thi công (dãy, ưu tiên). Vắng khoá → `/dieu-phoi:mo-dot` dừng và nói đúng việc
+phần thi công (dãy, ưu tiên). Vắng khoá → `/dispatch:open` dừng và nói đúng việc
 khai, không dựng đợt tay.
 
 **Năm lệnh:**
 
 | Lệnh | Làm gì | Ai gõ |
 |---|---|---|
-| `/dieu-phoi:mo-dot <tên>` | Dựng đợt từ gói, trình **thẻ khởi tạo** (dãy, hàng; hỏi quyền tự merge và `build` cho hàng còn chờ Cổng Đáng), rồi khi người duyệt thì chạy bộ phát lịch và mở chip cho từng dãy. Chạy lại được: chẩn đoán trước, làm đúng phần thiếu | người, ở phiên sẽ làm giám sát |
-| `/dieu-phoi:xem` | Pha, khoá đang giữ, hàng chờ lượt, chờ người, tiến độ từng dãy kèm nhóm kế hoạch. Chỉ đọc; cùng hàm mô hình với **bảng đợt** `bang.html` | bất kỳ phiên nào |
-| `/dieu-phoi:dong-dot` | Trình **thẻ đóng đợt** (hàng phát sinh, lớp phủ ưu tiên), khi người duyệt thì hoàn tất merge dở, dừng bộ phát lịch, dọn | người, ở phiên giám sát |
-| `/dieu-phoi:tiep-tuc` | Nối lại đợt sau khi app khởi động lại, hết ngữ cảnh, Monitor hết hạn hay đổi tài khoản: nhận vai giám sát, chạy lại bộ phát lịch nếu chết, giăng lại Monitor và lịch 30′, chỉ mở chip cho dãy không còn **nhịp sống**. Dạng `--nhe` cho mỗi lần thức | người, ở bất kỳ phiên nào trong kho |
-| `/dieu-phoi:ban-giao [lý do]` | Bàn giao trước khi đổi tài khoản: ngừng cấp lượt mới, nhắc thợ commit WIP và báo xong, máy dựng hồ sơ bàn giao từ git rồi báo một câu để tài khoản kia gõ `/dieu-phoi:tiep-tuc`. Bộ phát lịch cũng tự vào bàn giao khi mức dùng chạm ngưỡng của đợt | người, hoặc giám sát khi nhận sự kiện chạm hạn mức |
+| `/dispatch:open <tên>` | Dựng đợt từ gói, trình **thẻ khởi tạo** (dãy, hàng; hỏi quyền tự merge và `build` cho hàng còn chờ Cổng Đáng), rồi khi người duyệt thì chạy bộ phát lịch và mở chip cho từng dãy. Chạy lại được: chẩn đoán trước, làm đúng phần thiếu | người, ở phiên sẽ làm giám sát |
+| `/dispatch:status` | Pha, khoá đang giữ, hàng chờ lượt, chờ người, tiến độ từng dãy kèm nhóm kế hoạch. Chỉ đọc; cùng hàm mô hình với **bảng đợt** `bang.html` | bất kỳ phiên nào |
+| `/dispatch:close` | Trình **thẻ đóng đợt** (hàng phát sinh, lớp phủ ưu tiên), khi người duyệt thì hoàn tất merge dở, dừng bộ phát lịch, dọn | người, ở phiên giám sát |
+| `/dispatch:resume` | Nối lại đợt sau khi app khởi động lại, hết ngữ cảnh, Monitor hết hạn hay đổi tài khoản: nhận vai giám sát, chạy lại bộ phát lịch nếu chết, giăng lại Monitor và lịch 30′, chỉ mở chip cho dãy không còn **nhịp sống**. Dạng `--nhe` cho mỗi lần thức | người, ở bất kỳ phiên nào trong kho |
+| `/dispatch:handoff [lý do]` | Bàn giao trước khi đổi tài khoản: ngừng cấp lượt mới, nhắc thợ commit WIP và báo xong, máy dựng hồ sơ bàn giao từ git rồi báo một câu để tài khoản kia gõ `/dispatch:resume`. Bộ phát lịch cũng tự vào bàn giao khi mức dùng chạm ngưỡng của đợt | người, hoặc giám sát khi nhận sự kiện chạm hạn mức |
 
 Cả năm lệnh **không** khoá model-invocation (khác bảy thao tác cổng người), nhưng
 `mo-dot` và `dong-dot` mang khối «chữ quyết của người»: chữ duyệt thẻ, chữ `build`,
@@ -1436,10 +1436,10 @@ hai kho chạy đợt trên cùng máy không bao giờ chấm S4 chồng nhau; 
 đóng hay đã chết được thu hồi.
 
 **Vào phiên khi đợt đang chạy.** `/acceptance-gate:start` in một dòng «đợt <tên>
-đang chạy → /dieu-phoi:xem», và hàng kế của lộ trình mà một dãy đang giữ không còn
+đang chạy → /dispatch:status», và hàng kế của lộ trình mà một dãy đang giữ không còn
 là lựa chọn mở — tránh hai phiên mở cùng một hàng.
 
-**Sau sự cố: một lệnh `/dieu-phoi:tiep-tuc`.** CLI tính kế hoạch cho từng dãy — không làm gì (còn nhịp sống
+**Sau sự cố: một lệnh `/dispatch:resume`.** CLI tính kế hoạch cho từng dãy — không làm gì (còn nhịp sống
 hoặc giữ khoá), nhắn dãy giăng lại lệnh chờ, mở chip, hay báo người (worktree mất, dãy đứng chờ người, đợt
 chưa có nhịp sống) — phiên chỉ làm đúng hành động ấy. Lịch 30′ của đợt chạy `danh-thuc`: chỉ khi CÓ việc chờ
 (yêu cầu chưa trả lời, dãy chờ người, sự kiện cần phán sau lần thức cuối) thì mới nhắn giám sát, và báo chủ
@@ -1447,13 +1447,13 @@ kho khi giám sát không còn nhịp sống. Thợ và giám sát ghi vào thư
 `yeu-cau`, `tra-loi`, `nhat-ky`) — không dùng công cụ ghi tệp, vì thư mục đợt nằm ngoài worktree của phiên.
 Kho khai thêm phép kiểm môi trường riêng (`.env`, Docker…) bằng khoá `kiem_moi_truong` của cấu hình đợt.
 
-**Đổi tài khoản giữa đợt: `/dieu-phoi:ban-giao` rồi `/dieu-phoi:tiep-tuc`.** Mức dùng hạn mức đọc từ mod của
+**Đổi tài khoản giữa đợt: `/dispatch:handoff` rồi `/dispatch:resume`.** Mức dùng hạn mức đọc từ mod của
 gói (mỗi khi một cửa sổ nhích một điểm), từ `get_usage` mỗi lần giám sát thức và mỗi lần lịch 30′ chạy, vào
 `han-muc.json` của đợt. Khoá `han_muc` của cấu hình đợt khai bốn ngưỡng (khuôn đề xuất `80 · 90 · 20 · 45`;
 chủ kho duyệt khẩu vị ở thẻ khởi tạo): chạm ngưỡng báo trước → một dòng báo; chạm ngưỡng bàn giao mà cửa sổ sắp
 đặt lại → máy tự chờ, không đổi tài khoản; còn xa → đợt tự vào **bàn giao tài khoản**. Thợ nhận lời nhắc ngay
 trong phiên, commit WIP và báo xong; máy dựng `ban-giao.json` từ git; chủ kho đăng nhập tài khoản kia, mở một
-phiên trong kho và gõ `/dieu-phoi:tiep-tuc` — lệnh đọc mức dùng của tài khoản mới, đóng bàn giao vào lịch sử và
+phiên trong kho và gõ `/dispatch:resume` — lệnh đọc mức dùng của tài khoản mới, đóng bàn giao vào lịch sử và
 đưa đợt về đúng pha trước đó. Thợ chết vì hạn mức giữa chừng thì hook `StopFailure` commit WIP thay (trừ khi
 đang chấm) và đưa đợt vào bàn giao.
 

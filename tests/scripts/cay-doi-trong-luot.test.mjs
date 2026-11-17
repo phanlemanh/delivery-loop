@@ -1,6 +1,6 @@
 // cay-doi-trong-luot.test.mjs — hồ sơ luot-cham-ghi-vao-cay (T3, 01/10).
 // «Cây đổi trong lượt chấm»: s4-args chụp cây trước lượt (AC-1), thuoc-vat --write so sau lượt
-// (AC-2 chiều đỏ · AC-3 chiều im), lib/nhan-canh-gay.cjs phân nhãn (AC-4), s4-args chấm lại cùng
+// (AC-2 chiều đỏ · AC-3 chiều im), plugins/acceptance-gate/lib/nhan-canh-gay.cjs phân nhãn (AC-4), s4-args chấm lại cùng
 // round chỉ sau khi hoàn lại (AC-5), thẻ Cổng Bằng chứng khoá (AC-6), lưới trước-merge + recheck
 // chặn (AC-7). Tên nhóm LC<n> = AC-<n>.
 //
@@ -24,12 +24,12 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
 const GOC = process.env.LC_GOC ? path.resolve(process.env.LC_GOC) : KIT;
 const require = createRequire(import.meta.url);
-const S4ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
-const THUOC_VAT = path.join(KIT, 'feature-loop', 'scripts', 'thuoc-vat.mjs');
-const CAY_DOI = path.join(KIT, 'feature-loop', 'scripts', 'lib', 'cay-doi.mjs');
-const WF = path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js');
-const GC = path.join(KIT, 'scripts', 'gate-card.js');
-const LIB = path.join(KIT, 'lib', 'nhan-canh-gay.cjs');
+const S4ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
+const THUOC_VAT = path.join(KIT, 'plugins/feature-loop', 'scripts', 'thuoc-vat.mjs');
+const CAY_DOI = path.join(KIT, 'plugins/feature-loop', 'scripts', 'lib', 'cay-doi.mjs');
+const WF = path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
+const GC = path.join(KIT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
+const LIB = path.join(KIT, 'plugins/acceptance-gate/lib', 'nhan-canh-gay.cjs');
 const TMP = mkdtempSync(path.join(tmpdir(), 'cay-doi-'));
 const ONLY = (() => { const i = process.argv.indexOf('--only'); return i >= 0 ? process.argv[i + 1] : (process.env.LC_CASES || null); })();
 const want = g => !ONLY || ONLY.split(',').includes(g);
@@ -60,9 +60,9 @@ function kho() {
   return d;
 }
 const ARGS = d => path.join(WS(d), 's4-args.json');
-const sinhArgs = (d, extra = [], out = ARGS(d)) => spawnSync(process.execPath, [S4ARGS, '--slug', SLUG, '--root', d, '--ag-root', KIT, '--out', out, '--diff-base', 'main', '--no-carry', ...extra], { encoding: 'utf8' });
+const sinhArgs = (d, extra = [], out = ARGS(d)) => spawnSync(process.execPath, [S4ARGS, '--slug', SLUG, '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', out, '--diff-base', 'main', '--no-carry', ...extra], { encoding: 'utf8' });
 const docArgs = (d, f = ARGS(d)) => JSON.parse(readFileSync(f, 'utf8'));
-const sauLuot = d => spawnSync(process.execPath, [THUOC_VAT, '--root', d, '--slug', SLUG, '--ag-root', KIT, '--write'], { encoding: 'utf8' });
+const sauLuot = d => spawnSync(process.execPath, [THUOC_VAT, '--root', d, '--slug', SLUG, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--write'], { encoding: 'utf8' });
 const dongSo = (d, kind) => readFileSync(path.join(WS(d), 'run-log.jsonl'), 'utf8').split('\n').filter(Boolean)
   .map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(o => o && o.kind === kind);
 const ngan = (d, a, b) => git(d, 'log', '--format=%h', `${a}..${b}`).split('\n').filter(Boolean);
@@ -367,7 +367,7 @@ if (want('LC6')) {
 // ── LC7 — lưới trước-merge + recheck ────────────────────────────────────────
 // Hồ sơ ĐÃ KÝ PASS (khuôn kho của ntr-luoi.test.mjs); dòng cây đổi dựng bằng CHÍNH hàm viết
 // `dongCayDoi` của cay-doi.mjs (round-trip đầy đủ qua thuoc-vat đã có ở LC4).
-const DA_KY = require(path.join(KIT, 'lib', 'workspace-record.cjs')).DA_THONG_CONG_2.find(s => s !== 'machine-cleared');
+const DA_KY = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs')).DA_THONG_CONG_2.find(s => s !== 'machine-cleared');
 async function khoKy({ cay }) {
   const { dongCayDoi } = await import(CAY_DOI);
   const r = mkdtempSync(path.join(TMP, 'ky-'));
@@ -397,9 +397,9 @@ async function khoKy({ cay }) {
   g('add', '-A'); g('commit', '-qm', 'ho so');
   return { r, d, verdict: res.verdict };
 }
-const luoi = (r, kit = KIT) => { const p = spawnSync('bash', [path.join(kit, 'scripts', 'pre-merge-check.sh'), r, '--no-t1-escape'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }); return { ma: p.status, out: `${p.stdout}${p.stderr}` }; };
-const kiemLai = (d, kit = KIT) => { const p = spawnSync(process.execPath, [path.join(kit, 'scripts', 'recheck-evidence.cjs'), path.join(d, 'evidence-report.md')], { encoding: 'utf8' }); return { ma: p.status, out: `${p.stdout}${p.stderr}` }; };
-const banSaoKit = () => { const s = mkdtempSync(path.join(TMP, 'sao-')); for (const x of ['scripts', 'lib', 'commands', 'skills', 'feature-loop']) cpSync(path.join(KIT, x), path.join(s, x), { recursive: true }); return s; };
+const luoi = (r, kit = KIT) => { const p = spawnSync('bash', [path.join(kit, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), r, '--no-t1-escape'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }); return { ma: p.status, out: `${p.stdout}${p.stderr}` }; };
+const kiemLai = (d, kit = KIT) => { const p = spawnSync(process.execPath, [path.join(kit, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), path.join(d, 'evidence-report.md')], { encoding: 'utf8' }); return { ma: p.status, out: `${p.stdout}${p.stderr}` }; };
+const banSaoKit = () => { const s = mkdtempSync(path.join(TMP, 'sao-')); for (const x of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/commands', 'plugins/acceptance-gate/skills', 'plugins/feature-loop']) cpSync(path.join(KIT, x), path.join(s, x), { recursive: true }); return s; };
 if (want('LC7')) {
   const sai = []; const saiCu = [];
   const VIO = 'VIOLATION [s]: lượt chấm cuối không dùng được — cây đổi trong lượt chấm';
@@ -413,14 +413,14 @@ if (want('LC7')) {
     if (a0.ma !== 0) sai.push(`doi chung khong dong: pre-merge thoat ${a0.ma}: ${a0.out.split('\n').filter(l => /\[s\]/.test(l)).join(' | ')}`);
     if (b0.ma !== 0) sai.push(`doi chung khong dong: recheck thoat ${b0.ma}`);
     // lib vắng → luật cũ
-    const s1 = banSaoKit(); rmSync(path.join(s1, 'lib', 'nhan-canh-gay.cjs'));
+    const s1 = banSaoKit(); rmSync(path.join(s1, 'plugins/acceptance-gate/lib', 'nhan-canh-gay.cjs'));
     const a2 = luoi(co.r, s1); const b2 = kiemLai(co.d, s1);
     if (a2.out.includes(VIO)) sai.push('lib vang ma van VIOLATION cay doi');
     if (b2.out.includes('cây đổi trong lượt chấm')) sai.push('lib vang ma recheck van chan cay doi');
     // lib đời cũ (bản trước vòng) + script mới
     if (TRUOC.loi) saiCu.push(`khong dung duoc ban truoc vong: ${TRUOC.loi}`);
     else {
-      const s2 = banSaoKit(); cpSync(path.join(TRUOC.d, 'lib', 'nhan-canh-gay.cjs'), path.join(s2, 'lib', 'nhan-canh-gay.cjs'));
+      const s2 = banSaoKit(); cpSync(path.join(TRUOC.d, 'lib', 'nhan-canh-gay.cjs'), path.join(s2, 'plugins/acceptance-gate/lib', 'nhan-canh-gay.cjs'));
       const a3 = luoi(co.r, s2); const b3 = kiemLai(co.d, s2);
       if (a3.out.includes(VIO) || !a3.out.includes('lib chua biet nhan cay doi')) saiCu.push(`lib doi cu: pre-merge ${a3.ma}, NOTE ${a3.out.includes('lib chua biet nhan cay doi')}`);
       if (b3.ma !== 0 || /TypeError|\n\s+at /.test(b3.out)) saiCu.push(`lib doi cu: recheck thoat ${b3.ma}: ${b3.out.slice(0, 200)}`);

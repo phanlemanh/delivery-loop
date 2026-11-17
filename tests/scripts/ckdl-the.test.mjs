@@ -10,7 +10,7 @@ import { SRC, mkWs, card, extract, G1 } from './gate-fixture.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const FL_SKILL = path.join(KIT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const FL_SKILL = path.join(KIT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 const TMP = mkdtempSync(path.join(tmpdir(), 'ckdl-the-'));
 let pass = 0; let fail = 0;
 const ok = (n, m = '') => { pass += 1; console.log(`PASS: ${n} ${m}`.trimEnd() + ' '); };
@@ -21,7 +21,7 @@ const ca = async (n, fn) => { if (!want(n)) return; try { ok(n, (await fn()) || 
 const assert = (c, m) => { if (!c) throw new Error(m); };
 
 // Bản sao gate-card để phá thử: chép TRỌN scripts/ + lib/ (P150), rồi thay nguồn gate-card.
-const banSao = (fn) => { const s = mkdtempSync(path.join(TMP, 'gc-')); cpSync(path.join(KIT, 'scripts'), path.join(s, 'scripts'), { recursive: true }); cpSync(path.join(KIT, 'lib'), path.join(s, 'lib'), { recursive: true }); writeFileSync(path.join(s, 'scripts', 'gate-card.js'), fn(SRC)); return path.join(s, 'scripts', 'gate-card.js'); };
+const banSao = (fn) => { const s = mkdtempSync(path.join(TMP, 'gc-')); cpSync(path.join(KIT, 'plugins/acceptance-gate/scripts'), path.join(s, 'scripts'), { recursive: true }); cpSync(path.join(KIT, 'plugins/acceptance-gate/lib'), path.join(s, 'lib'), { recursive: true }); writeFileSync(path.join(s, 'scripts', 'gate-card.js'), fn(SRC)); return path.join(s, 'scripts', 'gate-card.js'); };
 const chayGc = (gc, root, slug, extra = []) => spawnSync('node', [gc, '--root', root, '--slug', slug, ...extra], { encoding: 'utf8' });
 const OOS8 = Array.from({ length: 8 }, (_, i) => `- Mục bỏ ngoài số ${i + 1} — lý do ${i + 1}`).join('\n');
 const hoSo = (probe, oos = OOS8) => { const f = G1(probe); f['contract.md'] = f['contract.md'].replace(/## Out of scope[\s\S]*?(?=\n## |$)/, `## Out of scope\n\n${oos}\n`); return f; };

@@ -9,8 +9,8 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
-const SKILL = path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
-const INIT = path.join(ROOT, 'commands', 'acceptance-init.md');
+const SKILL = path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const INIT = path.join(ROOT, 'plugins/acceptance-gate/commands', 'acceptance-init.md');
 
 const ALL_IDS = ['S5D1', 'S5D2', 'S5D3'];
 if (process.argv.includes('--ids')) { console.log(ALL_IDS.join(' ')); process.exit(0); }

@@ -24,10 +24,10 @@ const HERE = path.dirname(SELF);
 // không suy ra gốc kho — mutant truyền gốc thật vào. Lượt chạy bình thường
 // không có biến này và vẫn suy từ vị trí tệp (bất biến: không hardcode ROOT).
 const ROOT = process.env.GNRO_ROOT || path.resolve(HERE, '..', '..');
-const LANE = path.join(ROOT, 'feature-loop', 'scripts', 'repin-lane.mjs');
-const CARD = path.join(ROOT, 'scripts', 'gate-card.js');
-const LINT = path.join(ROOT, 'scripts', 'eval-coverage-lint.js');
-const SKILL = path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const LANE = path.join(ROOT, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs');
+const CARD = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
+const LINT = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'eval-coverage-lint.js');
+const SKILL = path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 const GUIDE = path.join(ROOT, 'GUIDE.md');
 const MOC = '2826f807';               // mốc 2.17.0 — writer + bên đọc đời TRƯỚC hồ sơ này
 const AC_KHONG = ['AC-b', 'AC-c'];    // kỳ vọng VIẾT TRƯỚC, không tính từ mã sản phẩm
@@ -170,7 +170,7 @@ function mkKho({ toanMay = false, evals = null } = {}) {
 }
 
 const chayLan = (root, slug, extra = [], laneScript = LANE) =>
-  spawnSync(process.execPath, [laneScript, '--root', root, '--ag-root', ROOT, '--slug', slug, '--reason', 'ca GN', ...extra], { encoding: 'utf8' });
+  spawnSync(process.execPath, [laneScript, '--root', root, '--ag-root', `${ROOT}/plugins/acceptance-gate`, '--slug', slug, '--reason', 'ca GN', ...extra], { encoding: 'utf8' });
 const dongRepinCuoi = (logPath) => JSON.parse(fs.readFileSync(logPath, 'utf8').split('\n').filter(l => l.includes('"kind":"repin"')).pop());
 const sectionCuoi = (reportPath) => {
   const t = fs.readFileSync(reportPath, 'utf8');
@@ -205,10 +205,10 @@ function mutant(src, tim, thay, chepTrong = null) {
   }
   return out;
 }
-// Bản sao của làn: chép trọn feature-loop/scripts (anh em cùng thư mục).
-const mutLane = (tim, thay) => mutant(LANE, tim, thay, ['feature-loop/scripts']);
+// Bản sao của làn: chép trọn plugins/feature-loop/scripts (anh em cùng thư mục).
+const mutLane = (tim, thay) => mutant(LANE, tim, thay, ['plugins/feature-loop/scripts']);
 // Bản sao của thẻ: chép trọn scripts + lib (thẻ require ../lib/*.cjs).
-const mutCard = (tim, thay) => mutant(CARD, tim, thay, ['scripts', 'lib']);
+const mutCard = (tim, thay) => mutant(CARD, tim, thay, ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib']);
 
 // Chuẩn hoá section để so BYTE: run_id, sha và ngày là giá trị của lượt chạy.
 const chuanHoa = (s) => String(s)
@@ -654,9 +654,9 @@ CASES.push({
     if (!d.evals_not_machine_touched) errs.push('fixture hong: dong ghim khong mang khoa moi');
     const cu = docMoc(MOC);
     const doc = [
-      ['recheck nay', () => spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'recheck-evidence.cjs'), f.reportPath], { encoding: 'utf8' })],
+      ['recheck nay', () => spawnSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), f.reportPath], { encoding: 'utf8' })],
       [`recheck ${MOC}`, () => spawnSync(process.execPath, [cu.recheck, f.reportPath], { encoding: 'utf8' })],
-      ['premerge nay', () => spawnSync('bash', [path.join(ROOT, 'scripts', 'pre-merge-check.sh'), f.root], { encoding: 'utf8' })],
+      ['premerge nay', () => spawnSync('bash', [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), f.root], { encoding: 'utf8' })],
       [`premerge ${MOC}`, () => spawnSync('bash', [cu.premerge, f.root], { encoding: 'utf8' })],
     ];
     for (const [ten, chay] of doc) {
@@ -863,9 +863,9 @@ CASES.push({
       judge: (p) => CASES.find(c => c.id === 'GN11').real({ lint: p }),
       // Tiêm vào MỆNH ĐỀ mà ca đo (một trong ba chuỗi), không vào nhãn dẫn — đổi nhãn
       // thì câu giá vẫn nguyên và phép đo đúng khi im.
-      // Chép TRỌN scripts + lib: lint require ../lib/eval-yaml.cjs, thiếu nó thì
+      // Chép TRỌN scripts + lib: lint require ../plugins/acceptance-gate/lib/eval-yaml.cjs, thiếu nó thì
       // bản sao fail-open advisory và ca đỏ vì HẠ TẦNG chứ không vì vật (P150).
-      make: () => mutant(LINT, 'sẽ không có chốt máy khi ghim lại', 'sẽ ổn thôi', ['scripts', 'lib']) },
+      make: () => mutant(LINT, 'sẽ không có chốt máy khi ghim lại', 'sẽ ổn thôi', ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib']) },
   ],
 });
 
@@ -902,7 +902,7 @@ CASES.push({
 // Danh sách canh SUY TỪ VẬT, không gõ tay: mọi ca CÓ mutant (trừ chính GN13) ×
 // mọi tệp git-theo-dõi dưới các thư mục nguồn — «đừng ghim con số thành danh
 // sách đóng» (CLAUDE.md).
-const VUNG_NGUON = ['scripts', 'lib', 'feature-loop', 'tests', 'GUIDE.md'];
+const VUNG_NGUON = ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/feature-loop', 'tests', 'GUIDE.md'];
 function tepTheoDoi() {
   return execFileSync('git', ['-C', ROOT, 'ls-files', '--', ...VUNG_NGUON], { encoding: 'utf8' })
     .split('\n').filter(Boolean);

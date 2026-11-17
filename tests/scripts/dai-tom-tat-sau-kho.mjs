@@ -5,7 +5,7 @@
 // Bản chụp: `git archive <mã ghim> _acceptance` của từng kho vào thư mục tạm — không ghi gì vào kho nào. Bộ đọc
 // base = cây bd8163dc (đỉnh vòng dai-tom-tat-doc-dung), bộ vẽ tiền-trần = 7f65e5a0 (trước khi ô vì sao có trần):
 // cả hai `git archive` TRỌN thư mục scripts lib skills. Bộ đếm và bộ dò khối giới hạn trong tệp này viết ĐỘC LẬP
-// (không require scripts/ho-so-tom-tat.cjs): phân lớp từng dòng rồi đếm chuỗi mục.
+// (không require plugins/acceptance-gate/scripts/ho-so-tom-tat.cjs): phân lớp từng dòng rồi đếm chuỗi mục.
 //
 //   node tests/scripts/dai-tom-tat-sau-kho.mjs                          → DD-7, DD-7-base, DD-7-do, DD-9, DD-9-do, DD-9-do-tran2
 //   node tests/scripts/dai-tom-tat-sau-kho.mjs --hien-tai crm=<gốc kho>  → đường đo của ngưỡng nghiệm thu (mục Đường
@@ -20,7 +20,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
 const req = createRequire(import.meta.url);
-const { section } = req(path.join(KIT, 'lib', 'md-section.cjs'));
+const { section } = req(path.join(KIT, 'plugins/acceptance-gate/lib', 'md-section.cjs'));
 const BASE_SHA = 'bd8163dcf46f04dff8d5f1ab21a4f1a5a1556767';
 const TIEN_SHA = '7f65e5a0277929b32663b44becf51c300dabfac0';
 const KHO = [
@@ -167,9 +167,9 @@ function veDocLap(dir) {
 
 // ── dựng ──────────────────────────────────────────────────────────────────
 const base = path.join(TMP, 'base'); const tien = path.join(TMP, 'tien');
-try { giai(KIT, BASE_SHA, base, ['scripts', 'lib', 'skills']); giai(KIT, TIEN_SHA, tien, ['scripts', 'lib', 'skills']); }
+try { giai(KIT, BASE_SHA, base, ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']); giai(KIT, TIEN_SHA, tien, ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']); }
 catch (e) { bad('DD-7', `không dựng được bộ đọc base/tiền-trần từ kit: ${String(e.message).split('\n')[0]}`); ketThuc(); }
-const moDun = kit => req(path.join(kit, 'scripts', 'ho-so-tom-tat.cjs'));
+const moDun = kit => req(path.join(kit, 'plugins/acceptance-gate/scripts', 'ho-so-tom-tat.cjs'));
 const HS = { cay: moDun(KIT), base: moDun(base), tien: moDun(tien) };
 
 const args = process.argv.slice(2);
@@ -179,7 +179,7 @@ function hoSoCua(acc) { return existsSync(acc) ? readdirSync(acc).sort().filter(
 // Trang hồ sơ của một bộ vẽ → nội dung mục «Vì sao làm» (bộ đọc HTML độc lập, `</li>`/`</p>` thành khoảng trắng).
 const boEsc = s => String(s).replace(/<[^>]*>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
 function viSaoTrang(kit, root, slug) {
-  const x = spawnSync(process.execPath, [path.join(kit, 'scripts', 'evidence-page.js'), '--root', root, '--slug', slug], { encoding: 'utf8', maxBuffer: 1 << 26 });
+  const x = spawnSync(process.execPath, [path.join(kit, 'plugins/acceptance-gate/scripts', 'evidence-page.js'), '--root', root, '--slug', slug], { encoding: 'utf8', maxBuffer: 1 << 26 });
   if (x.status !== 0) return null;
   const h = doc(path.join(root, '_acceptance', slug, 'evidence-page.html')) || '';
   const m = h.match(/<details class="muc" id="vi-sao"><summary>[^<]*<\/summary><div class="noi">([\s\S]*?)<\/div><\/details>/);
@@ -306,8 +306,8 @@ try {
   for (const [ma, cuMong] of SOI) { const h = HO_SO.find(x => `${x.ten}/${x.slug}` === ma); const v = h && gon(veGH(HS.base.tomTatHoSo(h.dir).dai.moi_nguoi.chua_lam)); if (v !== cuMong) saiB.push(`${ma} (base): «${v}» ≠ «${cuMong}»`); }
   if (saiB.length) bad('DD-7-base', saiB.slice(0, 6).join(' ; ')); else ok('DD-7-base', `bộ đọc base bd8163dc cho đúng ${SOI.length} giá trị cũ — phép đo phân biệt hai bản`);
   // Chiều đỏ: bản sao tách dòng tiếp thụt lề thành mục riêng.
-  const bs = path.join(TMP, 'bs-tach'); for (const d of ['scripts', 'lib', 'skills']) cpSync(path.join(KIT, d), path.join(bs, d), { recursive: true });
-  const p = path.join(bs, 'scripts', 'ho-so-tom-tat.cjs'); const s = readFileSync(p, 'utf8'); const cu = "    muc[muc.length - 1] += ' ' + l.trim(); da.add(j); j++;\n";
+  const bs = path.join(TMP, 'bs-tach'); for (const d of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(KIT, d), path.join(bs, d), { recursive: true });
+  const p = path.join(bs, 'plugins/acceptance-gate/scripts', 'ho-so-tom-tat.cjs'); const s = readFileSync(p, 'utf8'); const cu = "    muc[muc.length - 1] += ' ' + l.trim(); da.add(j); j++;\n";
   if (s.split(cu).length !== 2) bad('DD-7-do', 'nhát tiêm không khớp đúng một lần');
   else {
     writeFileSync(p, s.replace(cu, "    if (thut(l) > le) { muc.push(l.trim()); da.add(j); j++; continue; }\n" + cu));
@@ -343,9 +343,9 @@ try {
   if (vsCoTran < 301) sai.push(`chỉ ${vsCoTran} hồ sơ có ô vi_sao kết «…», cần ≥ 301`);
   // Khuôn khối: bản chụp crm kèm tệp lộ trình, vẽ bằng hai bản.
   const crm = path.join(TMP, 'crm-ve'); giai(goc('crm'), KHO[1][1], crm, ['_acceptance', 'docs/plan']);
-  const { docDuLieu } = await import(pathToFileURL(path.join(KIT, 'scripts', 'lo-trinh.mjs')).href);
+  const { docDuLieu } = await import(pathToFileURL(path.join(KIT, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs')).href);
   const khuon = kit => {
-    const x = spawnSync(process.execPath, [path.join(kit, 'scripts', 'product-map.mjs'), '--root', crm], { encoding: 'utf8', maxBuffer: 1 << 28 });
+    const x = spawnSync(process.execPath, [path.join(kit, 'plugins/acceptance-gate/scripts', 'product-map.mjs'), '--root', crm], { encoding: 'utf8', maxBuffer: 1 << 28 });
     if (x.status !== 0) throw new Error(`product-map exit ${x.status}: ${x.stderr.slice(0, 160)}`);
     const html = readFileSync(path.join(crm, 'LO-TRINH.html'), 'utf8'); const raw = JSON.parse(html.match(/<script type="application\/json" id="lo-trinh-du-lieu">([\s\S]*?)<\/script>/)[1]);
     if (!docDuLieu(html).duLieu) throw new Error('docDuLieu không đọc được khối');
@@ -360,8 +360,8 @@ try {
   if (g1) ok('DD-9-do', `trang của base bd8163dc: phép so trả «${g1.slice(0, 110)}»`); else bad('DD-9-do', `không bắt: ${JSON.stringify(rb.sai.slice(0, 2))}`);
   // Chiều đỏ 2: trần thứ hai lớn hơn mọi ca DD-8 (đoạn dài nhất của ca DD-8 là 754 ký tự).
   const TRAN2 = 800; const dai = coTran.filter(h => { const v = HS.cay.tomTatHoSo(h.dir).chiTiet.viSao; return v && v.doan.length > TRAN2; });
-  const bs = path.join(TMP, 'bs-tran2'); for (const d of ['scripts', 'lib', 'skills']) cpSync(path.join(KIT, d), path.join(bs, d), { recursive: true });
-  const p = path.join(bs, 'scripts', 'evidence-page.js'); const s = readFileSync(p, 'utf8'); const cu = '<p>${esc(CT.viSao.doan)}</p>';
+  const bs = path.join(TMP, 'bs-tran2'); for (const d of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(KIT, d), path.join(bs, d), { recursive: true });
+  const p = path.join(bs, 'plugins/acceptance-gate/scripts', 'evidence-page.js'); const s = readFileSync(p, 'utf8'); const cu = '<p>${esc(CT.viSao.doan)}</p>';
   if (s.split(cu).length !== 2) bad('DD-9-do-tran2', 'nhát tiêm không khớp đúng một lần');
   else if (!dai.length) bad('DD-9-do-tran2', `không hồ sơ thật nào có đoạn lý do dài hơn ${TRAN2} — chiều đỏ không có ca`);
   else {

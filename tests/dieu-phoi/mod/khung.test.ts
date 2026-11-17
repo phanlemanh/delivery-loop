@@ -13,13 +13,13 @@ const GOC_GOI: string = __GOC_GOI__
 const SURFACES = ['terminal', 'desktop'] as const
 const COT = 160
 const BAND = (surface: any) => ({
-  plugin: 'dieu-phoi',
+  plugin: 'dispatch',
   surface,
   component: 'AbovePrompt' as const,
   props: { hasSurvey: false, isWorking: false, maxRows: 4, bodyColumns: COT, scroll: { offset: 0, bodyRows: 3, contentRows: 1 }, view: {} } as any,
 })
 const PANE = (surface: any) => ({
-  plugin: 'dieu-phoi',
+  plugin: 'dispatch',
   surface,
   component: 'Pane' as const,
   requestId: 'dieu-phoi-dot',
@@ -126,7 +126,7 @@ test('bam xem mo pane', async ($, on) => {
   expect(mo).toEqual(['dieu-phoi-dot', 'dieu-phoi-dot'])
 })
 
-// Hồ sơ khung-dot-dinh-vi AC-5: pane vẽ khung định vị, không vẽ chữ `xem` (lệnh /dieu-phoi:xem vẫn trả chữ xem).
+// Hồ sơ khung-dot-dinh-vi AC-5: pane vẽ khung định vị, không vẽ chữ `xem` (lệnh /dispatch:status vẫn trả chữ xem).
 test('pane dung chu khung', async ($, on) => {
   const clock = mock.clock(on)
   nen(on, { stdout: JSON_P3 })
@@ -211,7 +211,7 @@ test('nhip loi 20s', async ($, on) => {
 test('lenh xem tra chu', async ($, on) => {
   mock.clock(on)
   const { mo } = nen(on, { stdout: JSON_P3 })
-  const r = await $.command.run({ command: 'dieu-phoi:xem' })
+  const r = await $.command.run({ command: 'dispatch:status' })
   expect(r.text).toBe(chuXem(JSON.parse(JSON_P3)))
   expect(r.text).toBe(CHU_XEM.replace(/\n$/, ''))
   expect(mo).toEqual(['dieu-phoi-dot'])

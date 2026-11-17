@@ -7,9 +7,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { mkKho, boKiem, ok, lenhChapChon, ROOT } from './gia-lan-fixture.mjs';
 
-const SKILL = process.env.GG_SKILL || path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const SKILL = process.env.GG_SKILL || path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 const GUIDE = process.env.GG_GUIDE || path.join(ROOT, 'GUIDE.md');
-const LAN_KHOA = process.env.GG_LAN_KHOA || path.join(ROOT, 'feature-loop', 'scripts', 'lib', 'lan-khoa.mjs');
+const LAN_KHOA = process.env.GG_LAN_KHOA || path.join(ROOT, 'plugins/feature-loop', 'scripts', 'lib', 'lan-khoa.mjs');
 const ALL = ['AC6-khuon-writer', 'AC6-skill-ma-4', 'AC6-guide-du-khoa', 'AC6-lan-khoa-rut'];
 const { ca, ket } = boKiem(ALL);
 
@@ -75,7 +75,7 @@ await ca('AC6-lan-khoa-rut', 'khối LAN-KHOA rút đúng 6 khoá; giá trị sa
   ok(khoa.length === 6, `số ô lệch: ${khoa.length} khoá, hứa 6`);
   const { docKhoa } = await import(LAN_KHOA);
   const { createRequire } = await import('node:module');
-  const core = createRequire(import.meta.url)(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+  const core = createRequire(import.meta.url)(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   const nem = (cfg, re) => { try { docKhoa(`feature_loop:\n${cfg}`, core); } catch (e) { ok(re.test(e.message), `thông điệp ${e.message}`); return; } throw new Error(`không ném với ${cfg.trim()}`); };
   nem('  repin_retry: 2\n', /repin_retry.*0 \| 1/);
   nem('  repin_ci_blank_env: [1BAD]\n', /repin_ci_blank_env/);

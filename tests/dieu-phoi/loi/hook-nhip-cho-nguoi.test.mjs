@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { chamNhip } from '../../../dieu-phoi/scripts/hook-nhip.mjs';
-import { xuLyChoNguoi } from '../../../dieu-phoi/scripts/hook-cho-nguoi.mjs';
+import { chamNhip } from '../../../plugins/dispatch/scripts/hook-nhip.mjs';
+import { xuLyChoNguoi } from '../../../plugins/dispatch/scripts/hook-cho-nguoi.mjs';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { CFG_BIEN } from './mau-thu.mjs';
 
-const HOOK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'dieu-phoi', 'scripts', 'hook-cho-nguoi.mjs');
+const HOOK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'plugins/dispatch', 'scripts', 'hook-cho-nguoi.mjs');
 
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp-')));
 function dung() {

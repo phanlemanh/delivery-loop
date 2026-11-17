@@ -4,8 +4,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { khop, khopMot } from '../../../dieu-phoi/scripts/glob.mjs';
-import { docJson, ghiJsonNguyenTu, ghiSuKien, phienCuaCwd, timThuMucDot, trongWorktree, TEN_LIEN_KET } from '../../../dieu-phoi/scripts/dot.mjs';
+import { khop, khopMot } from '../../../plugins/dispatch/scripts/glob.mjs';
+import { docJson, ghiJsonNguyenTu, ghiSuKien, phienCuaCwd, timThuMucDot, trongWorktree, TEN_LIEN_KET } from '../../../plugins/dispatch/scripts/dot.mjs';
 
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp-')));
 

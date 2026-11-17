@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test runner for hooks/acceptance-evidence-gate.js
+# Test runner for plugins/acceptance-gate/hooks/acceptance-evidence-gate.js
 # Each case: build a PreToolUse JSON payload on stdin, assert exit code.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -12,7 +12,7 @@ else
 fi
 bc_tg_mo hooks all "$HERE/../.."
 # BO-CHAY>>>
-HOOK="$HERE/../../hooks/acceptance-evidence-gate.js"
+HOOK="$HERE/../../plugins/acceptance-gate/hooks/acceptance-evidence-gate.js"
 REPO="$HERE/fixtures/repo"
 REPORT_PATH="$REPO/_acceptance/login-flow/evidence-report.md"
 PASS_COUNT=0; FAIL_COUNT=0

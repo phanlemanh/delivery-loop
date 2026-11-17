@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Bộ ca đo tương phản với màu lab/oklab/lch/oklch, kể cả alpha — chạy trên HAI tầng dùng chung bộ dò:
-//   cổng  = scripts/design-gate.mjs chế độ dom (jsdom giữ nguyên chuỗi màu như trình duyệt trả);
-//   quét  = scripts/design-scan.js nạp vào trang, gọi window.__impeccableDesignScan().
+//   cổng  = plugins/acceptance-gate/scripts/design-gate.mjs chế độ dom (jsdom giữ nguyên chuỗi màu như trình duyệt trả);
+//   quét  = plugins/acceptance-gate/scripts/design-scan.js nạp vào trang, gọi window.__impeccableDesignScan().
 // Chuỗi màu và kết quả điểm ảnh trong BANG_CHROME đo trên Chrome thật (canvas 2D), không tính lại bằng chính công thức
 // đang kiểm. Màu không đọc được phải ra KHONG-DO-DUOC, không được PASS.
 //
@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
 const { JSDOM } = createRequire(path.join(HERE, 'noop.js'))('jsdom');
-const SCAN = fs.readFileSync(path.join(ROOT, 'scripts', 'design-scan.js'), 'utf8');
+const SCAN = fs.readFileSync(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'design-scan.js'), 'utf8');
 const LY_DO = 'mau-khong-doc-duoc';
 const tam = fs.mkdtempSync(path.join(os.tmpdir(), 'mau-lab-'));
 
@@ -28,7 +28,7 @@ function chayCong(html, them = []) {
   const f = path.join(fs.mkdtempSync(path.join(tam, 'c-')), 'trang.html');
   fs.writeFileSync(f, html);
   return new Promise((xong) => {
-    execFile(process.execPath, [path.join(ROOT, 'scripts', 'design-gate.mjs'), f, '--jsdom', HERE, ...them], { maxBuffer: 1 << 26 }, (loi, stdout) => {
+    execFile(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'design-gate.mjs'), f, '--jsdom', HERE, ...them], { maxBuffer: 1 << 26 }, (loi, stdout) => {
       xong({ ma: loi ? loi.code : 0, j: JSON.parse(stdout) });
     });
   });
@@ -174,8 +174,8 @@ const CA = [
 
   // Đồng bộ lại bản gốc mà làm mất một mốc vá thì phải đỏ to, không được âm thầm chạy bản chưa vá.
   ['moc-va-mat', '', async () => {
-    const { patchDetector, PATCHES } = await import(path.join(ROOT, 'lib', 'design-bundle.mjs'));
-    const goc = fs.readFileSync(path.join(ROOT, 'vendor', 'impeccable', 'engine', 'detect-antipatterns-browser.js'), 'utf8');
+    const { patchDetector, PATCHES } = await import(path.join(ROOT, 'plugins/acceptance-gate/lib', 'design-bundle.mjs'));
+    const goc = fs.readFileSync(path.join(ROOT, 'plugins/acceptance-gate/vendor', 'impeccable', 'engine', 'detect-antipatterns-browser.js'), 'utf8');
     patchDetector(goc);
     const loi = [];
     let dem = 0;

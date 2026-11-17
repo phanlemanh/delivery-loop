@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capLuot, chonHangKe, xepHang, xetHanThue } from '../../../dieu-phoi/scripts/lich.mjs';
+import { capLuot, chonHangKe, xepHang, xetHanThue } from '../../../plugins/dispatch/scripts/lich.mjs';
 
 const HV = {
   day: [{ id: 'P1' }, { id: 'P2' }, { id: 'P3' }, { id: 'P4' }],

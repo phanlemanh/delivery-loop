@@ -27,3 +27,13 @@ s4-args.json
 
 # Biến môi trường cục bộ — không bao giờ commit (bí mật, khoá máy chủ).
 .env
+
+# Added by repo-setup
+.env.*
+!.env.example
+*.pem
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log

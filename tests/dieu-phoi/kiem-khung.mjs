@@ -5,7 +5,7 @@
 // Code: script chạy ở lượt chấm trên máy.
 //   KH-05 dải · KH-06 nhịp · KH-07 pane — `claude plugin test` trên bản sao gói kèm tests/dieu-phoi/mod/khung.test.ts;
 //     ba chỗ giữ trong tệp ca được thay bằng stdout THẬT mà CLI in trong lượt này trên kho thử (round-trip CLI → mod).
-//   KH-08 — `claude -p "/dieu-phoi:xem"` trong môi trường CÔ LẬP (bỏ mọi biến CLAUDE_*/ANTHROPIC_*, thư mục cấu hình
+//   KH-08 — `claude -p "/dispatch:status"` trong môi trường CÔ LẬP (bỏ mọi biến CLAUDE_*/ANTHROPIC_*, thư mục cấu hình
 //     tạm, khoá API giả, đường tới model trỏ cổng chết): mọi lần gọi model lộ thành api_error, không tốn token, không
 //     chạm tài khoản nào.
 //   KH-09 — `claude plugin validate --strict --json` + kiemKhungMod + kiemChiVe (răng «mod chỉ vẽ»).
@@ -20,7 +20,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const i = process.argv.indexOf('--root');
 const GOC = path.resolve(i > -1 ? process.argv[i + 1] : path.join(DAY, '..', '..'));
-const GOI = path.join(GOC, 'dieu-phoi');
+const GOI = path.join(GOC, 'plugins/dispatch');
 const FIXTURE = path.join(GOC, 'tests', 'dieu-phoi', 'fixtures', 'dot-crm-0910');
 const CA_TEP = path.join(GOC, 'tests', 'dieu-phoi', 'mod', 'khung.test.ts');
 const ENV = Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('GIT_') && k !== 'NODE_TEST_CONTEXT'));
@@ -185,7 +185,7 @@ const moiTruongCoLap = () => {
   return { ...env, TZ, CLAUDE_CONFIG_DIR: tam('kk-cfg-'), ANTHROPIC_API_KEY: 'khoa-gia-kiem-thu', ANTHROPIC_BASE_URL: 'http://127.0.0.1:9', CLAUDE_CODE_MAX_RETRIES: '0' };
 };
 function chayLenh(sao, kho) {
-  const r = spawnSync(BAN, ['-p', '/dieu-phoi:xem', '--plugin-dir', sao, '--output-format', 'json'], { cwd: kho, env: moiTruongCoLap(), encoding: 'utf8', timeout: 120_000 });
+  const r = spawnSync(BAN, ['-p', '/dispatch:status', '--plugin-dir', sao, '--output-format', 'json'], { cwd: kho, env: moiTruongCoLap(), encoding: 'utf8', timeout: 120_000 });
   try {
     return JSON.parse(r.stdout);
   } catch {
@@ -215,7 +215,7 @@ const veModel = (d) => d.num_turns >= 1 && d.terminal_reason === 'api_error';
 const lui = chayLenh(goiLanh, khoDot({ hong: true }));
 ket(aXanh && veModel(lui) && !String(lui.result ?? '').startsWith('dieu-phoi: khung'), 'KH-08 duong-lui', `num_turns ${lui.num_turns} · ${lui.terminal_reason}`);
 const khoA = HANG[0][1];
-const doMatcher = chayLenh(banSao((s) => tiem(tepKhung(s), "{ command: 'dieu-phoi:xem' }", "{ command: 'dieu-phoi:xem-khac' }")), khoA);
+const doMatcher = chayLenh(banSao((s) => tiem(tepKhung(s), "{ command: 'dispatch:status' }", "{ command: 'dispatch:xem-khac' }")), khoA);
 ket(aXanh && veModel(doMatcher), 'KH-08-do matcher', `num_turns ${doMatcher.num_turns} · ${doMatcher.terminal_reason}`);
 const doKhongMod = chayLenh(banSao((s) => {
   const p = path.join(s, 'hooks', 'hooks.json');

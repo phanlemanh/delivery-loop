@@ -10,9 +10,9 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
-const SCRIPT = path.join(ROOT, 'scripts', 'plugin-declare.mjs');
+const SCRIPT = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'plugin-declare.mjs');
 const MARKET = path.join(ROOT, '.claude-plugin', 'marketplace.json');
-const INIT_MD = path.join(ROOT, 'commands', 'acceptance-init.md');
+const INIT_MD = path.join(ROOT, 'plugins/acceptance-gate/commands', 'acceptance-init.md');
 const GUIDE = path.join(ROOT, 'GUIDE.md');
 const README = path.join(ROOT, 'README.md');
 const QUICK = path.join(ROOT, 'QUICKSTART.md');
@@ -56,7 +56,7 @@ const CMD_PLUGIN = /claude (plugin )?(install|update|marketplace add)/g;
 const humanDocs = () => {
   const out = [];
   for (const f of readdirSync(ROOT)) if (f.endsWith('.md')) out.push(path.join(ROOT, f));
-  for (const d of ['commands', 'feature-loop', 'diagram-design']) {
+  for (const d of ['plugins/acceptance-gate/commands', 'plugins/feature-loop', 'plugins/diagram-design']) {
     const dir = path.join(ROOT, d);
     if (!existsSync(dir)) continue;
     for (const f of readdirSync(dir)) if (f.endsWith('.md')) out.push(path.join(dir, f));
@@ -76,8 +76,8 @@ if (want('PD1')) {
   else {
     const raw = readFileSync(file, 'utf8'); const j = JSON.parse(raw); const names = expectedNames();
     const keys = Object.keys(j.enabledPlugins || {});
-    const ok = j.extraKnownMarketplaces?.['acceptance-gate-kit']?.source?.source === 'github'
-      && j.extraKnownMarketplaces['acceptance-gate-kit'].source.repo === 'phanlemanh/acceptance-gate-kit'
+    const ok = j.extraKnownMarketplaces?.['delivery-loop']?.source?.source === 'github'
+      && j.extraKnownMarketplaces['delivery-loop'].source.repo === 'phanlemanh/delivery-loop'
       && sameSet(keys, names) && keys.length === names.length && keys.every(k => j.enabledPlugins[k] === true)
       && raw === JSON.stringify(j, null, 2) + '\n';
     if (!ok) fail('PD1', `nội dung sai: keys=${keys.join(',')} expected=${names.join(',')}`);
@@ -87,7 +87,7 @@ if (want('PD1')) {
       const mk = path.join(tmp(), 'marketplace.json'); writeFileSync(mk, JSON.stringify(m));
       const root2 = tmp(); const r2 = run(['--root', root2, '--write', '--marketplace', mk]);
       const j2 = JSON.parse(readFileSync(settingsOf(root2), 'utf8')); const k2 = Object.keys(j2.enabledPlugins);
-      const redOk = r2.status === 0 && !k2.includes('diagram-design@acceptance-gate-kit') && k2.length === names.length - 1 && !sameSet(k2, names);
+      const redOk = r2.status === 0 && !k2.includes('diagram-design@delivery-loop') && k2.length === names.length - 1 && !sameSet(k2, names);
       if (!redOk) fail('PD1', `chiều đỏ không đỏ: keys=${k2.join(',')}`);
       else pass('PD1', 'repo trống → file đúng tập n+1; gỡ diagram-design → thiếu đúng tên + lệch số');
     }
@@ -101,7 +101,7 @@ if (want('PD1b')) {
   const root = tmp(); const r = run(['--root', root, '--write', '--marketplace', mk]);
   const j = r.status === 0 ? JSON.parse(readFileSync(settingsOf(root), 'utf8')) : {};
   const keys = Object.keys(j.enabledPlugins || {});
-  const ok = r.status === 0 && keys.filter(k => k.endsWith('@kit-khac')).length === expectedNames(mk).length - 1 && !!j.extraKnownMarketplaces?.['kit-khac'] && !j.extraKnownMarketplaces?.['acceptance-gate-kit'];
+  const ok = r.status === 0 && keys.filter(k => k.endsWith('@kit-khac')).length === expectedNames(mk).length - 1 && !!j.extraKnownMarketplaces?.['kit-khac'] && !j.extraKnownMarketplaces?.['delivery-loop'];
   if (!ok) fail('PD1b', `exit ${r.status} keys=${keys.join(',')} ekm=${Object.keys(j.extraKnownMarketplaces || {}).join(',')}`);
   else pass('PD1b', 'đổi name marketplace → hậu tố và khoá extraKnownMarketplaces cùng theo (một nguồn)');
 }
@@ -188,9 +188,9 @@ if (want('PD6')) {
   const e = [sameSet(list, names) ? null : `--list lệch: ${list.join(',')}`, check('init', initBlk), check('GUIDE', guideBlk)].filter(Boolean);
   if (e.length) fail('PD6', e.join(' · '));
   else {
-    const redA = check('GUIDE', guideBlk.replace(/^.*feature-loop@acceptance-gate-kit.*$/m, ''));
+    const redA = check('GUIDE', guideBlk.replace(/^.*feature-loop@delivery-loop.*$/m, ''));
     const redB = check('init', block(readFileSync(INIT_MD, 'utf8').replace(/INIT-PLUGIN-DECLARE/g, 'INIT-PLUGIN-DECLAR'), 'INIT-PLUGIN-DECLARE'));
-    if (!redA || !redA.includes('feature-loop@acceptance-gate-kit') || !redA.includes('GUIDE')) fail('PD6', `đột biến (a) không đỏ đúng: ${redA}`);
+    if (!redA || !redA.includes('feature-loop@delivery-loop') || !redA.includes('GUIDE')) fail('PD6', `đột biến (a) không đỏ đúng: ${redA}`);
     else if (!redB || !redB.includes('không tìm thấy khối')) fail('PD6', `đột biến (b) không đỏ đúng: ${redB}`);
     else pass('PD6', 'bốn nơi khớp; gỡ một tên ở GUIDE → nêu tên+nơi; đổi marker init → không tìm thấy khối');
   }
@@ -205,7 +205,7 @@ if (want('PD7')) {
     const errs = [];
     if (count(nfc(sec), TUY_CHON) !== 0) errs.push("GUIDE 5.1 còn 'tuỳ chọn/optional' (mọi chính tả)");
     if (!/không pin phiên bản/.test(sec)) errs.push('GUIDE 5.1 thiếu câu không pin phiên bản');
-    if (count(dau, /claude plugin marketplace add phanlemanh\/acceptance-gate-kit/g) !== 1 || count(dau, /claude plugin install acceptance-gate@acceptance-gate-kit/g) !== 1) errs.push('máy-đầu phải đúng 1 add + 1 install acceptance-gate');
+    if (count(dau, /claude plugin marketplace add phanlemanh\/delivery-loop/g) !== 1 || count(dau, /claude plugin install acceptance-gate@delivery-loop/g) !== 1) errs.push('máy-đầu phải đúng 1 add + 1 install acceptance-gate');
     if (count(sau, /claude plugin marketplace add/g) !== 1 || count(sau, /claude plugin install/g) !== 0) errs.push('máy-sau có lệnh install hoặc thiếu add');
     return errs;
   };
@@ -214,8 +214,8 @@ if (want('PD7')) {
   else {
     const ANCHOR = 'Sau khi cài, **mở phiên Claude Code mới**';
     if (!g.includes(ANCHOR)) fail('PD7', 'neo đột biến không còn trong GUIDE — sửa ca trước khi tin');
-    const redA = judge(g.replace(ANCHOR, 'claude plugin install diagram-design@acceptance-gate-kit    # (tùy chọn)\n\n' + ANCHOR));
-    const redB = judge(g.replace('<!-- GUIDE-MAY-SAU>>> -->', 'claude plugin install feature-loop@acceptance-gate-kit\n<!-- GUIDE-MAY-SAU>>> -->'));
+    const redA = judge(g.replace(ANCHOR, 'claude plugin install diagram-design@delivery-loop    # (tùy chọn)\n\n' + ANCHOR));
+    const redB = judge(g.replace('<!-- GUIDE-MAY-SAU>>> -->', 'claude plugin install feature-loop@delivery-loop\n<!-- GUIDE-MAY-SAU>>> -->'));
     if (!redA.some(x => x.includes("tuỳ chọn/optional"))) fail('PD7', `đột biến (a) không đỏ: ${redA}`);
     else if (!redB.some(x => x.includes('máy-sau có lệnh install'))) fail('PD7', `đột biến (b) không đỏ: ${redB}`);
     else pass('PD7', 'GUIDE 5.1: 0 tuỳ chọn (cả hai chính tả), không pin, máy-đầu 1+1, máy-sau 1+0; hai đột biến đỏ đúng');
@@ -245,8 +245,8 @@ if (want('PD7b')) {
   };
   const docs = Object.fromEntries(humanDocs().map(f => [f, readFileSync(f, 'utf8')]));
   // Vũ trụ quét phải ĐỦ và được ASSERT — in số mà không so thì vũ trụ teo lại vẫn xanh.
-  const MUST_SCAN = ['README.md', 'QUICKSTART.md', 'GUIDE.md', 'feature-loop/README.md',
-                     'commands/acceptance-init.md', 'docs/reference/DIAGRAM-RULE.md'];
+  const MUST_SCAN = ['README.md', 'QUICKSTART.md', 'GUIDE.md', 'plugins/feature-loop/README.md',
+                     'plugins/acceptance-gate/commands/acceptance-init.md', 'docs/reference/DIAGRAM-RULE.md'];
   const scanned = Object.keys(docs).map(f => path.relative(ROOT, f));
   const missing = MUST_SCAN.filter(f => !scanned.includes(f));
   const e = missing.length ? [`vũ trụ quét thiếu: ${missing.join(', ')}`] : judgeDocs(docs);
@@ -254,7 +254,7 @@ if (want('PD7b')) {
   else {
     // ba đột biến, mỗi cái một hình dạng đã dẫm thật ở S4-r1/r2
     const rd = path.join(ROOT, 'README.md'), qk = path.join(ROOT, 'QUICKSTART.md');
-    const m1 = judgeDocs({ ...docs, [rd]: docs[rd] + '\nclaude plugin update diagram-design@acceptance-gate-kit   # if installed\n' });
+    const m1 = judgeDocs({ ...docs, [rd]: docs[rd] + '\nclaude plugin update diagram-design@delivery-loop   # if installed\n' });
     const m2 = judgeDocs({ ...docs, [qk]: docs[qk] + '\n# feature-loop (plugin thứ 2, tùy chọn)\n' });   // chính tả «ù»
     const m3 = judgeDocs({ ...docs, [path.join(ROOT, 'GUIDE.md')]: docs[path.join(ROOT, 'GUIDE.md')].replace('<!-- GUIDE-PLUGIN-DECLARE>>> -->', '') });
     if (!m1.some(x => x.startsWith('README.md:') && x.includes('lệnh plugin ngoài'))) fail('PD7b', `đột biến 1 (README có lệnh) không đỏ: ${m1}`);
@@ -272,7 +272,7 @@ if (want('PD8')) {
   const runLine = (b, root) => {
     const line = (b || '').split('\n').find(l => l.includes('plugin-declare.mjs'));
     if (!line) return { status: -1, stderr: 'không có dòng lệnh' };
-    const argv = line.trim().replace('${CLAUDE_PLUGIN_ROOT}', ROOT).replace('<path>', root).match(/"[^"]*"|\S+/g).map(s => s.replace(/^"|"$/g, ''));
+    const argv = line.trim().replace('${CLAUDE_PLUGIN_ROOT}', path.join(ROOT, 'plugins/acceptance-gate')).replace('<path>', root).match(/"[^"]*"|\S+/g).map(s => s.replace(/^"|"$/g, ''));
     if (argv[0] !== 'node') return { status: -1, stderr: `lệnh không bắt đầu bằng node: ${argv[0]}` };
     return spawnSync(process.execPath, argv.slice(1), { encoding: 'utf8' });
   };
@@ -352,15 +352,15 @@ if (want('PD1c')) {
 // ---------- PD2c: giá trị đội đã đặt KHÔNG bị lật im lặng — false giữ false, source riêng giữ nguyên, có dòng «giữ nguyên»
 if (want('PD2c')) {
   const root = tmp(); mkdirSync(path.join(root, '.claude')); const f = settingsOf(root);
-  const before = { extraKnownMarketplaces: { 'acceptance-gate-kit': { source: { source: 'git', url: 'https://fork/x.git' } } },
-                   enabledPlugins: { 'feature-loop@acceptance-gate-kit': false } };
+  const before = { extraKnownMarketplaces: { 'delivery-loop': { source: { source: 'git', url: 'https://fork/x.git' } } },
+                   enabledPlugins: { 'feature-loop@delivery-loop': false } };
   writeFileSync(f, JSON.stringify(before, null, 2) + '\n');
   const r = run(['--root', root, '--write']); const after = JSON.parse(readFileSync(f, 'utf8'));
   const errs = [];
-  if (after.enabledPlugins['feature-loop@acceptance-gate-kit'] !== false) errs.push('false bị lật thành true');
-  if (JSON.stringify(after.extraKnownMarketplaces['acceptance-gate-kit']) !== JSON.stringify(before.extraKnownMarketplaces['acceptance-gate-kit'])) errs.push('source riêng của đội bị thay');
+  if (after.enabledPlugins['feature-loop@delivery-loop'] !== false) errs.push('false bị lật thành true');
+  if (JSON.stringify(after.extraKnownMarketplaces['delivery-loop']) !== JSON.stringify(before.extraKnownMarketplaces['delivery-loop'])) errs.push('source riêng của đội bị thay');
   if (!/giữ nguyên \(đội đã đặt\)/.test(r.stdout)) errs.push('không in dòng «giữ nguyên»');
-  if (after.enabledPlugins['diagram-design@acceptance-gate-kit'] !== true) errs.push('plugin chưa khai không được bật');
+  if (after.enabledPlugins['diagram-design@delivery-loop'] !== true) errs.push('plugin chưa khai không được bật');
   if (r.status !== 0 || errs.length) fail('PD2c', `exit ${r.status} · ${errs.join(' · ')}`);
   else pass('PD2c', 'false giữ false, source riêng giữ nguyên, có dòng «giữ nguyên»; plugin chưa khai vẫn được bật');
 }

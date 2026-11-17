@@ -25,9 +25,9 @@ import { runWorkflow, check, summary, KHOI_GHI_BASELINE, lenhGhiBaseline, kichBa
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
-const WF = path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const SRC = fs.readFileSync(WF, 'utf8');
-const GC = path.join(ROOT, 'scripts', 'gate-card.js');
+const GC = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
 // Chuỗi cờ và chữ `kind` RÚT từ bên đọc/bên viết thật — test không giữ bản chép thứ ba.
 const GC_SRC = fs.readFileSync(GC, 'utf8');
 const CO_DOI_CHUNG = (GC_SRC.match(/const CO_DOI_CHUNG = '([^']+)'/) || [])[1];
@@ -218,8 +218,8 @@ const dotBien = (kim, thay) => {
   check('BW5c lời gọi là khối lệnh có git → BW1b/BW1c đỏ', !/^bash '[^']+'$/.test(gC) && /git/.test(gC), gC.slice(0, 80));
   // (d) thẻ bỏ cờ: bản sao TRỌN thư mục, tiêm một chỗ, đối chứng là bản lành xanh ở BW4 trên cùng fixture.
   const sao = fs.mkdtempSync(path.join(TMP, 'sao-'));
-  for (const t of ['scripts', 'lib', 'feature-loop', 'commands', 'skills']) fs.cpSync(path.join(ROOT, t), path.join(sao, t), { recursive: true });
-  const gcSao = path.join(sao, 'scripts', 'gate-card.js');
+  for (const t of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/feature-loop', 'plugins/acceptance-gate/commands', 'plugins/acceptance-gate/skills']) fs.cpSync(path.join(ROOT, t), path.join(sao, t), { recursive: true });
+  const gcSao = path.join(sao, 'plugins/acceptance-gate/scripts', 'gate-card.js');
   const gSrc = fs.readFileSync(gcSao, 'utf8');
   const kimD = 'if (doiChung) P.push(';
   if (soLan(gSrc, kimD) !== 1) throw new Error('kim đột biến thẻ không khớp đúng một lần');

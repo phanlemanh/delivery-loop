@@ -12,7 +12,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(DAY, '..', '..');
-const GOI = path.join(KIT, 'dieu-phoi');
+const GOI = path.join(KIT, 'plugins/dispatch');
 const FIXTURE = path.join(DAY, 'fixtures', 'dot-crm-0910');
 // Bản cũ của AC-3: commit cố định (đỉnh main khi hồ sơ mở), không merge-base sống.
 const BAN_CU = 'f59d9547';

@@ -1,5 +1,5 @@
 // dai-tom-tat.test.mjs — hồ sơ dai-tom-tat-doc-dung (gốc: crm/_acceptance/ngan-ho-so-trong-lo-trinh, LT1b).
-// Ba ô của dải tóm tắt hồ sơ (scripts/ho-so-tom-tat.cjs) nói đúng trên dữ liệu thật: production không đọc
+// Ba ô của dải tóm tắt hồ sơ (plugins/acceptance-gate/scripts/ho-so-tom-tat.cjs) nói đúng trên dữ liệu thật: production không đọc
 // thành «chưa lên», chưa làm đếm giới hạn ở `## Notes` của hợp đồng và gọi Out of scope là «để ngoài phạm
 // vi», vì sao không cụt ở câu dẫn và có trần 400 ký tự. Ca DT-1..DT-8; DT-9 (bản sao crm) ở
 // dai-tom-tat-crm.mjs, ngoài suite.
@@ -32,8 +32,8 @@ const node = (args, o = {}) => spawnSync(process.execPath, args, { encoding: 'ut
 const deq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const SL = 'hs';
 
-const HS = kit => createRequire(import.meta.url)(path.join(kit, 'scripts', 'ho-so-tom-tat.cjs'));
-const LT = await import(pathToFileURL(path.join(KIT, 'scripts', 'lo-trinh.mjs')).href);
+const HS = kit => createRequire(import.meta.url)(path.join(kit, 'plugins/acceptance-gate/scripts', 'ho-so-tom-tat.cjs'));
+const LT = await import(pathToFileURL(path.join(KIT, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs')).href);
 
 // ── kho thử ───────────────────────────────────────────────────────────────
 let khoN = 0;
@@ -48,7 +48,7 @@ function khoThu({ notes = '', oos = ['Không làm a.', 'Không làm b.'], known 
   writeFileSync(path.join(r, '_acceptance', 'config.yaml'), `schema_version: 1\nrisk_tiers:\n  t1_skip_globs:\n    - "PRODUCT-MAP.md"\n    - "LO-TRINH.html"\nlo_trinh:\n  tep: docs/lo-trinh.json\n${nhanh ? `production:\n  nhanh: ${nhanh}   # nhánh production của kho\n` : ''}`);
   writeFileSync(path.join(r, 'docs', 'lo-trinh.json'), JSON.stringify({ schema: 1, ten: 'Lộ trình thử', hang: [{ ma: 'X', slug: SL, cau_giao: 'Việc X có dải tóm tắt', vi_sao: 'Gốc: crm/_acceptance/a — lý do một câu đủ.' }] }, null, 2) + '\n');
   git(r, 'add', '-A'); git(r, 'commit', '-qm', 'kho');
-  const mo = node([path.join(KIT, 'scripts', 'lo-trinh.mjs'), '--root', r, '--hang', 'X', '--mo-o', '--slug', SL, '--owner', 'x@y.z']);
+  const mo = node([path.join(KIT, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs'), '--root', r, '--hang', 'X', '--mo-o', '--slug', SL, '--owner', 'x@y.z']);
   if (mo.status !== 0) throw new Error(`--mo-o exit ${mo.status}: ${mo.stderr}`);
   const d = path.join(r, '_acceptance', SL);
   let ma = 'a'.repeat(40);
@@ -77,13 +77,13 @@ const boEsc = s => String(s).replace(/<[^>]*>/g, '').replace(/&lt;/g, '<').repla
 const daiCua = h => Object.fromEntries([...h.matchAll(/<div class="o" data-o="(\w+)" data-nguon="[^"]*"><div class="hoi">[^<]*<\/div><div class="tra">([\s\S]*?)<\/div><\/div>/g)].map(m => [m[1], boEsc(m[2])]));
 const gioiHanTrang = h => [...h.matchAll(/<li data-loai="gioi-han">([\s\S]*?)<\/li>/g)].map(m => boEsc(m[1]));
 function trang(kit, r) {
-  const x = node([path.join(kit, 'scripts', 'evidence-page.js'), '--root', r, '--slug', SL]);
+  const x = node([path.join(kit, 'plugins/acceptance-gate/scripts', 'evidence-page.js'), '--root', r, '--slug', SL]);
   const p = path.join(r, '_acceptance', SL, 'evidence-page.html');
   if (x.status !== 0 || !existsSync(p)) throw new Error(`evidence-page exit ${x.status}: ${x.stderr.slice(0, 200)}`);
   return readFileSync(p, 'utf8');
 }
 function khoi(kit, r) {
-  const x = node([path.join(kit, 'scripts', 'product-map.mjs'), '--root', r]);
+  const x = node([path.join(kit, 'plugins/acceptance-gate/scripts', 'product-map.mjs'), '--root', r]);
   if (x.status !== 0) throw new Error(`product-map exit ${x.status}: ${x.stderr.slice(0, 200)}`);
   const d = LT.docDuLieu(readFileSync(path.join(r, 'LO-TRINH.html'), 'utf8')).duLieu;
   const h = d && d.lo_trinh[0].hang.find(y => y.ma === 'X');
@@ -95,7 +95,7 @@ const tomTat = (kit, r) => HS(kit).tomTatHoSo(path.join(r, '_acceptance', SL));
 let bsN = 0;
 function banSao(tiem) {
   const c = path.join(TMP, `bs-${++bsN}`);
-  for (const d of ['scripts', 'lib', 'skills', 'commands']) cpSync(path.join(KIT, d), path.join(c, d), { recursive: true });
+  for (const d of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills', 'plugins/acceptance-gate/commands']) cpSync(path.join(KIT, d), path.join(c, d), { recursive: true });
   for (const [tep, cu, moi] of tiem) {
     const p = path.join(c, tep); const s = readFileSync(p, 'utf8'); const n = s.split(cu).length - 1;
     if (n !== 1) throw new Error(`nhát tiêm vào ${tep} khớp ${n} lần (cần 1): ${cu.slice(0, 60)}`);
@@ -111,7 +111,7 @@ const chayDo = async (id, f, tiem, ghim, moTa) => {
     if (g) ok(id, `${moTa}: hàm đo trả «${g.slice(0, 110)}»`); else bad(id, `không bắt (cần «${ghim}»): ${JSON.stringify(s).slice(0, 200)}`);
   } catch (e) { bad(id, loi(e)); }
 };
-const HS_FILE = 'scripts/ho-so-tom-tat.cjs';
+const HS_FILE = 'plugins/acceptance-gate/scripts/ho-so-tom-tat.cjs';
 
 // ── DT-1: ô production — kho KHÔNG khai nhánh production: hành vi cũ giữ nguyên ──────────────────
 const CHUA_GHI = 'chưa ghi quan sát production';
@@ -275,9 +275,9 @@ function dt7(kit) {
 
 // ── DT-8: khối KNOWN-LIMITS-NOTE (bên viết) → bộ đọc ───────────────────────
 function dt8(kit) {
-  const t = readFileSync(path.join(kit, 'commands', 'signoff.md'), 'utf8');
+  const t = readFileSync(path.join(kit, 'plugins/acceptance-gate/commands', 'signoff.md'), 'utf8');
   const m = t.match(/<!-- <<<KNOWN-LIMITS-NOTE -->\n```\n([\s\S]*?)```\n<!-- KNOWN-LIMITS-NOTE>>> -->/);
-  if (!m) return ['commands/signoff.md không có khối KNOWN-LIMITS-NOTE'];
+  if (!m) return ['plugins/acceptance-gate/commands/signoff.md không có khối KNOWN-LIMITS-NOTE'];
   const dong = m[1].replace(/\n$/, '').split('\n'); const dau = dong[0]; const con = dong.slice(1);
   if (con.length !== 1) return [`khối KNOWN-LIMITS-NOTE có ${con.length} dòng gạch con mẫu, cần 1`];
   const notes = [dau.replace('<YYYY-MM-DD>', '2026-10-12'), con[0].replace('<Ngoài-n>', 'Ngoài-1').replace(/<giới hạn[^>]*>/, 'trang đếm lệch khi lọc.'), con[0].replace('<Ngoài-n>', 'Ngoài-2').replace(/<giới hạn[^>]*>/, 'bàn phím mất chỗ đứng.')].join('\n');
@@ -308,7 +308,7 @@ if (want('DT-7')) await chayCa('DT-7', dt7, 'năm câu → hai câu trọn + «�
 if (want('DT-7-do')) await chayDo('DT-7-do', dt7, [[HS_FILE, 'if (du.length <= TRAN_VI_SAO) return du;', 'return du;']], '400', 'bản sao bỏ trần');
 if (want('DT-7-do-muc')) await chayDo('DT-7-do-muc', dt7, [[HS_FILE, "return catTran([`${d} ${muc[0]}`, ...muc.slice(1)], ' · ');", "return catTran([[`${d} ${muc[0]}`, ...muc.slice(1)].join(' · ')], ' · ');"]], 'ca (d)', 'bản sao cắt danh sách theo ký tự');
 if (want('DT-8')) await chayCa('DT-8', dt8, 'khối KNOWN-LIMITS-NOTE điền hai giới hạn → «2 giới hạn đã biết»');
-if (want('DT-8-do')) await chayDo('DT-8-do', dt8, [['commands/signoff.md', '- Known limits — chọn ở Cổng Bằng chứng <YYYY-MM-DD>:', '- Hạn chế — chọn ở Cổng Bằng chứng <YYYY-MM-DD>:']], '2 giới hạn', 'bản sao signoff.md đổi đầu khối sang «Hạn chế»');
+if (want('DT-8-do')) await chayDo('DT-8-do', dt8, [['plugins/acceptance-gate/commands/signoff.md', '- Known limits — chọn ở Cổng Bằng chứng <YYYY-MM-DD>:', '- Hạn chế — chọn ở Cổng Bằng chứng <YYYY-MM-DD>:']], '2 giới hạn', 'bản sao signoff.md đổi đầu khối sang «Hạn chế»');
 
 rmSync(TMP, { recursive: true, force: true });
 console.log(`\nResults: ${pass} passed, ${fail} failed (dai-tom-tat)`);

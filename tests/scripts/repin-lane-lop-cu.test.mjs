@@ -22,8 +22,8 @@ import { createRequire } from 'node:module';
 const SELF = fileURLToPath(import.meta.url);
 const HERE = path.dirname(SELF);
 const ROOT = path.resolve(HERE, '..', '..');
-const LANE = path.join(ROOT, 'feature-loop', 'scripts', 'repin-lane.mjs');
-const RECHECK = path.join(ROOT, 'scripts', 'recheck-evidence.cjs');
+const LANE = path.join(ROOT, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs');
+const RECHECK = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs');
 const LIBS = ['lib/eval-yaml.cjs', 'lib/evidence-core.cjs', 'lib/workspace-record.cjs'];
 const MOC_CU = '0b5c5b37';  // kit mang plugin.json 2.8.0 — lớp vendored đo được ở media-library 11/09
 const MOC_LAI = '04069351'; // mốc 2.10.0 — evidence-core trước luật hai vế (readSignedReportFor)
@@ -57,8 +57,8 @@ function layerAt(sha) {
 // Bản chép TRỌN lib/ + scripts/ của cây đang đo.
 function copyTree() {
   const d = mk('tree-');
-  fs.cpSync(path.join(ROOT, 'lib'), path.join(d, 'lib'), { recursive: true });
-  fs.cpSync(path.join(ROOT, 'scripts'), path.join(d, 'scripts'), { recursive: true });
+  fs.cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(d, 'lib'), { recursive: true });
+  fs.cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(d, 'scripts'), { recursive: true });
   return d;
 }
 function layerMixed() {
@@ -156,7 +156,7 @@ const norm = (s) => s.replace(/repin-\d{8}T\d{6}Z-\d{5}/g, 'RUN').replace(/\d{4}
 const cut = (s, n = 240) => s.replace(/\s+/g, ' ').slice(0, n);
 
 // ── bản sao bị tiêm ─────────────────────────────────────────────────────
-// Bản sao TRỌN feature-loop/scripts (repin-lane suy RESOLVER từ vị trí nó).
+// Bản sao TRỌN plugins/feature-loop/scripts (repin-lane suy RESOLVER từ vị trí nó).
 function injectInto(file, before, after) {
   const s = read(file);
   const n = s.split(before).length - 1;
@@ -168,7 +168,7 @@ function injectInto(file, before, after) {
 }
 function mutantLane(before, after) {
   const d = mk('fl-');
-  fs.cpSync(path.join(ROOT, 'feature-loop', 'scripts'), path.join(d, 'scripts'), { recursive: true });
+  fs.cpSync(path.join(ROOT, 'plugins/feature-loop', 'scripts'), path.join(d, 'scripts'), { recursive: true });
   const f = path.join(d, 'scripts', 'repin-lane.mjs');
   injectInto(f, before, after);
   return f;
@@ -178,7 +178,7 @@ function mutantLane(before, after) {
 // BỘ tập hàng đang thiếu, không phải một hàng gõ tay.
 function mutantLaneMulti(edits) {
   const d = mk('fl-');
-  fs.cpSync(path.join(ROOT, 'feature-loop', 'scripts'), path.join(d, 'scripts'), { recursive: true });
+  fs.cpSync(path.join(ROOT, 'plugins/feature-loop', 'scripts'), path.join(d, 'scripts'), { recursive: true });
   const f = path.join(d, 'scripts', 'repin-lane.mjs');
   for (const [before, after] of edits) injectInto(f, before, after);
   return f;
@@ -207,7 +207,7 @@ const needStop = (r, words) => {
 function judgeGL01(lane) {
   const p = [];
   const repo = mkRepo(); const old = layerAt(MOC_CU);
-  const c = runLane(lane, repo, ['--ag-root', ROOT, '--slug', 'feat-z']);
+  const c = runLane(lane, repo, ['--ag-root', `${ROOT}/plugins/acceptance-gate`, '--slug', 'feat-z']);
   if (c.status !== 0) p.push(`doi chung duong exit ${c.status}: ${cut(c.stderr)}`);
   for (const mode of [[], ['--write']]) {
     repo.restore('feat-z');
@@ -219,7 +219,7 @@ function judgeGL01(lane) {
   const d = runLane(lane, repo, ['--ag-root', old, '--slug', 'feat-z']);
   if (d.status !== 2 || !d.stderr.includes('expectedExits')) p.push(`[cay ban] khong ra thong diep thieu export (exit ${d.status})`);
   if (d.stderr.includes(PIN.laneStop)) p.push('[cay ban] cong bo may chay SAU kiem cay sach');
-  const dc = runLane(lane, repo, ['--ag-root', ROOT, '--slug', 'feat-z']);
+  const dc = runLane(lane, repo, ['--ag-root', `${ROOT}/plugins/acceptance-gate`, '--slug', 'feat-z']);
   if (dc.status !== 2 || !dc.stderr.includes(PIN.laneStop)) p.push(`[cay ban] doi chung duong khong ra thong diep cay ban hom nay (exit ${dc.status})`);
   repo.g('checkout', '--', 'src.js');
   return p;
@@ -233,7 +233,7 @@ function judgeGL02(lane) {
   const p = [];
   const rows = tableRows(lane);
   const repo = mkRepo();
-  const c = runLane(lane, repo, ['--ag-root', ROOT, '--slug', 'feat-z']);
+  const c = runLane(lane, repo, ['--ag-root', `${ROOT}/plugins/acceptance-gate`, '--slug', 'feat-z']);
   if (c.status !== 0 || printedMissing(c.stderr).length) p.push(`doi chung duong khong xanh sach (exit ${c.status})`);
   const cmp = (tag, layer) => {
     const lacks = lacksIn(layer);
@@ -277,10 +277,10 @@ function matrixJudge(lane, only) {
   // QUAN HỆ: mỗi hàng bảng mà export có mặt ở cây đang đo phải ra (N) ở CẢ HAI hồ sơ.
   // Kho mẫu ở đây KHÔNG bật khoá nào, nên hàng điều kiện phải ra (G) — chạy y như bộ máy cũ (AC-10 của
   // lan-ghim-lai-theo-paths); vế «bật khoá thì dừng có tên» do răng hồ sơ ấy đo (chân lan-doc-cu).
-  const rowsHere = rows.filter(rw => !rw.khi && exportsOf(ROOT, rw.file).includes(rw.name));
+  const rowsHere = rows.filter(rw => !rw.khi && exportsOf(path.join(ROOT, 'plugins/acceptance-gate'), rw.file).includes(rw.name));
   const dieuKien = new Set(rows.filter(rw => rw.khi).map(rw => `${rw.file}:${rw.name}`));
   for (const rel of LIBS) {
-    for (const name of exportsOf(ROOT, rel)) {
+    for (const name of exportsOf(path.join(ROOT, 'plugins/acceptance-gate'), rel)) {
       total += 2;
       if (only && name !== only) continue;
       const layer = delExports(copyTree(), rel, [name]);
@@ -321,7 +321,7 @@ ca('GL03', 'ma trận xoá-export × hai hồ sơ (G so byte · N có tên) + qu
 function judgeGL04(lane) {
   const p = [];
   const repo = mkRepo();
-  const c = runLane(lane, repo, ['--ag-root', ROOT, '--slug', 'feat-h', '--write']);
+  const c = runLane(lane, repo, ['--ag-root', `${ROOT}/plugins/acceptance-gate`, '--slug', 'feat-h', '--write']);
   const last = repo.snap('feat-h')[0].trim().split('\n').pop();
   if (c.status !== 0 || !c.stderr.includes(PIN.rcGreen)) p.push(`doi chung duong khong xanh (exit ${c.status}): ${cut(c.stderr)}`);
   else if (!/"evals_exit":\{"E1":2\}/.test(last)) p.push(`doi chung: evals_exit khong giu ma 2: ${cut(last)}`);
@@ -403,7 +403,7 @@ function judgeGL06(lane) {
   return p;
 }
 ca('GL06', 'không --ag-root, plugin cache chỉ có lớp cũ → nói nguồn + cập nhật plugin', judgeGL06, [
-  { pin: 'khong noi nguon', make: () => mutantLane("'nguồn bộ máy: plugin cache (resolve-plugin.mjs chọn, không có --ag-root) — cập nhật plugin: claude plugin update acceptance-gate@acceptance-gate-kit'", "'nguồn bộ máy: ?'") },
+  { pin: 'khong noi nguon', make: () => mutantLane("'nguồn bộ máy: plugin cache (resolve-plugin.mjs chọn, không có --ag-root) — cập nhật plugin: claude plugin update acceptance-gate@delivery-loop'", "'nguồn bộ máy: ?'") },
 ]);
 
 function judgeGL07(lane) {
@@ -424,7 +424,7 @@ function judgeGL07(lane) {
   return p;
 }
 ca('GL07', 'lối đi tiếp rút từ stderr: lệnh dò chạy từ --root → --ag-root in ra → bên đọc cũ nhận', judgeGL07, [
-  { pin: 'lenh do khong chay duoc tu --root', make: () => mutantLane('shq(RESOLVER)', "'feature-loop/scripts/resolve-plugin.mjs'") },
+  { pin: 'lenh do khong chay duoc tu --root', make: () => mutantLane('shq(RESOLVER)', "'plugins/feature-loop/scripts/resolve-plugin.mjs'") },
   { pin: 'recorded no evals_exit', make: () => mutantLane(', evals_exit: evalsExit, wall_s: wallS, so_lenh: soLenh },', ', wall_s: wallS, so_lenh: soLenh },') },
 ]);
 

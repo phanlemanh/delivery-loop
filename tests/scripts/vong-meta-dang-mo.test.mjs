@@ -3,7 +3,7 @@
 //
 // Luật (b) cho tối đa MỘT vòng meta giữa hai mốc; cửa sổ 2.13 → 2.14 có hai vòng
 // chạy song song ở hai phiên và con số chỉ lộ khi mốc đếm. Khoá `metaOpen` của
-// scripts/start-scan.mjs biến «tối đa một» thành số trên thẻ.
+// plugins/acceptance-gate/scripts/start-scan.mjs biến «tối đa một» thành số trên thẻ.
 //
 // Mọi ca chạy CHÍNH bộ quét thật trên kho git do code sinh trong lần chạy này;
 // chiều đỏ chạy bản sao TRỌN `scripts/` + `lib/` của cây đang kiểm, bỏ đúng một
@@ -18,10 +18,10 @@ import assert from 'node:assert/strict';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const SCAN = path.join(ROOT, 'scripts', 'start-scan.mjs');
+const SCAN = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'start-scan.mjs');
 // Trạng thái «đã thông cổng» của hồ sơ nhiễu RÚT từ lib — một nguồn, không gõ tay
 // (cùng khuôn tệp ca chup-ho-so-da-thong; RT13 soi mọi tệp gõ tay chuỗi trạng thái).
-const { DA_THONG_CONG_2 } = createRequire(import.meta.url)(path.join(ROOT, 'lib', 'workspace-record.cjs'));
+const { DA_THONG_CONG_2 } = createRequire(import.meta.url)(path.join(ROOT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs'));
 assert.ok(Array.isArray(DA_THONG_CONG_2) && DA_THONG_CONG_2.length > 0, 'lib không trả mảng trạng thái đã thông cổng');
 const DA_THONG = DA_THONG_CONG_2[0];
 let passed = 0, failed = 0;
@@ -97,8 +97,8 @@ check('VM4 kho kit KHÔNG phải git → «chưa biết»: moc và n là null, k
 check('VM5 CHIỀU ĐỎ: bản sao trọn scripts/+lib/ chưa phá cho đúng kết quả VM2; gỡ đúng MỘT chỗ đếm → phán VM2 đỏ gọi tên n và cờ', () => {
   const { r, moc } = khoMau({ hai: true });
   const ban = tmp('vong-meta-ban-sao-');
-  cpSync(path.join(ROOT, 'scripts'), path.join(ban, 'scripts'), { recursive: true });
-  cpSync(path.join(ROOT, 'lib'), path.join(ban, 'lib'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(ban, 'scripts'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(ban, 'lib'), { recursive: true });
   const scanBan = path.join(ban, 'scripts', 'start-scan.mjs');
   assert.deepEqual(phanHaiVong(quet(scanBan, r), moc), [], 'bản sao CHƯA phá phải xanh — không thì chiều đỏ không chứng gì');
   const src = readFileSync(scanBan, 'utf8');

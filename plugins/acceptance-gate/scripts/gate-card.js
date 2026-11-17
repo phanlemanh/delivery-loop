@@ -1,0 +1,1596 @@
+#!/usr/bin/env node
+/* gate-card.js — render a human DECISION CARD for Gate 1 or Gate 2 from the
+ * acceptance artifacts (contract.md / evals.yaml / evidence-report.md).
+ *
+ * Purpose (acceptance-gate goal: let the human decide at the few real decision
+ * moments WITHOUT cutting quality): the two human gates are where the decisions
+ * live. This puts the few
+ * things only a human can decide FIRST, in plain product language, collapses what
+ * the machine already proved, and always shows reversibility — so the fast
+ * decision is also a good one (anti-rubber-stamp). Presentation layer ONLY; it
+ * reads artifacts the gate already produced and DECIDES NOTHING. The deterministic
+ * hook + evidence remain the source of truth.
+ *
+ * Trust invariants (the card must NEVER make a bad/incomplete state look
+ * approvable): a non-PASS/PENDING-JUDGMENT verdict renders a non-approvable state
+ * with no signoff affordance; "all machine checks passed" / "evidence complete"
+ * are claimed only when actually true; every judgment item a human still owes
+ * (incl. all T3 judgment items) is surfaced.
+ *
+ * Pipeline: EXTRACT (this script, deterministic) -> translate to plain product
+ * language (an LLM step, see commands/acceptance-card.md) -> RENDER (this script).
+ *
+ * Usage:
+ *   gate-card.js --root <repo> --slug <slug> [--gate 1|2] [--extract] [--plain <plain.json>]
+ *   gate auto-detected from contract.status, else evidence-report.md presence.
+ *   --extract : print the jargon-y bits a plain-language step should translate (JSON)
+ *   --plain   : apply a plain.json overlay produced by the translate step
+ *   default   : print the card HTML fragment to stdout
+ */
+'use strict';
+const fs = require('fs');
+const path = require('path');
+const gapProbe = require('../lib/gap-probe.cjs');
+const outOfContract = require('../lib/out-of-contract.cjs');
+const evidenceCore = require('../lib/evidence-core.cjs');
+// Ranh giới section: luật PER-SECTION nằm ở bảng marker trong lib/md-section.cjs
+// (Findings=any-heading chặn hàng ma; văn xuôi=same-or-higher giữ AC sau sub-heading).
+const { section, contentLines } = require('../lib/md-section.cjs');
+// Parser evals.yaml dùng chung với eval-coverage-lint (lib/eval-yaml.cjs) — hiểu
+// block scalar: khuôn eval-gen viết `expected: >`, regex một-dòng cũ bắt được
+// ">" nên NEG_RE luôn false → covGaps bắn cảnh báo giả cho MỌI AC có số.
+const evalYamlLib = require('../lib/eval-yaml.cjs');
+const { parseEvals } = evalYamlLib;
+// Thoát SAU khi stdout đã xả (hồ sơ xa-stdout-truoc-khi-thoat). Stdout ra pipe là bất đồng bộ trên
+// POSIX: process.exit ngay sau một lần ghi lớn cắt đầu ra ở bộ đệm pipe (65 536 byte trên macOS), im
+// lặng. Không dùng process.exitCode: người đọc đóng sớm (| head) thì EPIPE thành lỗi không bắt, mã 1;
+// callback của write nhận cả lỗi đó nên mã thoát giữ nguyên. Gọi kèm `return` để mã phía dưới không chạy.
+const ghiRoiThoat = (noiDung, ma) => { process.stdout.write(noiDung, () => process.exit(ma)); };
+
+const a = process.argv.slice(2);
+const opt = n => { const i = a.indexOf(n); return i >= 0 ? a[i + 1] : null; };
+const root = opt('--root') || '.';
+const slug = opt('--slug');
+const plainPath = opt('--plain');
+const EXTRACT = a.includes('--extract');
+const glossaryBase = opt('--glossary-base'); // opt-in: the ONLY path that shells out to git
+let gate = opt('--gate');
+if (!slug) { process.stderr.write('gate-card: --slug required\n'); process.exit(2); }
+// slug must be a single safe path segment — no traversal / separators
+if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(slug)) { process.stderr.write('gate-card: invalid --slug (expect one name, got "' + slug + '")\n'); process.exit(2); }
+
+const MAX = 1024 * 1024; // cap artifact reads at 1MB (the card parses only small fields)
+const read = p => { try { if (fs.statSync(p).size > MAX) { process.stderr.write('gate-card: ' + p + ' too large, skipped\n'); return ''; } return fs.readFileSync(p, 'utf8'); } catch (_) { return ''; } };
+// Lỗi dựng khối «Khuôn» → MỘT cờ gọi tên lỗi, thẻ vẫn dựng xong (khoi-khuon-tren-the-cong AC-7).
+const loiKhuon = e => ({ dong: [], co: [`không dựng được khối Khuôn: ${e && e.message ? e.message : e}`] });
+const dir = path.join(root, '_acceptance', slug);
+const contract = read(path.join(dir, 'contract.md'));
+const evalsT = read(path.join(dir, 'evals.yaml'));
+const report = read(path.join(dir, 'evidence-report.md'));
+const probeT = read(path.join(dir, 'gap-probe.md'));
+
+// ---- chốt «không có hồ sơ thì không vẽ thẻ» -------------------------------
+// Lỗ đã đo 2026-08-30: slug không tồn tại → exit 0 + 4201 byte thẻ Cổng 1 đầy
+// đủ, tiêu đề là chính chuỗi người vừa gõ nhầm, khối việc-của-người vẫn hỏi
+// «duyệt hay sửa». Người được mời ký trên hư không — false-green ở tầng trình
+// bày. Chốt đặt TRƯỚC mọi nhánh đường ra (--extract lẫn render, Cổng 1 lẫn
+// Cổng 2) nên một chỗ che hết; vá riêng ở thân lệnh thì ba đường gọi còn lại
+// vẫn sinh thẻ ma.
+// Câu chữ ở đây là MẶT MÁY theo chính bản luật ngôn ngữ mặt người (nó liệt
+// «thông điệp lỗi của script» vào cột KHÔNG ÁP, nơi tên chính xác là bắt
+// buộc). Tiếng sản phẩm sống ở thân lệnh commands/acceptance-card.md, nơi
+// bước tiền đề thuật lại ca này cho người.
+// <<<NO-DOSSIER-GUARD  — MỘT nguồn của NĂM thông điệp; thân lệnh chép nguyên
+// văn và phép đo RÚT từ đây (không gõ literal), nên đổi chữ ở đây mà quên
+// thân lệnh là ĐỎ ngay, không trôi âm thầm.
+const MSG_NO_WORKSPACE = 'gate-card: xưởng chưa mở';
+const MSG_NO_DOSSIER   = 'gate-card: không có hồ sơ';
+const MSG_NO_CONTRACT  = 'gate-card: hồ sơ chưa có contract.md';
+const MSG_O_DA_DONG    = 'gate-card: ý đã đóng';
+const MSG_HO_SO_HONG   = 'gate-card: hồ sơ hỏng';
+// NO-DOSSIER-GUARD>>>
+// <<<LMCMS-MSG — hồ sơ loi-moi-cong-may-sinh (2.7): hai đường FAIL-QUIET của
+// thẻ nay kêu to. Chuỗi khai ở đây là MỘT nguồn; lưới thường trực rút từ đây
+// (khuôn gmpick), không gõ literal — đổi chữ mà quên test là đỏ ngay.
+const MSG_OOC_SUSPECT = 'mục «Ngoài hợp đồng» có chữ nhưng máy không đọc ra finding nào — sai khuôn OOC-ITEM-TEMPLATE, khối đang bị GIẤU khỏi thẻ; soi review-findings.md trước khi ký';
+const MSG_PROPOSAL_LA = 'đề xuất không đọc được';
+// Hai cờ khối «Nền hạ tầng» trên thẻ Cổng Phạm vi (thuoc-co-cua AC-8) — chữ thuật ở commands/acceptance-card.md.
+const NEN_DO_FLAG = 'Nền hạ tầng có chân ĐỎ — đỏ ở đây không phải lỗi của vòng này; quyết nó trong gói này trước khi duyệt.';
+// Nhãn mục «Dòng vàng» của duong-nen.md (hồ sơ nen-khong-tinh-tep-cua-vong): tệp/vi phạm của CHÍNH vòng —
+// có tên trên thẻ, không phải nền đỏ.
+const NEN_VANG_LAB = 'Tệp của chính vòng — nền không tính';
+const NEN_VANG_FLAG = 'Chưa có số liệu nền hạ tầng — hồ sơ sinh trước bản này, hoặc đường nền chưa chạy xong.';
+// Cờ dòng đếm vật · thước · nhát trên thẻ Cổng Bằng chứng (thuoc-co-cua AC-13).
+const THUOC_VAT_HONG_FLAG = 'Không đọc được dòng đếm vật/thước trong run-log — thẻ không in số.';
+// Cờ danh sách không đọc được (hồ sơ evals-sat-le-doc-du AC-8) — chữ thuật ở commands/acceptance-card.md.
+// Bên đọc là MỘT bộ đọc ở lib (danhSachKhongDoc): cờ hiện ở Cổng Phạm vi, TRƯỚC khi một lượt chấm bị đốt.
+const DANH_SACH_KHONG_DOC_FLAG = 'Tệp tiêu chí có danh sách máy không đọc được — lượt chấm sẽ thiếu đúng các trường này; viết lại thành danh sách rồi dựng thẻ lại:';
+const danhSachKhongDocCua = d => { try { return typeof evidenceCore.danhSachKhongDoc === 'function' ? evidenceCore.danhSachKhongDoc(read(path.join(d, 'evals.yaml'))) : []; } catch (_) { return []; } };
+// Cờ evals.yaml không phải YAML chuẩn (hồ sơ bo-doc-ho-so-khoan-dung AC-3): kit vẫn đọc theo dòng, cờ chỉ NÓI RA chỗ
+// công cụ khác của kho sẽ vấp. Bộ dò nạp mềm — vắng/lỗi thì thẻ vẫn dựng, mang cờ «không kiểm được».
+const YAML_KHONG_CHUAN_FLAG = 'evals.yaml không phải YAML chuẩn — công cụ khác của kho (Bun.YAML, PyYAML) sẽ không đọc được; kit vẫn đọc theo dòng, không chặn:';
+const YAML_KHONG_KIEM_FLAG = 'Không kiểm được YAML chuẩn của evals.yaml — bộ dò của kit không nạp được.';
+const YAML_CHUAN_DUONG = path.join(__dirname, 'yaml-chuan.cjs');
+const yamlChuanCo = d => {
+  const t = read(path.join(d, 'evals.yaml'));
+  if (t == null) return [];
+  let ds;
+  try { ds = require(YAML_CHUAN_DUONG).yamlKhongChuan(t); } catch (_) { return [['fwarn', esc(YAML_KHONG_KIEM_FLAG)]]; }
+  return Array.isArray(ds) && ds.length ? [['fwarn', esc(YAML_KHONG_CHUAN_FLAG + ' ' + ds.map(m => `dòng ${m.dong} (${m.mo_ta})`).join(', '))]] : [];
+};
+// Cờ câu dịch wont_do mang id không trùng tiêu chí phủ định nào và không trùng mục phạm vi
+// OOS-n nào (cham-khong-tu-dot-luot AC-6) — câu dịch lạc bị bỏ qua, người phải biết.
+const DICH_LAC = 'dòng dịch không khớp mục nào: ';
+// Nhãn dòng của mục phạm vi (AC-6): mỗi mục giữ nhãn «Hoãn/cắt: » như dòng gộp đời trước —
+// thẻ một mục không dịch ra byte y hệt trước vòng; câu tóm bản dịch là dòng dẫn nhãn riêng.
+const SCOPE_MUC = 'Hoãn/cắt: ';
+const SCOPE_TOM = 'Tóm phần hoãn/cắt: ';
+// <<<GAP-PROBE-HEADER — chữ ký bảng phản biện; bên VIẾT là câu định nghĩa bảng ở
+// feature-loop SKILL S1#7 (ca CK-AC7 so bằng nhau). Bảng tìm theo chữ ký, KHÔNG theo tên mục.
+const GP_HEADER = '| Sev | Artifact | Thiếu gì | Kịch bản fail | Thước đo | Xử lý |';
+const GP_NGOAI = 'bảng phản biện ngoài khai báo: ';
+// GAP-PROBE-HEADER>>>
+const MSG_ROI_BAC = 'Đối kháng máy KHÔNG chạy được — phần vượt-nhận-thức RƠI VỀ ANH: thẻ này không điền sẵn ô nào, và chữ ký ở đây KHÔNG có nghĩa «đối kháng đã hội tụ». Anh tự đọc vật, hoặc chạy lại bước phản biện context sạch rồi dựng thẻ lại.';
+
+// <<<ONE-SHOT-CMD — MỘT nguồn của tên lệnh thẻ in ra. Luật «lệnh in ra phải
+// bấm được» (chip D #93+#98) từ đây do MÁY giữ, không do trí nhớ phiên: vòng
+// 2.6.0 in tên lệnh THIẾU tiền tố plugin và owner bấm hụt một lượt.
+const ONE_SHOT_CMD_APPROVE = '/acceptance-gate:approve';
+const ONE_SHOT_CMD_SIGNOFF = '/acceptance-gate:signoff';
+// ONE-SHOT-CMD>>>
+// <<<GOAL-TEMPLATE — bản chép thứ BA của khuôn goal (nguồn runtime: SKILL feature-loop; bản người đọc: GUIDE).
+// Vì sao chép chứ không đọc: gate-card.js thuộc plugin acceptance-gate, khuôn sống ở plugin
+// feature-loop — đọc chéo plugin lúc chạy là đường dẫn giòn. P85 so ba bản sau strip + 6 dòng;
+// đổi một ký tự ở bất kỳ bản nào là đỏ. Thẻ Cổng 1 in dòng này để người dán ngay sau khi trả
+// lời — điểm vũ trang thứ hai (hồ sơ vu-trang-goal-luc-goi-ten). Chép NGUYÊN VĂN, không trim dòng.
+const GOAL_TEMPLATE = `/goal Feature <slug>: coi là HOÀN THÀNH chỉ khi transcript cho thấy phiên chính
+đã trình thẻ Cổng Bằng chứng của vòng <slug>, hoặc (làn V) đã mở PR ở S5, hoặc đã dừng
+ở một cổng có tên — Cổng Phạm vi, Gate 1.5, trần 3 round, dừng-vá, DỪNG-lỗi có tên.
+Lượt BLOCKED vì hạ tầng chưa thử lại cùng round = CHƯA hoàn thành: máy thử lại, không hỏi.
+Chỉ neo vào việc phiên đã trình trong transcript, không neo vào trạng thái tệp. Hoặc dừng
+sau 15 turns.`;
+// GOAL-TEMPLATE>>>
+// Một dòng, MỌI `<slug>` thay bằng slug thật (khuôn có hai chỗ).
+const goalLine = s => GOAL_TEMPLATE.trim().split('\n').join(' ').split('<slug>').join(s);
+const LBL_DOI_KHANG = 'PHÁN QUYẾT ĐỐI KHÁNG — máy thay mắt người ở phần vượt nhận thức';
+// <<<ROUTING-RULE — mục Treo (quyết định máy ghi sau Cổng 1) LUÔN là DÒNG BÁO.
+// Truy nguyên 02/09 (owner hỏi «chữ ký là hình thức?»): Treo sinh ở 1.11.0
+// (sổ quyết định Pareto — máy quyết giữa vòng, ghi sổ, người veto sau) và đợt
+// 2 «veto có dấu vết» (15/08) chốt nó là máy-đi-trước-cửa-veto-mở. Theo luật
+// lời-mời (CLAUDE.md 01/09) đó là loại-1: căn cứ = mục tiêu + quy tắc đã khai
+// → máy đi tiếp, ghi sổ, cửa veto. Hỏi «phê hết?» là trạm thu phí; thẻ vẫn
+// liệt từng Treo-<n> để người veto đích danh bằng cách sửa ô đã điền.
+// Ngoại lệ duy nhất theo thiết kế là KHÓ-ĐẢO — danh sách ĐÓNG do owner đặt
+// (KHO-DAO-V trong SKILL: ship ra người dùng thật · xoá dữ liệu · cam kết ra
+// ngoài repo), KHÔNG suy từ hình dạng entry. Sổ chưa có tín hiệu máy-đọc cho
+// khó-đảo (entry sổ d-…-3002), nên ở đây KHÔNG có nhánh tách.
+// LỊCH SỬ CHÁY (giữ để không lặp): S4-r2 định tuyến theo `e.type` (trường mở,
+// xưởng 11 giá trị) → 2 hồ sơ thật mọc ô hỏi; S4-r3 «đổi khuôn» sang hỏi
+// hình dạng entry (có lời quyết + trường căn cứ ngoài 11 khoá sổ) → 3 hồ sơ,
+// trong đó chữ ký người ở ra-co-ten-lam-va-trao bị hỏi lại. Cả hai là bộ
+// phân loại trên không gian mở mà hợp đồng không đòi. Nhánh nào thêm vào đây
+// phải đỏ ở LM18 (mọi phương ngữ sổ đều phải ra dòng báo) và lệch
+// routing-baseline.txt (quét trọn xưởng).
+// ROUTING-RULE>>>
+// <<<NO-DOSSIER-GUARD-BLOCK
+if (!contract.trim()) {
+  const acc = path.join(root, '_acceptance');
+  let real = [];
+  try {
+    real = fs.readdirSync(acc, { withFileTypes: true })
+      .filter(e => e.isDirectory() && fs.existsSync(path.join(acc, e.name, 'contract.md')))
+      .map(e => e.name).sort();
+  } catch (_) { /* xưởng không đọc được → danh sách rỗng, nhánh dưới vẫn nói đúng ca */ }
+  const opp0 = read(path.join(dir, 'opportunity.md'));
+  if (!fs.existsSync(path.join(acc, 'config.yaml'))) {
+    process.stderr.write(MSG_NO_WORKSPACE + ' — không thấy _acceptance/config.yaml dưới "' + root + '". Chạy acceptance-init cho kho này trước.\n');
+    process.exit(2);
+  }
+  if (!fs.existsSync(dir)) {
+    process.stderr.write(MSG_NO_DOSSIER + ' «' + slug + '» — _acceptance/' + slug + '/ không tồn tại.\n' +
+      (real.length ? '  Hồ sơ có thật trong xưởng: ' + real.join(', ') + '\n'
+                   : '  Xưởng chưa có hồ sơ nào.\n'));
+    process.exit(2);
+  }
+  // Hồ sơ CÓ ô cơ hội → ba ngả: hỏng · đã đóng · còn mở (còn mở thì đây là
+  // CỔNG ĐÁNG, không phải một ca từ chối). Trước bản này cả ba rơi chung vào
+  // nhánh đáy mang nhãn «chưa có contract.md»: nói sai nguyên nhân, và với ô
+  // đã đóng thì còn mời người đi viết hợp đồng cho một ý đã dừng.
+  // Từ vựng điều hướng HỎI LIB dùng chung — không chép bảng enum thứ hai:
+  // máy quét vào phiên và bộ dựng thẻ phải cho CÙNG kết luận trên cùng hồ sơ,
+  // và chính chỗ hai bên bất đồng là con trỏ chết vòng này đi dẹp.
+  if (opp0.trim()) {
+    const wr = require(path.join(__dirname, '..', 'lib', 'workspace-record.cjs'));
+    const fp = wr.fieldProblem('opportunity.md', opp0, 'stage')
+            || wr.fieldProblem('opportunity.md', opp0, 'decision');
+    if (fp) {
+      process.stderr.write(MSG_HO_SO_HONG + ' «' + slug + '» — ' + fp.reason + '.\n' +
+        '  Sửa đúng chỗ vừa nêu rồi chạy lại; máy quét vào phiên cũng đang xếp hồ sơ này vào mục hỏng.\n');
+      process.exit(2);
+    }
+    // Giá trị lấy qua CHÍNH bộ đọc của lib (đã chuẩn hoá chữ thường), không tự
+    // lau chuỗi ở đây: hai bên đọc cùng hồ sơ phải ra cùng giá trị, và helper
+    // `clean` của file này khai bằng `const` phía DƯỚI chốt nên gọi lên là vùng
+    // chết — bẫy chỉ lộ khi chạy thật, không lộ khi đọc mã.
+    const { stage: st0, decision: dec0 } = wr.navValues({ 'opportunity.md': opp0 });
+    // THỨ TỰ NHÁNH BÁM SÁT scripts/start-scan.mjs — bộ quét quyết định GỬI AI tới
+    // thẻ, bộ dựng quyết định VẼ ĐƯỢC CHO AI; hai bên lệch một nhánh là sinh đúng
+    // con trỏ chết vòng này đi dẹp. Vấp thật ở S4-r1: bản trước khoá làn theo
+    // MỖI `decision` rỗng, trong khi bộ quét khoá theo `stage !== 'decided' ||
+    // !decision`. Hồ sơ `stage: discovery` + `decision: park` (ghi frontmatter
+    // dở dang) khi đó được bộ quét gọi «chờ chữ ký» còn thẻ nói «ý đã đóng».
+    if (st0 === 'archived') {
+      process.stderr.write(MSG_O_DA_DONG + ' «' + slug + '» — ý này đã đóng hồ sơ, không có gì để ký. Mở lại là một quyết định riêng, không phải bước kế.\n');
+      process.exit(2);
+    }
+    // Ô CÒN MỞ (chờ Cổng Đáng) rơi xuống lời thuật thiếu-hợp-đồng như cũ — làn
+    // thẻ Cổng Đáng đã THU VỀ Ô ở điều khoản dừng-vá 01/09 (xem
+    // discovery/LAY-VE-LAN-THE.md của hồ sơ cong-dang-co-cua). Đây là GIỚI HẠN
+    // ĐÃ KHAI, không phải chỗ quên: người mở một ô đang chờ Cổng Đáng vẫn nhận
+    // câu chỉ sai bước kế. Mở lại là quyết định riêng của owner.
+    if (st0 === 'decided' && (dec0 === 'park' || dec0 === 'kill')) {
+      process.stderr.write(MSG_O_DA_DONG + ' «' + slug + '» — ý này đã ' + (dec0 === 'park' ? 'xếp lại' : 'dừng') +
+        ', không có gì để ký. Mở lại là một quyết định riêng, không phải bước kế.\n');
+      process.exit(2);
+    }
+  }
+  {
+    process.stderr.write(MSG_NO_CONTRACT + ' «' + slug + '» — _acceptance/' + slug + '/ có mặt nhưng chưa đọc được contract.md, chưa có gì để trình.\n' +
+      (real.length ? '  Hồ sơ đủ bản hợp đồng trong xưởng: ' + real.join(', ') + '\n' : ''));
+    process.exit(2);
+  }
+}
+// NO-DOSSIER-GUARD-BLOCK>>>
+
+// ---- glossary delta (Đợt 2) ----------------------------------------------
+// The Gate-1 human approves SCOPE and, alongside it, the LANGUAGE the scope is
+// written in: which domain terms this feature adds or sharpens in the repo's
+// CONTEXT.md. Parsing is delegated to lib/context-glossary.js — the kit has
+// four hand-rolled contract parsers already and 1.20.1 had to patch the same
+// bug in all of them; this is not the place to grow a fifth.
+// Purity note: gate-card is otherwise a pure file reader. git is touched ONLY
+// when --glossary-base is passed, so every existing call site is unchanged.
+let glossaryLib = null;
+try { glossaryLib = require(path.join(__dirname, '..', 'lib', 'context-glossary.js')); } catch (_) {}
+const glossaryText = read(path.join(root, 'CONTEXT.md'));
+const glossaryPresent = !!glossaryText.trim();
+let glossaryDelta = null;      // [{term, added}] | null = not computed
+let glossaryDeltaErr = null;   // 'no-base' | 'git-failed'
+if (glossaryPresent && glossaryLib) {
+  if (!glossaryBase) glossaryDeltaErr = 'no-base';
+  else {
+    try {
+      const out = require('child_process').execFileSync(
+        'git', ['-C', root, 'diff', '-U0', glossaryBase, '--', 'CONTEXT.md'],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+      glossaryDelta = glossaryLib.termsAtLines(glossaryText, glossaryLib.addedLinesFromDiff(out));
+    } catch (_) { glossaryDeltaErr = 'git-failed'; }
+  }
+}
+
+let plain = null;
+if (plainPath && fs.existsSync(plainPath)) {
+  try { plain = JSON.parse(read(plainPath)); }
+  catch (e) { process.stderr.write('gate-card: ignoring malformed --plain (' + e.message + ') — rendering without overlay\n'); plain = null; }
+}
+
+// ---- parsers ----
+function frontmatter(t) { const m = t.match(/^---\r?\n([\s\S]*?)\r?\n---/); const o = {}; if (m) for (const l of m[1].split('\n')) { const mm = l.match(/^(\w+)\s*:\s*(.*)$/); if (mm) o[mm[1]] = mm[2].trim(); } return o; }
+// Cắt chú thích qua MỘT nguồn (lib/eval-yaml.cjs) cho MỌI trường frontmatter, không riêng
+// surfaces: luật cũ `\s*#` cắt cả `x#y` (dữ liệu), nên `risk_tier`, `status`, `veto_state`…
+// từng đọc khác lib. Phần bóc quote giữ nguyên vì đó là việc riêng của thẻ.
+const clean = s => evalYamlLib.stripComment(String(s == null ? '' : s).replace(/["']/g, ''));
+const unquote = s => String(s == null ? '' : s).replace(/^["']|["']$/g, '').trim();
+const cleanLines = arr => arr.filter(l => l.trim() && !/^\s*#/.test(l)); // drop blanks + markdown-comment lines
+
+// ── Chốt máy khi ghim lại (hồ sơ ghim-lai-noi-ra-o-khong-do, 20/09/2026) ─────
+// Vị từ mức EVAL hỏi `evidence-core.isRepinMachineEval` — MỘT nguồn với làn ghim
+// lại và bên đọc pin. Mức AC là phép gộp theo `criterion`: AC không có chốt máy
+// ⟺ MỌI (∀) eval phủ nó đều không phải eval máy đáng ghim. KHÔNG phải ∃: một AC
+// có cả ui-check lẫn test VẪN có chốt, và ghép thêm test đúng là lối lint W8
+// khuyên. Làn dựng lại phép gộp này và ca GN09 so hai bản (round-trip), nên hai
+// bản không trôi khỏi nhau.
+//
+// `touched` đọc dòng repin CHỐNG LƯNG pin hiện tại — dòng có `sha` ==
+// `verified_commit` của báo cáo, KHÔNG phải dòng đầu tiên mang khoá: một hồ sơ đã
+// chứng lại qua S4 delta rồi ghim sạch phải TẮT cờ, không mang cờ vàng vĩnh viễn.
+// Hàm này đặt trước cả hai nhánh cổng vì nhánh Cổng Phạm vi thoát bằng exit(0).
+function chotMay(dir) {
+  const rong = { ac_khong: [], ac_khong_mo: [], touched: [] };
+  const evalsText = read(path.join(dir, 'evals.yaml'));
+  if (!evalsText.trim()) return rong;
+  let recs = [];
+  try { recs = evalYamlLib.parseEvals(evalsText, ['executor', 'status', 'criterion']); } catch (_) { return rong; }
+  const theoAc = new Map();   // Map giữ thứ tự chèn = thứ tự xuất hiện trong evals.yaml
+  for (const e of recs) {
+    const ac = String(e.criterion || '').trim();
+    if (!ac) continue;
+    if (!theoAc.has(ac)) theoAc.set(ac, []);
+    theoAc.get(ac).push(e);
+  }
+  const kieuCua = (e) => {
+    const st = evalYamlLib.stripComment(String(e.status || '')).replace(/^["']|["']$/g, '').trim().toLowerCase();
+    return `${e.executor}${st === 'not-run' ? ' not-run' : ''}`;
+  };
+  const khong = [...theoAc.entries()]
+    .filter(([, evs]) => evs.every(e => !evidenceCore.isRepinMachineEval(e)))
+    .map(([ac, evs]) => ({ ac, mo: `${ac} (${evs.map(e => `${e.id} ${kieuCua(e)}`).join(', ')})` }));
+  const ngoaiMay = new Set(recs
+    .filter(e => !evidenceCore.REPIN_MACHINE_EXECUTORS.includes(String(e.executor || '').trim().toLowerCase()))
+    .map(e => e.id));
+  const vc = (read(path.join(dir, 'evidence-report.md')).match(/^verified_commit\s*:\s*(\S+)/m) || [])[1];
+  let touched = [];
+  if (vc) {
+    const dongRepin = read(path.join(dir, 'run-log.jsonl')).split('\n')
+      .filter(l => /"kind"\s*:\s*"repin"/.test(l))
+      .map(l => { try { return JSON.parse(l); } catch (_) { return null; } })
+      .filter(Boolean);
+    const chongLung = dongRepin.filter(o => o.sha === vc).pop();
+    if (chongLung && Array.isArray(chongLung.evals_not_machine_touched)) touched = chongLung.evals_not_machine_touched.filter(id => ngoaiMay.has(id));
+  }
+  // Nhãn «đỏ sẵn trên nền» (hồ sơ ho-so-da-ky-giu-tuoi): hỏi lib/do-san-tren-nen.cjs#nhanHoSo — cùng hàm bản
+  // đồ hỏi; nó gọi CHÍNH checkRepinEvals của lưới trước-gộp và kiểm lại. Chỉ nhãn đạt mới hiện; tệp luật vắng
+  // (bộ máy chép đời trước) → thẻ như cũ.
+  let doSan = null;
+  try { const ds = require('../lib/do-san-tren-nen.cjs'); if (typeof ds.nhanHoSo === 'function') doSan = ds.nhanHoSo(dir); }
+  catch (e) { if (e.code !== 'MODULE_NOT_FOUND') throw e; }
+  return { ac_khong: khong.map(x => x.ac), ac_khong_mo: khong.map(x => x.mo), touched, ...(doSan ? { do_san: doSan } : {}) };
+}
+// Bullet list VỚI dòng-nối: contract hard-wrap 80 cột nên phần nối của một bullet
+// không mở "- " — lọc theo từng dòng từng vứt nửa sau câu ("AC-6 (sha vào" cụt
+// giữa thẻ, findings 2026-08-05). Dòng trắng đóng bullet; prose trước bullet đầu bị bỏ.
+const bullets = arr => {
+  const out = []; let open = false;
+  for (const raw of arr) {
+    const l = String(raw == null ? '' : raw);
+    if (/^\s*-\s+\S/.test(l)) { out.push(l.trim().replace(/^-\s+/, '')); open = true; }
+    else if (!l.trim()) open = false;
+    else if (open && !/^\s*#{1,6}\s/.test(l)) out[out.length - 1] += ' ' + l.trim();
+  }
+  return out;
+};
+// Lột dấu markdown khi buộc in text thô (fallback của tầng card-plain):
+// `code`, **đậm**, *nghiêng*, [nhãn](link) → chữ trần. KHÔNG đụng gạch dưới —
+// run_id, suites_exit là tên máy hợp lệ, lột "_" sẽ phá chúng.
+//
+// HAI CHÂN giữ đường dẫn nguyên vẹn (card-text-fidelity):
+//
+// (1) CHE nội dung trong dấu nháy ngược TRƯỚC, lột sau, trả lại cuối. Đây là
+//     khôi phục ngữ nghĩa markdown chuẩn — nội dung đoạn mã KHÔNG tham gia
+//     nhấn mạnh. Bản cũ lột nháy trước rồi mới lột đậm, tức tự tay phá lớp bảo
+//     vệ đó: `**Miễn trừ `+"`"+`.github/**`+"`"+` khỏi …**` bị ghép dấu đóng
+//     của cụm đậm với hai sao của glob.
+//
+// (2) Dùng lookbehind (không tiêu thụ ký tự dẫn — nhóm dẫn kiểu (^|[^*/])
+//     ăn mất khoảng trắng phân tách nên cụm đậm liền sau bị trượt).
+//     Dấu nhấn mạnh không được MỞ ngay trước dấu gạch chéo và không được ĐÓNG
+//     ngay sau dấu gạch chéo — `*/_acceptance/*` là đường dẫn, không phải chữ
+//     nghiêng. Ba vòng trước chỉ đặt chốt ở dấu mở nên hình dạng đóng-sau-gạch
+//     -chéo vẫn lọt.
+//
+// Kỳ vọng cho TỪNG hình dạng nằm ở bộ kiểm P161 (https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/plugins/run-tests.sh),
+// và bảng hình dạng ở đó RÚT TỪ hồ sơ thật chứ không do người viết tự nghĩ.
+const MASK = '\u0000';
+const stripMd = s => {
+  const code = [];
+  let t = String(s == null ? '' : s)
+    .replace(/`([^`]+)`/g, (_, c) => { code.push(c); return MASK + (code.length - 1) + MASK; })
+    .replace(/\[([^\]]*)\]\([^)\s]*\)/g, '$1')
+    .replace(/(?<![*/])\*\*\*(?=[^\s/])([^*]+?)(?<=[^\s/])\*\*\*(?!\*)/g, '$1')
+    .replace(/(?<![*/])\*\*(?=[^\s/])([^*]+?)(?<=[^\s/])\*\*(?!\*)/g, '$1')
+    .replace(/(?<![*/])\*(?=[^\s/])([^*]+?)(?<=[^\s/])\*(?!\*)/g, '$1');
+  return t.replace(new RegExp(MASK + '(\\d+)' + MASK, 'g'), (_, i) => (code[+i] !== undefined ? code[+i] : ''));
+};
+const { parseAC, parseACBlock, acBlindSpot, blindSpotText } = require('../lib/ac-line.cjs');
+const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+const NEG_RE = /\bKHÔNG\b|\bkhông\b|\bkhong\b|\bNOT\b|reject|denied|\bdeny\b|từ chối|tu choi|\b0\s*(row|touch)\b|rỗng|\bn-a\b|\bbiên\b|\bbien\b|dưới ngưỡng|duoi nguong|just[- ]?below|should[- ]?not|không tăng|không ghi|không fire|không kích hoạt|suppress|absent|vắng/i;
+const THRESHOLD_RE = /[≥≤]|[<>]=?|ngưỡng|nguong|threshold|\bbiên\b|\bbien\b|\b\d+\b|reach|at least|at most|exceed|tối thiểu|toi thieu|tối đa|toi da|\bdưới\b|\btrên\b/i;
+// classify will/wont on the Then-clause only — reduces false "Sẽ KHÔNG" from an incidental "không" in Given/When.
+const thenOf = g => { const m = String(g).split(/\bThen\b|\bthì\b/i); return m.length > 1 ? m[m.length - 1] : String(g); };
+// Phân cột SẼ/KHÔNG-làm theo MỆNH ĐỀ ĐẦU của vế Then (hồ sơ loi-moi-cong-may-sinh
+// D6; owner chọn tại Gate 1.5 ngày 02/09 trên số đo 566 AC thật của xưởng:
+// NEG_RE cũ 251 · mệnh-đề-đầu 109 · head-only 17).
+//   · NEG_RE cũ dò cả câu → một chữ «không» tiện thể («không so hằng», «không
+//     đổi kể từ mốc trước») biến cả tiêu chí thành việc máy KHÔNG làm; cả 3 AC
+//     của release-2-5-0 lẫn 2-6-0 đều bị xếp nhầm như thế.
+//   · Head-only (chỉ dò ĐẦU vế) thì ngược lại: Then tiếng Việt hay mở bằng chủ
+//     ngữ («script thoát khác 0 và KHÔNG sinh tệp») nên ~100 ca chặn THẬT biến
+//     khỏi cột — đảo quá tay.
+// Luật giữ: phủ định phải nằm TRƯỚC dấu phẩy/chấm phẩy đầu tiên. Đây là luật VỊ
+// TRÍ, không phải danh sách đen mẫu-gây-nhầm (blacklist trên không gian mở).
+// NEG_RE cũ Ở LẠI, chỉ dùng cho covGaps (ca «dưới ngưỡng → KHÔNG xảy ra») —
+// hai việc khác nhau, đừng gộp regex cho gọn rồi tái phát lỗi cột.
+const HEAD_NEG_RE = /^[^,;.]{0,60}?\b(KHÔNG|không được|không|chặn|từ chối|refuse|reject|VIOLATION|thoát khác 0)\b/i;
+
+const cfm = frontmatter(contract);
+const feature = cfm.feature || cfm.slug || slug;
+const tier = clean(cfm.risk_tier);
+const status = clean(cfm.status);
+const oos = bullets(section(contract, 'Out of scope'));
+// <<<CARD-PLAIN-SCOPE — khuôn phía viết của mục phạm vi (cham-khong-tu-dot-luot AC-6):
+// mỗi mục «Out of scope» mang id OOS-<thứ tự 1-based>; bản dịch ghi câu vào khoá wont_do
+// với CHÍNH id đó. Bộ đọc: mục có câu dịch dùng câu dịch, không có dùng chữ hợp đồng.
+const oosItems = oos.map((t, i) => ({ id: `OOS-${i + 1}`, text: t }));
+// CARD-PLAIN-SCOPE>>>
+
+// ---- decisions.jsonl (ledger — rationale only, tolerant per-line parse) ----
+// Returns entries in FILE ORDER; sealIdx = index of the first gate-1 seal entry
+// (everything after it is provisional until a human ratifies at Gate 2).
+function readLedger(d) {
+  const t = read(path.join(d, 'decisions.jsonl'));
+  const entries = []; let broken = 0; let sealIdx = null;
+  if (!t.trim()) return { entries, broken, sealIdx };
+  for (const line of t.split('\n')) {
+    if (!line.trim()) continue;
+    try {
+      const e = JSON.parse(line);
+      if (e && typeof e === 'object' && !Array.isArray(e)) {
+        if (sealIdx === null && e.type === 'seal' && String(e.gate) === '1') sealIdx = entries.length;
+        entries.push(e);
+      } else broken++;
+    } catch (_) { broken++; }
+  }
+  return { entries, broken, sealIdx };
+}
+const ledger = readLedger(dir);
+const decsAll = ledger.entries.filter(e => e.type !== 'seal');
+// display order: descope first (Pareto — "không làm" là quyết định đắt nhất khi bị lật)
+const decSort = arr => [...arr.filter(e => e.type === 'descope'), ...arr.filter(e => e.type !== 'descope')];
+// no seal yet => NOTHING is approved; everything surfaces as provisional at Gate 2 (fail-visible, not fail-quiet)
+const decsApproved = ledger.sealIdx === null ? [] : ledger.entries.slice(0, ledger.sealIdx).filter(e => e.type !== 'seal');
+const decsProvisional = ledger.sealIdx === null ? decsAll : ledger.entries.slice(ledger.sealIdx + 1).filter(e => e.type !== 'seal');
+const decLine = e => esc(stripMd(e.decision || '')) + (e.impact ? ' — ' + esc(stripMd(e.impact)) : (e.cost_if_wrong ? ' — sai thì tốn: ' + esc(stripMd(e.cost_if_wrong)) : ''));
+
+// auto-detect gate: prefer contract.status (the SKILL's source of truth), else report presence
+// Mọi trạng thái mà bộ tự nhận cổng dưới đây biết tên — trạng thái ngoài danh sách rơi về phép hỏi
+// báo cáo (và là ca DUY NHẤT thẻ Cổng 1 phải hỏi bộ quét «đã khép chưa», ha-tang-khong-dot-luot AC-7).
+const TRANG_THAI_CONG_BIET = /^(implemented|verified|signed-off|machine-cleared|draft|approved)$/i;
+if (!gate) {
+  if (/^(implemented|verified|signed-off|machine-cleared)$/i.test(status)) gate = '2';
+  else if (/^(draft|approved)$/i.test(status)) gate = '1';
+  else gate = report.trim() ? '2' : '1';
+}
+
+// <<<QUET-HO-SO — MỘT lượt gọi bộ quét cho cả hai nhánh cổng, nhớ kết quả (ha-tang-khong-dot-luot
+// AC-7). Trước vòng, chỉ nhánh Cổng 2 hỏi bộ quét, nên hồ sơ đã khép mà không có evidence-report.md
+// rơi vào Cổng 1 và vẫn bị hỏi «duyệt hay sửa» (crm 2/7 thẻ hồ sơ khép, 22/09).
+let _quet = null;
+function quetHoSo() {
+  if (_quet) return _quet;
+  const q = { state: null, err: null, broken: null, hit: null, han: null };
+  try {
+    // Hạn theo cỡ kho, không trần cứng 20 giây: crm 380 hồ sơ quét 19–22 giây nên hết hạn 7/7 lượt, và lý do
+    // rơi về «exit null» vì hết hạn cho status null (hồ sơ quet-het-han-khong-moi-ky, issue #463).
+    const HQ = require('./han-quet.cjs');
+    const han = q.han = HQ.hanQuet(root);
+    const r = require('child_process').spawnSync(process.execPath,
+      [path.join(__dirname, 'start-scan.mjs'), '--root', root],
+      { encoding: 'utf8', timeout: han, maxBuffer: 64 * 1024 * 1024 });
+    if (r.status !== 0) q.err = HQ.lyDoQuet(r, han);
+    else {
+      const j = JSON.parse(r.stdout);
+      // `config: false` = máy quét CHẠY ĐƯỢC nhưng repo chưa dựng cổng, nên không
+      // có `groups`. Đó KHÔNG phải lỗi: không có gì để nói thì thẻ đi lối cũ và
+      // KHÔNG bật cờ. Cờ chỉ dành cho máy quét THẤT BẠI. (P150 bắt: bản đầu đọc
+      // thẳng j.groups.gates nên ném lỗi và bật cờ oan ở mọi repo không workspace.)
+      const gr = j.groups || {};
+      const hit = [...(gr.gates || []), ...(gr.inProgress || []), ...(gr.done || [])]
+        .find(x => x.slug === slug);
+      // `broken` phát ở TẦNG NGOÀI `groups` (start-scan out({..., broken})) — không tra nó
+      // thì hồ sơ bộ quét gọi HỎNG rơi vào scanState null và mệnh đề «bộ quét mù» bên dưới
+      // biến đúng hồ sơ mâu thuẫn thành «máy đã đi tiếp hợp lệ» (S4-r6 [4], dựng lại được
+      // với machine-cleared + human_signoff).
+      q.broken = (j.broken || []).find(x => x.slug === slug) || null;
+      q.state = hit ? hit.stateKey : (q.broken ? (q.broken.stateKey || 'ho-so-hong') : null);
+      q.hit = hit || null;
+    }
+  } catch (e) { q.err = String(e.message).slice(0, 200); }
+  return (_quet = q);
+}
+// Vị từ «đã khép» của THẺ — đọc khoá đầu ra của bộ quét (nghỉ · thực tế đủ vế), KHÔNG tự đọc sổ.
+const daKhepTu = hit => !!(hit && (hit.nghi || hit.thucTe));
+// QUET-HO-SO>>>
+
+const STYLE = `<style>
+.gc{font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:640px;margin:0 auto;color:#1f1f1d;line-height:1.5}
+.gc .card{background:#fff;border:1px solid #e6e4de;border-radius:14px;padding:16px 18px}
+.gc .h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+.gc .ft{font-size:16px;font-weight:600}.gc .sub{font-size:12px;color:#6c6a64;margin-top:2px}
+.gc .chip{font-size:12px;font-weight:600;padding:4px 11px;border-radius:999px;white-space:nowrap}
+.gc .amber{background:#FAEEDA;color:#633806}.gc .teal{background:#E1F5EE;color:#085041}.gc .coral{background:#FAECE7;color:#712B13}.gc .gray{background:#f1efe8;color:#444441}
+.gc .lab{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#8a887f;margin:16px 0 8px;font-weight:600}
+.gc .grp{border-radius:10px;padding:11px 14px;margin-bottom:8px}.gc .gdo{background:#E1F5EE}.gc .gnot{background:#f4f2ec}
+.gc .li{font-size:14px;margin:0 0 6px;padding-left:17px;position:relative}.gc .li:last-child{margin-bottom:0}
+.gc .li:before{content:"";position:absolute;left:1px;top:7px;width:7px;height:7px;border-radius:50%}
+.gc .gdo .li{color:#085041}.gc .gdo .li:before{background:#1D9E75}.gc .gnot .li{color:#56544d}.gc .gnot .li:before{background:#b4b2a9}
+.gc .item{background:#FAEEDA;border:1px solid #EF9F27;border-radius:10px;padding:11px 13px;margin-bottom:8px}
+.gc table.ngoai{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 8px;table-layout:fixed}
+.gc .ngoai th{text-align:left;font-size:11px;color:#8a887f;font-weight:600;padding:6px 8px;border-bottom:1px solid #e6e4de}
+.gc .ngoai td{padding:8px;vertical-align:top;border-bottom:1px solid #efede7;color:#412402;overflow-wrap:anywhere}
+.gc .ngoai th:first-child,.gc .ngoai td:first-child{width:84px;white-space:nowrap}
+.gc .ngoai tr.nhom td{background:#FAEEDA;font-weight:600;color:#633806}
+.gc .ngoai .mo{color:#9a988f}
+@media (max-width:560px){.gc table.ngoai,.gc .ngoai tbody,.gc .ngoai tr,.gc .ngoai td{display:block;width:auto}.gc .ngoai thead{display:none}.gc .ngoai tr{border:1px solid #e6e4de;border-radius:9px;margin-bottom:8px}.gc .ngoai td:before{content:attr(data-cot);display:block;font-size:11px;color:#8a887f;font-weight:600}.gc .ngoai td:first-child{white-space:normal}}
+.gc .q{font-size:14px;font-weight:600;color:#412402;margin:0 0 3px}.gc .ai{font-size:12px;color:#854F0B;margin:0 0 9px}
+.gc .flag{display:flex;gap:8px;font-size:13px;padding:8px 11px;border-radius:9px;margin-bottom:6px}
+.gc .fwarn{background:#FAEEDA;color:#633806}.gc .finfo{background:#f4f2ec;color:#56544d}.gc .fok{background:#E1F5EE;color:#085041}.gc .fred{background:#FAECE7;color:#712B13}
+.gc .mach{background:#f4f2ec;border-radius:9px;padding:11px 13px;font-size:13px;color:#56544d}.gc .mach b{color:#1f1f1d}
+.gc .foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px;padding-top:12px;border-top:1px solid #e6e4de}
+.gc .rev{font-size:12px;color:#9a988f}
+.gc .btns{display:flex;gap:8px}
+.gc .b{font-size:13px;padding:6px 14px;border-radius:8px;border:1px solid;background:transparent;cursor:pointer}
+.gc .bn{border-color:#cfcdc4;color:#3f3e39}.gc .yes{background:#E1F5EE;border-color:#5DCAA5;color:#085041;font-weight:600}.gc .no{border-color:#F0997B;color:#993C1D}
+</style>`;
+const pl = plain || {};
+// <<<DEC-PLAIN-KEY — khoá overlay decisions_plain cho MỘT dòng sổ (một nguồn cho --extract lẫn render).
+// Sổ ghi trước khuôn d-<UTC>-<n> có thể nhiều dòng chung một mã (release-2-11-0: 8 dòng/1 mã); tra
+// bằng mã trần thì một câu dịch hiện trên MỌI dòng cùng mã. Mã duy nhất → khoá = mã (overlay cũ đọc
+// y nguyên); mã trùng → `<id>#<k>` theo thứ tự dòng SỔ (không theo thứ tự hiển thị), overlay mã trần
+// của mã trùng bị bỏ qua — đường đọc-cũ in chữ gốc của sổ. Lưới: https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/scripts/gate-card-dec-key.test.mjs.
+const decKeys = (() => {
+  const total = new Map(); const seen = new Map(); const keys = new Map();
+  for (const e of decsAll) total.set(e.id, (total.get(e.id) || 0) + 1);
+  for (const e of decsAll) {
+    const k = (seen.get(e.id) || 0) + 1; seen.set(e.id, k);
+    keys.set(e, total.get(e.id) > 1 ? `${e.id}#${k}` : String(e.id));
+  }
+  return { total, keys };
+})();
+const decKey = e => decKeys.keys.get(e);
+const decPlainList = Array.isArray(pl.decisions_plain) ? pl.decisions_plain : [];
+const plDec = e => ((decPlainList.find(x => x && x.id === decKey(e))) || {}).p;
+// <<<DEC-BA-VE — một dòng sổ ra một dòng thẻ, dùng cho CẢ BA khối (ADR 0021, hồ sơ mot-so-ba-ve).
+// Dòng có `why` → «decision — why — sai thì tốn: cost_if_wrong», không tra decisions_plain; thiếu giá →
+// nhãn ngay dòng đó, không chặn thẻ. Dòng không có `why` → câu dịch nếu có, không thì chữ gốc (đọc-cũ).
+const coBaVe = e => !!e && typeof e.why === 'string' && e.why.trim() !== '';
+const decBaVe = e => {
+  if (coBaVe(e)) {
+    const d = esc(stripMd(e.decision || '')) + ' — ' + esc(stripMd(e.why));
+    const c = typeof e.cost_if_wrong === 'string' && e.cost_if_wrong.trim();
+    return c ? d + ' — sai thì tốn: ' + esc(stripMd(e.cost_if_wrong)) : d + ' <b>⚠ chưa khai giá nếu sai</b>';
+  }
+  return esc(plDec(e)) || decLine(e);
+};
+// DEC-BA-VE>>>
+// Hai vế của dòng sổ cho bản rút (khoá can_cu): chuỗi thì giữ nguyên văn, vắng thì null.
+const baVeRut = e => ({ why: typeof e.why === 'string' ? e.why : null, cost_if_wrong: typeof e.cost_if_wrong === 'string' ? e.cost_if_wrong : null });
+for (const x of decPlainList) {
+  const n = x ? decKeys.total.get(x.id) : 0;
+  if (n > 1) process.stderr.write(`gate-card: decisions_plain id "${x.id}" trùng ${n} dòng trong sổ — bỏ qua; dịch từng dòng bằng khoá ${x.id}#1…#${n} lấy từ --extract\n`);
+}
+// DEC-PLAIN-KEY>>>
+
+// ================= GATE 1 =================
+if (gate === '1') {
+  const acs = []; const seen = {}; const dupIds = [];
+  // parseACBlock (hồ sơ cong-nguoi-doc-du-nguon): đọc cả dạng TIÊU ĐỀ và cả ba
+  // cách đặt tên mục. Vòng lặp cũ chỉ thấy gạch đầu dòng trong mục tên đúng
+  // `Criteria`, nên 220 hợp đồng trên 11 kho hiện thiếu tiêu chí — 38 trong đó
+  // hiện SỐ KHÔNG. Bộ bóc trả ĐỦ, không gộp id trùng, nên phép dò trùng dưới đây
+  // giữ nguyên ý nghĩa.
+  for (const ac of parseACBlock(contract)) { if (seen[ac.id]) dupIds.push(ac.id); seen[ac.id] = 1; acs.push(ac); }
+  const blindSpot = acBlindSpot(contract, acs.map(x => x.id));
+  // Cỡ hợp đồng (hồ sơ vong-mo-thang-bang-feature-loop): khoảng đọc từ khối CAT-LUOT-CO qua MỘT bộ đọc dùng
+  // chung với đồng hồ cỡ (scripts/co-hop-dong.cjs); chỉ hợp đồng draft bị chặn hay cờ — hợp đồng đã qua Cổng
+  // Phạm vi đi đường đọc-cũ. Khối hỏng / không đọc được tiêu chí → cờ vàng, KHÔNG chặn (fail-visible).
+  // Nạp KHOAN DUNG: thẻ chạy được ở nơi chỉ có lib/ cạnh nó (bản cô lập của P161) — thiếu bộ đọc cỡ thì
+  // cờ vàng nói ra, không sập thẻ, không chặn.
+  let CHD = null, chdLoi = null;
+  try { CHD = require('./co-hop-dong.cjs'); } catch (e) { chdLoi = String(e && e.message || e).split('\n')[0]; }
+  const coHD = CHD ? (() => { const r = CHD.coHopDong({ contract, decisions: read(path.join(dir, 'decisions.jsonl')), status }); delete r.draft; return r; })()
+    : { n: null, nhom: null, khoang: null, giu: null, chan: false, vang: String(status || '').toLowerCase() === 'draft', loi: `không nạp được bộ đọc cỡ scripts/co-hop-dong.cjs: ${chdLoi}` };
+  const coKhoang = k => `khối CAT-LUOT-CO: mục tiêu ${k.muc_tieu[0]}–${k.muc_tieu[1]} · cho phép tới ${k.cho_phep_den} · từ ${k.tach_tu} phải tách`;
+  const coDo = coHD.chan ? `CHƯA vào được Cổng Phạm vi: hợp đồng có ${coHD.n} tiêu chí — từ ${coHD.khoang.tach_tu} phải tách (${coKhoang(coHD.khoang)}). Hai lối ra: tách thành nhiều vòng, mỗi vòng một kết quả; hoặc ghi vào decisions.jsonl một dòng có decision mở đầu «${CHD.GIU_CO_MO_DAU}<lý do>» nói vì sao kết quả không tách được mà giữ nghĩa.` : null;
+  const coVang = !coHD.vang ? null
+    : coHD.loi ? `Chưa kiểm cỡ hợp đồng — ${!CHD ? 'không nạp được bộ đọc cỡ' : /khối CAT-LUOT-CO|SKILL cắt lượt/.test(coHD.loi) ? 'không đọc được khoảng cỡ' : 'không đọc được tiêu chí'}: ${coHD.loi}.`
+    : coHD.giu ? `Hợp đồng có ${coHD.n} tiêu chí — giữ theo dòng sổ ${coHD.giu.id || '(không mã)'}: «${coHD.giu.ly_do}» (${coKhoang(coHD.khoang)}).`
+    : `Hợp đồng có ${coHD.n} tiêu chí — trên mục tiêu ${coHD.khoang.muc_tieu[0]}–${coHD.khoang.muc_tieu[1]} (cho phép tới ${coHD.khoang.cho_phep_den}, khối CAT-LUOT-CO): chỉ giữ khi kết quả không tách được mà giữ nghĩa — ghi vì sao bằng dòng «${CHD.GIU_CO_MO_DAU}<lý do>».`;
+  const evalList = parseEvals(evalsT, ['criterion', 'expected'], unquote);
+  const evalsFor = id => evalList.filter(e => e.criterion === id);
+  const willDo = acs.filter(x => !x.judgment && !HEAD_NEG_RE.test(thenOf(x.gwt)));
+  const wontDo = acs.filter(x => !x.judgment && HEAD_NEG_RE.test(thenOf(x.gwt)));
+  const judgmentACs = acs.filter(x => x.judgment);
+  // ── Căn cứ bước thiết kế: câu chỉ-người-biết tách khỏi lựa chọn máy đã quyết; dòng đỏ chặn điền sẵn.
+  // Mỗi dòng của hai khối in ba vế bằng decBaVe (ADR 0021) rồi mới tới căn cứ / khuyến nghị (hồ sơ can-cu-s1-chay-moi-kho).
+  // Nạp trong nhánh Cổng 1 (chỉ cổng này dùng). Vắng tệp (bản sao thẻ đứng một mình, cài thiếu) → thẻ vẫn dựng,
+  // mọi dòng sổ về khối chung, và MỘT cờ vàng nêu tên tệp — lộ ra, không im (ADR 0022).
+  let canCu = null; try { canCu = require('./can-cu-s1.cjs'); } catch (_) { canCu = null; }
+  const ccDraft = /^draft$/i.test(status);
+  // Luật sản phẩm của kho (bat-bien-san-pham): chữ + cờ rút ở luat-san-pham.cjs; kho không có tệp → không đổi gì.
+  let luatG1 = null; try { luatG1 = require('./luat-san-pham.cjs').theCong1({ root, entries: ledger.entries, draft: ccDraft }); } catch (_) { luatG1 = null; }
+  // Dòng «đã tra tri thức» (hồ sơ thiet-ke-nap-tri-thuc): kho không khai tri_thuc → null, thẻ không đổi một byte. Vắng
+  // mô-đun ở kho đã khai → một cờ vàng nói ra, không chặn (fail-visible).
+  let ttG1 = null, ttLoi = null;
+  try { ttG1 = require('./tri-thuc-tra.cjs').theCong1({ root, entries: ledger.entries, draft: ccDraft, oTxt: read(path.join(dir, 'opportunity.md')) }); } catch (e) { ttLoi = String(e && e.message || e).split('\n')[0]; }
+  const cc = canCu ? canCu.phanLoaiSo(ledger.entries, { root, slug, base: glossaryBase || null }) : { cau_hoi: [], da_quyet: [], do: [], doi_truoc: 0, bi_thay: 0, goc: 'chua-kiem', dong: [] };
+  const ccCauHoi = cc.cau_hoi;
+  const ccMayQuyet = cc.da_quyet;
+  const ccRieng = new Set([...ccCauHoi, ...ccMayQuyet].map(d => d.e).concat(cc.dong.filter(d => d.lop === 'bi-thay').map(d => d.e)));
+  const decsChung = decsAll.filter(e => !ccRieng.has(e));
+  const cat200 = x => { const t = String(x || '').replace(/\s+/g, ' ').trim(); return t.length > 200 ? t.slice(0, 199) + '…' : t; };
+  const covGaps = acs.filter(x => !x.judgment && THRESHOLD_RE.test(x.gwt) && !evalsFor(x.id).some(e => NEG_RE.test(e.expected))).map(x => x.id);
+  // CT-S coverage section — presentation only: render what the contract claims, flag absence/unverified
+  const covPresent = /^#{2,6}\s+Coverage\b/im.test(contract);
+  const covAll = section(contract, 'Coverage');
+  // NỚI (hồ sơ cong-nguoi-doc-du-nguon, AC-15): mục Coverage viết bằng BẢNG hoặc
+  // văn xuôi từng đọc ra RỖNG, nên thẻ nổi cờ «chưa có section Coverage» trên một
+  // mục CÓ THẬT — đo được 29 trên 244 hợp đồng có mục Coverage ở 11 kho. Gạch đầu
+  // dòng vẫn được ưu tiên; chỉ khi KHÔNG có gạch nào mới lấy dòng thường, và bỏ
+  // hàng phân cách của bảng vì nó không mang chữ cho người đọc.
+  const covLines = contentLines(covAll);
+  const covUnverified = covAll.some(l => /CE chưa kiểm chứng/i.test(l));
+  // gap-probe (S1#7 phản biện context sạch) — presentation only: render findings + disposition, flag absence/failed/dropped
+  const gpFm = frontmatter(probeT);
+  const gpPresent = !!probeT.trim();
+  const gpVerdict = clean(gpFm.verdict).toLowerCase();
+  const gpRows = []; let gpDropped = 0;
+  // AC-7 (cham-khong-tu-dot-luot): đọc MỌI bảng mang chữ ký GP_HEADER ở bất kỳ mục nào
+  // (bảng soát lại sau Cổng Phạm vi từng bị bỏ vì chỉ đọc «## Findings»); bảng khác chữ ký
+  // bị bỏ qua. Bảng kết thúc ở dòng đầu tiên không bắt đầu bằng «|».
+  // Bảng đời cũ có cột đầu «Sev» mà KHÁC chữ ký (4–5 cột) không được đọc thành phát hiện,
+  // nhưng mọi hàng của nó vẫn đếm vào parse_dropped như trước vòng — cờ «dòng finding không
+  // đọc được» không được im đi trên hồ sơ cũ (Review Focus 5 của kế hoạch).
+  const cotGp = l => l.split('|').slice(1, -1).map(c => c.trim());
+  const GP_COT = cotGp(GP_HEADER).join('|');
+  // Nguồn dòng: mục «## Findings» đọc qua section() của lib/md-section.cjs — luật ranh giới
+  // (bảng dưới «### Notes» hay «# Appendix» là bảng ma) sống MỘT chỗ ở bảng marker của lib
+  // (FSB1/FSB2/FSB8). Mục «##» KHÁC (bảng soát lại sau Cổng Phạm vi của crm) đọc tới tiêu đề
+  // kế tiếp ở mọi cấp: nghiêm hơn, không có bảng ma nào lọt từ mục con.
+  // khoanDung (chỉ «## Findings»): bảng đời cũ đúng SÁU cột mở bằng ô «sev» (tiêu đề chữ khác,
+  // vd `| sev | artifact | summary | … |` ở artifact-platform) vẫn đọc thành phát hiện như trước
+  // vòng — đường đọc-cũ, luật 26/09: kho không sự cố không đổi phán quyết. Mục ## khác: đúng chữ ký.
+  const docBang = (dong, khoanDung) => {
+    let bang = ''; // '' ngoài bảng · 'gp' bảng đúng chữ ký · 'cu' bảng Sev khác chữ ký
+    for (const l of dong) {
+      if (!/^\s*\|/.test(l)) { bang = ''; continue; }
+      const cells = cotGp(l);
+      if (!bang) { bang = cells.join('|') === GP_COT ? 'gp' : /^sev$/i.test(cells[0] || '') ? 'cu' : 'khac'; continue; }
+      if (bang === 'khac') continue;
+      if (cells.every(c => /^:?-+:?$/.test(c))) continue; // separator row
+      if ((bang === 'gp' || (khoanDung && bang === 'cu')) && cells.length === 6) gpRows.push({ sev: cells[0], artifact: cells[1], summary: cells[2], scenario: cells[3], measure: cells[4], disposition: cells[5] });
+      else gpDropped++; // cell chứa "|" → sai số cột (giới hạn v1, spec §4), hoặc bảng Sev đời cũ
+    }
+  };
+  if (gpPresent) {
+    docBang(section(probeT, 'Findings'), true);
+    const mucKhac = []; let trongMucKhac = false;
+    for (const l of probeT.split(/\r?\n/)) {
+      const td = l.match(/^(#{1,6})\s+(.*)$/);
+      if (td) { trongMucKhac = td[1].length === 2 && !/^findings\b/i.test(td[2].trim()); mucKhac.push(''); continue; }
+      if (trongMucKhac) mucKhac.push(l);
+    }
+    docBang(mucKhac, false);
+  }
+  const gpPhatHien = gpRows.filter(r => /^P[0-2]$/.test(r.sev)).length;
+  // Luật van thoát nằm ở lib/gap-probe.cjs — CÙNG hàm mà pre-merge gọi. Không
+  // viết lại ở đây: contract v2 chết đúng vì chỗ này bị tách làm hai bản, parity
+  // giữ bằng comment (ledger d-125/d-126). P38 canh bằng máy.
+  const gpDescopeId = gapProbe.descopeId(read(path.join(dir, 'decisions.jsonl')));
+  const gpDescope = gpDescopeId ? (decsAll.find(e => e.id === gpDescopeId) || { id: gpDescopeId }) : null;
+  const gpP0 = parseInt(clean(gpFm.p0), 10) || 0, gpP1 = parseInt(clean(gpFm.p1), 10) || 0, gpP2 = parseInt(clean(gpFm.p2), 10) || 0;
+  const gpVerdictKnown = gpVerdict === 'clean' || gpVerdict === 'findings' || gpVerdict === 'probe-failed';
+
+  // ── LUẬT RƠI BẬC (hồ sơ loi-moi-cong-may-sinh, D3/AC-4) ──────────────────
+  // ĐẢO CHIỀU MẶC ĐỊNH: đối kháng chỉ được coi là ĐÃ CHẠY khi file đọc được VÀ
+  // verdict thuộc tập đã khai VÀ không phải probe-failed. Mọi trạng thái khác
+  // — file hỏng, verdict token lạ, probe-failed — đều rơi bậc: phần
+  // vượt-nhận-thức trả về NGƯỜI, thẻ thôi điền sẵn, và chữ ký không được nói
+  // «đối kháng đã hội tụ» khi nó chưa hề đọc được.
+  // NGOẠI LỆ ca VẮNG MẶT: chỉ rơi bậc khi repo khai `gap_probe: required`.
+  // Khoá vắng = advisory (CÙNG mặc định với scripts/pre-merge-check.sh:214) —
+  // repo tiêu thụ crm · media-library · floorplanstudio đều advisory, đỏ oan
+  // ở đó thì MỌI thẻ Cổng 1 của họ mất câu gộp mà nghiệm thu tại kit (đang
+  // `required`) không bao giờ thấy.
+  const gpMode = (function () {
+    const m = /^\s*gap_probe:\s*([A-Za-z-]+)/m.exec(read(path.join(root, '_acceptance', 'config.yaml')));
+    return m ? m[1].toLowerCase() : 'advisory';
+  })();
+  const roiBacReason = !gpPresent ? ((gpDescope || gpMode !== 'required') ? '' : 'vang')
+    : !gpVerdictKnown ? 'khong-doc-duoc'
+    : gpVerdict === 'probe-failed' ? 'probe-failed' : '';
+  const roiBac = !!roiBacReason;
+
+
+  // ---- trục ngữ cảnh (design-pass.md — khối chỉ hiện khi phiên S1-D đã chạy) ----
+  // Nhãn tiếng người + chuỗi descope là CHUỖI PIN của P135-P138; đổi phải đổi test.
+  // Bảng tra KHÔNG prototype: object literal làm `TABLE[key]` trúng mọi khoá kế thừa
+  // (`constructor` · `__proto__` · `toString` · `valueOf` · `hasOwnProperty`), nên cờ
+  // «không nhận diện được» im lặng và thẻ in ra rác kiểu `function Object() { … }`.
+  // Giá trị vào đây đến thẳng từ frontmatter sổ phiên — văn bản người/máy viết.
+  // Sửa theo LỚP: CẢ HAI bảng nhãn, và mọi chỗ tra chúng (cờ · --extract · render).
+  const CONTEXT_LABEL = Object.assign(Object.create(null), { 'standalone': 'đứng một mình', 'static-frame': 'khung giả tĩnh', 'host-embedded': 'nhúng host thật' });
+  const DP_SCENE_DESCOPE = 'bỏ cảnh ngữ-cảnh — ';
+  // Nhãn tiếng người của thang phản ứng — CÙNG chữ với cột «Tên» của REACTION-LADDER
+  // trong skills/design-pass/SKILL.md. Không tự chế chuỗi: ca DP9 rút nhãn TỪ bảng đó
+  // rồi đòi thấy đúng nó trên đầu ra thẻ, nên lệch một chữ là đỏ.
+  const REACTION_LABEL = Object.assign(Object.create(null), {
+    'nac-0': 'đi thẳng',
+    'nac-1': 'không đồng bộ trên ảnh',
+    'nac-2': 'không đồng bộ trên vật bấm được',
+    'nac-3': 'ngồi cùng ngắn, có người gọi tên',
+  });
+  const dpText = read(path.join(dir, 'design-pass.md'));
+  const dpFm = frontmatter(dpText);
+  const dp = { present: !!dpText.trim(), material: clean(dpFm.material || ''), context: clean(dpFm.context || ''), scenes: [], reaction: '', options: '' };
+  if (dp.present) {
+    // Placeholder khuôn chưa điền CHỨA DẤU PHẨY — phải loại '<'/'>' TRƯỚC khi split,
+    // không thì nửa sau placeholder sống qua filter và standalone-thiếu-cảnh im lặng
+    // trong khi card khoe "1 cảnh ngữ-cảnh" (false-green seam writer→reader, S4-r1).
+    const rawScenes = clean(dpFm.context_scenes || '');
+    if (!/[<>]/.test(rawScenes)) dp.scenes = rawScenes.replace(/^\[|\]$/g, '').split(',').map(s => s.trim()).filter(Boolean);
+    // `reaction: <id> (<kênh>)` — lấy id, bỏ phần kênh.
+    // Khoá VẮNG HẲN và khoá ĐIỀN NỬA VỜI là hai chuyện khác nhau: cái trước là hồ sơ
+    // đời trước thang phản ứng, cái sau là phiên MỚI vừa ghi hỏng. Gộp cả hai vào một
+    // câu «hồ sơ đời trước» là nói sai chuyện đang xảy ra cho người duyệt, và giấu mất
+    // cái sai vừa xảy ra (S4-r2 finding, AC-10). Nên giữ ba mẩu riêng.
+    const rawReaction = clean(dpFm.reaction || '');
+    dp.reaction_raw = rawReaction;
+    dp.reaction_declared = ('reaction' in dpFm);   // CÓ MẶT dòng khoá, không phải giá trị khác rỗng
+    dp.reaction_placeholder = /[<>]/.test(rawReaction);
+    const reactionId = (rawReaction.match(/^(nac-[0-9a-z]+)/) || [])[1] || '';
+    dp.reaction = reactionId || (dp.reaction_placeholder ? '' : rawReaction);
+    const rawOptions = clean(dpFm.options || '');
+    dp.options = /[<>]/.test(rawOptions) ? '' : rawOptions;
+  }
+  // socket design_pass.host_embed — đường đọc-cũ: vắng là hợp lệ (nấc thấp), không lỗi.
+  // Đọc bằng resolveConfigKey của lib (blank line / comment đuôi / CRLF như hook) —
+  // kit đã trả giá cho 4 parser hand-rolled trùng bug, không mọc con thứ 5 (S4-r1).
+  const cfgText = read(path.join(root, '_acceptance', 'config.yaml'));
+  const heGuide = evidenceCore.resolveConfigKey(cfgText, 'design_pass.host_embed.guide');
+  const he = {
+    present: heGuide !== null
+      || evidenceCore.resolveConfigKey(cfgText, 'design_pass.host_embed.route') !== null
+      || evidenceCore.resolveConfigKey(cfgText, 'design_pass.host_embed.dev_flag') !== null,
+    guide: heGuide || '', resolvable: true,
+  };
+  if (he.present && he.guide) {
+    if (he.guide.includes('/') || /\.md$/.test(he.guide)) he.resolvable = fs.existsSync(path.join(root, he.guide));
+    else if (!he.guide.includes(':')) he.resolvable = fs.existsSync(path.join(root, '.claude', 'skills', he.guide, 'SKILL.md'));
+    // tên skill plugin-qualified (a:b) không kiểm được cache người khác → coi giải được
+  }
+  const dpFlags = [];
+  if (dp.present) {
+    if (!dp.context) dpFlags.push('Sổ phiên chưa khai nấc ngữ cảnh (đời trước trục ngữ cảnh) — bản mẫu sống ở đâu chưa được khai; không chặn, khuyên bổ sung ở phiên thiết kế sau.');
+    else if (!CONTEXT_LABEL[dp.context]) dpFlags.push('Nấc ngữ cảnh không nhận diện được: "' + dp.context + '" — chỉ nhận standalone / static-frame / host-embedded.');
+    else if (dp.context === 'standalone' && !dp.scenes.length && !decsAll.some(e => e.type === 'descope' && String(e.decision || '').startsWith(DP_SCENE_DESCOPE))) {
+      dpFlags.push('Bản mẫu khai đứng-một-mình nhưng chưa có cảnh ngữ-cảnh (khung host bọc vật + hành trình vào–ra) và không có dòng từ-chối trong sổ quyết định — người duyệt có quyền trả.');
+    }
+    // Đường đọc-cũ của thang phản ứng: sổ phiên đời trước không có khoá này. Cờ vàng,
+    // KHÔNG chặn, KHÔNG bắt migrate — cùng khuôn với trục ngữ cảnh từ 2.0.0.
+    if (!dp.reaction && dp.reaction_declared) dpFlags.push('Sổ phiên có khoá nấc phản ứng nhưng CHƯA ĐIỀN: "' + dp.reaction_raw + '" — phiên này vừa ghi hỏng, KHÔNG phải hồ sơ đời trước; không chặn, sửa sổ phiên rồi dựng lại thẻ.');
+    else if (!dp.reaction) dpFlags.push('Sổ phiên chưa khai nấc phản ứng (hồ sơ đời trước thang phản ứng) — không biết phiên đã gọi người ở nấc nào; không chặn, khuyên bổ sung ở phiên thiết kế sau.');
+    else if (!REACTION_LABEL[dp.reaction]) dpFlags.push('Nấc phản ứng không nhận diện được: "' + dp.reaction + '" — chỉ nhận nac-0 / nac-1 / nac-2 / nac-3.');
+    else if (dp.reaction_placeholder) dpFlags.push('Nấc phản ứng đã khai nhưng phần kênh còn nguyên chỗ trống của khuôn: "' + dp.reaction_raw + '" — không biết phiên đã gọi người qua kênh nào; không chặn.');
+    if (!he.present) dpFlags.push('Repo chưa khai đường nhúng (design_pass.host_embed) — phiên coi như chưa có đường nhúng rẻ, đi nấc thấp; không chặn.');
+    else if (!he.resolvable) dpFlags.push('Đường nhúng đã khai nhưng con trỏ không giải được: "' + he.guide + '" — sửa con trỏ, hoặc phiên đi nấc thấp; không chặn.');
+  }
+
+  // ---- ngưỡng nghiệm thu (opportunity.md — mối nối Vòng HIỂU → Cổng Phạm vi) ----
+  // Heading là chuỗi PIN round-trip với khuôn opportunity-template (P197 rút heading từ khuôn).
+  // Không lưu «đường A» ở đâu cả: có/không hồ sơ cơ hội suy khi đọc (hồ sơ moi-noi-vong-trao,
+  // ledger descope route). Đọc-cũ: hồ sơ không opportunity = dòng sự kiện, không lỗi.
+  // Hằng + vị từ hỏi LIB sở hữu luật ngưỡng — bản chép tay trong cùng file là hai nguồn
+  // cho một hằng, và hai bản PLACEHOLDER_RE đã kịp lệch nhau (finding S4-r4).
+  const NG1 = require(path.join(__dirname, '..', 'lib', 'nguong-o-co-hoi.cjs'));
+  const OPP_TPL1 = path.join(__dirname, '..', 'skills', 'acceptance', 'references', 'opportunity-template.md');
+  const UAT_THRESHOLD_HEADING = NG1.UAT_THRESHOLD_HEADING;
+  const oppPath = path.join(dir, 'opportunity.md');
+  const oppText = read(oppPath);
+  // present = FILE TỒN TẠI (statSync), không suy từ chuỗi rỗng — read() trả '' cho cả file vắng
+  // lẫn file quá cỡ; hai ca đó khác nhau trên thẻ (S4-r1 finding).
+  let rangHongNguong = null;
+  const ut = { opportunity_present: fs.existsSync(oppPath), readable: !!oppText.trim(), section_present: false, lines: [] };
+  if (ut.opportunity_present && ut.readable) {
+    // Ranh giới heading: cùng dạng tiền tố `\b` với lib/md-section.cjs (một luật, không khớp-chính-xác riêng)
+    ut.section_present = new RegExp('^#{2,6}\\s+' + UAT_THRESHOLD_HEADING.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&') + '\\b', 'im').test(oppText);
+    // Dòng «đã khai» = có nội dung sau dấu ':' khác placeholder của khuôn («…»/«...»/rỗng); khuôn chép
+    // nguyên chưa điền KHÔNG được tính là ngưỡng (S4-r2 finding: placeholder lọt thành «đã khai»).
+    // «chưa điền» hỏi đúng vị từ của lib trên PHẦN GIÁ TRỊ bullet — không giữ regex riêng.
+    const chuaDien = l => NG1.chuaDien(l);
+    if (ut.section_present) ut.lines = section(oppText, UAT_THRESHOLD_HEADING).map(l => l.trim()).filter(l => l && !/^>/.test(l) && !chuaDien(l));
+  }
+  // «ĐÃ KHAI NGƯỠNG» phải HỎI LIB, không tự suy từ `lines.length > 0`. Vị từ tự chế là bên đọc
+  // thứ hai, và nó trả lời KHÁC lib ở ba ca thật (S4-r9 [1][5]): ô thiếu hẳn nhãn của khuôn · ô
+  // mang tiền tố ĐỀ XUẤT của khuôn (máy đề nghị, người CHƯA chốt) · ô điền đủ nhưng KHÔNG gạch đầu
+  // dòng. Ở cả ba, thẻ in «Ngưỡng nghiệm thu (đã khai ở Cổng Đáng)» — tức gán cho người một lời
+  // khai người chưa nói — trong khi bộ quét gọi «chưa chốt». Nguồn phải là MỘT.
+  let ngState = null;
+  if (ut.opportunity_present && ut.readable && ut.section_present) {
+    try { ngState = NG1.thresholdState(oppText, read(OPP_TPL1)); }
+    catch (e) { rangHongNguong = e.message; }
+  }
+  ut.state = ngState;
+
+  // Lối «không đo được» tính NGAY đây — cả răng chống lách lẫn khối đường-đo cùng hỏi nó.
+  let mienDo = false, rangHong = null;
+  if (ut.opportunity_present && ut.readable) {
+    try {
+      const kd = NG1.prefixes(read(OPP_TPL1)).khongDo;
+      mienDo = section(oppText, UAT_THRESHOLD_HEADING).some(l => NG1.isKhongDoLine(l, kd));
+    } catch (e) { rangHong = e.message; }
+  }
+
+  // ---- đường đo (contract `## Đường đo` — chỉ có nghĩa khi hồ sơ có ngưỡng đã khai) ----
+  // Heading + tiền tố bỏ là CHUỖI PIN round-trip với khối CONTRACT-DUONG-DO-TEMPLATE của khuôn
+  // (DD5) và câu auto-draft trong feature-loop SKILL S1#4 (DD6). «Áp dụng» = ĐÚNG vị từ ut ở trên
+  // (khối «Ngưỡng nghiệm thu» in ⇔ applicable) — không viết vị từ thứ hai (d-4303).
+  const DUONG_DO_HEADING = 'Đường đo';
+  const DUONG_DO_DESCOPE = 'bỏ đường-đo — ';
+  const ddStem = DUONG_DO_DESCOPE.replace(/\s*—\s*$/, '').toLowerCase();
+  // dòng bỏ nhận diện ROỘNG (lệch gạch nối / viết hoa vẫn là dòng bỏ — finding C1); entry ledger vẫn phải ĐÚNG tiền tố mới thành info
+  const ddIsBoLine = l => /^bỏ\s+đường[-\s]đo\b/i.test(l.trim()) || l.trim().toLowerCase().startsWith(ddStem);
+  // Ô khai «không đo được» thì KHÔNG có ngưỡng để đo → không đòi đường đo (giục xây đường
+  // đo cho lối ra vừa khai đúng là cằn nhằn sai ngay tại cổng người — finding S4-r4).
+  const ddApplicable = ut.opportunity_present && ut.readable && ut.section_present && ut.lines.length > 0 && !mienDo;
+  const ddPresent = new RegExp('^#{2,6}\\s+' + DUONG_DO_HEADING + '\\b', 'im').test(contract);
+  // dòng thật = bullet không còn placeholder VÀ không phải dòng bỏ (dòng bỏ không phải đường đo — gap-probe F2)
+  const ddLines = ddPresent ? bullets(section(contract, DUONG_DO_HEADING)).filter(l => !/\{\{/.test(l) && !ddIsBoLine(l)) : [];
+  const ddDescope = decsAll.find(e => e.type === 'descope' && String(e.decision || '').startsWith(DUONG_DO_DESCOPE)) || null;
+
+  // ── Răng chống lách (hồ sơ ra-co-ten, AC-11) ──
+  // Lối «không đo được» chỉ dành cho vòng KHÔNG có người dùng cuối. Hợp đồng khai mặt
+  // ui/mobile mà ô cơ hội lại khai không đo được ⇒ đang trốn Cổng Giá trị.
+  const mienDoCoNguoiDung = mienDo && NG1.coNguoiDungCuoi(evalYamlLib.stripComment(cfm.surfaces));
+
+  // ── Lớp bằng chứng nhìn-thấy (hồ sơ lop-bang-chung-nhin-thay) ──
+  // Hợp đồng có MẶT NGƯỜI NHÌN (ui; alias web/web-ui; không mobile) phải có ≥1 eval ui-check
+  // theo hợp đồng; vị từ + alias + tiền tố descope RÚT từ lib/lop-nhin-thay.cjs (một nguồn với
+  // lint W8 và pre-merge). Hai chuỗi cờ là CHUỖI PIN của ca LNT3 — đổi phải đổi test.
+  const UI_OBS_FLAG_WARN = 'Chưa có bằng chứng lớp nhìn-thấy';
+  const UI_OBS_FLAG_INFO = 'Đã bỏ bằng chứng lớp nhìn-thấy theo';
+  let LNT = null; try { LNT = require(path.join(__dirname, '..', 'lib', 'lop-nhin-thay.cjs')); } catch (_) {}
+  const uo = LNT ? LNT.classify(dir) : { applicable: false, reason: 'no-lib' };
+  const uiObserved = { applicable: !!uo.applicable, present: !uo.reason && (uo.declared || 0) > 0, declared: uo.reason ? 0 : (uo.declared || 0), descoped: (!uo.reason && uo.descoped) || null, token_la: uo.tokenLa || [] };
+
+  // ── Chốt máy khi ghim lại (hồ sơ ghim-lai-noi-ra-o-khong-do) ───────────────
+  // Làn ghim lại chỉ chạy executor test/script; ui-check và judgment không bao giờ
+  // chạy trong nó (giới hạn khai, GUIDE §7.1). Một AC mà MỌI eval phủ nó đều ngoài
+  // làn máy — hoặc tự khai không-chạy — thì lúc ghim lại KHÔNG có chốt máy nào, và
+  // trước hồ sơ này không mặt nào nói ra điều đó (đo ở crm 20/09: 6 hồ sơ vừa có
+  // ui-check vừa từng ghim, không dòng nào kêu).
+  const cmG1 = chotMay(dir);
+
+  // ── Nền hạ tầng (thuoc-co-cua AC-8): đọc `duong-nen.md` do feature-loop/scripts/duong-nen.mjs ghi.
+  // Khuôn tệp và khuôn dòng đỏ sống MỘT chỗ (skills/acceptance/references/duong-nen-template.md);
+  // thẻ chỉ đọc frontmatter bốn chân và in NGUYÊN VĂN mỗi bullet của mục «Dòng đỏ».
+  const nenT = read(path.join(dir, 'duong-nen.md'));
+  const nen = docNen(nenT);
+  // ── Sàn thiết kế (design-floor-moc-s0-s1 AC-7): `design-floor.json` do scripts/design-floor-s1.mjs ghi ở S1. Khối là
+  // THÔNG TIN — không vào routing.hoi, không đổi làn V; vắng tệp (kho M0) thì thẻ không đổi một byte.
+  const sanTk = docSanTk(read(path.join(dir, 'design-floor.json')));
+  // ── Khuôn (khoi-khuon-tren-the-cong AC-3/AC-4): lựa chọn S1 ghi ở khuon-nap.json, đọc bằng ban-do-khuon.cjs. Kho không
+  // khai bản đồ → null, thẻ không đổi một byte; lỗi dựng khối → MỘT cờ, không nuốt (AC-7).
+  let khuonG1 = null;
+  try {
+    const ddoc = (cfm.design_doc || '').trim();
+    khuonG1 = require('./ban-do-khuon.cjs').theCong1({ root, slug, contractTxt: contract, designTxt: ddoc ? read(path.join(root, ddoc)) : '', decisionsTxt: read(path.join(dir, 'decisions.jsonl')) });
+  } catch (e) { khuonG1 = loiKhuon(e); }
+  // Câu gộp MÁY SINH cho Cổng 1 — đặt SAU mọi nguồn cờ đỏ và TRƯỚC --extract
+  // (thứ tự khai có thật: blindSpot 349 · roiBac 401 · rangHong/mienDo ~549).
+  // Ô duy nhất của cổng này là CHỮ QUYẾT: thẻ sạch → điền sẵn «duyệt»; có cờ
+  // đỏ hoặc rơi bậc → để trống, vì mời ký trên thẻ đang đỏ đúng là thứ audit
+  // 01/09 gọi tên «mời khi chưa ký-được-ngay». dupIds chỉ VÀNG, không chặn.
+  const g1Blocked = !!rangHong || mienDoCoNguoiDung || !!blindSpot || cc.do.length > 0 || coHD.chan || (ttG1 && ttG1.chan);
+  // Hồ sơ đã khép (bộ quét: chấm bởi thực tế / nghỉ) không còn câu hỏi nào cho người — không ô hỏi,
+  // không dòng lệnh duyệt, không dòng goal (ha-tang-khong-dot-luot AC-7; cùng chữ AC-6 của 2.18.1).
+  // Chỉ HỎI bộ quét khi trạng thái nằm NGOÀI mọi danh sách mà bộ tự nhận cổng ở trên biết — đúng ca
+  // hồ sơ rơi về Cổng 1 vì không có báo cáo (vd `da-cham-boi-thuc-te` chưa từng có lượt chấm). Hồ sơ
+  // draft/approved không bao giờ khép theo vị từ một nguồn (hoSoDaKhep, 2.18.1 AC-1); hồ sơ đã ký tự
+  // nhận Cổng 2, nơi vị từ khép đã chạy. Lý do là giá: bộ quét 0,5 s mỗi thẻ, và P161 dựng thẻ Cổng 1
+  // ép `--gate 1` cho mọi hồ sơ trong kho (đo S3: suite plugins 391 s → 665 s khi gọi mọi thẻ).
+  const G1_CO_THE_KHEP = !TRANG_THAI_CONG_BIET.test(status);
+  const DA_KHEP_G1 = G1_CO_THE_KHEP && daKhepTu(quetHoSo().hit);
+  const DA_KHEP_G1_VI = DA_KHEP_G1 && (quetHoSo().hit || {}).nghi ? 'đã nghỉ' : 'đã chấm bởi thực tế';
+  const oneShotG1 = DA_KHEP_G1 ? null : `${ONE_SHOT_CMD_APPROVE} ${slug} ${(roiBac || g1Blocked) ? '___' : 'duyệt'}`;
+  if (EXTRACT) { return ghiRoiThoat(JSON.stringify({ gate: 1, feature, tier, blind_spot: blindSpot ? { kind: blindSpot.kind, suspect: blindSpot.suspect, parsed: blindSpot.parsed, lines: blindSpot.lines, heading: blindSpot.heading } : null, co_hop_dong: coHD, will_do: willDo.map(x => ({ id: x.id, gwt: x.gwt })), wont_do: wontDo.map(x => ({ id: x.id, gwt: x.gwt })), scope: oosItems.map(x => ({ id: x.id, text: x.text })), coverage: covLines, coverage_missing: !covPresent || !covLines.length, glossary_delta: { present: glossaryPresent, computed: glossaryDelta !== null, error: glossaryDeltaErr, terms: glossaryDelta || [] }, one_shot: oneShotG1, goal_line: DA_KHEP_G1 ? null : goalLine(slug), routing: { hoi: DA_KHEP_G1 ? [] : ['duyệt hay sửa', ...(ccDraft ? ccCauHoi.map(d => d.nhan) : [])], bao: [] }, roi_bac: { on: roiBac, reason: roiBacReason }, gap_probe: { present: gpPresent, verdict: gpPresent ? (gpVerdict || null) : null, p0: gpP0, p1: gpP1, p2: gpP2, rows: gpRows.map(r => ({ sev: r.sev, artifact: r.artifact, summary: r.summary, disposition: r.disposition })), parse_dropped: gpDropped, descoped: !!gpDescope }, decisions: decsAll.filter(e => !coBaVe(e)).map(e => ({ id: e.id, key: decKey(e), type: e.type, stage: e.stage, decision: e.decision, impact: e.impact })), decisions_broken: ledger.broken, can_cu: { cau_hoi: ccCauHoi.map(d => ({ nhan: d.nhan, id: d.id, decision: d.e.decision, ...baVeRut(d.e), khuyen: d.e.can_cu.khuyen, loi_khac: d.e.can_cu.loi_khac, kho_dao: d.e.can_cu.kho_dao === true })), da_quyet: ccMayQuyet.map(d => ({ id: d.id, decision: d.e.decision, ...baVeRut(d.e), nguon: d.e.can_cu.nguon, tep: d.e.can_cu.tep || null, trich: d.e.can_cu.trich || null, loi_chet: d.e.can_cu.loi_chet || null, ghi_chu: d.ghi_chu || null, ...(d.e.can_cu.tri_thuc !== undefined ? { tri_thuc: d.e.can_cu.tri_thuc } : {}) })), do: cc.do.map(d => ({ id: d.id, ma: d.ma, thong_diep: d.thong_diep })), doi_truoc: cc.doi_truoc, bi_thay: cc.bi_thay, goc: cc.goc }, design_pass: dp.present ? { material: dp.material, context: dp.context, context_label: CONTEXT_LABEL[dp.context] || null, scenes: dp.scenes, reaction: dp.reaction, reaction_label: REACTION_LABEL[dp.reaction] || null, options: dp.options, host_embed: he, flags: dpFlags } : { present: false }, uat_threshold: ut, cong_gia_tri: { mien_do_co_nguoi_dung: mienDoCoNguoiDung }, ui_observed: uiObserved, chot_may: { ac_khong: cmG1.ac_khong, ac_khong_mo: cmG1.ac_khong_mo }, duong_do: { applicable: ddApplicable, present: ddPresent, lines: ddLines, descoped: ddDescope ? ddDescope.id : null }, nen, luat: luatG1 ? luatG1.khoa : { co_tep: false }, ...(ttG1 ? { tri_thuc: ttG1.khoa } : {}), ...(sanTk ? { san_thiet_ke: sanTk } : {}), ...(khuonG1 ? { khuon_g1: khuonG1 } : {}) }, null, 2), 0); }
+  const featurePlain = pl.feature_plain || feature;
+  const pmap = (arr, id) => (((arr || []).find(x => x.id === id)) || {}).p;
+  const willText = x => pmap(pl.will_do, x.id) || stripMd(x.gwt);
+  const wontText = x => pmap(pl.wont_do, x.id) || stripMd(x.gwt);
+  // Mục phạm vi (AC-6): mỗi dòng «Out of scope» là MỘT mục trên thẻ; câu dịch theo id
+  // OOS-n, vắng câu dịch thì chữ hợp đồng — không mục nào bị gộp mất vào một câu tóm.
+  const scopeText = x => pmap(pl.wont_do, x.id) || stripMd(x.text);
+  const idHopLe = new Set([...wontDo.map(x => x.id), ...oosItems.map(x => x.id)]);
+  const dichLac = (pl.wont_do || []).map(x => x && x.id).filter(id => id && !idHopLe.has(id));
+  // Tầng card-plain cho hai khối sinh sau nó (findings 2026-08-05): overlay chỉ
+  // ĐỔI CHỮ theo luật mặt người — script vẫn render đủ MỌI dòng/hàng (không thể
+  // quên) và sev do script in (không đè được). Vắng overlay → bản lột-markdown.
+  const pIdx = (arr, i) => (((arr || []).find(x => x.i === i)) || {}).p;
+
+  const P = [STYLE, `<div class="gc"><div class="card">
+<div class="h"><div><div class="ft">${esc(featurePlain)}</div><div class="sub">Cổng 1 · duyệt tiêu chí TRƯỚC khi code${tier === 'T3' ? ' · tier T3 (đụng critical)' : ''}</div></div><span class="chip amber">duyệt tiêu chí</span></div>`];
+  // First thing on the card, before any criterion list: if the card cannot be trusted,
+  // the reviewer must learn that BEFORE reading a list that looks complete.
+  if (blindSpot) P.push(`<div class="flag fred">⚠ ${esc(blindSpotText(blindSpot))}</div>`);
+  if (coDo) P.push(`<div class="flag fred co-hd">⚠ ${esc(coDo)}</div>`);
+  if (ttG1 && ttG1.chuDo) P.push(`<div class="flag fred tri-thuc">⚠ ${esc(ttG1.chuDo)}</div>`);
+  if (willDo.length) P.push(`<div class="lab">Hệ thống SẼ làm</div><div class="grp gdo">${willDo.map(x => `<p class="li">${esc(willText(x))}</p>`).join('')}</div>`);
+  const notItems = wontDo.map(x => esc(wontText(x))).concat(pl.scope_plain && oos.length ? [SCOPE_TOM + esc(pl.scope_plain)] : []).concat(oosItems.map(x => SCOPE_MUC + esc(scopeText(x))));
+  if (notItems.length) P.push(`<div class="lab">Sẽ KHÔNG làm / sẽ chặn</div><div class="grp gnot">${notItems.map(t => `<p class="li">${t}</p>`).join('')}</div>`);
+  if (ccCauHoi.length) P.push(`<div class="lab">${ccDraft ? 'Câu chỉ anh trả lời được' : 'Câu đã hỏi ở Cổng Phạm vi (trả lời khi duyệt)'}</div><div class="grp gdo">${ccCauHoi.map(d => `<p class="li" data-cau-hoi="${esc(d.nhan)}"><b>${esc(d.nhan)}</b> · ${decBaVe(d.e)}${luatG1 && luatG1.tienTo(d.e.can_cu) ? ' · ' + esc(luatG1.tienTo(d.e.can_cu)) : ''}${d.e.can_cu.kho_dao === true ? ' · <b>khó-đảo</b>' : ''} — máy khuyên: ${esc(stripMd(d.e.can_cu.khuyen))} · lối khác: ${esc(stripMd(d.e.can_cu.loi_khac))}</p>`).join('')}</div>`);
+  if (ccMayQuyet.length) P.push(`<div class="lab">Máy đã quyết ở bước thiết kế — anh lật được</div><div class="grp gnot">${ccMayQuyet.map(d => { const c = d.e.can_cu; const cu = c.nguon === 'muc-tieu' ? (c.tri_thuc !== undefined ? `căn cứ: trang tri thức ${esc(String(c.tri_thuc))}${d.ghi_chu ? ' · ' + esc(d.ghi_chu) : ''}` : `căn cứ: «${esc(cat200(c.trich))}» (${esc(c.tep)})`) : `lối khác chết vì: ${esc(stripMd(c.loi_chet))}`; return `<p class="li" data-may-quyet="${esc(d.id)}">${d.e.type === 'descope' ? '<b>KHÔNG làm:</b> ' : ''}${decBaVe(d.e)} — ${cu}${luatG1 && luatG1.hauTo(c) ? ' · ' + esc(luatG1.hauTo(c)) : ''}</p>`; }).join('')}</div>`);
+  P.push(`<div class="lab">Quyết định &amp; trade-off</div>`);
+  if (!decsChung.length) P.push(`<div class="flag finfo">${ccCauHoi.length || ccMayQuyet.length ? 'Sổ quyết định: mọi dòng đã ở hai khối trên' : 'Sổ quyết định: (chưa ghi quyết định nào)'}</div>`);
+  else P.push(`<div class="grp gnot">${decSort(decsChung).map(e => `<p class="li">${e.type === 'descope' ? '<b>KHÔNG làm:</b> ' : ''}${decBaVe(e)}</p>`).join('')}</div>`);
+  if (ledger.broken) P.push(`<div class="flag fwarn">⚠ ${ledger.broken} dòng ledger hỏng, đã bỏ qua.</div>`);
+  if (covLines.length) P.push(`<div class="lab">Độ phủ AC (bằng chứng "đủ")</div><div class="grp gnot">${covLines.map((t, i) => `<p class="li">${esc(pIdx(pl.coverage_plain, i) || stripMd(t))}</p>`).join('')}</div>`);
+  if (nen.present) P.push(`<div class="lab">Nền hạ tầng (máy kiểm trước khi vòng viết gì)</div><div class="grp gnot"><p class="li">Nền: <b>${esc(nen.nen || '?')}</b> · công cụ ${esc(nen.cong_cu || '?')} · bộ kiểm ${esc(nen.suite || '?')} · lưới như CI ${esc(nen.luoi || '?')} · bộ máy ${esc(nen.engine || '?')}</p>${nen.do.map(l => `<p class="li">${esc(l)}</p>`).join('')}${nen.vang.length ? `<p class="li"><b>${esc(NEN_VANG_LAB)} (${nen.vang.length})</b></p>${nen.vang.map(l => `<p class="li">${esc(l)}</p>`).join('')}` : ''}</div>`);
+  if (sanTk) P.push(`<div class="lab">Sàn thiết kế (thông tin, không cần trả lời)</div><div class="grp gnot">${sanTk.dong.map(t => `<p class="li">${esc(t)}</p>`).join('')}</div>`);
+  if (khuonG1) P.push(`<div class="lab">Khuôn (thông tin, không cần trả lời)</div><div class="grp gnot">${[...khuonG1.co.map(t => `<p class="li">⚠ ${esc(t)}</p>`), ...khuonG1.dong.map(t => `<p class="li">${esc(t)}</p>`)].join('')}</div>`);
+  if (ddLines.length) P.push(`<div class="lab">Đường đo (con số cho ngưỡng sẽ đến từ đâu)</div><div class="grp gnot">${ddLines.map(t => `<p class="li">${esc(t)}</p>`).join('')}</div>`);
+  if (dp.present) P.push(`<div class="lab">Bản mẫu &amp; ngữ cảnh</div><div class="grp gnot"><p class="li">Vật liệu: ${esc(dp.material || '(chưa khai)')} · sống ở: <b>${esc(CONTEXT_LABEL[dp.context] || dp.context || '(chưa khai)')}</b>${dp.scenes.length ? ' · ' + dp.scenes.length + ' cảnh ngữ-cảnh' : ''}</p><p class="li">Phản ứng ở nấc: <b>${esc(REACTION_LABEL[dp.reaction] || dp.reaction || '(chưa khai)')}</b>${dp.options ? ' · có bộ phương án đính kèm' : ''}</p></div>`);
+  // Dòng ngưỡng in NGUYÊN VĂN (AC-1 hồ sơ moi-noi-vong-trao): chỉ bỏ dấu đầu dòng, không đi qua
+  // hàm lột markdown — số chỗ gọi hàm lột là ma trận đã ghim của card-text-fidelity (P161).
+  // Nhãn khối nói ĐÚNG trạng thái: chỉ `chot` mới là «đã khai ở Cổng Đáng» (lời của NGƯỜI).
+  // `de-xuat` / `chua-chot` vẫn in ra để người soi, nhưng KHÔNG được gọi là lời khai của họ.
+  if (ut.opportunity_present && ut.readable && ut.section_present && ut.lines.length) {
+    const nhanKhoi = ngState === 'de-xuat' ? 'Ngưỡng nghiệm thu — ĐỀ XUẤT CỦA MÁY, anh chưa chốt'
+      : 'Ngưỡng nghiệm thu (đã khai ở Cổng Đáng)';
+    P.push(`<div class="lab">${nhanKhoi}</div><div class="grp gnot">${ut.lines.map(l => `<p class="li">${esc(l.replace(/^[-*]\s+/, ''))}</p>`).join('')}<p class="li">${mienDo ? 'Ô khai không đo được — vòng này không có phiên nghiệm thu; đã giao là đóng.' : 'Vòng này sẽ có phiên nghiệm thu sau khi giao — số đo thật sẽ đặt cạnh các ngưỡng trên.'}</p></div>`);
+  }
+  if (glossaryDelta && glossaryDelta.length) P.push(`<div class="lab">Từ vựng chốt ở feature này</div><div class="grp gnot">${glossaryDelta.map(x => `<p class="li">${esc(x.term)} — ${x.added ? 'term MỚI' : 'định nghĩa/_Avoid_ được sửa'}</p>`).join('')}</div>`);
+  if (gpPresent && gpVerdict === 'clean' && !gpRows.length && !gpDropped) P.push(`<div class="lab">Phản biện context sạch</div><div class="flag fok">Phản biện: không còn lỗ đáng kể.</div>`);
+  else if (gpRows.length) P.push(`<div class="lab">Phản biện context sạch</div><div class="grp gnot">${gpRows.map((r, i) => `<p class="li"><b>${esc(r.sev)}</b> · ${esc(pIdx(pl.gap_probe_plain, i) || stripMd(r.artifact) + ' · ' + stripMd(r.summary) + ' — ' + stripMd(r.disposition))}</p>`).join('')}</div>`);
+  const flags = [];
+  if (glossaryPresent && glossaryDelta && !glossaryDelta.length) flags.push(['finfo', 'Từ vựng: feature này không thêm/sửa term nào trong CONTEXT.md.']);
+  // (lenh-in-ra-phai-bam-duoc AC-5) cờ «chưa truyền --glossary-base» đã bỏ — nó nói với agent, không với người.
+  if (glossaryDeltaErr === 'git-failed') flags.push(['fwarn', 'Từ vựng: không đọc được diff CONTEXT.md (base sai hoặc không phải git repo) — term mới/sửa CHƯA được trình, đừng coi là "không có thay đổi".']);
+  for (const id of covGaps) flags.push(['fwarn', `${id} có ngưỡng/biên nhưng chưa có ca "dưới ngưỡng → KHÔNG xảy ra" — thêm 1 ca chặn ngay sẽ rẻ hơn nhiều so với phát hiện sau.`]);
+  // dpFlags chảy vào HAI đường: mảng `flags` (ra HTML) và `--extract` (JSON máy-đọc).
+  // Thoát chuỗi ở CHỖ ĐẨY làm đúng đường HTML nhưng bẩn đường JSON — thực thể `&lt;`
+  // lọt vào trường máy đọc (hồi quy do chính bản vá S4-r4 của tôi). Nên giữ dpFlags
+  // NGUYÊN VĂN và thoát chuỗi ở ĐÚNG BIÊN RENDER, cùng nếp với mọi mục khác của
+  // `flags` (chúng cũng esc() ngay trước khi vào mảng này).
+  for (const f of dpFlags) flags.push(['fwarn', esc(f)]);
+  if (!ut.opportunity_present) flags.push(['finfo', 'Vòng này không có hồ sơ cơ hội → sau Cổng Bằng chứng sẽ ship thẳng, không phiên nghiệm thu.']);
+  else if (!ut.readable) flags.push(['fwarn', 'Hồ sơ cơ hội có nhưng thẻ không đọc được (file rỗng hoặc quá cỡ) — chưa biết vòng này có ngưỡng nghiệm thu không; soi file trước khi duyệt.']);
+  else if (!(ut.section_present && ut.lines.length)) flags.push(['fwarn', 'Hồ sơ cơ hội chưa khai ngưỡng nghiệm thu — chưa biết vòng này sẽ được đo bằng gì; khai ở Cổng Đáng trước khi duyệt.']);
+  // Ô mang tiền tố «đề xuất» = MÁY đề nghị, người CHƯA nói. Thẻ Cổng Phạm vi là mặt người duy
+  // nhất ở bước đó, nên gọi nó là «đã khai ở Cổng Đáng» là máy nói hộ người — thứ hiến pháp kit
+  // cấm (S4-r9 [1]). Cờ này THÊM, không thay chuỗi cũ (P198 của hồ sơ đã ký ghim nguyên văn).
+  else if (ngState === 'de-xuat') flags.push(['fwarn', 'Ngưỡng nghiệm thu đang là ĐỀ XUẤT CỦA MÁY — anh chưa chốt. Thẻ KHÔNG coi đây là lời khai của anh; chốt ở Cổng Đáng trước khi duyệt.']);
+  if (rangHongNguong) flags.push(['fwarn', `Thẻ không phân loại được ô ngưỡng (${esc(rangHongNguong)}) — sửa khuôn rồi chạy lại, đừng duyệt khi thẻ đang mù.`]);
+  if (ddApplicable && !ddLines.length) {
+    if (ddDescope) flags.push(['finfo', `Đã bỏ đường đo theo ${esc(ddDescope.id || 'entry descope')} — Cổng Giá trị sẽ đọc ngưỡng với ô CHƯA ĐO; quyết định chủ động, có dấu vết.`]);
+    else flags.push(['fwarn', 'Hồ sơ cơ hội có ngưỡng nhưng contract chưa có đường đo — không ai xây thứ sinh ra con số, Cổng Giá trị sẽ đọc bảng toàn CHƯA ĐO. Thêm section «Đường đo» (mỗi thước một dòng: số từ đâu · AC nào bảo đảm) hoặc ghi entry «bỏ đường-đo — lý do 1 dòng» rồi hãy duyệt.']);   // không đặt <…> thô trong cờ: HTML nuốt như tag (review S4-r1 F1)
+  }
+  if (uiObserved.applicable && !uiObserved.present) {
+    if (uiObserved.descoped) flags.push(['finfo', `${UI_OBS_FLAG_INFO} ${esc(uiObserved.descoped)} — Cổng Bằng chứng sẽ không có frame; quyết định chủ động, có dấu vết.`]);
+    else flags.push(['fwarn', `${UI_OBS_FLAG_WARN}: hợp đồng có mặt người nhìn mà không eval nào nhìn màn hình (ui-check) — người ký Cổng Bằng chứng sẽ chỉ đọc tên ca máy. Thêm một eval ui-check (layer: ui-observed), hoặc ghi entry descope «${esc(LNT ? LNT.UI_OBSERVED_DESCOPE : 'bỏ ui-observed — ')}lý do» rồi hãy duyệt.`]);
+  }
+  // Giá của một lựa chọn phải nói TRƯỚC khi chọn: khối trên vừa khuyên thêm eval
+  // ui-check, và đây là cái giá của lời khuyên đó ở làn ghim lại. Cờ BÁO (finfo),
+  // không chặn — nó không đổi routing, nên bản ghi mốc định tuyến không trôi.
+  if (cmG1.ac_khong.length) flags.push(['finfo', `AC không có chốt máy khi ghim lại: ${esc(cmG1.ac_khong_mo.join(', '))} — làn ghim lại chỉ chạy eval test/script, nên các tiêu chí này KHÔNG được chứng lại ở mỗi lượt ghim (GUIDE §7.1). Muốn có chốt: ghép thêm ≥1 eval test/script cho cùng tiêu chí.`]);
+  if (uiObserved.token_la.length) flags.push(['fwarn', `Surface ghi chữ ngoài từ vựng (${esc(uiObserved.token_la.join(', '))}) — các bộ đọc có thể xếp hồ sơ khác nhau; dùng ${esc(LNT ? LNT.SURFACE_ENUM.join(' · ') : 'ui · api · cli · sdk · mobile')} (web, web-ui đọc là ui).`]);
+  if (!LNT) flags.push(['fwarn', 'Thẻ không đọc được lib/lop-nhin-thay.cjs — chưa kiểm được bằng chứng lớp nhìn-thấy.']);
+  // Răng chống lách: đặt SAU chuỗi if/else của ngưỡng — chen vào giữa là cướp mất nhánh else.
+  if (rangHong) flags.push(['fred', `Răng chống lách KHÔNG chạy được: ${rangHong} (${OPP_TPL1}) — thẻ này chưa kiểm được «khai không đo được nhưng có mặt người dùng». Sửa khuôn rồi dựng lại thẻ trước khi duyệt.`]);
+  if (mienDoCoNguoiDung) flags.push(['fred', 'Khai không đo được nhưng hợp đồng có mặt người dùng (ui/mobile) — lối «không đo được» chỉ dành cho vòng không có người dùng cuối. Khai lại ngưỡng, hoặc bỏ mặt người dùng khỏi hợp đồng.']);
+  if (!covPresent || !covLines.length) flags.push(['fwarn', 'Contract chưa có section Coverage — độ phủ bộ AC chưa có bằng chứng (workspace cũ / chưa quét). Quét bằng morphological-scan hoặc ghi 1 dòng lý do bỏ, rồi hãy duyệt.']);
+  if (covUnverified) flags.push(['fwarn', 'Coverage có trục chưa nêu được thước đo "đủ" (CE chưa kiểm chứng) — hỏi nguồn đối chiếu trước khi tin "đã quét đủ".']);
+  if (!gpPresent && gpDescope) flags.push(['finfo', `Đã bỏ phản biện context sạch theo ${esc(gpDescope.id || 'entry descope')} — quyết định chủ động, có dấu vết.`]);
+  else if (!gpPresent) flags.push(['fwarn', 'Chưa có phản biện context sạch (gap-probe) — bộ artifact chưa qua truy lỗ hổng bởi context sạch (workspace cũ / bước bị bỏ không dấu vết). Chạy bước S1#7 hoặc ghi entry descope "bỏ gap-probe", rồi hãy duyệt.']);
+  if (gpPresent && gpVerdict === 'probe-failed') flags.push(['fwarn', 'Phản biện không chạy được (probe-failed sau retry) — duyệt nghĩa là duyệt KHÔNG có phản biện context sạch.']);
+  if (gpPresent && !gpVerdictKnown) flags.push(['fwarn', `gap-probe.md không đọc được (verdict lạ/thiếu${gpVerdict ? ': "' + esc(gpVerdict) + '"' : ''}) — coi như CHƯA có phản biện, chạy lại bước S1#7 hoặc sửa frontmatter.`]);
+  if (gpPresent && gpVerdictKnown && gpVerdict !== 'probe-failed' && (gpVerdict === 'findings' || gpP0 + gpP1 + gpP2 > 0) && !gpRows.length && !gpDropped) flags.push(['fwarn', 'gap-probe.md khai findings nhưng không đọc được dòng finding nào (bảng thiếu / heading sai) — soi file trước khi duyệt.']);
+  if (gpPresent && gpPhatHien > gpP0 + gpP1 + gpP2) flags.push(['fwarn', GP_NGOAI + gpPhatHien + esc(' > ') + (gpP0 + gpP1 + gpP2)]);
+  if (gpVerdict === 'clean' && (gpPhatHien || gpDropped)) flags.push(['fwarn', 'gap-probe.md mâu thuẫn: verdict clean nhưng bảng có finding — soi lại file trước khi duyệt.']);
+  for (const id of dichLac) flags.push(['fwarn', DICH_LAC + esc(id)]);
+  if (gpDropped) flags.push(['fwarn', `${gpDropped} dòng finding không đọc được (sai số cột — cell chứa "|" hoặc thiếu cột) — sửa bảng gap-probe.md nếu cần soi đủ.`]);
+  if (nen.present && nen.nen === 'do') flags.push(['fwarn', esc(NEN_DO_FLAG)]);
+  else if (!nen.present) flags.push(['fwarn', esc(NEN_VANG_FLAG)]);
+  { const ds = danhSachKhongDocCua(dir); if (ds.length) flags.push(['fwarn', esc(DANH_SACH_KHONG_DOC_FLAG + ' ' + ds.join(', '))]); }
+  flags.push(...yamlChuanCo(dir));
+  if (roiBac) flags.push(['fred', esc(MSG_ROI_BAC)]);
+  if (dupIds.length) flags.push(['fwarn', `Trùng mã tiêu chí: ${esc([...new Set(dupIds)].join(', '))} — mapping eval mơ hồ, đổi mã trước khi duyệt.`]);
+  for (const j of judgmentACs) flags.push(['finfo', `${j.id} cần MẮT bạn chấm sau khi code (việc người, máy không chấm được).`]);
+  if (tier === 'T3') flags.push(['finfo', 'Đụng phần nhạy cảm → tier T3, duyệt kỹ phần "sẽ KHÔNG làm".']);
+  if (!canCu) flags.push(['fwarn', 'Không nạp được bộ đọc căn cứ bước thiết kế (scripts/can-cu-s1.cjs) — thẻ in mọi dòng sổ ở khối chung, chưa kiểm căn cứ.']);
+  for (const d of cc.do) flags.push(['fred', esc(canCu.CO.dong(d.id, d.thong_diep))]);
+  if (cc.goc === 'loi') flags.push(['fwarn', esc(canCu.CO.gocLoi(glossaryBase))]);
+  else if (ccDraft && !glossaryBase && ccMayQuyet.some(d => d.e.can_cu.nguon === 'muc-tieu')) flags.push(['fwarn', esc(canCu.CO.chuaKiemGoc)]);
+  if (ccDraft && cc.doi_truoc) flags.push(['fwarn', esc(canCu.CO.doiTruoc(cc.doi_truoc))]);
+  if (luatG1) for (const [c, t] of luatG1.co) flags.push([c, esc(t)]);
+  if (ttG1) for (const [c, t] of ttG1.co) flags.push([c, esc(t)]);
+  else if (ttLoi && /^tri_thuc:/m.test(read(path.join(root, '_acceptance', 'config.yaml')))) flags.push(['fwarn tri-thuc', esc(`Không nạp được bộ đọc dòng tra tri thức (scripts/tri-thuc-tra.cjs) — chưa kiểm dòng «đã tra tri thức»: ${ttLoi}`)]);
+  if (coVang) flags.push(['fwarn co-hd', esc(coVang)]);
+  if (flags.length) P.push(`<div class="lab">Cần chú ý trước khi duyệt</div>${flags.map(([c, t]) => `<div class="flag ${c}">${t}</div>`).join('')}`);
+  // ---- 👉 VIỆC CỦA ANH trên THẺ (danh sách máy-đếm — chip ② kit 2.1): mỗi
+  // mục làm-gì/ở-đâu/trả-lời-dạng-gì + câu mẫu gộp MỘT dòng (một <p> duy nhất,
+  // không tag chen giữa — P185 canh). Khuôn này sống CHỈ trên thẻ; tin nhắn
+  // mời cổng KHÔNG dùng nó (hồ sơ cat-khoi-viec-cua-anh-tren-tin, 16/08 —
+  // điều khoản GATE-INVITE-CLAUSE trong human-facing-language.md).
+  if (DA_KHEP_G1) P.push(`<div class="lab">👉 VIỆC CỦA ANH</div><div class="grp gdo"><p class="li"><b>Hồ sơ đã khép (${DA_KHEP_G1_VI}) — không còn câu hỏi nào cho người.</b> Mở lại hồ sơ là một quyết định riêng.</p></div>`);
+  else P.push(`<div class="lab">👉 VIỆC CỦA ANH</div><div class="grp gdo"><p class="li"><b>Duyệt hay trả hồ sơ này</b> — làm gì: đọc hai khối SẼ làm / KHÔNG làm và các cờ chú ý ở trên; ở đâu: trả lời ngay trong phiên đang trình thẻ; trả lời dạng: «Duyệt» hoặc «Sửa: nêu điều cần đổi».</p>${ccDraft ? ccCauHoi.map(d => `<p class="li"><b>${esc(d.nhan)}</b> — ${esc(stripMd(d.e.decision || ''))}: máy khuyên ${esc(stripMd(d.e.can_cu.khuyen))}; «duyệt» là nhận khuyến nghị, chọn lối khác thì trả lời «sửa: ${esc(d.nhan)} = &lt;lối&gt;».</p>`).join('') : ''}<p class="li">Trả lời mẫu (một dòng, điền vào chỗ trống): «duyệt hay sửa: ___»</p></div><div class="mach">Dòng lệnh ${(roiBac || g1Blocked) ? 'CHƯA điền sẵn được — thẻ đang có cờ đỏ, đọc cờ trước' : 'đã điền sẵn khuyến nghị'}: <b>${esc(oneShotG1)}</b></div><div class="mach goal">Sau khi trả lời (duyệt hay sửa), dán dòng này để đoạn máy chạy tới cổng kế: <b>${esc(goalLine(slug))}</b></div>`);
+  P.push(`<div class="foot"><span class="rev">↻ Sửa 1 dòng tiêu chí GIỜ rẻ hơn 10× phát hiện sai sau khi code.</span><div class="btns"><button class="b no">Sửa lại</button><button class="b yes">Duyệt, cho code</button></div></div>
+</div></div>`);
+  return ghiRoiThoat(P.join('\n'), 0);
+}
+
+// Bộ đọc `design-floor.json` — null khi vắng, hỏng, hay không mang mảng `dong` chuỗi.
+function docSanTk(t) {
+  if (!t) return null;
+  try {
+    const j = JSON.parse(t);
+    return Array.isArray(j.dong) && j.dong.length && j.dong.every(x => typeof x === 'string') ? { bac: j.bac || null, dong: j.dong } : null;
+  } catch { return null; }
+}
+
+// Bộ đọc `duong-nen.md` — MỘT hàm cho Cổng 1 (khối «Nền hạ tầng») và Cổng 2 (câu «đỏ từ
+// trước vòng» trên khối chỗ mù, nhan-trang-thai-va-reality AC-5). Tách ra từ thân Cổng 1
+// nguyên văn; hai cổng đọc hai cách là đúng lớp hai-bộ-đọc-một-tệp.
+function docNen(nenT) {
+  if (!nenT.trim()) return { present: false };
+  const f = frontmatter(nenT);
+  // Cắt mục theo CẢ DÒNG tiêu đề, không qua section(): bộ cắt chung neo `\b` sau tên mục,
+  // mà `\b` của JS không coi «ỏ» là chữ — «## Dòng đỏ» không bao giờ khớp (ca GN2 bắt).
+  // «Dòng vàng» (2.31) cắt cùng cách; tệp đời trước không có mục → rỗng (đường đọc-cũ).
+  const dongs = nenT.split('\n');
+  const muc = re => { const i = dongs.findIndex(l => re.test(l)); if (i < 0) return []; const sau = dongs.slice(i + 1); const j = sau.findIndex(l => /^#{1,6}\s/.test(l)); return bullets(j < 0 ? sau : sau.slice(0, j)).filter(l => l.trim() && l.trim() !== 'không có'); };
+  return { present: true, nen: clean(f.nen), cong_cu: clean(f.cong_cu), suite: clean(f.suite), luoi: clean(f.luoi), engine: clean(f.engine), do: muc(/^##\s+Dòng đỏ\s*$/), vang: muc(/^##\s+Dòng vàng\s*$/) };
+}
+
+// ================= GATE 2 =================
+const rfm = frontmatter(report);
+const verdict = clean(rfm.verdict).toUpperCase();
+const reason = unquote(rfm.reason);
+// ── NHAN-CANH-GAY (hồ sơ nhan-trang-thai-va-reality, Đ2 · AC-4…AC-7) ──────────
+// Lượt chấm cuối kẹt vì đâu — hỏi MỘT nguồn lib/nhan-canh-gay.cjs (cùng nguồn với lưới
+// trước-merge và recheck). Nguồn chuỗi engine không rút được → nguon null → mọi mục không
+// phân loại → khoá như trước vòng (fail-closed); dòng «thước lệch» vẫn đọc được.
+const NCG = require('../lib/nhan-canh-gay.cjs');
+const cgNguon = NCG.nguonNhan();
+const cgExpected = (() => { try { const r = evalYamlLib.expectedExits(read(path.join(dir, 'evals.yaml'))); return r.errs.length ? {} : Object.fromEntries(r.byId); } catch (_) { return {}; } })();
+const cg = NCG.canhGay({ runLogText: read(path.join(dir, 'run-log.jsonl')), verdict, expectedExit: cgExpected, nguon: cgNguon });
+const CANH_MO = verdict === 'BLOCKED' && cg.trangThai === 'mo';
+// Đối chứng của lượt cuối không đo (bị từ chối / chết / chạy dở): mọi màu xanh của lượt chưa từng được thấy
+// đỏ trên code cũ. NHÃN ở cổng đã có — cờ, không thêm ô hỏi (K8). Bên viết: dòng `baseline-khong-do` của
+// bộ chấm (acceptance-verify.js); chỉ dòng của LẦN CHẠY CUỐI (cùng round + ts với dòng tổng kết cuối — cùng
+// luật «lượt cuối» với canhGay), nên lượt chấm lại đo trọn thì dòng cũ là sử liệu. Ca BW4 dựng run-log bằng
+// bộ chấm thật rồi đọc bằng thẻ thật — đổi chữ `kind` ở một bên là đỏ.
+const CO_DOI_CHUNG = 'Đối chứng trên code cũ KHÔNG chạy ở lượt chấm này';
+const doiChung = (() => {
+  const dong = NCG.docDong(read(path.join(dir, 'run-log.jsonl')));
+  const tallies = dong.filter(o => o.kind === 'round-tally');
+  const cuoi = tallies[tallies.length - 1];
+  if (!cuoi || typeof cuoi.round !== 'number') return null;
+  const d = [...dong].reverse().find(o => o.kind === 'baseline-khong-do' && o.round === cuoi.round && o.ts === cuoi.ts);
+  return d ? { round: cuoi.round, ly_do: typeof d.ly_do === 'string' ? d.ly_do : '', chua_chay: d.chua_chay === true, so_lenh: Number.isInteger(d.so_lenh) ? d.so_lenh : null } : null;
+})();
+const approvable = cg.trangThai !== 'lech' && cg.trangThai !== 'cay-doi' && (verdict === 'PASS' || verdict === 'PENDING-JUDGMENT' || CANH_MO);
+
+const critText = {}; for (const ac of parseACBlock(contract)) { if (!critText[ac.id]) critText[ac.id] = ac.gwt; }
+const cgEvalMeta = (() => { try { return Object.fromEntries(evalYamlLib.parseEvals(read(path.join(dir, 'evals.yaml')), ['criterion', 'cmd']).map(e => [e.id, { ac: clean(e.criterion), cmd: clean(e.cmd) }])); } catch (_) { return {}; } })();
+// Dời logic cờ nền đỏ của Cổng 1 sang Cổng 2 (AC-5): cùng tệp đường nền, cùng bộ đọc dòng đỏ.
+const cgNenDo = docNen(read(path.join(dir, 'duong-nen.md'))).do || [];
+const cgDoTruoc = m => { const k = (cgEvalMeta[m.evalId] || {}).cmd; const key = k && k.startsWith('config:') ? k.slice(7) : ''; return cgNenDo.some(l => (key && l.includes(key)) || (m.cmd && l.includes(m.cmd)) || (String(m.evalId).startsWith('SUITE-') && /^nen suite:/.test(l))); };
+const cgAC = m => (cgEvalMeta[m.evalId] || {}).ac || '—';
+// ── LOI-RA-TRAN-LUOT (hồ sơ loi-moi-tran-luot-loi-song-co-gia) ──────────────────────────────
+// Thẻ CHƯA-ký-được ở trần lượt hoặc khi một eval chưa đạt lặp lại: khối «Lối ra» (ba lối sống,
+// có giá, khuyến nghị tất định) tính từ sổ chạy bằng MỘT mô-đun thuần — HTML và `--extract` đọc
+// cùng đối tượng. Ngoài hai ca ấy `LR` là null và thẻ giữ nguyên từng byte. evals.yaml vắng hoặc
+// không đọc ra eval nào → evalMeta null: không lọc id, khối in cờ vàng có tên thay vì im.
+const LRM = require('./loi-ra-tran-luot.cjs');
+const lrEvalMeta = (() => { const t = read(path.join(dir, 'evals.yaml')); if (!t.trim()) return null; try { const ds = evalYamlLib.parseEvals(t, ['criterion']); return ds.length ? Object.fromEntries(ds.map(e => [e.id, { ac: clean(e.criterion) }])) : null; } catch (_) { return null; } })();
+const LR = LRM.loiRa({ runLogText: read(path.join(dir, 'run-log.jsonl')), verdict, approvable, trangThai: cg.trangThai, expectedExit: cgExpected, evalMeta: lrEvalMeta });
+const CG_LOI = ['ghi hạn chế rồi ship', 'dựng bàn đo rồi chấm lại', 'trả lại'];
+const CG_GIA = ['AC ấy ship không có bằng chứng máy; mở lại khi bàn đo về', 'thêm một lượt chấm và công dựng bàn đo', 'vòng dừng ở đây, không ship'];
+
+// per-eval rows — tolerate any non-pipe cell content (e.g. "N/A", "PASS*")
+const rows = [];
+for (const l of report.split('\n')) { const m = l.match(/^\|\s*(E\w+)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|/); if (m && m[1] !== 'Eval') rows.push({ id: m[1], crit: m[2].trim(), exec: m[3].trim().toLowerCase(), verdict: m[4].trim().toUpperCase() }); }
+
+// evidence blocks — skip YAML block scalars (output: |) and only accept allow-listed keys,
+// so a log excerpt line like "human_override: ..." or "baseline: green" inside output can't
+// drop a real decision or inflate the regression counts.
+const FIELDS = ['run_id', 'exit_code', 'baseline', 'verifier', 'verified_at', 'judged_by', 'verdict', 'rationale', 'human_override', 'screenshot', 'pass_rate', 'reason'];
+const evid = {};
+{ let cur = null; let skip = -1; for (const raw of report.split('\n')) {
+    if (/^#{1,6}\s/.test(raw)) { cur = null; skip = -1; continue; } // LOP-DOC: heading
+    const em = raw.match(/^-\s+eval:\s*(\S+)/); if (em) { cur = em[1]; evid[cur] = {}; skip = -1; continue; }
+    // Khối KHÔNG-phải-eval ở cột 0 (khuôn SUITE-BLOCK-TEMPLATE mở đầu bằng `- cmd:`)
+    // ĐÓNG khối đang mở. Thiếu nhánh này thì run_id/exit_code/verified_at của lệnh
+    // chạy chung chảy vào eval CUỐI và cờ «bằng chứng máy đầy đủ» xanh nhờ mã của
+    // lệnh suite — false-green ngay tại khoảnh khắc người bấm ký. Bullet thụt lề
+    // (mục của required_evidence) KHÔNG khớp vì mẫu này neo cột 0.
+    if (/^-\s+\w+\s*:/.test(raw)) { cur = null; skip = -1; continue; } // LOP-DOC: bullet
+    if (!cur) continue;
+    if (skip >= 0) { if (raw.trim() === '') continue; if (raw.match(/^(\s*)/)[1].length > skip) continue; skip = -1; }
+    // judge-required-evidence: gom list items dưới `required_evidence:` (dòng "- …"
+    // không match khuôn key:value nên parser cũ bỏ qua — thêm nhánh additive).
+    const li = raw.match(/^\s+-\s+(.+)$/);
+    if (li && evid[cur].__reOpen) { (evid[cur].required_evidence_list = evid[cur].required_evidence_list || []).push(li[1].trim()); continue; }
+    const fm = raw.match(/^(\s*)(\w+):\s*(.*)$/); if (!fm) continue;
+    evid[cur].__reOpen = fm[2] === 'required_evidence';
+    const indent = fm[1].length, key = fm[2], val = fm[3].trim();
+    if (/^[|>]/.test(val)) { skip = indent; if (FIELDS.indexOf(key) >= 0) evid[cur][key] = ''; continue; } // block scalar → skip body
+    if (FIELDS.indexOf(key) < 0) continue;
+    evid[cur][key] = val;
+} }
+// ── Lớp bằng chứng nhìn-thấy ở Cổng Bằng chứng: đọc trên BÁO CÁO, không trên bản khai
+// (hồ sơ lop-bang-chung-nhin-thay, gap-probe F1 — ca oneflow E10 «khai rồi bỏ ở S4»). Một eval
+// ui-check chỉ ĐẠT khi block của nó trong evidence-report có exit_code 0 + screenshot:. Hai chuỗi
+// là CHUỖI PIN của ca LNT4.
+const UI_OBS_G2_NONE = 'Bằng chứng lớp nhìn-thấy: KHÔNG có';
+const UI_OBS_G2_OK = 'Bằng chứng lớp nhìn-thấy:';
+let LNT2 = null; try { LNT2 = require(path.join(__dirname, '..', 'lib', 'lop-nhin-thay.cjs')); } catch (_) {}
+const uo2 = LNT2 ? LNT2.classify(dir) : { applicable: false, reason: 'no-lib' };
+const uiIds = (LNT2 && !uo2.reason) ? LNT2.uiCheckIds(LNT2.parseEvalsText(read(path.join(dir, 'evals.yaml')))) : [];
+// Ảnh phải là TỆP có thật dưới evidence/ của hồ sơ (hồ sơ anh-co-that-trong-ho-so) — chuỗi `screenshot:` một mình không
+// đủ: một kho tiêu thụ 22/10 có hồ sơ đã ký được tính «có ảnh» mà không chứa ảnh nào. Cùng bộ xét với trang bằng chứng.
+const anhHoSo = require('./anh-ho-so.cjs');
+const uiKhaiAnh = uiIds.filter(i => { const e = evid[i] || {}; return String(e.exit_code || '').trim() === '0' && !!(e.screenshot && anhHoSo.giaTriSach(e.screenshot)); });
+const uiKhung = Object.fromEntries(uiKhaiAnh.map(i => [i, anhHoSo.khungAnh(dir, i, evid[i].screenshot)]));
+const uiPassed = uiKhaiAnh.filter(i => uiKhung[i].frames.length > 0);
+const uiThieuAnh = uiKhaiAnh.filter(i => !uiKhung[i].frames.length).map(i => ({ id: i, ...uiKhung[i].thieu[0] }));
+const uiObserved2 = { applicable: !!uo2.applicable, present: uiPassed.length > 0, declared: uiIds.length, passed: uiPassed.length, descoped: (!uo2.reason && uo2.descoped) || null, ...(uiThieuAnh.length ? { thieu_anh: uiThieuAnh } : {}) };
+const UI_OBS_G2_THIEU = 'Bằng chứng lớp nhìn-thấy: THIẾU ảnh';
+const thieuAnhChu = () => uiThieuAnh.map(t => `${esc(t.id)} — <code>${esc(t.gia_tri)}</code> (${esc(t.ly_do)})`).join('; ');
+
+const hasOverride = id => { const v = evid[id] && evid[id].human_override; return !!(v && v.trim() && !/^#|^<|^\{\{/.test(v.trim())); };
+
+// decisions the human still owes: any UNCERTAIN row, plus EVERY judgment row on T3
+// (T3 requires a human verdict on each judgment item — matches the hook), minus those overridden.
+const decById = {};
+for (const r of rows) {
+  const owed = r.verdict === 'UNCERTAIN' || (tier === 'T3' && r.exec === 'judgment');
+  if (owed && !hasOverride(r.id)) decById[r.id] = { id: r.id, q: critText[r.crit] || (evid[r.id] && evid[r.id].rationale) || r.crit, why: evid[r.id] && evid[r.id].rationale };
+}
+const decisions = Object.values(decById);
+const machineRows = rows.filter(r => r.exec === 'test' || r.exec === 'script' || r.exec === 'ui-check');
+// Mã thoát ĐÃ KHAI (`expected_exit`) đọc qua bộ đọc dùng chung của lib — cùng nguồn với
+// làn ghim lại, bên đọc pin và bộ sinh args (thuoc-co-cua AC-2). Trước bản này thẻ so cứng
+// mã 0 nên một eval trả ĐÚNG giới hạn đã khai bị gọi «CHƯA đủ trường», nói ngược
+// `failed_evals` của chính báo cáo (crm 16/09). Bản khai sai luật → coi như không khai,
+// như evidence-core. Mã 0 luôn đạt: giới hạn đã khai không còn thì không bị phạt.
+const maDaKhai = (() => { try { const r = evalYamlLib.expectedExits(read(path.join(dir, 'evals.yaml'))); return r.errs.length ? new Map() : r.byId; } catch (_) { return new Map(); } })();
+const maDat = (id, code) => { const c = String(code == null ? '' : code).trim(); return c === '0' || c === String(maDaKhai.get(id) || 0); };
+// Eval có mã trong báo cáo mà mã ấy KHÔNG đạt thì không tính là đạt, dù bảng ghi PASS.
+const machinePass = machineRows.filter(r => r.verdict === 'PASS' && !(evid[r.id] && evid[r.id].exit_code && !maDat(r.id, evid[r.id].exit_code))).length;
+const allPass = machineRows.length > 0 && machinePass === machineRows.length;
+const red = Object.values(evid).filter(e => e.baseline === 'red').length;
+const green = Object.values(evid).filter(e => e.baseline === 'green').length;
+const evComplete = machineRows.length > 0 && machineRows.every(r => { const e = evid[r.id] || {}; return e.run_id && e.run_id.length >= 4 && e.exit_code && maDat(r.id, e.exit_code) && e.verifier; });
+
+// Scope-triage: lỗi THẬT nhưng ngoài phạm vi đã duyệt. Đọc thẳng từ artifact —
+// KHÔNG qua key overlay, cùng luật với gap-probe: cái gì phải hiện trên thẻ thì
+// script render, để không thể quên hay điền sai.
+const ooc = outOfContract.parse(read(path.join(dir, 'review-findings.md')));
+// Luật sản phẩm của kho (bat-bien-san-pham): khối, ô, cờ rút ở luat-san-pham.cjs; kho không khai luật → null, thẻ y nguyên.
+let luatG2 = null; try { luatG2 = require('./luat-san-pham.cjs').theCong2({ root, slug, contractTxt: read(path.join(dir, 'contract.md')), evidenceTxt: read(path.join(dir, 'evidence-report.md')), esc }); } catch (_) { luatG2 = null; }
+// Bản đồ khuôn của kho (khuon-loi): một dòng số đo + cờ rút ở ban-do-khuon.cjs; kho không khai bản đồ → null, thẻ y nguyên.
+let khuonG2 = null; try { khuonG2 = require('./ban-do-khuon.cjs').theCong2({ root, slug, contractTxt: read(path.join(dir, 'contract.md')), evidenceTxt: read(path.join(dir, 'evidence-report.md')) }); } catch (e) { khuonG2 = loiKhuon(e); }
+// Mục máy tự định tuyến (hồ sơ ngoai-n-tu-dinh-tuyen): dòng gate2 định tuyến mục mang dấu máy → mục là
+// dòng BÁO (routing.bao), in kèm lệnh đảo. Dòng máy không còn mục nào cùng mã → cờ, mục về người. Sổ
+// không có dòng máy → mọi nhánh dưới im, thẻ như trước (đọc-cũ).
+// Dòng sổ → mục đi qua bộ phân giải CHUNG của lib (`ganDinhTuyen`, hồ sơ dinh-tuyen-theo-ma-muc): khớp
+// theo mã mục (tiêu đề gỡ nhãn lượt + tệp), dòng chỉ số ghi trước một lượt chấm là «dòng cũ» → cờ vàng.
+const DTM_DAU = 'dinh-tuyen-ngoai-n';
+let dtmLib = null; try { dtmLib = require('./dinh-tuyen-may.cjs'); } catch (_) {}
+const ganG = outOfContract.ganDinhTuyen(ooc, read(path.join(dir, 'decisions.jsonl')), read(path.join(dir, 'run-log.jsonl')));
+const dtmMay = fi => {
+  const x = ganG.gan[fi]; const d = x && x.dong;
+  return d && d.may === DTM_DAU ? { id: d.id || '', dao: d.dao || '', de_xuat: dtmLib ? dtmLib.deXuatCua(d.decision) : '' } : null;
+};
+const dtmLech = ganG.moCoi.filter(m => m.may === DTM_DAU).map(m => 'Ngoài-' + (m.n || '?'));
+// Dòng cũ chỉ đáng cờ khi còn mục chưa định tuyến — người đã định tuyến lại đủ thì dòng cũ là sử liệu.
+const dtmCu = ganG.soCu.length && ganG.gan.some(x => !x) ? ganG : null;
+const dinhTuyenMay = ooc.findings.map((f, fi) => { const d = dtmMay(fi); return d ? { nhan: 'Ngoài-' + (fi + 1), id: d.id, de_xuat: d.de_xuat, dao: d.dao } : null; }).filter(Boolean);
+
+// DỜI LÊN TRƯỚC --extract (hồ sơ loi-moi-cong-may-sinh, Task 6): câu gộp của
+// Cổng 2 cần biết hồ sơ có đi làn V không (ô cuối là dòng báo «đi tiếp hay kéo lại» hay
+// ô hỏi «ký hay trả»), mà MAY_DI_TIEP trước đây tính SAU cả --extract lẫn nhánh thoát
+// non-approvable — extract sẽ khai một nhãn khác thẻ. Khối giữ NGUYÊN VĂN, chỉ
+// đổi vị trí (rà soát Gate 1.5, rủi ro #5).
+// Trạng thái làn V HỎI đúng bộ phân ô, KHÔNG dựng lại sáu điều kiện xanh-sạch ở
+// đây: đó sẽ là bản dựng THỨ BA của lớp lỗi lan-v-khong-phai-cho-ky đã trả giá
+// (bash trong lưới trước-merge, JS trong khong-can-nguoi). Thẻ tiêu thụ CHÍNH
+// đầu ra của máy quét nên không thể lệch theo cấu trúc (ledger d-...-29818).
+// Hồ sơ máy đã đi tiếp hợp lệ thì thẻ KHÔNG mời ký — hôm nay nó vẫn in «máy đã
+// xong — ký nhanh» kèm nút Ký cho đúng những hồ sơ lưới đã cho qua.
+// Máy quét chết → GIỮ NGUYÊN hành vi cũ + một cờ vàng; không bao giờ im lặng
+// tuyên sạch (fail-visible, không fail-quiet).
+const trangThai = require('./trang-thai-ho-so.cjs');
+let scanState = null, scanErr = null, scanBroken = null, scanHit = null, scanHan = null;
+// Chỉ quét khi thẻ CÓ THỂ ký: nhánh REJECT/BLOCKED không đọc MAY_DI_TIEP, mà
+// start-scan là lượt chạy tiến trình con đắt nhất của bộ dựng (S4-r1 đo:
+// --extract 0,03s → 0,45s sau khi khối bị dời lên trước extract).
+if (approvable) ({ state: scanState, err: scanErr, broken: scanBroken, hit: scanHit, han: scanHan } = quetHoSo());
+// Hồ sơ đã có ô kết `machine-cleared` cũng là «máy đã đi tiếp» — bộ quét gọi nó bằng hai
+// khoá riêng, thẻ phải nhận cả bốn, nếu không hồ sơ máy-thông lại bị mời ký (hồ sơ ra-co-ten).
+const MAY_THONG = (clean(cfm.status) || '').toLowerCase() === 'machine-cleared';
+// Ca «bộ quét mù» (chạy lỗi, hoặc repo chưa dựng cổng) KHÔNG còn cần vế riêng: `MAY_THONG`
+// đọc thẳng status nên nó đúng cả khi bộ quét câm — mời ký lúc mù là ca thẻ từng dẫm với
+// may-di-tiep (S4-r4). Hồ sơ HỎNG vẫn phải hiện đường sửa, nên `!scanBroken` giữ nguyên
+// ở vế đầu (S4-r6 [4]).
+// Vế `MAY_THONG` đứng RIÊNG, không nằm trong danh sách khoá: hợp đồng đã khai `machine-cleared`
+// là ĐÃ QUA Cổng Bằng chứng KHÔNG chữ ký — sự thật đó do STATUS quyết, không do khoá bộ quét.
+// Liệt khoá bằng tay là blacklist trên không gian mở và nó đã thủng ba vòng liền: hồ sơ
+// máy-thông CÓ `opportunity.md` rơi vào `cho-cong-gia-tri` (khoảnh khắc người kế là Cổng Giá
+// trị, không phải Cổng 2) hoặc `da-giao-khong-do` — cả hai đều ngoài danh sách, nên thẻ vừa in
+// «máy đã thông — KHÔNG có chữ ký người» vừa mời «Ký duyệt», và người bấm theo sẽ bị chính
+// hook + lưới trước-merge chặn (S4-r7 [0][3], S4-r8 [2]).
+// `scanState == null` = bộ quét KHÔNG trả lời được (chạy lỗi, hoặc repo chưa dựng cổng →
+// `config:false`). Lúc đó thẻ KHÔNG biết hồ sơ có sạch không, nên phải GIỮ NGUYÊN hành vi cũ
+// (mời ký) + một cờ vàng — đúng câu chú thích ngay trên. Bản S4-r10 để `MAY_THONG` đứng một
+// mình nên repo không có config.yaml vừa MẤT nút ký vừa in lời khai sáu-điều-kiện mà không ai
+// kiểm: im lặng tuyên sạch, đúng thứ bị cấm (S4-r12 [2]).
+// Hồ sơ NGHỈ — thẻ CHỈ đọc bộ quét, KHÔNG tự đọc sổ: bản sao thứ hai của luật
+// là đúng lớp lỗi hồ sơ này sinh ra để đóng. Nghỉ nghĩa là hồ sơ thôi chờ ai —
+// mời ký một hồ sơ đã cho nghỉ là mời người ký lại chính điều họ đã quyết dừng.
+const NGHI = (scanHit && scanHit.nghi) || null;
+// Bộ quét LỖI (hết hạn · bị ngắt · thoát lỗi) khác bộ quét mù vì kho chưa dựng cổng (`config: false`, không lỗi):
+// hồ sơ khai `machine-cleared` đã qua Cổng Bằng chứng không chữ ký, nên ở lượt bộ quét lỗi thẻ vẫn hỏi «đi tiếp hay
+// kéo lại» theo lời khai ấy + một cờ vàng nói chưa ai kiểm lại — không rơi về «ký hay trả» (crm 7/7 thẻ, issue #463;
+// Hỏi-1 của hồ sơ quet-het-han-khong-moi-ky). Ca `config: false` giữ lối mời ký của S4-r12 [2].
+const MU_LOI = scanState == null && !!scanErr;
+const MAY_DI_TIEP = !(luatG2 && luatG2.chan) && !scanBroken && ((scanState != null && (MAY_THONG || !!NGHI
+  || ['may-di-tiep-veto-mo', 'may-di-tiep-xanh-sach',
+      'da-giao-may-thong-veto-mo', 'da-giao-may-thong-xanh-sach'].includes(scanState))) || (MAY_THONG && MU_LOI));
+// Chữ cho trạng thái này: bộ quét trả khoá thì HỎI BẢNG; bộ quét mù (scanState null) thì
+// dùng câu dự phòng — `chu(null)` NÉM (bảng cố ý chết cho khoá lạ) và làm sập cả thẻ, đúng
+// ca S4-r5 dựng lại được trên repo chưa dựng cổng: exit 1, 0 byte, người nhận màn hình trắng.
+const CHU_MAY_THONG = { nhan: 'đã giao — máy thông (chưa đọc được trạng thái)', viecKe: 'người: veto lúc nào cũng được, cửa không có hạn' };
+const chuMDT = () => (scanState == null ? CHU_MAY_THONG : trangThai.chu(scanState));
+
+// ── CÂU GỘP MÁY SINH + BẢNG ĐỊNH TUYẾN cho Cổng 2 (loi-moi-cong-may-sinh D1/D2)
+// Ô nào ĐÃ CÓ khuyến nghị máy thì điền sẵn — đó là nhận thức máy gánh (luật (c)
+// CLAUDE.md, owner 01/09). Ô người phải tự chấm và CHỮ QUYẾT luôn để trống:
+// ranh ADR 0002 nằm ở AI PHÁT NGÔN CUỐI, không ở việc ô có được điền hay không.
+// Đề xuất in bằng CHỮ NGƯỜI (OOC_GLOSS_NGUOI) chứ không token máy — thân lệnh
+// signoff dạy đúng những chữ đó, nên dòng này dán lại là chạy được (rà soát
+// Gate 1.5 rủi ro #1: in token máy thì owner dán vào vẫn tốn thêm một lượt).
+const oneParts = [], routingHoi = [], routingBao = [];
+if (luatG2) for (const x of luatG2.slots) { oneParts.push(`${x.lbl}: ${x.val}`); routingHoi.push(x.lbl); }   // luật sản phẩm: câu của người
+ooc.findings.forEach((f, fi) => {
+  const lbl = 'Ngoài-' + (fi + 1);
+  const g = f.proposal ? outOfContract.OOC_GLOSS_NGUOI[f.proposal] : '';
+  oneParts.push(`${lbl}: ${g || '___'}`);
+  // Mục ngoài hợp đồng là của người — trừ mục máy đã định tuyến theo đề xuất của chính nó khi kho
+  // bật khoá (dòng sổ mang dấu máy, tiêu đề khớp): đó là dòng BÁO, người đảo bằng lệnh in kèm.
+  if (dtmMay(fi)) routingBao.push(lbl); else routingHoi.push(lbl);
+});
+for (const d of decisions) { oneParts.push(`${d.id}: ___`); routingHoi.push(d.id); }   // câu hỏi cần mắt người
+// Chỗ mù (AC-5, AC-7): máy khuyên «ghi hạn chế» — điền sẵn; người sửa ô ấy nếu nghĩ khác.
+if (CANH_MO) cg.muc.forEach((m, i) => { oneParts.push(`Mù-${i + 1}: ghi hạn chế`); routingHoi.push(`Mù-${i + 1}`); });
+// Phạm vi đã được người duyệt Ở CỔNG 1 rồi — nhắc lại là trạm thu phí; máy
+// điền sẵn và báo, người sửa ô đó nếu đổi ý.
+if (oos.length) { oneParts.push('cắt/hoãn: đồng ý cắt'); routingBao.push('cắt/hoãn'); }
+// Treo: máy đã quyết + ghi sổ + cửa veto mở → dòng báo, điền sẵn (ROUTING-RULE).
+if (decsProvisional.length) { oneParts.push('Treo: phê hết'); routingBao.push('Treo'); }
+// Hồ sơ máy-đi-trước: máy ĐÃ qua cổng, im lặng = đi tiếp. Nhãn gọi HƯỚNG của sản phẩm, không
+// gọi động tác của người — «veto hay để yên» đọc như hai lối đều lùi/đứng (owner nhầm nhiều lần
+// ở thẻ crm soan-okr-khong-tru-luot, 04/10). Ô điền sẵn «đi tiếp» là TRẠNG THÁI máy đã đi (signoff
+// không ghi byte nào cho nó), không phải lời chấp thuận viết hộ — nên nó là dòng BÁO như Treo;
+// người chỉ gõ khi kéo lại (hồ sơ nhan-lan-v-theo-huong).
+const NHAN_LAN_V = 'đi tiếp hay kéo lại';
+if (MAY_DI_TIEP) { oneParts.push(`${NHAN_LAN_V}: đi tiếp`); routingBao.push(NHAN_LAN_V); }
+else { oneParts.push('ký hay trả: ___'); routingHoi.push('ký hay trả'); }   // chữ quyết luôn của người
+// Thẻ KHÔNG-ký-được (REJECT/BLOCKED) không có câu gộp: mời ký ở đó là mời trên
+// một thẻ đang đỏ — đúng thứ audit 01/09 gọi tên.
+// Thẻ KHÔNG-ký-được (REJECT/BLOCKED): HTML in «không cần làm gì», nên routing
+// cũng phải RỖNG. Bản trước để routing khai 6 ô hỏi trong khi mặt người nói
+// không có việc — hai mặt đọc của CÙNG một thẻ khai khác nhau về số việc của
+// người, đúng lớp hai-nguồn-cho-một-luật (S4-r2).
+const cm = chotMay(dir);
+// Hồ sơ ĐÃ KHÉP (nghỉ · chấm bởi thực tế — khoá đầu ra của bộ quét, KHÔNG tự đọc sổ): không còn
+// câu hỏi nào cho người (ho-so-khep-thoi-hoi AC-6), và cũng không còn lối ra «đi tiếp hay kéo
+// lại» để báo — hồ sơ nghỉ đi vế NGHI của MAY_DI_TIEP nên nhãn đã vào bao, phải lọc ra. Mục
+// Ngoài-N vẫn hiện ở khối riêng làm sử liệu; các dòng BÁO khác giữ nguyên.
+// Vế thực tế hỏi KHOÁ đầu ra `thucTe` của bộ quét — khác null CHỈ khi dòng quan sát đủ vế (vị từ
+// hoSoDaKhep, AC-1). Suy từ tên ô `da-cham-thuc-te` là sai: bộ quét xếp MỌI hồ sơ status ấy vào ô
+// đó, kể cả khi dòng vắng/thiếu vế (Ngoài-5/7 lượt chấm 2 — thẻ giấu câu hỏi, lưới vẫn chặn).
+const DA_KHEP = daKhepTu(scanHit);
+const DA_KHEP_VI = NGHI ? 'đã nghỉ' : 'đã chấm bởi thực tế';
+const oneShotG2 = approvable && !DA_KHEP ? `${ONE_SHOT_CMD_SIGNOFF} ${slug} ${oneParts.join('; ')}` : null;
+if (!approvable) { routingHoi.length = 0; routingBao.length = 0; }
+if (DA_KHEP) routingHoi.length = 0;
+if (DA_KHEP && routingBao.includes(NHAN_LAN_V)) routingBao.splice(routingBao.indexOf(NHAN_LAN_V), 1);
+
+// ── Dòng đếm vật · thước · nhát (thuoc-co-cua AC-13): dòng `kind: thuoc-vat` CUỐI CÙNG của
+// run-log, do feature-loop/scripts/thuoc-vat.mjs --write ghi sau mỗi lượt chấm. Dòng BÁO, không
+// phải ô hỏi — không chạm routing. Không có dòng → không in gì; dòng cuối hỏng → cờ, không in số.
+const thuocVat = (() => {
+  const raw = read(path.join(dir, 'run-log.jsonl'));
+  const dongTV = raw.split('\n').filter(l => /"kind"\s*:\s*"thuoc-vat"/.test(l));
+  if (!dongTV.length) return null;
+  try {
+    const o = JSON.parse(dongTV[dongTV.length - 1]);
+    const cap = v => Array.isArray(v) && v.length === 2 && v.every(n => Number.isInteger(n));
+    if (!cap(o.vat) || !cap(o.thuoc) || !Number.isInteger(o.nhat)) return { hong: true };
+    return { vat: o.vat, thuoc: o.thuoc, nhat: o.nhat, lan: Number.isInteger(o.lan) ? o.lan : 0, round: o.round, san: o.san || null };
+  } catch (_) { return { hong: true }; }
+})();
+// ── Dòng ý định (AC-12, lát mỏng Đ7): trích NGUYÊN VĂN từ opportunity.md — không tóm tắt,
+// không trọng số. Tệp vắng → null, không khối, không cờ.
+const Y_DINH_MAX = 12;
+const yDinh = (() => {
+  const t = read(path.join(dir, 'opportunity.md'));
+  if (!t.trim()) return null;
+  const dong = section(t, 'Vấn đề & ai gặp').filter(l => l.trim());
+  return { feature: unquote(frontmatter(t).feature || ''), dong: dong.slice(0, Y_DINH_MAX), cat: dong.length > Y_DINH_MAX };
+})();
+if (EXTRACT) { return ghiRoiThoat(JSON.stringify({ gate: 2, feature, tier, verdict, approvable, one_shot: oneShotG2, routing: { hoi: routingHoi, bao: routingBao }, decisions: decisions.map(d => ({ id: d.id, gwt: d.q, rationale: d.why })), scope: oos, analyst: '', out_of_contract: { present: ooc.present, findings: ooc.findings, unclassified: ooc.unclassified, cluster: ooc.cluster, suspect_empty: ooc.suspect_empty, dinh_tuyen_may: dinhTuyenMay }, decisions_approved: decsApproved.filter(e => !coBaVe(e)).map(e => ({ id: e.id, key: decKey(e), type: e.type, decision: e.decision, impact: e.impact })), decisions_provisional: decsProvisional.filter(e => !coBaVe(e)).map(e => ({ id: e.id, key: decKey(e), type: e.type, stage: e.stage, decision: e.decision, impact: e.impact })), decisions_broken: ledger.broken, ui_observed: uiObserved2, chot_may: { ac_khong: cm.ac_khong, ac_khong_mo: cm.ac_khong_mo, touched: cm.touched, ...(cm.do_san ? { do_san: cm.do_san } : {}) }, thuoc_vat: thuocVat, ...(doiChung ? { doi_chung: doiChung } : {}), canh_gay: { trangThai: cg.trangThai, round: cg.round, muc: cg.muc, lech: cg.lech, daThuLai: cg.daThuLai, ...(cg.cay ? { cay: cg.cay } : {}) }, y_dinh: yDinh, luat: luatG2 ? luatG2.khoa : { co_tep: false }, ...(LR ? { loi_ra: LR } : {}) }, null, 2), 0); }
+
+const featurePlain = pl.feature_plain || feature;
+const plainDec = id => ((pl.decisions && pl.decisions.find(x => x.id === id)) || {}).q;
+const scopePlain = pl.scope_plain || oos.map(stripMd).join(' · ');
+const P = [STYLE];
+
+// --- non-approvable: REJECT / BLOCKED / unknown — no signoff affordance, no green reassurance ---
+if (!approvable) {
+  const ch = verdict === 'REJECT' ? { t: 'có eval fail — trả lại code', c: 'coral' } : verdict === 'BLOCKED' ? { t: 'không chạy được — chưa thể ký', c: 'coral' } : { t: 'verdict không xác định — không ký', c: 'gray' };
+  const failed = machineRows.filter(r => r.verdict !== 'PASS' || (evid[r.id] && evid[r.id].exit_code && !maDat(r.id, evid[r.id].exit_code))).map(r => r.id + (critText[r.crit] ? ' (' + r.crit + ')' : ''));
+  const notes = [];
+  const cgVat = verdict === 'BLOCKED' && cg.muc.some(m => m.nhan === 'vat');
+  if (cg.trangThai === 'lech') {
+    ch.t = `${NCG.NHAN.LECH} — chấm lại`; ch.c = 'coral';
+    notes.push(['fred', `${esc(NCG.NHAN.LECH)}: thước của hồ sơ đổi nội dung giữa lúc sinh tham số chấm và lúc lượt chấm xong — lượt này chấm bằng thước khác, không dùng được.`]);
+    for (const x of cg.lech) notes.push(['fwarn', `${esc(x.doi || 'đổi')}: ${esc(x.tep || '')}`]);
+  } else if (cg.trangThai === 'cay-doi') {
+    // luot-cham-ghi-vao-cay AC-6: mã đổi giữa lúc sinh tham số chấm và lúc lượt xong — ai đổi máy
+    // không biết; lượt không dùng được BẤT KỂ verdict nó ra.
+    ch.t = `${NCG.NHAN.CAY} — chấm lại`; ch.c = 'coral';
+    notes.push(['fred', `${esc(NCG.NHAN.CAY)}: trong lúc chấm có commit mới hoặc tệp mã đang theo dõi bị sửa — lượt này không chấm đúng một mốc commit nên không dùng được, dù nó ra «${esc(verdict || '—')}».`]);
+    for (const x of (cg.cay && cg.cay.tep) || []) notes.push(['fwarn', `${esc(x.doi || 'đổi')}: ${esc(x.tep || '')}`]);
+    if (cg.cay && cg.cay.commit && cg.cay.commit.length) notes.push(['fwarn', `commit lạ: ${esc(cg.cay.commit.join(', '))}`]);
+  } else if (cg.trangThai === 'chet-lan-dau') {
+    notes.push(['fred', `${esc(NCG.NHAN.CHET)} — tác tử chấm không trả kết quả cho ${esc(cg.muc.map(m => m.evalId).join(', '))}; máy thử lại một lần, chưa ký.`]);
+  } else if (cgVat) {
+    for (const m of cg.muc) notes.push(['fred', `${esc(NCG.TEN[m.nhan] || 'không phân loại được')} — ${esc(m.evalId)} (${esc(cgAC(m))})`]);
+  }
+  if (cg.trangThai === 'lech' || cg.trangThai === 'cay-doi' || cg.trangThai === 'chet-lan-dau' || cgVat) { /* nhãn đã in ở trên */ }
+  else if (verdict === 'REJECT') notes.push(['fred', (failed.length ? 'Eval chưa đạt: ' + esc(failed.join(', ')) + ' — ' : '') + 'quay lại sửa code, chưa ký.']);
+  else if (verdict === 'BLOCKED') notes.push(['fred', 'Không chạy được' + (reason ? ': ' + esc(stripMd(reason)) : '') + ' — sửa môi trường rồi chạy lại, chưa ký.']);
+  else notes.push(['fred', 'Verdict "' + esc(verdict || '—') + '" không phải PASS/PENDING-JUDGMENT — không ký ở thẻ này.']);
+  P.push(`<div class="gc"><div class="card">
+<div class="h"><div><div class="ft">${esc(featurePlain)}</div><div class="sub">Cổng 2 · ${tier === 'T3' ? 'tier T3 · ' : ''}CHƯA ký được</div></div><span class="chip ${ch.c}">${esc(ch.t)}</span></div>
+<div class="lab">Vì sao chưa ký được</div>${notes.map(([c, t]) => `<div class="flag ${c}">${t}</div>`).join('')}
+${LR ? LRM.khoiHtml(LR, esc) : `<div class="lab">👉 VIỆC CỦA ANH</div><div class="grp gnot"><p class="li">không cần làm gì — ${cg.trangThai === 'lech' ? 'máy chấm lại lượt mới; thước đổi giữa lượt nên lượt này không dùng được' : cg.trangThai === 'cay-doi' ? 'máy hoàn lại thay đổi lạ rồi chấm lại cùng vòng — không đếm vào trần' : cg.trangThai === 'chet-lan-dau' ? 'máy thử lại lượt chấm một lần' : verdict === 'REJECT' ? 'máy đang quay lại sửa code rồi tự chấm vòng mới' : verdict === 'BLOCKED' ? 'máy đang khắc phục nguyên nhân kẹt rồi chạy lại vòng chấm' : 'máy phải chạy lại vòng chấm để có kết luận đọc được'}; thẻ này chỉ báo trạng thái. Khi máy cần bạn quyết, nó hỏi bằng tin nhắn riêng.</p></div>`}
+<div class="foot"><span class="rev">↻ Trả lại → quay về code; trạng thái này không có nút ký.</span><div class="btns"><button class="b no">Quay về code</button></div></div>
+</div></div>`);
+  return ghiRoiThoat(P.join('\n'), 0);
+}
+
+// --- approvable: PASS / PENDING-JUDGMENT ---
+const chip = MAY_DI_TIEP
+  ? { t: chuMDT().nhan, c: 'gray' }
+  : CANH_MO ? { t: 'ký được trên cạnh gãy có tên', c: 'amber' }
+  : (verdict === 'PASS' ? { t: 'máy đã xong — ký nhanh', c: 'teal' } : { t: 'cần bạn quyết', c: 'amber' });
+P.push(`<div class="gc"><div class="card">
+<div class="h"><div><div class="ft">${esc(featurePlain)}</div><div class="sub">${MAY_DI_TIEP ? 'Cổng 2 · máy đã đi tiếp' : 'Cổng 2 · ký duyệt'}${tier === 'T3' ? ' · tier T3 (đụng critical)' : ''}</div></div><span class="chip ${chip.c}">${esc(chip.t)}</span></div>`);
+if (MAY_THONG && !scanBroken && scanState == null && !scanErr) P.push(`<div class="flag fwarn">Hợp đồng tự khai «máy đã thông» nhưng thẻ KHÔNG hỏi được bộ quét (repo chưa dựng cổng, hoặc bộ quét lỗi) — chưa ai kiểm sáu điều kiện xanh-sạch. Thẻ giữ lối ký như cũ; chạy máy quét trước khi tin lời khai đó.</div>`);
+if (scanErr && MAY_DI_TIEP && MU_LOI) P.push(`<div class="flag fwarn">⚠ Chưa đọc được trạng thái làn V — ${esc(scanErr)}. Thẻ trình theo lời khai «máy đã thông» của hợp đồng; chưa ai kiểm lại sáu điều kiện xanh-sạch ở lượt dựng thẻ này. Chạy lại với hạn dài hơn: <code>${esc(require('./han-quet.cjs').lenhChayLai({ card: __filename, root, slug, han: scanHan || 0 }))}</code></div>`);
+else if (scanErr) P.push(`<div class="flag fwarn">⚠ Chưa đọc được trạng thái làn V (${esc(scanErr)}) — thẻ đang trình theo lối cũ, nên nó có thể đang mời ký một hồ sơ máy đã đi tiếp hợp lệ. Kiểm bằng máy quét trước khi ký.</div>`);
+// Bộ quét gọi HỎNG → cờ ĐỎ in đúng lý do + đường sửa. Hồ sơ mâu thuẫn không bao giờ là
+// «máy đã đi tiếp hợp lệ»; lưới trước-merge sẽ chặn y vậy, thẻ phải nói trước (S4-r6 [4]).
+if (scanBroken) P.push(`<div class="flag fred">⚠ Bộ quét gọi hồ sơ này là HỎNG — ${esc(scanBroken.reason || 'không nêu lý do')}. Đường sửa: sửa hồ sơ đúng theo lý do trên rồi mở lại thẻ (lưới trước-merge cũng sẽ chặn y vậy); chưa sửa thì đừng ký.</div>`);
+// Gác `!scanBroken` như MAY_DI_TIEP: hồ sơ HỎNG (vd chữ ký người trên hồ sơ máy-thông) thì câu
+// «qua Cổng Bằng chứng bằng sáu điều kiện xanh-sạch, KHÔNG có chữ ký người» vừa SAI vừa KHÔNG
+// ai kiểm — thẻ chỉ đọc `status`, không chạy xanhSach. In nó cạnh cờ đỏ đang trích chính chữ
+// ký đó là thẻ tự cãi mình, đúng thứ AC-8 cấm (S4-r10 [1]).
+if (MAY_THONG && !scanBroken && scanState != null) P.push(`<div class="flag finfo">máy đã thông — hồ sơ này qua Cổng Bằng chứng bằng sáu điều kiện xanh-sạch, KHÔNG có chữ ký người; cửa veto ${(clean(cfm.veto_state) || '').toLowerCase() === 'mo' ? 'đang mở' : 'không mở'}.</div>`);
+if (MAY_DI_TIEP) P.push(`<div class="flag finfo">Hồ sơ này máy đã đi tiếp — ${esc(chuMDT().viecKe)}. Thẻ không có nút ký cho trạng thái này.</div>`);
+// Khối ý định (AC-12): nguyên văn Cổng Đáng, trước mọi thứ khác người đọc để quyết.
+if (yDinh) P.push(`<div class="lab">Ý định (nguyên văn Cổng Đáng)</div><div class="grp gnot">${yDinh.feature ? `<p class="li"><b>${esc(stripMd(yDinh.feature))}</b></p>` : ''}${yDinh.dong.map(l => `<p class="li">${esc(stripMd(l))}</p>`).join('')}${yDinh.cat ? '<p class="li">… xem opportunity.md</p>' : ''}</div>`);
+if (doiChung) P.push(`<div class="flag fwarn">⚠ ${esc(CO_DOI_CHUNG)}${doiChung.so_lenh ? ` (${doiChung.so_lenh} lệnh máy)` : ''} — ${doiChung.chua_chay ? 'lệnh đối chứng chưa chạy dòng nào' : 'làn đối chứng không chạy trọn'}: ${esc(doiChung.ly_do)}. Các eval máy xanh ở lượt này chưa từng được thấy đỏ trên code cũ — chưa biết eval nào thật sự phân biệt được tính năng. Lượt chấm lại sẽ đo lại.</div>`);
+// Chỗ mù (AC-5, AC-7): lượt chấm kẹt CHỈ vì bàn đo / hệ thống chết đã thử lại. Verdict và
+// bảng per-eval KHÔNG đổi — thẻ chỉ mở lối ra, mỗi cạnh gãy có tên · ba lối · giá.
+if (CANH_MO) {
+  P.push(`<div class="lab">Chỗ mù — anh quyết (${cg.muc.length})</div><div class="flag fwarn">Lượt chấm không đọc được các eval dưới đây vì bàn đo hoặc hệ thống, không phải vì sản phẩm. Kết quả chấm giữ nguyên; anh chọn lối cho từng chỗ.</div>`);
+  cg.muc.forEach((m, i) => {
+    const gia = CG_LOI.map((l, k) => `<p class="ai"><b>${esc(l)}</b> — giá: ${esc(CG_GIA[k])}</p>`).join('');
+    const nen = cgDoTruoc(m) ? '<p class="ai">đỏ từ trước vòng — không phải lỗi của vòng</p>' : '';
+    P.push(`<div class="item"><p class="q">Mù-${i + 1} · ${esc(NCG.TEN[m.nhan])} — ${esc(m.evalId)} (${esc(cgAC(m))})</p>${nen}${gia}<div class="btns">${CG_LOI.map((l, k) => `<button class="b ${k === 0 ? 'bn' : 'no'}">${esc(l)}</button>`).join('')}</div></div>`);
+  });
+}
+P.push(`<a href="evidence-page.html" style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:#E6F1FB;border:1px solid #B5D4F4;border-radius:10px;padding:9px 13px;margin:11px 0 2px;text-decoration:none;color:#0C447C;font-size:13px"><b>Bằng chứng đầy đủ — ảnh chụp + chạy thật</b><span style="font-size:12px;color:#185FA5;white-space:nowrap">đã mở trong trình duyệt</span></a>`);
+// Khối "Ngoài hợp đồng" đứng TRƯỚC mọi việc-của-người khác: đây là thứ máy cố ý
+// KHÔNG tự sửa, nên nếu người duyệt bỏ qua thì không ai bắt lại.
+// Cờ hỏng-phân-loại CỘNG THÊM, không thay thế: nuốt cả khối thì các lỗi đã phân
+// loại được biến mất khỏi chỗ người quyết dù chúng vẫn nằm trong file.
+if (ooc.unclassified) {
+  P.push(`<div class="lab">Phân loại phạm vi chưa đầy đủ</div><div class="flag fwarn">⚠ Bước phân loại phạm vi không chạy trọn — máy không tự sửa lỗi nào trong vòng này. Xem đủ danh sách trong review-findings.md trước khi ký.</div>`);
+}
+{ // ── PHÁN QUYẾT ĐỐI KHÁNG: phần vượt-nhận-thức trình bằng SỐ, không bằng vật.
+  // Người ký đọc «đối kháng tìm được bao nhiêu, xử lý ra sao», không đọc từng
+  // finding — đó là loại-3 của luật lời-mời (CLAUDE.md, owner 01/09).
+  const gpT2 = read(path.join(dir, 'gap-probe.md'));
+  const gpF2 = frontmatter(gpT2);
+  const gpRows2 = section(gpT2, 'Findings').filter(l => /^\s*\|/.test(l) && !/^\s*\|\s*(Sev\b|:?-+)/i.test(l));
+  const gpFixed = gpRows2.filter(l => /\|\s*fixed:/i.test(l)).length;
+  const v3 = clean(gpF2.verdict).toLowerCase() || 'không đọc được';
+  const n = k => clean(gpF2[k]) || '0';
+  P.push(`<div class="lab">${esc(LBL_DOI_KHANG)}</div><div class="grp gnot">`
+    + `<p class="li">Phản biện context sạch: <b>${esc(v3)}</b> · P0 ${esc(n('p0'))} · P1 ${esc(n('p1'))} · P2 ${esc(n('p2'))} · đã sửa ${gpFixed}/${gpRows2.length}</p>`
+    + `<p class="li">Rà soát đối kháng: ${ooc.findings.length} mục ngoài hợp đồng${ooc.suspect_empty ? ' (⚠ khối nghi sai khuôn)' : ''} · ${decisions.length} mục cần mắt người</p>`
+    + (thuocVat && !thuocVat.hong ? `<p class="li">Vật +${thuocVat.vat[0]}/−${thuocVat.vat[1]} · thước +${thuocVat.thuoc[0]}/−${thuocVat.thuoc[1]} · nhát sửa thước ${thuocVat.nhat} (lẫn ${thuocVat.lan})</p>` : '')
+    + `</div>`);
+}
+if (ooc.suspect_empty) P.push(`<div class="flag fwarn">⚠ ${esc(MSG_OOC_SUSPECT)}</div>`);
+if (luatG2) { for (const [c, t] of luatG2.co) P.push(`<div class="flag ${c}">${esc(t)}</div>`); if (luatG2.html) P.push(luatG2.html); }
+if (khuonG2) {
+  for (const c of [].concat(khuonG2.co || [], khuonG2.co2 || [])) P.push(`<div class="flag fwarn">⚠ ${esc(c)}</div>`);
+  if (typeof khuonG2.dong === 'string') P.push(`<div class="flag finfo">${esc(khuonG2.dong)}</div>`);
+  for (const l of khuonG2.lech || []) P.push(`<div class="flag finfo">${esc(l)}</div>`);
+}
+// Dòng máy cũ trỏ một mục đã đổi sau lượt chấm mới (tiêu đề lệch) — mục ấy về người; lưới trước-merge
+// không bắt ca này (giới hạn khai ở hồ sơ ngoai-n-tu-dinh-tuyen), nên thẻ phải nói to.
+if (dtmLech.length) P.push(`<div class="flag fwarn">⚠ dòng máy trỏ mục đã đổi: ${esc(dtmLech.join(', '))} — dòng sổ máy định tuyến một mục khác mục đang ở vị trí ấy; người quyết lại mục này.</div>`);
+if (dtmCu) P.push(`<div class="flag fwarn">⚠ dòng sổ Cổng 2 theo SỐ ghi trước lượt chấm ${esc(dtmCu.luotCuoi)} (gọi tên ${esc(dtmCu.soCu.map(n => 'Ngoài-' + n).join(', '))}) — mục có thể đã đổi số kể từ khi ký; mục chưa định tuyến được hỏi lại: ${esc(dtmCu.gan.map((x, i) => (x ? null : 'Ngoài-' + (i + 1))).filter(Boolean).join(', '))}.</div>`);
+if (ooc.findings.length) {
+  P.push(`<div class="lab">Ngoài hợp đồng — bạn quyết (${ooc.findings.length})</div>`);
+  // T1 (khoi-tim-loi-tra-phi-theo-vat, 14/09): mục ngoài hợp đồng KHÔNG còn đi qua
+  // bác bỏ đối kháng — máy không chấm thứ máy không được sửa. Câu cũ («là thật») nay
+  // nói SAI với người đọc thẻ. Bản chép thứ hai của câu này sống trong prompt
+  // synthesize của acceptance-verify.js; hai bên đổi CÙNG lượt, P53b canh bản render.
+  P.push(`<div class="flag fwarn">Các lỗi dưới đây nằm ngoài phạm vi đã duyệt ở Cổng Phạm vi và CHƯA qua bác bỏ đối kháng — bạn quyết; máy cố ý không sửa và không chấm thứ máy không được sửa.</div>`);
+  const recCua = f => f.proposal === 'new-contract' ? 'Máy đề xuất: tách thành một việc riêng.'
+    : f.proposal === 'known-limits' ? 'Máy đề xuất: ghi vào hạn chế đã biết rồi ship.'
+    // ngăn thứ ba (hồ sơ cham-dung-cay-dung-cho-dung, AC-10): lỗi thật nhưng
+    // không đáng sửa — máy khuyên chấp nhận có ghi vết; file đời cũ không có
+    // giá trị này rơi xuống nhánh mặc định như trước (đường đọc-cũ).
+    : f.proposal === 'wont-fix' ? 'Máy đề xuất: không sửa — chấp nhận và ghi vết, không mở việc nào.'
+    // Token ngoài danh sách KHÔNG được nuốt thành «chưa đề xuất»: bước triage
+    // ĐÃ nêu hướng, chỉ viết sai khuôn máy-đọc. Nói sai thành «chưa có» là
+    // giấu một đề xuất có thật khỏi người quyết (vết 01/09: «ghi Known limits»).
+    : f.proposal_raw ? `${MSG_PROPOSAL_LA}: «${f.proposal_raw}» — dùng một trong: ${outOfContract.PROPOSALS.join(' · ')}`
+    : 'Máy chưa đề xuất hướng nào.';
+  // In câu ngôn ngữ sản phẩm do bước triage viết. Thiếu nó thì nói thẳng là
+  // thiếu — TUYỆT ĐỐI không rơi về title kỹ thuật của reviewer, vì đó là thứ
+  // người quyết kinh doanh không đọc được (và judge sẽ chấm nhầm tài liệu).
+  const qCua = f => (f.plain ? f.plain : '(chưa có mô tả cho người đọc — xem review-findings.md)');
+  const aiCua = (f, fi) => { const dm = dtmMay(fi); return dm ? `Máy đã định tuyến: ${esc(outOfContract.OOC_GLOSS_NGUOI[dm.de_xuat] || dm.decision)} — đảo: <code>${esc(dm.dao)}</code>` : esc(recCua(f)); };
+  // BẢNG (hồ sơ bang-ngoai-n-co-can-cu, gốc crm/_acceptance/kanban-viec): mỗi mục một hàng bốn cột, mục cần
+  // người quyết lên đầu. Nhãn Ngoài-<n> vẫn là VỊ TRÍ TRONG TỆP — câu gộp ký, sổ định tuyến và mucChuaDinhTuyen
+  // đều đếm theo vị trí; chỉ thứ tự HIỂN THỊ đổi. Ba nút lặp ở từng mục cũ là chữ trình bày (không hành vi),
+  // nay gom thành MỘT dòng ba lựa chọn dưới bảng; quyết từng mục vẫn đi qua câu gộp ký.
+  const COT = ['Mục', 'Người dùng gặp gì', 'Máy đề xuất', 'Căn cứ'];
+  const NHOM = ['Cần anh quyết', 'Máy khuyên — chỉ đổi khi anh nghĩ khác', 'Máy đã định tuyến'];
+  // «Máy khuyên» = mọi token đề xuất hợp lệ trừ mở hợp đồng mới — rút từ MỘT nguồn OOC-PROPOSALS, không chép tay.
+  const KHUYEN = new Set(outOfContract.PROPOSALS.filter(p => p !== 'new-contract'));
+  const nhomCua = (f, fi) => (dtmMay(fi) ? 2 : KHUYEN.has(f.proposal) ? 1 : 0);
+  const hang = ooc.findings.map((f, fi) => ({ f, fi, g: nhomCua(f, fi) }));
+  // <<<XEP-NHOM
+  hang.sort((a, b) => a.g - b.g || a.fi - b.fi);
+  // XEP-NHOM>>>
+  const nhomCo = new Set(hang.map(h => h.g));
+  const tr = [];
+  let truoc = -1;
+  for (const { f, fi, g } of hang) {
+    if (nhomCo.size > 1 && g !== truoc) tr.push(`<tr class="nhom"><td colspan="4">${esc(NHOM[g])}</td></tr>`);
+    truoc = g;
+    const nhanL = luatG2 ? luatG2.nhanNgoai(f) : '';
+    const o = [`Ngoài-${fi + 1}`, esc(qCua(f)) + (nhanL ? ' · ' + esc(nhanL) : ''), aiCua(f, fi),
+      f.can_cu ? esc(f.can_cu) : '<span class="mo">chưa có căn cứ</span>'];
+    tr.push(`<tr>${o.map((x, i) => `<td data-cot="${COT[i]}">${x}</td>`).join('')}</tr>`);
+  }
+  P.push(`<table class="ngoai"><thead><tr>${COT.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${tr.join('')}</tbody></table>`);
+  P.push(`<p class="ai">Mỗi mục: ghi Known limits · mở hợp đồng mới · nâng phạm vi sửa ngay — đổi bằng dòng lệnh ký.</p>`);
+  // Đọc-cũ: hồ sơ chấm trước bản có trường căn cứ — ô trống có tên + MỘT cờ vàng đếm, không bắt sửa hồ sơ.
+  const thieuCanCu = ooc.findings.filter(f => !f.can_cu).length;
+  if (thieuCanCu) P.push(`<div class="flag fwarn">${thieuCanCu}/${ooc.findings.length} mục chưa có căn cứ — hồ sơ chấm bằng bản kit trước khi có trường này; lý do của đề xuất nằm trong review-findings.md nếu có</div>`);
+}
+const yourCount = decisions.length + (oos.length ? 1 : 0);
+if (yourCount) {
+  P.push(`<div class="lab">Việc chỉ mình bạn quyết được — ${yourCount} việc</div>`);
+  for (const d of decisions) {
+    const reList = (evid[d.id] && evid[d.id].required_evidence_list) || [];
+    const reHtml = reList.length ? `<p class="ai"><b>Muốn máy đổi ý, cần:</b> ${reList.map(x => esc(stripMd(x))).join(' · ')}</p>` : '';
+    // Mã eval là mã TRA CỨU (N3): khối 👉 VIỆC CỦA ANH bảo "đọc câu hỏi <mã> ở
+    // khối này", nên mã PHẢI hiện ngay tại câu hỏi — không thì lời chỉ đường
+    // chỉ đúng bằng loại trừ (S4-r1, finding trong hợp đồng + judge E7).
+    P.push(`<div class="item"><p class="q">${esc(d.id)} (câu hỏi cần mắt người) · ${esc(plainDec(d.id) || stripMd(d.q))}</p><p class="ai">Máy: chưa chắc${d.why ? ' — ' + esc(stripMd(d.why)) : ' (cần mắt người).'}</p>${reHtml}<div class="btns"><button class="b bn">Đạt</button><button class="b no">Chưa đạt</button></div></div>`);
+  }
+  if (oos.length) P.push(`<div class="item"><p class="q">Xác nhận các phần đã cắt/hoãn ngoài phạm vi:</p><p class="ai">${esc(scopePlain)}</p><div class="btns"><button class="b bn">Đồng ý cắt</button><button class="b no">Không, kéo vào</button></div></div>`);
+}
+if (decsProvisional.length) {
+  P.push(`<div class="lab">Quyết định CHƯA duyệt — cần phê (ghi sau Gate 1)</div>`);
+  // Nhãn Treo-<n> là mã tra cứu ngắn (N3) — khối 👉 VIỆC CỦA ANH trỏ về nó khi
+  // bảo "không phê: nêu mã". Id đầy đủ của sổ quyết định quá dài cho mặt người.
+  decSort(decsProvisional).forEach((e, ti) => P.push(`<div class="item"><p class="q">Treo-${ti + 1} · ${decBaVe(e)}</p><p class="ai">${e.may === DTM_DAU ? 'máy định tuyến · ' : ''}${esc(e.stage || '')} · ${e.type === 'descope' ? 'đề nghị KHÔNG làm' : esc(e.type)}${e.revisit ? ' · xem lại khi: ' + esc(e.revisit) : ''}${e.may === DTM_DAU && e.dao ? ` · đảo: <code>${esc(e.dao)}</code>` : ''}</p><div class="btns"><button class="b bn">Phê</button><button class="b no">Không phê</button></div></div>`));
+}
+if (decsApproved.length) P.push(`<div class="lab">Đã duyệt từ Gate 1</div><div class="grp gnot">${decSort(decsApproved).map(e => `<p class="li">${decBaVe(e)}</p>`).join('')}</div>`);
+if (ledger.broken) P.push(`<div class="flag fwarn">⚠ ${ledger.broken} dòng ledger hỏng, đã bỏ qua.</div>`);
+const flags = [];
+if (thuocVat && thuocVat.hong) flags.push(['fwarn', esc(THUOC_VAT_HONG_FLAG)]);
+{ const ds = danhSachKhongDocCua(dir); if (ds.length) flags.push(['fwarn', esc(DANH_SACH_KHONG_DOC_FLAG + ' ' + ds.join(', '))]); }
+flags.push(...yamlChuanCo(dir));
+if (uiObserved2.applicable) {
+  if (uiObserved2.present) {
+    flags.push(['finfo', `${UI_OBS_G2_OK} ${uiPassed.length} eval ui-check đạt (${esc(uiPassed.join(', '))}) — xem frame ở trang bằng chứng.`]);
+    if (uiThieuAnh.length) flags.push(['fwarn', `${UI_OBS_G2_THIEU} — ${thieuAnhChu()}; thẻ không tính các eval này là có ảnh.`]);
+  } else if (uiThieuAnh.length) flags.push(['fwarn', `${UI_OBS_G2_NONE} — thiếu ảnh: ${thieuAnhChu()}; báo cáo khai ảnh mà evidence/ của hồ sơ không có, nên ký nghĩa là ký trên tên ca máy, không phải trên thứ người dùng thấy.`]);
+  else if (uiObserved2.descoped) flags.push(['fwarn', `${UI_OBS_G2_NONE} — đã bỏ theo ${esc(uiObserved2.descoped)}; người ký đọc tên ca máy, không nhìn frame.`]);
+  else flags.push(['fwarn', `${UI_OBS_G2_NONE} — ${uiIds.length ? 'eval ui-check ' + esc(uiIds.join(', ')) + ' khai nhưng không đạt (không exit 0 kèm screenshot)' : 'hợp đồng có mặt người nhìn mà không eval ui-check nào'}; ký nghĩa là ký trên tên ca máy, không phải trên thứ người dùng thấy.`]);
+}
+if (cm.ac_khong.length) flags.push(['finfo', `AC không có chốt máy khi ghim lại: ${esc(cm.ac_khong_mo.join(', '))} — làn ghim lại chỉ chạy eval test/script; diff chạm vật các eval này phải đi vòng S4 delta, không đi ghim lại.`]);
+// Cờ VÀNG chỉ đọc dòng ghim CHỐNG LƯNG pin hiện tại: hồ sơ đã chứng lại rồi ghim
+// sạch phải tắt cờ, không mang cờ vĩnh viễn.
+if (cm.touched.length) flags.push(['fwarn', `Pin hiện tại: diff đã chạm vật ${esc(cm.touched.join(', '))} đo (ngoài làn máy) mà lượt ghim gần nhất KHÔNG chạy các eval đó — chưa chứng lại.`]);
+// Nhãn «đỏ sẵn trên nền»: eval vẫn ĐỎ ở pin hiện tại — nhãn chỉ nói cái đỏ ấy đã ghi trên nhánh chính trước
+// vòng này. Chữ nhãn rút từ bảng chung NHAN; không bao giờ đọc thành đạt.
+const NHAN_DO_SAN = require('../lib/nhan-canh-gay.cjs').NHAN.DO_SAN;
+if (cm.do_san) flags.push(['fwarn', `${esc(NHAN_DO_SAN)}: ${esc(cm.do_san.note.split(' · ').map(x => x.replace(/^đỏ sẵn trên nền — /, '')).join(' · '))} — eval đang đỏ ở pin hiện tại; cái đỏ đã ghi trên nhánh chính trước vòng này nên không chặn vòng này, nhưng KHÔNG tính là qua.`]);
+// Cụm ngoài vùng phủ: bộ đo đang hụt so với chỗ lỗi thật xuất hiện. Không nêu
+// đường dẫn file ở thẻ — thẻ là chỗ quyết định, chi tiết nằm ở gói bằng chứng.
+if (ooc.cluster) flags.push(['fwarn', '⚠ Nhiều lỗi rơi ngoài vùng các bộ đo đang phủ — dừng và quyết: mở rộng hợp đồng hay rút phạm vi. Chi tiết trong review-findings.md.']);
+{ const analyst = cleanLines(section(report, 'Analyst')).join(' ').trim();
+  // n-a CÓ LÝ DO (≥ 20 ký tự sau «n-a») là lựa chọn chủ ý đã khai — không phải đỏ; n-a trần/ngắn vẫn đỏ
+  // (hồ sơ lenh-in-ra-phai-bam-duoc AC-4: đỏ không có nghĩa dạy người bỏ qua màu đỏ).
+  const naReason = /^n-a\b[\s—–:-]*([\s\S]*)$/i.exec(analyst);
+  // «n-a có lý do» KHÔNG phải khi phần sau còn mệnh đề mở bằng mã eval (`; E4, E5: …`) — đó là phân tích thật (review S4-r1 F2)
+  const naMixed = naReason && /[;\n]\s*[A-Z]{1,3}\d+\b/.test(naReason[1]);
+  if (naReason && !naMixed && naReason[1].trim().length >= 20) { /* chủ ý, đã nêu lý do — không cờ */ }
+  else if (naReason && !naMixed) flags.push(['fred', 'Analyst n-a không nêu lý do — baseline không chạy mà không nói vì sao; ghi lý do (≥ 20 ký tự) hoặc chạy baseline.']);
+  else if (analyst && !/^none/i.test(analyst) && !/^\{\{/.test(analyst)) flags.push(['fred', esc(pl.analyst_plain || stripMd(analyst))]); }
+{ const varr = cleanLines(section(report, 'Variance')).join(' ').trim(); if (varr && !/^none/i.test(varr) && !/^\{\{/.test(varr)) flags.push(['fred', 'Có eval ngẫu nhiên (pass-rate hỗn hợp) — ' + esc(stripMd(varr))]); }
+if (NGHI) flags.push(['fok', `Hồ sơ đã nghỉ — ${esc(String(NGHI.by || ''))} ${esc(String(NGHI.at || '').slice(0, 10))}: ${esc(String(NGHI.ly_do || ''))}. Chữ ký giữ làm sử liệu, không mời ký lại.`]);
+for (const f of (scanHit && scanHit.flags) || []) {
+  if (String(f).startsWith('nghi-thieu-ve:')) flags.push(['fwarn', `Dòng cho nghỉ thiếu ${esc(String(f).split(':')[1])} — chưa tính là nghỉ, hồ sơ vẫn cần người ký.`]);
+}
+if (tier === 'T3') flags.push(['fok', 'Đụng phần nhạy cảm → tier T3, đúng là cần bạn duyệt kỹ.']);
+if (evComplete) flags.push(['fok', 'Cổng chạy thật, bằng chứng máy đầy đủ (run_id · exit 0 · verifier).']);
+else flags.push(['fwarn', 'Bằng chứng máy CHƯA đủ trường (run_id · exit 0 · verifier) — kiểm trước khi ký.']);
+P.push(`<div class="lab">Lưu ý trước khi ký</div>${flags.map(([c, t]) => `<div class="flag ${c}">${t}</div>`).join('')}`);
+P.push(`<details style="margin-top:14px"><summary style="font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#8a887f;font-weight:600;cursor:pointer">Máy đã lo (liếc qua, không cần làm gì)</summary>`);
+if (machineRows.length === 0) P.push(`<div class="mach" style="margin-top:8px">Không có phép kiểm máy tự động — feature này toàn judgment do người chấm.</div>`);
+else if (allPass && cm.do_san) P.push(`<div class="mach" style="margin-top:8px"><b>${machinePass}/${machineRows.length} phép kiểm máy đạt lúc ký</b> · pin hiện tại: ${esc(cm.do_san.ids.join(', '))} ${esc(NHAN_DO_SAN)}.</div>`);
+else if (allPass) P.push(`<div class="mach" style="margin-top:8px"><b>${machinePass}/${machineRows.length} phép kiểm máy đều đạt</b>${red ? ` · ${red} thật sự mới (chạy code cũ là hỏng → đúng là test feature)` : ''}${green ? ` · ${green} canh hồi quy` : ''}${evComplete ? ' · bằng chứng đủ, không lỗi.' : '.'}</div>`);
+else P.push(`<div class="flag fred" style="margin-top:8px"><b>${machinePass}/${machineRows.length} phép kiểm máy đạt · ${machineRows.length - machinePass} CHƯA đạt</b> — xem lại trước khi ký.</div>`);
+P.push(`</details>`);
+// ---- 👉 VIỆC CỦA ANH (khối cứng máy-sinh — liệt TỪNG việc máy đã đếm, đúng
+// thứ tự thẻ; mẫu gộp build động từ đúng các mã đang hiện, MỘT dòng — P186
+// canh đủ mã, P186b canh khối-không-biến-mất khi 0 việc-người).
+//
+// BẤT BIẾN (luật âm «máy không viết sẵn câu trả lời của người» trong
+// human-facing-language.md, đặt sau S4-r2): câu mẫu là KHUÔN DẠNG CÓ CHỖ TRỐNG. Máy nêu mã mục + các ngả
+// chọn được, KHÔNG điền sẵn lựa chọn/verdict thay người. Bản round-2 từng in
+// «Ngoài-1 ghi Known limits; E9 Đạt; đồng ý cắt; phê hết quyết định treo; Ký»
+// — tức viết sẵn câu TRẢ LỜI của người tại cổng, vòng qua chính khoá ADR 0002.
+// Mã trong câu mẫu phải là mã THÔ (esc một lần lúc render, không esc hai lần),
+// nếu không người dán lại một chuỗi entity HTML không khớp mã họ thấy. ----
+if (DA_KHEP) {
+  P.push(`<div class="lab">👉 VIỆC CỦA ANH</div><div class="grp gdo"><p class="li"><b>Hồ sơ đã khép (${DA_KHEP_VI}) — không còn câu hỏi nào cho người.</b> Mục ngoài hợp đồng ở trên giữ làm sử liệu; mở lại hồ sơ là một quyết định riêng.</p></div>`);
+} else {
+  const ymItems = []; const ymSlots = [];
+  if (luatG2) for (const [i, x] of luatG2.slots.entries()) { ymItems.push(luatG2.ymItems[i]); ymSlots.push(`${x.lbl}: ${x.val === '___' ? '___' : x.val}`); }
+  ooc.findings.forEach((f, fi) => {
+    const lbl = 'Ngoài-' + (fi + 1);
+    if (dtmMay(fi)) return;   // máy đã định tuyến — dòng BÁO, gom một dòng bên dưới
+    ymItems.push(`<b>Chọn hướng cho ${lbl}</b> — làm gì: đọc mục ${lbl} ở khối "Ngoài hợp đồng"; ở đâu: trả lời trong phiên đang trình thẻ; trả lời dạng: «${lbl}: ghi Known limits» hoặc «${lbl}: mở hợp đồng mới» hoặc «${lbl}: nâng phạm vi sửa ngay».`);
+    ymSlots.push(lbl + ': ___');
+  });
+  if (dinhTuyenMay.length) ymItems.push(`<b>${dinhTuyenMay.length} mục ngoài hợp đồng máy đã định tuyến (${esc(dinhTuyenMay.map(x => x.nhan).join(', '))}) — không cần trả lời</b> — máy làm theo chính đề xuất của nó vì kho bật khoá; muốn đổi một mục: dán lệnh đảo in ở mục đó.`);
+  for (const d of decisions) {
+    ymItems.push(`<b>Chấm ${esc(d.id)} (câu hỏi cần mắt người)</b> — làm gì: đọc câu hỏi mở đầu bằng "${esc(d.id)}" ở khối "Việc chỉ mình bạn quyết được"; ở đâu: trả lời trong phiên đang trình thẻ; trả lời dạng: «${esc(d.id)} Đạt» hoặc «${esc(d.id)} Chưa đạt vì nêu lý do».`);
+    ymSlots.push(d.id + ': ___');
+  }
+  // AC-3: mục xác-nhận-cắt/hoãn và Treo là DÒNG BÁO (máy đã điền theo khuyến
+  // nghị), không phải ô hỏi — nên chúng KHÔNG vào ymSlots. Trước bản này khối
+  // «VIỆC CỦA ANH» dựng độc lập với bảng định tuyến, nên thẻ in hai dòng trả
+  // lời đá nhau: dòng mẫu 5 ô trống ngay trên dòng lệnh có 3 (S4-r1).
+  if (oos.length) ymItems.push(`<b>Phần cắt/hoãn — máy đã điền «đồng ý cắt»</b> — làm gì: đọc mục xác nhận phạm vi ở trên; ở đâu: trả lời trong phiên đang trình thẻ; trả lời dạng: sửa ô «cắt/hoãn» trong dòng lệnh thành «kéo vào: nêu mục» nếu anh không đồng ý.`);
+  if (decsProvisional.length) ymItems.push(`<b>${decsProvisional.length} quyết định ghi sau Cổng 1 (Treo-1…Treo-${decsProvisional.length}) — máy đã điền «phê hết»</b> — làm gì: đọc khối "Quyết định CHƯA duyệt"; ở đâu: trả lời trong phiên đang trình thẻ; trả lời dạng: sửa ô «Treo» trong dòng lệnh thành «không phê: Treo-số» nếu có mục anh không phê.`);
+  // Hồ sơ máy ĐÃ đi tiếp hợp lệ thì việc-của-người KHÔNG phải ký, mà là kéo lại nếu
+  // muốn. Bỏ sót chỗ này là thẻ nói «máy đã đi tiếp» ở đầu rồi vẫn bảo «Ký hay
+  // trả» ở cuối — mâu thuẫn ngay trong chính thẻ, và đúng thứ AC-8 cấm. Ô «đi tiếp
+  // hay kéo lại» là dòng BÁO (điền sẵn ở dòng lệnh), nên KHÔNG vào dòng mẫu.
+  if (MAY_DI_TIEP) {
+    ymItems.push(`<b>Máy đã đi tiếp — không cần trả lời</b> — ${esc(chuMDT().viecKe)}; muốn dừng: sửa ô cuối của dòng lệnh thành «${NHAN_LAN_V}: kéo lại: nêu lý do» (hoặc gõ «kéo lại: nêu lý do»).`);
+  } else {
+    ymItems.push(`<b>Ký hay trả</b> — làm gì: sau khi trả lời các mục trên, chốt hồ sơ; ở đâu: trả lời trong phiên đang trình thẻ; trả lời dạng: «Ký» hoặc «Trả lại: nêu lý do».`);
+    ymSlots.push('ký hay trả: ___');
+  }
+  P.push(`<div class="lab">👉 VIỆC CỦA ANH</div><div class="grp gdo">${ymItems.map(t => `<p class="li">${t}</p>`).join('')}<p class="li">Trả lời mẫu (một dòng, điền vào chỗ trống): «${ymSlots.length ? esc(ymSlots.join('; ')) : '— không có ô nào cần anh điền —'}»</p></div>${oneShotG2 ? `<div class="mach">Dòng lệnh đã điền sẵn khuyến nghị — sửa ô nào anh nghĩ khác: <b>${esc(oneShotG2)}</b></div>` : ''}`);
+}
+P.push(DA_KHEP
+  ? `<div class="foot"><span class="rev">↻ Hồ sơ đã khép — mở lại bằng một dòng sổ có người và lý do.</span></div></div>`
+  : MAY_DI_TIEP
+  ? `<div class="foot"><span class="rev">↻ ${esc(chuMDT().viecKe)}</span><div class="btns"><button class="b no">Kéo lại</button></div></div>
+</div></div>`
+  : `<div class="foot"><span class="rev">↻ Đảo ngược dễ: trả lại → quay về code, không mất gì.</span><div class="btns"><button class="b no">Trả lại</button><button class="b yes">Ký duyệt</button></div></div>
+</div></div>`);
+process.stdout.write(P.join('\n'));

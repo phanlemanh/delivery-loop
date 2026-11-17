@@ -15,11 +15,11 @@ import { fileURLToPath } from 'node:url';
 
 const DAY_TEP = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(DAY_TEP, '..', '..');
-const GOI = path.join(KIT, 'dieu-phoi');
+const GOI = path.join(KIT, 'plugins/dispatch');
 const SLUG = 'dieu-phoi-sua-truoc-dot-thu';
 const NHANH = `vong/${SLUG}`;
 // Trạng thái hợp đồng «đã thông Cổng Bằng chứng» rút từ lib của CÂY ĐANG KIỂM, không chép chữ (khuôn DP7).
-const DA_KY = createRequire(import.meta.url)(path.join(KIT, 'lib', 'workspace-record.cjs')).DA_THONG_CONG_2[0];
+const DA_KY = createRequire(import.meta.url)(path.join(KIT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs')).DA_THONG_CONG_2[0];
 
 // Khoá máy của ca nằm trong thư mục tạm — đặt TRƯỚC mọi lần nạp mô-đun của gói.
 const MAY_TAM = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'sdt-may-')));
@@ -331,10 +331,10 @@ test('SDT-03-do chi-phu-thuoc', async () => {
 // ---------- SDT-04: bộ phát lịch chỉ giao hàng đã quyết build (AC-4, E4 — lỗi B1) ----------
 const A = { ma: 'A', slug: 'hang-a', day: 'P1', uu_tien: 1 };
 const B = { ma: 'B', slug: 'hang-b', day: 'P1', uu_tien: 2 };
-const KHUON_O = path.join(KIT, 'skills', 'acceptance', 'references', 'opportunity-template.md');
+const KHUON_O = path.join(KIT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'opportunity-template.md');
 // Ô của hàng A do CHÍNH bộ ghi của `lo-trinh.mjs --mo-o` sinh từ khuôn thật của kit (writer → quyetCua → tiep).
 async function oTuBoGhi(goc, { build = false } = {}) {
-  const { dungCoHoi } = await import(path.join(KIT, 'scripts', 'lo-trinh.mjs'));
+  const { dungCoHoi } = await import(path.join(KIT, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs'));
   let o = dungCoHoi({ khuon: fs.readFileSync(KHUON_O, 'utf8'), hang: { ma: 'A', cau_giao: 'Hàng A của đợt thử' }, tep: 'docs/lo-trinh.json', tenLoTrinh: 'thử', slug: 'hang-a', owner: 't@t' });
   if (build) {
     // Bước 4 của mo-dot: ghi chữ build người gõ vào dòng `decision:` — giữ chú thích sau giá trị của khuôn.
@@ -633,7 +633,7 @@ export function dieuKienLenh(moDot, tiepTuc) {
 const docLenh = (ten) => fs.readFileSync(path.join(GOI, 'commands', ten), 'utf8');
 
 test('SDT-02 lenh-nguoi', () => {
-  const nay = dieuKienLenh(docLenh('mo-dot.md'), docLenh('tiep-tuc.md'));
+  const nay = dieuKienLenh(docLenh('open.md'), docLenh('resume.md'));
   const moc = mocSo(KIT);
   const cu = dieuKienLenh(noiDungTai(KIT, moc.tu, 'dieu-phoi/commands/mo-dot.md'), noiDungTai(KIT, moc.tu, 'dieu-phoi/commands/tiep-tuc.md'));
   const giuNguyen = cu.filter(([, ok]) => ok).map(([t]) => t);
@@ -644,8 +644,8 @@ test('SDT-02 lenh-nguoi', () => {
 });
 
 test('SDT-02-do buoc-7-cu', () => {
-  const moDot = docLenh('mo-dot.md');
-  const tiepTuc = docLenh('tiep-tuc.md');
+  const moDot = docLenh('open.md');
+  const tiepTuc = docLenh('resume.md');
   assert.deepEqual(dieuKienLenh(moDot, tiepTuc).filter(([, ok]) => !ok), [], 'đối chứng dương: thân lệnh hiện tại');
   const cu7 = doanBuoc(noiDungTai(KIT, mocSo(KIT).tu, 'dieu-phoi/commands/mo-dot.md'), 7);
   const sao = moDot.replace(doanBuoc(moDot, 7), cu7);
@@ -713,18 +713,18 @@ export function kiemLich(moDot, tiepTuc, moDotCu) {
 const moDotTaiMoc = () => noiDungTai(KIT, mocSo(KIT).tu, 'dieu-phoi/commands/mo-dot.md');
 
 test('SDT-05 lich-30', () => {
-  const loi = kiemLich(docLenh('mo-dot.md'), docLenh('tiep-tuc.md'), moDotTaiMoc());
-  console.log(`  khối LICH-30: mo-dot ${khoiLich(docLenh('mo-dot.md'))?.length ?? 0} ký tự · tiep-tuc ${khoiLich(docLenh('tiep-tuc.md'))?.length ?? 0} ký tự · lỗi: [${loi.join(', ')}]`);
+  const loi = kiemLich(docLenh('open.md'), docLenh('resume.md'), moDotTaiMoc());
+  console.log(`  khối LICH-30: mo-dot ${khoiLich(docLenh('open.md'))?.length ?? 0} ký tự · tiep-tuc ${khoiLich(docLenh('resume.md'))?.length ?? 0} ký tự · lỗi: [${loi.join(', ')}]`);
   assert.deepEqual(loi, []);
 });
 
 test('SDT-05-do thieu-han-muc', () => {
-  const moDot = docLenh('mo-dot.md');
-  assert.deepEqual(kiemLich(moDot, docLenh('tiep-tuc.md'), moDotTaiMoc()), [], 'đối chứng dương');
+  const moDot = docLenh('open.md');
+  assert.deepEqual(kiemLich(moDot, docLenh('resume.md'), moDotTaiMoc()), [], 'đối chứng dương');
   const khoi = khoiLich(moDot);
   const sao = moDot.replace(khoi, khoi.split('\n').filter((d) => !d.includes('han-muc')).join('\n'));
   assert.notEqual(sao, moDot, 'bước bỏ câu han-muc không áp được');
-  const loi = kiemLich(sao, docLenh('tiep-tuc.md'), moDotTaiMoc());
+  const loi = kiemLich(sao, docLenh('resume.md'), moDotTaiMoc());
   assert.ok(loi.includes('mo-dot.md: khối LICH-30 lệch tiep-tuc.md'), `phải nêu khối lệch: ${loi.join(' | ')}`);
 });
 
@@ -740,7 +740,7 @@ async function kiemKhongHoi(gocGoi) {
   const loi = [];
   for (const h of the.hoi) if (!/^(quyen-tu-merge|build:.+)$/.test(h)) loi.push(`hoi ${h} không có lối ghi`);
   if (JSON.stringify(the.han_muc) !== JSON.stringify(HM)) loi.push(`han_muc ${JSON.stringify(the.han_muc)}, cần ${JSON.stringify(HM)}`);
-  const b3 = doanBuoc(docLenh('mo-dot.md'), 3);
+  const b3 = doanBuoc(docLenh('open.md'), 3);
   if (!b3.includes('han_muc') || !b3.includes('dieu-phoi.config.json')) loi.push('mo-dot.md bước 3: thiếu dòng thông tin ngưỡng han_muc và chỗ sửa dieu-phoi.config.json');
   return { loi, hoi: the.hoi };
 }

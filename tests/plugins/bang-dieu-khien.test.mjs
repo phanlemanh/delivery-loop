@@ -11,8 +11,8 @@ import { createRequire } from 'node:module';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
-const SCAN = path.join(ROOT, 'scripts', 'start-scan.mjs');
-const START_MD = path.join(ROOT, 'commands', 'start.md');
+const SCAN = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'start-scan.mjs');
+const START_MD = path.join(ROOT, 'plugins/acceptance-gate/commands', 'start.md');
 const require = createRequire(import.meta.url);
 
 let failures = 0;
@@ -41,7 +41,7 @@ const scan = (root, script = SCAN) => {
 if (want('BDK2')) {
   const errs = []; let BDK2_N = 0;
   let BANG = null;
-  try { BANG = require(path.join(ROOT, 'scripts', 'trang-thai-ho-so.cjs')); }
+  try { BANG = require(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'trang-thai-ho-so.cjs')); }
   catch (e) { errs.push(`không nạp được bảng: ${e.message}`); }
 
   if (BANG) {
@@ -61,7 +61,7 @@ if (want('BDK2')) {
     if (Object.keys(BANG.TRANG_THAI).length !== N)
       errs.push(`bảng khai ${Object.keys(BANG.TRANG_THAI).length} khoá != ${N} — thêm khoá thì thêm ca`);
     // Ô của bản đồ là danh sách ĐÓNG — rút từ chính product-map.mjs lúc chạy, không chép tay
-    const pmSrc = readFileSync(path.join(ROOT, 'scripts', 'product-map.mjs'), 'utf8');
+    const pmSrc = readFileSync(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'product-map.mjs'), 'utf8');
     const secBlock = (pmSrc.match(/const SECTIONS = \[([\s\S]*?)\];/) || [])[1] || '';
     const O_BAN_DO = new Set([...secBlock.matchAll(/\['([a-z-]+)',/g)].map(m => m[1]));
     if (O_BAN_DO.size !== 11) errs.push(`rút được ${O_BAN_DO.size} ô bản đồ từ product-map.mjs, mong 11`);
@@ -93,7 +93,7 @@ if (want('BDK2')) {
     // ── acceptance-status.md: ALLOWLIST, không blacklist ──
     // Không gian nhãn là MỞ: cấm «Chờ người ký» thì bên viết đặt «Đợi chữ ký» và ca
     // vẫn xanh. Rút MỌI nhãn ứng viên rồi assert TẬP CON của bảng.
-    const md = readFileSync(path.join(ROOT, 'commands', 'acceptance-status.md'), 'utf8');
+    const md = readFileSync(path.join(ROOT, 'plugins/acceptance-gate/commands', 'acceptance-status.md'), 'utf8');
     const blk = (md.match(/<!-- <<<STATUS-NHAN\n([\s\S]*?)STATUS-NHAN>>> -->/) || [])[1];
     if (blk === undefined) errs.push('không thấy khối STATUS-NHAN trong acceptance-status.md');
     else {
@@ -187,15 +187,15 @@ if (want('BDK3')) {
 if (want('BDK4')) {
   const errs = [];
   for (const [rel, ten, re] of [
-    ['commands/approve.md', 'bước kế S2', /Bước kế: máy lập kế hoạch thi công \(S2\)/],
-    ['commands/signoff.md', 'bước kế S5', /Bước kế: bàn giao \(S5\)/],
-    ['commands/acceptance-card.md', 'hai lệnh ký', /`\/acceptance-gate:approve <slug>`[\s\S]{0,200}`\/acceptance-gate:signoff <slug>`/],
+    ['plugins/acceptance-gate/commands/approve.md', 'bước kế S2', /Bước kế: máy lập kế hoạch thi công \(S2\)/],
+    ['plugins/acceptance-gate/commands/signoff.md', 'bước kế S5', /Bước kế: bàn giao \(S5\)/],
+    ['plugins/acceptance-gate/commands/acceptance-card.md', 'hai lệnh ký', /`\/acceptance-gate:approve <slug>`[\s\S]{0,200}`\/acceptance-gate:signoff <slug>`/],
   ]) {
     const txt = readFileSync(path.join(ROOT, rel), 'utf8');
     if (!re.test(txt)) errs.push(`${rel} thiếu «${ten}»`);
   }
   // signoff phải nói CẢ HAI ngả của Vòng TRAO — có hồ sơ cơ hội thì còn một cổng nữa
-  const so = readFileSync(path.join(ROOT, 'commands/signoff.md'), 'utf8');
+  const so = readFileSync(path.join(ROOT, 'plugins/acceptance-gate/commands/signoff.md'), 'utf8');
   if (!/acceptance-gate:uat-session <slug>/.test(so)) errs.push('signoff.md không nêu phiên nghiệm thu cho vòng có hồ sơ cơ hội');
   if (!/không hồ\s*\n?\s*sơ cơ hội nên ship thẳng/.test(so)) errs.push('signoff.md không nêu ngả không có hồ sơ cơ hội');
   // Vũ trụ quét dạng-lệnh GIỮ 16: ba thân cổng đã nằm trong đó từ chip D

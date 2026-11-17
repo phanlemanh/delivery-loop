@@ -41,8 +41,8 @@ function banSao({ tu = GOC_KIT, sua, suaKhoa, suaSo, suaCay } = {}) {
   cpSync(join(tu, 'design-floor'), join(goc, 'design-floor'), { recursive: true });
   mkdirSync(join(goc, 'tests', 'design-floor'), { recursive: true });
   symlinkSync(join(GOC_KIT, 'tests', 'design-floor', 'node_modules'), join(goc, 'tests', 'design-floor', 'node_modules'));
-  const hdMd = join(goc, 'design-floor/HOP-DONG-NHAP.md');
-  const khoa = join(goc, 'design-floor/upstream.lock.json');
+  const hdMd = join(goc, 'plugins/acceptance-gate/design-floor/HOP-DONG-NHAP.md');
+  const khoa = join(goc, 'plugins/acceptance-gate/design-floor/upstream.lock.json');
   if (sua) thayKhoi(hdMd, 'DESIGN-FLOOR-HOP-DONG', sua);
   if (suaSo) thayKhoi(join(goc, HD.vendor.so_va), 'DESIGN-FLOOR-LOCAL-PATCHES', suaSo);
   if (suaKhoa) {
@@ -130,7 +130,7 @@ ca('FN-01', 'tệp khoá lệch một băm', RAO, () => [...banSao({ suaKhoa: (k
   { ec: 1, chua: ['FAIL: FN-01', `~${KHOA.tep[0].path} (băm)`] });
 ca('FN-01', 'tệp diff A sửa một dòng ngữ cảnh — không đảo được', RAO, () => [...banSao({
   suaCay: (g) => {
-    const p = join(g, 'design-floor/patches/A-bo-cham-khong-but.patch');
+    const p = join(g, 'plugins/acceptance-gate/design-floor/patches/A-bo-cham-khong-but.patch');
     writeFileSync(p, readFileSync(p, 'utf8').replace(' import type { CommandResult } from "../core/output.js";', ' import type { CommandResultX } from "../core/output.js";'));
   },
 }).args, '--chi', 'FN-01'], { ec: 1, chua: ['FAIL: FN-01', 'bản vá A không đảo được'] });
@@ -169,7 +169,7 @@ const MONG_DO = { '': [], A: ['DF-07', 'DF-08', 'FN-02'], B: ['DF-01', 'DF-03', 
 for (const [bo, mong] of Object.entries(MONG_DO)) {
   caHam('BO-VA', bo ? `bỏ bản vá ${bo} → đỏ đúng {${mong.join(',')}}` : 'đối chứng: biến thể áp đủ bốn bản vá (cùng đường dựng) → không phép đo nào đỏ', () => {
     const goc = bienThe(bo);
-    const tham = ['--hop-dong', join(goc, 'design-floor/HOP-DONG-NHAP.md'), '--khoa', join(goc, 'design-floor/upstream.lock.json'), '--goc', goc];
+    const tham = ['--hop-dong', join(goc, 'plugins/acceptance-gate/design-floor/HOP-DONG-NHAP.md'), '--khoa', join(goc, 'plugins/acceptance-gate/design-floor/upstream.lock.json'), '--goc', goc];
     const out = chay(HOP, tham).out + chay(RAO, [...tham, '--chi', 'FN-02']).out;
     const nhan = new Map([...out.matchAll(/^\s+(PASS|XFAIL|XPASS→FAIL|FAIL): (DF-\d+|FN-\d+)/gm)].map((m) => [m[2], m[1]]));
     const doThat = PHEP_DO.filter((id) => /FAIL/.test(nhan.get(id) || 'FAIL'));
@@ -185,7 +185,7 @@ for (const [bo, mong] of Object.entries(MONG_DO)) {
 ca('BAN-VA-A', 'bỏ bản vá A khỏi bản sao rồi dựng lại bản gói → DF-07, DF-08 đỏ', HOP, () => {
   const { args } = banSao({
     suaCay: (g) => {
-      apVa(join(g, HD.vendor.goc), join(g, 'design-floor/patches/A-bo-cham-khong-but.patch'), { nguoc: true });
+      apVa(join(g, HD.vendor.goc), join(g, 'plugins/acceptance-gate/design-floor/patches/A-bo-cham-khong-but.patch'), { nguoc: true });
       writeFileSync(join(g, HD.vendor.ban_goi), dungBanGoi(HD, g));
     },
   });

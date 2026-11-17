@@ -5,11 +5,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { chonHangKe } from '../../../dieu-phoi/scripts/lich.mjs';
-import { docNhanhMo, mauGiao, xetTrungTep } from '../../../dieu-phoi/scripts/trung-tep.mjs';
-import { xetYeuCau } from '../../../dieu-phoi/scripts/yeu-cau.mjs';
-import { motNhip } from '../../../dieu-phoi/scripts/phat-lich.mjs';
-import { themHang, themSau } from '../../../dieu-phoi/scripts/hang.mjs';
+import { chonHangKe } from '../../../plugins/dispatch/scripts/lich.mjs';
+import { docNhanhMo, mauGiao, xetTrungTep } from '../../../plugins/dispatch/scripts/trung-tep.mjs';
+import { xetYeuCau } from '../../../plugins/dispatch/scripts/yeu-cau.mjs';
+import { motNhip } from '../../../plugins/dispatch/scripts/phat-lich.mjs';
+import { themHang, themSau } from '../../../plugins/dispatch/scripts/hang.mjs';
 import { CFG_PHAT_LICH } from './mau-thu.mjs';
 
 const PHIEU = 'apps/web/src/company/company-sheet.tsx';

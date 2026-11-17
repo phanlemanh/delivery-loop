@@ -624,11 +624,11 @@ const khoiS0 = () => {
   if (!m) throw new Error('không thấy khối S0-NHAN-HANG (một dòng lệnh trong rào ```) trong SKILL feature-loop');
   return m[1];
 };
-// Gốc bộ giải gói đặt như harness đặt: HOME tạm có cache acceptance-gate-kit/acceptance-gate/<ver>
+// Gốc bộ giải gói đặt như harness đặt: HOME tạm có cache delivery-loop/acceptance-gate/<ver>
 // mang bản sao scripts + lib của cây đang kiểm (dirent symlink không được bộ giải tính là thư mục).
 const homeGia = (() => { let h = null; return () => {
   if (h) return h;
-  h = path.join(TMP, 'home'); const v = path.join(h, '.claude', 'plugins', 'cache', 'acceptance-gate-kit', 'acceptance-gate', '9.9.9');
+  h = path.join(TMP, 'home'); const v = path.join(h, '.claude', 'plugins', 'cache', 'delivery-loop', 'acceptance-gate', '9.9.9');
   for (const d of LOI) cpSync(path.join(AG(KIT), d), path.join(v, d), { recursive: true });
   return h; }; })();
 const chayS0 = (lenh, r) => spawnSync('bash', ['-c', lenh], { cwd: r, encoding: 'utf8', env: { ...process.env, HOME: homeGia(), WORKFLOWS_DIR: P(KIT, 'feature-loop/workflows') } });
@@ -1433,7 +1433,7 @@ if (want('LT-83-do')) {
 
 // ── LT-84: khối S0 mở việc chạy được khi máy không khai email git ─────────
 function homeTu(kit) {
-  const h = path.join(TMP, `home-${++bsN}`); const v = path.join(h, '.claude', 'plugins', 'cache', 'acceptance-gate-kit', 'acceptance-gate', '9.9.9');
+  const h = path.join(TMP, `home-${++bsN}`); const v = path.join(h, '.claude', 'plugins', 'cache', 'delivery-loop', 'acceptance-gate', '9.9.9');
   for (const d of LOI) cpSync(path.join(AG(kit), d), path.join(v, d), { recursive: true });
   return h;
 }

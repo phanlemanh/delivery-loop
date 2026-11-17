@@ -311,7 +311,7 @@ function kiemThang(gocGoi = GOI) {
     const chu = `${kq.cau} ${kq.ly_do}`;
     if (kq.hanh_dong !== can) loi.push(`(${phut}′): ${kq.hanh_dong}, cần ${can}`);
     else if (can !== 'khong' && (!chu.includes(HOOK) || chu.includes('không có nhịp sống'))) loi.push(`(${phut}′): câu thiếu «${HOOK}»`);
-    else if (can === 'nhan-giam-sat' && (kq.phien !== APP || !kq.cau.includes('/dieu-phoi:tiep-tuc'))) loi.push(`(${phut}′): nhắn sai mã hay thiếu lệnh`);
+    else if (can === 'nhan-giam-sat' && (kq.phien !== APP || !kq.cau.includes('/dispatch:resume'))) loi.push(`(${phut}′): nhắn sai mã hay thiếu lệnh`);
   }
   return loi;
 }
@@ -405,7 +405,7 @@ async function vaiMa(gocGoi, { phienCli }) {
 test('TC1-07 vang-ma-app', async () => {
   const moi = await vaiMa(GOI, { phienCli: null });
   assert.equal(moi.muc.length, 1);
-  assert.match(moi.muc[0].viec, /\/dieu-phoi:tiep-tuc/);
+  assert.match(moi.muc[0].viec, /\/dispatch:resume/);
   assert.equal(moi.ma, (await vaiMa(goiMoc(), { phienCli: null })).ma, 'mã thoát bằng bản ở sha ghim');
   assert.equal((await vaiMa(GOI, { phienCli: CLI_ID })).muc.length, 0, 'đối chứng: vai có phien_cli thì không có dòng');
 });

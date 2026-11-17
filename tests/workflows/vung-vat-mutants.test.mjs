@@ -14,14 +14,14 @@ import { runWorkflow, check, summary, TOOL_KILL_RULE_SRC } from './harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const WF = path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const SRC = readFileSync(WF, 'utf8');
 
 // Sau ĐỔI KHUÔN 14/09, bên ĐỌC nhận DANH SÁCH tệp chứ không nhận mẫu. Ca vẫn rút mẫu từ
 // khối marker của bên VIẾT — nhưng để CHỨNG rằng tệp ca khai là ngoài-vật thật sự khớp
 // định nghĩa của bên viết, chứ không phải ca tự bịa ra một định nghĩa thứ hai.
 // thuoc-co-cua AC-10: hằng sống ở MỘT nguồn `lib/phan-loai.mjs`, s4-args nhập từ đó.
-const S4 = readFileSync(path.join(ROOT, 'feature-loop', 'scripts', 'lib', 'phan-loai.mjs'), 'utf8');
+const S4 = readFileSync(path.join(ROOT, 'plugins/feature-loop', 'scripts', 'lib', 'phan-loai.mjs'), 'utf8');
 const HO_SO_GLOBS = (() => {
   const m = S4.match(/const HO_SO_VAN_BAN_GLOBS = \[([^\]]*)\]/);
   if (!m) throw new Error('khong rut duoc HO_SO_VAN_BAN_GLOBS tu lib/phan-loai.mjs — mot nguon cua s4-args doi khuon');

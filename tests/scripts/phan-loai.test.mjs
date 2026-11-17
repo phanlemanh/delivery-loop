@@ -1,5 +1,5 @@
 // phan-loai.test.mjs — thuoc-co-cua AC-10 (E12): MỘT nguồn phân bốn lớp
-// ngoài · thước · hồ sơ · vật (`feature-loop/scripts/lib/phan-loai.mjs`).
+// ngoài · thước · hồ sơ · vật (`plugins/feature-loop/scripts/lib/phan-loai.mjs`).
 //
 //   PL1 ma trận viết-trước: mỗi vế của từng lớp một đường mẫu; số khẳng định = số hàng.
 //   PL4 tệp máy ghi của hồ sơ, gọi tên đích danh → «hồ sơ»; bản ghi mốc định tuyến
@@ -17,8 +17,8 @@ import path from 'node:path';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');
-const MODULE = path.join(KIT, 'feature-loop', 'scripts', 'lib', 'phan-loai.mjs');
-const S4ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
+const MODULE = path.join(KIT, 'plugins/feature-loop', 'scripts', 'lib', 'phan-loai.mjs');
+const S4ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
 let pass = 0, fail = 0;
 const ok = m => { console.log(`  PASS: ${m}`); pass += 1; };
 const bad = (m, d) => { console.log(`  FAIL: ${m}${d ? ` (${d})` : ''}`); fail += 1; };
@@ -42,7 +42,7 @@ const PL1_MATRAN = [
   ['_acceptance/demo/contract.md', 'ho-so'],
   ['docs/x.md', 'ngoai', ['docs/**']],
   ['src/a.js', 'vat'],
-  ['scripts/gate-card.js', 'vat'],
+  ['plugins/acceptance-gate/scripts/gate-card.js', 'vat'],
 ];
 const PL4_MATRAN = [
   ['_acceptance/demo/run-log.jsonl', 'ho-so'],
@@ -98,7 +98,7 @@ function chayMaTran(fn, maTran) {
   for (const [i, [ten, kim, oLat]] of VE.entries()) {
     try {
       const d = path.join(TMP, `pl2-${i}`);
-      cpSync(path.join(KIT, 'feature-loop', 'scripts'), path.join(d, 'scripts'), { recursive: true });
+      cpSync(path.join(KIT, 'plugins/feature-loop', 'scripts'), path.join(d, 'scripts'), { recursive: true });
       const f = path.join(d, 'scripts', 'lib', 'phan-loai.mjs');
       const src = readFileSync(f, 'utf8');
       const n = src.split(kim).length - 1;
@@ -140,7 +140,7 @@ function buildRepo() {
 }
 const runArgs = (script, d) => {
   const out = path.join(d, `args-${Math.random().toString(36).slice(2)}.json`);
-  execFileSync(process.execPath, [script, '--slug', 'demo', '--root', d, '--ag-root', KIT, '--out', out, '--diff-base', 'main'],
+  execFileSync(process.execPath, [script, '--slug', 'demo', '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', out, '--diff-base', 'main'],
     { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
   return JSON.parse(readFileSync(out, 'utf8'));
 };
@@ -149,7 +149,7 @@ const runArgs = (script, d) => {
     const d = buildRepo();
     const that = runArgs(S4ARGS, d);
     const m = path.join(TMP, 'pl3');
-    cpSync(path.join(KIT, 'feature-loop'), path.join(m, 'feature-loop'), { recursive: true });
+    cpSync(path.join(KIT, 'plugins/feature-loop'), path.join(m, 'feature-loop'), { recursive: true });
     const f = path.join(m, 'feature-loop', 'scripts', 'lib', 'phan-loai.mjs');
     let src = readFileSync(f, 'utf8');
     for (const re of [/export const DO_GLOBS = \[[^\]]*\];/g, /export const HO_SO_VAN_BAN_GLOBS = \[[^\]]*\];/g]) {

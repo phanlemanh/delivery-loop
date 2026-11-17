@@ -11,7 +11,7 @@ const ROOT = path.join(HERE, '..', '..');
 let pass = 0, fail = 0;
 const ca = (n, f) => { try { f(); pass++; console.log(`  PASS: ${n} `); } catch (e) { fail++; console.log(`  FAIL: ${n} — ${e.message}`); } };
 const die = m => { throw new Error(m); };
-const hooksJson = JSON.parse(readFileSync(path.join(ROOT, 'hooks', 'hooks.json'), 'utf8'));
+const hooksJson = JSON.parse(readFileSync(path.join(ROOT, 'plugins/acceptance-gate/hooks', 'hooks.json'), 'utf8'));
 const muc = hooksJson.hooks.PreToolUse.filter(x => x.matcher === 'Bash' && x.hooks.some(h => h.command.includes('ruling-truoc-khi-xoa.js')));
 const PROGRESS = '# SDD ledger\n\nHợp đồng ràng buộc: _acceptance/ws-thu/contract.md\n\nRuling 1: chọn A — Vì sao: vì B. Sai thì tốn: C.\n\nTask 2: Ruling: chọn D — vì E — tốn F\n';
 const kho = (slugDir = 'ws-thu') => {
@@ -24,7 +24,7 @@ const kho = (slugDir = 'ws-thu') => {
 };
 const so = r => { const p = path.join(r, '_acceptance', 'ws-thu', 'decisions.jsonl'); return existsSync(p) ? readFileSync(p, 'utf8') : ''; };
 const dem = r => so(r).split('\n').filter(Boolean).length;
-const hook = (r, command, cwd = r, pluginRoot = ROOT) => {
+const hook = (r, command, cwd = r, pluginRoot = path.join(ROOT, 'plugins/acceptance-gate')) => {
   const cmd = muc[0].hooks.find(h => h.command.includes('ruling-truoc-khi-xoa.js')).command;
   return spawnSync('sh', ['-c', cmd], { input: JSON.stringify({ tool_name: 'Bash', cwd, tool_input: { command } }), env: { ...process.env, CLAUDE_PLUGIN_ROOT: pluginRoot }, encoding: 'utf8' });
 };
@@ -77,16 +77,16 @@ ca('RT-AC6-kho-ngoai', () => { // kho chưa dùng kit: không sổ để gặt �
 });
 ca('RT-AC6-vang', () => { const r = kho(); const x = hook(r, 'rm -rf .superpowers/sdd/khong-ton-tai'); if (x.status !== 0 || dem(r) !== 0) die(`exit ${x.status}`); });
 
-const banSao = mutate => { const d = mkdtempSync(path.join(tmpdir(), 'rt-m-')); for (const s of ['hooks', 'scripts', 'lib']) cpSync(path.join(ROOT, s), path.join(d, s), { recursive: true }); const p = path.join(d, 'hooks', 'ruling-truoc-khi-xoa.js'); const s = readFileSync(p, 'utf8'); const m = mutate(s); if (m === s) die('kim khong khop'); writeFileSync(p, m); return d; };
+const banSao = mutate => { const d = mkdtempSync(path.join(tmpdir(), 'rt-m-')); for (const s of ['plugins/acceptance-gate/hooks', 'plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib']) cpSync(path.join(ROOT, s), path.join(d, s), { recursive: true }); const p = path.join(d, 'plugins/acceptance-gate/hooks', 'ruling-truoc-khi-xoa.js'); const s = readFileSync(p, 'utf8'); const m = mutate(s); if (m === s) die('kim khong khop'); writeFileSync(p, m); return d; };
 ca('RT-AC6-dot-bien-rm', () => {
   const d = banSao(s => s.replace("if (!laRm(w[0])) continue;", ''));
-  const r = kho(); hook(r, 'grep -r Ruling .superpowers/sdd/2026-09-29-ws-thu', r, d);
+  const r = kho(); hook(r, 'grep -r Ruling .superpowers/sdd/2026-09-29-ws-thu', r, path.join(d, 'plugins/acceptance-gate'));
   if (dem(r) === 0) die('dot bien bo neo rm khong co tac dung');
   console.log('    · chieu do: bo neo rm → «lệnh đọc kích gặt» (bat duoc)');
 });
 ca('RT-AC6-dot-bien-chan', () => {
   const d = banSao(s => s.replace('process.exitCode = 2;', ''));
-  const r = kho('ho-so-khac'); const x = hook(r, 'rm -rf .superpowers/sdd/2026-09-29-ws-thu', r, d);
+  const r = kho('ho-so-khac'); const x = hook(r, 'rm -rf .superpowers/sdd/2026-09-29-ws-thu', r, path.join(d, 'plugins/acceptance-gate'));
   if (x.status === 2) die('dot bien bo exit 2 khong co tac dung');
   console.log('    · chieu do: bo exit 2 → «hook cho xoá khi ruling chưa vào sổ» (bat duoc)');
 });

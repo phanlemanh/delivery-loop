@@ -18,7 +18,7 @@ const ca = async (n, fn) => { if (!want(n)) return; try { ok(n, (await fn()) || 
 const assert = (c, m) => { if (!c) throw new Error(m); };
 
 // ── Task C1 (AC-8): nhãn chi phí từ meta.json ──
-const WFU = path.join(KIT, 'feature-loop', 'scripts', 'wf-usage.mjs');
+const WFU = path.join(KIT, 'plugins/feature-loop', 'scripts', 'wf-usage.mjs');
 const HARNESS = '[Workflow harness — user request] The harness relayed this request verbatim';
 function thuMuc({ meta = true, tagO2 = false } = {}) {
   const d = mkdtempSync(path.join(TMP, 'wf-'));

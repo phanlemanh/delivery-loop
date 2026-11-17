@@ -13,7 +13,7 @@ import { fileFromTemplate } from '../fixtures/from-template.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
-const LH = path.join(ROOT, 'scripts', 'loop-health.mjs');
+const LH = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'loop-health.mjs');
 
 const ALL_IDS = ['LH1', 'LH2', 'LH3', 'LH4'];
 if (process.argv.includes('--ids')) { console.log(ALL_IDS.join(' ')); process.exit(0); }
@@ -39,7 +39,7 @@ const usageSection = (n, out, inn, cr, cc) => [
   `| machine:x | claude-haiku-4-5 | 2 | ${out} | ${inn} | ${cr} | 3 |`, '',
   `- **claude-haiku-4-5**: 1 agent · 2 calls · out ${out} · in ${inn} · cache_read ${cr} · cache_create ${cc}`, '',
 ].join('\n');
-const CONTRACT_TPL = path.join(ROOT, 'skills', 'acceptance', 'references', 'contract-template.md');
+const CONTRACT_TPL = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'contract-template.md');
 const contractOf = (slug, tier, extra = '') => fileFromTemplate(CONTRACT_TPL, 'CONTRACT-FRONTMATTER-TEMPLATE',
   { feature: slug, slug, owner: 'o@x', risk_tier: tier, surfaces: 'api', status: 'implemented' },
   '\n## Criteria\n\n- AC-1: Given a, When b, Then c.\n')

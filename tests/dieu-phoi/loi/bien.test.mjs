@@ -4,12 +4,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { phienCuaCwd, trongWorktree } from '../../../dieu-phoi/scripts/dot.mjs';
-import { chayHook } from '../../../dieu-phoi/scripts/hook-chan-s4.mjs';
-import { chamNhip } from '../../../dieu-phoi/scripts/hook-nhip.mjs';
-import { capLuot } from '../../../dieu-phoi/scripts/lich.mjs';
-import { motNhip } from '../../../dieu-phoi/scripts/phat-lich.mjs';
-import { xetYeuCau } from '../../../dieu-phoi/scripts/yeu-cau.mjs';
+import { phienCuaCwd, trongWorktree } from '../../../plugins/dispatch/scripts/dot.mjs';
+import { chayHook } from '../../../plugins/dispatch/scripts/hook-chan-s4.mjs';
+import { chamNhip } from '../../../plugins/dispatch/scripts/hook-nhip.mjs';
+import { capLuot } from '../../../plugins/dispatch/scripts/lich.mjs';
+import { motNhip } from '../../../plugins/dispatch/scripts/phat-lich.mjs';
+import { xetYeuCau } from '../../../plugins/dispatch/scripts/yeu-cau.mjs';
 import { CFG_BIEN, hangViecHai } from './mau-thu.mjs';
 
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp-')));

@@ -11,8 +11,8 @@ import { measureShapes } from './measure-pins.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const WF = path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js');
-const SKILL_P = path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const WF = path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
+const SKILL_P = path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 // sha TRƯỚC feature (commit Cổng 1 duyệt matrix-measure-law nằm ngay sau sha này)
 const PRE_SHA = 'dc49fe7cae2e525b352b0cd85ebd501c652b8bad';
 let passed = 0, failed = 0;

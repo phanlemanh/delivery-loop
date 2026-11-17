@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Bộ đo hành vi của hợp đồng nhập design-floor (design-floor/HOP-DONG-NHAP.md), chạy trên BẢN GÓI giao
-// đi (design-floor/dist/ui.mjs = vỏ của kit + bản vendored đã vá) — thước gắn vào đúng vật kho tiêu thụ nhận. Mỗi phép đo có đối chứng: đối chứng hỏng là FAIL bất kể
+// Bộ đo hành vi của hợp đồng nhập design-floor (plugins/acceptance-gate/design-floor/HOP-DONG-NHAP.md), chạy trên BẢN GÓI giao
+// đi (plugins/acceptance-gate/design-floor/dist/ui.mjs = vỏ của kit + bản vendored đã vá) — thước gắn vào đúng vật kho tiêu thụ nhận. Mỗi phép đo có đối chứng: đối chứng hỏng là FAIL bất kể
 // giới hạn đã khai, vì khi đó phép đo không phân biệt được «bắt đúng» với «chưa chạy».
 // Fixture do mã sinh trong chính lượt chạy, mỗi phép đo một hộp cát:
 //   <hộp>/home          HOME của lượt chạy (bắt ghi vào ~/.ease-design)

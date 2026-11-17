@@ -15,7 +15,7 @@ import { boPhan } from '../bo-cuc.mjs';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(DAY, '..', '..');
-const GOI = path.join(KIT, 'dieu-phoi');
+const GOI = path.join(KIT, 'plugins/dispatch');
 
 const MAY_TAM = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp3-may-')));
 process.env.DIEU_PHOI_MAY_DIR = MAY_TAM;
@@ -231,7 +231,7 @@ test('DP3-14 giam-sat', async () => {
   assert.equal(mucCua(dung, 'hook-phien').trang_thai, 'du');
   const khac = chanDoanJson(kho, ['--phien', 's-khac']);
   assert.equal(mucCua(khac, 'giam-sat').trang_thai, 'thieu');
-  assert.match(mucCua(khac, 'giam-sat').viec, /\/dieu-phoi:tiep-tuc/);
+  assert.match(mucCua(khac, 'giam-sat').viec, /\/dispatch:resume/);
   fs.rmSync(path.join(dot, 'song', 's-gs.json'));
   assert.equal(mucCua(chanDoanJson(kho, ['--phien', 's-gs']), 'hook-phien').trang_thai, 'thieu');
   const tron = JSON.parse(chayCli(kho, ['chan-doan', '--json']).out);
@@ -536,9 +536,9 @@ test('DP3-09 ma-tran', async () => {
   for (const h of ['b', 'g']) {
     const r = kq.find((x) => x.hang === h).kq;
     assert.equal(r.phien, 's-gs');
-    assert.match(r.cau, /\/dieu-phoi:tiep-tuc --nhe/);
+    assert.match(r.cau, /\/dispatch:resume --nhe/);
   }
-  assert.match(kq.find((x) => x.hang === 'd').kq.cau, /\/dieu-phoi:tiep-tuc/);
+  assert.match(kq.find((x) => x.hang === 'd').kq.cau, /\/dispatch:resume/);
 });
 
 test('DP3-09-do bo-viec-cho', async () => {
@@ -801,7 +801,7 @@ test('DP3-11-do khuon-cu merge-base-song', () => {
 
 // ---------- DP3-01: trình tự lệnh người tiep-tuc (AC-1, E1) ----------
 export async function kiemTiepTucMd(gocGoi = GOI) {
-  const t = fs.readFileSync(path.join(gocGoi, 'commands', 'tiep-tuc.md'), 'utf8');
+  const t = fs.readFileSync(path.join(gocGoi, 'commands', 'resume.md'), 'utf8');
   const { HANH_DONG } = await nap(gocGoi, 'tiep-tuc.mjs');
   const body = t.slice(Math.max(0, t.indexOf('\nCác bước')));
   const loi = [];
@@ -830,7 +830,7 @@ test('DP3-01-do dao-buoc', async () => {
   const sao = path.join(tam(), 'dieu-phoi');
   chep(GOI, sao);
   assert.deepEqual(await kiemTiepTucMd(sao), [], 'đối chứng dương: bản sao lành');
-  const p = path.join(sao, 'commands', 'tiep-tuc.md');
+  const p = path.join(sao, 'commands', 'resume.md');
   const goc = fs.readFileSync(p, 'utf8');
   const lenh = '`node "${CLAUDE_PLUGIN_ROOT}/scripts/dieu-phoi.mjs" tiep-tuc --phien <mã phiên này> --json $ARGUMENTS`';
   assert.ok(goc.includes(lenh), 'bước tiêm không áp được');
@@ -840,7 +840,7 @@ test('DP3-01-do dao-buoc', async () => {
 });
 
 // ---------- DP3-12: tài liệu, từ điển, bảng tên lệnh (AC-12, E12) ----------
-const DONG_LENH = '| tiep-tuc | /dieu-phoi:tiep-tuc | command |';
+const DONG_LENH = '| tiep-tuc | /dispatch:resume | command |';
 export function kiemTaiLieu(goc) {
   const loi = [];
   const dong = fs.readFileSync(path.join(goc, 'CONTEXT.md'), 'utf8').split('\n');
@@ -853,9 +853,9 @@ export function kiemTaiLieu(goc) {
   }
   const guide = fs.readFileSync(path.join(goc, 'GUIDE.md'), 'utf8');
   const s66 = /^### 6\.6 [^\n]*\n([\s\S]*?)(?=\n## )/m.exec(guide)?.[1] ?? '';
-  if (!s66.includes('/dieu-phoi:tiep-tuc')) loi.push('GUIDE §6.6 thiếu /dieu-phoi:tiep-tuc');
-  if (!fs.readFileSync(path.join(goc, 'QUICKSTART.md'), 'utf8').includes('/dieu-phoi:tiep-tuc')) loi.push('QUICKSTART thiếu /dieu-phoi:tiep-tuc');
-  const hfl = fs.readFileSync(path.join(goc, 'skills', 'acceptance', 'references', 'human-facing-language.md'), 'utf8');
+  if (!s66.includes('/dispatch:resume')) loi.push('GUIDE §6.6 thiếu /dispatch:resume');
+  if (!fs.readFileSync(path.join(goc, 'QUICKSTART.md'), 'utf8').includes('/dispatch:resume')) loi.push('QUICKSTART thiếu /dispatch:resume');
+  const hfl = fs.readFileSync(path.join(goc, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'human-facing-language.md'), 'utf8');
   if (!hfl.split('\n').includes(DONG_LENH)) loi.push('COMMAND-NAMES thiếu dòng tiep-tuc');
   return loi;
 }
@@ -868,8 +868,8 @@ function caySaoLb() {
   const sao = tam('dp3-lb-');
   // Cùng nhát với caySaoLb của mo-dot (hồ sơ phan-du-bo-cuc-moi): danh sách giải theo bố cục của cây đang chạy (boPhan kèm
   // tệp khai chợ) và mang bộ dịch — tệp ca LB2 giải đường qua nó.
-  for (const rel of boPhan(['lib', 'skills', 'commands', 'feature-loop/skills', 'tests/fixtures', 'tests/bo-cuc.mjs', 'tests/plugins/lenh-bam-duoc.test.mjs',
-    'scripts/gate-card.js', 'scripts/evidence-page.js', 'QUICKSTART.md', 'README.md', 'GUIDE.md'], { thuMuc: KIT })) {
+  for (const rel of boPhan(['lib', 'skills', 'commands', 'plugins/feature-loop/skills', 'tests/fixtures', 'tests/bo-cuc.mjs', 'tests/plugins/lenh-bam-duoc.test.mjs',
+    'plugins/acceptance-gate/scripts/gate-card.js', 'plugins/acceptance-gate/scripts/evidence-page.js', 'QUICKSTART.md', 'README.md', 'GUIDE.md'], { thuMuc: KIT })) {
     fs.mkdirSync(path.dirname(path.join(sao, rel)), { recursive: true });
     fs.cpSync(path.join(KIT, rel), path.join(sao, rel), { recursive: true });
   }
@@ -882,14 +882,14 @@ test('DP3-12-do-lb', () => {
   const lanh = chayLb2(sao);
   assert.equal(lanh.status, 0, `đối chứng dương: ${lanh.stdout}${lanh.stderr}`);
   assert.match(lanh.stdout, /PASS: \[LB2\]/);
-  const hfl = path.join(sao, 'skills', 'acceptance', 'references', 'human-facing-language.md');
+  const hfl = path.join(sao, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'human-facing-language.md');
   const goc = fs.readFileSync(hfl, 'utf8');
   const tiem = goc.replace(`${DONG_LENH}\n`, '');
   assert.notEqual(tiem, goc, 'bước tiêm không áp được');
   fs.writeFileSync(hfl, tiem);
   const r = chayLb2(sao);
   assert.notEqual(r.status, 0);
-  assert.match(r.stdout, /FAIL: \[LB2\].*\/dieu-phoi:tiep-tuc/);
+  assert.match(r.stdout, /FAIL: \[LB2\].*\/dispatch:resume/);
 });
 
 // ---------- DP3-13: ca DP1 và lõi nguyên vẹn (AC-13, E13) ----------

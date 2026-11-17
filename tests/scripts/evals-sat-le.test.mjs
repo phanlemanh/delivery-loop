@@ -19,7 +19,7 @@ const ca = (ma, moTa, f) => {
 const J = x => JSON.stringify(x);
 
 let CORE = null, BASE_DIR = null, CORE_BASE = null;
-try { CORE = require(path.join(L.KIT, 'lib', 'evidence-core.cjs')); } catch (e) { console.log(`  FAIL: NAP lib — ${e.message}`); fail++; }
+try { CORE = require(path.join(L.KIT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs')); } catch (e) { console.log(`  FAIL: NAP lib — ${e.message}`); fail++; }
 try { BASE_DIR = L.dungBase(); CORE_BASE = require(path.join(BASE_DIR, 'lib', 'evidence-core.cjs')); } catch (e) { console.log(`  FAIL: BASE ${e.message}`); fail++; }
 
 // ── AC-5: neo &ten và bí danh *ten ─────────────────────────────────────────────
@@ -40,7 +40,7 @@ ca('NEO3', 'chiều đỏ: base đọc neo thành glob', () => {
 
 // ── AC-3: vi phân trên mọi hồ sơ của kit ───────────────────────────────────────
 ca('VP1', 'vi phân base ↔ mới trên hồ sơ kit: 0 lệch ngoài sát lề', () => {
-  const kq = L.viPhan({ khos: [L.KIT], cu: L.docBase(BASE_DIR), moi: L.docLib(L.KIT) });
+  const kq = L.viPhan({ khos: [L.KIT], cu: L.docBase(BASE_DIR), moi: L.docLib(path.join(L.KIT, 'plugins/acceptance-gate')) });
   console.log(`    · ${kq.hoSo} hồ sơ / ${kq.tieuChi} tiêu chí đã so`);
   if (!kq.hoSo || !kq.tieuChi) return 'vi phân rỗng';
   const x = kq.lech.filter(l => !l.satLe);
@@ -49,7 +49,7 @@ ca('VP1', 'vi phân base ↔ mới trên hồ sơ kit: 0 lệch ngoài sát lề
 ca('VP2', 'chiều đỏ: bản sao bộ đọc bỏ mục cuối của mọi danh sách khối → lệch', () => {
   const KIM = 'if (it && it[1].length >= keyCol) { seq.items.push(';
   const dot = L.dungBanSaoLib(KIM, 'if (it && it[1].length >= keyCol) { if (seq.tre !== undefined) seq.items.push(seq.tre); seq.tre = (');
-  const doi = L.viPhan({ khos: [L.KIT], cu: L.docLib(L.KIT), moi: L.docLib(dot) }).lech.length;
+  const doi = L.viPhan({ khos: [L.KIT], cu: L.docLib(path.join(L.KIT, 'plugins/acceptance-gate')), moi: L.docLib(dot) }).lech.length;
   if (!doi) return 'đột biến tương đương';
   const x = L.viPhan({ khos: [L.KIT], cu: L.docBase(BASE_DIR), moi: L.docLib(dot) }).lech.filter(l => !l.satLe);
   if (!x.length) return 'đột biến không làm lệch';
@@ -170,7 +170,7 @@ const CP_EVALS = {
     + '- id: C\n  criterion: AC-1\n  executor: script\n  cmd: config:executors.script.cli\n  paths:\n  - src/a/**\n',
 };
 const runLog1 = ids => ids.map(id => JSON.stringify({ ts: '2026-10-10T00:00:00Z', evalId: id, round: 1, sha: 'abc1234', exit_code: 0, run_id: 'r1-x', cmd: 'echo x' })).join('\n') + '\n';
-function chayCarry(cach, delta, { cp = path.join(L.KIT, 'feature-loop', 'scripts', 'carry-plan.mjs'), agRoot = L.KIT } = {}) {
+function chayCarry(cach, delta, { cp = path.join(L.KIT, 'plugins/feature-loop', 'scripts', 'carry-plan.mjs'), agRoot = path.join(L.KIT, 'plugins/acceptance-gate') } = {}) {
   const d = L.tam('cp');
   const ids = cach === 'thut4' ? ['A', 'B'] : ['C'];
   writeFileSync(path.join(d, 'evals.yaml'), CP_EVALS[cach]);
@@ -234,7 +234,7 @@ ca('MN2', 'lib không có evalListsOf → lượt chấm và lượt sửa thoá
 ca('MN2b', 'chiều đỏ: bản sao s4-args ghi tệp args TRƯỚC khi dừng → phép kiểm MN2 bắt «sinh tệp dù thoát 2»', () => {
   const dot = L.dungBanSaoLib('  evalListsOf,\n', '');
   const d = L.tam('s4dot');
-  cpSync(path.join(L.KIT, 'feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
+  cpSync(path.join(L.KIT, 'plugins/feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
   const f = path.join(d, 'feature-loop', 'scripts', 's4-args.mjs');
   const src = readFileSync(f, 'utf8'); const KIM = "if (!flags.slug || !flags.root) usage('thiếu --slug hoặc --root');\n";
   if (src.split(KIM).length !== 2) return 'kim không khớp đúng một lần';
@@ -245,7 +245,7 @@ ca('MN2b', 'chiều đỏ: bản sao s4-args ghi tệp args TRƯỚC khi dừng 
 });
 
 // ── AC-8: cờ trên thẻ Cổng Phạm vi và Cổng Bằng chứng (hằng rút từ nguồn) ─────────
-const GC_SRC = readFileSync(path.join(L.KIT, 'scripts', 'gate-card.js'), 'utf8');
+const GC_SRC = readFileSync(path.join(L.KIT, 'plugins/acceptance-gate/scripts', 'gate-card.js'), 'utf8');
 const CO_THE = (GC_SRC.match(/const DANH_SACH_KHONG_DOC_FLAG = '([^']+)';/) || [])[1];
 const HD = (status) => `---\nschema_version: 1\nfeature: F\nslug: demo\nrisk_tier: T2\nsurfaces: [cli]\nstatus: ${status}\n${status === 'draft' ? '' : 'approved_by: A\napproved_at: 2026-10-10\n'}---\n\n## Criteria\n\n- AC-1: Given a, When b, Then c.\n\n## Out of scope\n\n- bỏ X.\n- bỏ Y.\n`;
 const BC = '---\nschema_version: 2\nfeature_slug: demo\nverdict: PASS\nfailed_evals: []\nverified_commit: 0000000\n---\n\n# E\n\n| Eval | Criterion | Executor | Verdict |\n|---|---|---|---|\n| X1 | AC-1 | script | PASS |\n\n## Evidence\n\n- eval: X1\n  run_id: r1abc\n  exit_code: 0\n  verifier: config:executors.script.cli\n  verified_at: 2026-10-10T00:00:00Z\n';
@@ -258,7 +258,7 @@ function hoSoThe(evalsText, cong) {
   if (cong === 2) writeFileSync(path.join(d, '_acceptance', 'demo', 'evidence-report.md'), BC);
   return d;
 }
-const the = (d, gc = path.join(L.KIT, 'scripts', 'gate-card.js')) => {
+const the = (d, gc = path.join(L.KIT, 'plugins/acceptance-gate/scripts', 'gate-card.js')) => {
   const r = spawnSync(process.execPath, [gc, '--root', d, '--slug', 'demo'], { encoding: 'utf8' });
   if (r.status !== 0) throw new Error(`gate-card rc ${r.status}: ${String(r.stderr).trim().split('\n').pop()}`);
   return r.stdout;
@@ -279,16 +279,16 @@ ca('TH2', 'chiều im: hồ sơ sạch → hai thẻ không có cờ', () => {
   for (const cong of [1, 2]) if (the(hoSoThe(SACH, cong)).includes(CO_THE)) return `Cổng ${cong}: cờ trên hồ sơ sạch`;
   return true;
 });
-ca('TH3', 'commands/acceptance-card.md có dòng thuật cho cờ', () =>
-  (CO_THE && readFileSync(path.join(L.KIT, 'commands', 'acceptance-card.md'), 'utf8').includes(CO_THE)) || 'thiếu dòng thuật');
+ca('TH3', 'plugins/acceptance-gate/commands/acceptance-card.md có dòng thuật cho cờ', () =>
+  (CO_THE && readFileSync(path.join(L.KIT, 'plugins/acceptance-gate/commands', 'acceptance-card.md'), 'utf8').includes(CO_THE)) || 'thiếu dòng thuật');
 ca('TH4', 'chiều đỏ: bản sao gate-card gỡ dòng đẩy cờ → thẻ im', () => {
   const KIM = "flags.push(['fwarn', esc(DANH_SACH_KHONG_DOC_FLAG";
   const n = GC_SRC.split(KIM).length - 1;
   if (n !== 2) return `kim khớp ${n} lần (cần 2)`;
   const d = L.tam('gc');
-  cpSync(path.join(L.KIT, 'scripts'), path.join(d, 'scripts'), { recursive: true });
-  cpSync(path.join(L.KIT, 'lib'), path.join(d, 'lib'), { recursive: true });
-  cpSync(path.join(L.KIT, 'skills'), path.join(d, 'skills'), { recursive: true });
+  cpSync(path.join(L.KIT, 'plugins/acceptance-gate/scripts'), path.join(d, 'scripts'), { recursive: true });
+  cpSync(path.join(L.KIT, 'plugins/acceptance-gate/lib'), path.join(d, 'lib'), { recursive: true });
+  cpSync(path.join(L.KIT, 'plugins/acceptance-gate/skills'), path.join(d, 'skills'), { recursive: true });
   writeFileSync(path.join(d, 'scripts', 'gate-card.js'), GC_SRC.split(KIM).join("void (['fwarn', esc(DANH_SACH_KHONG_DOC_FLAG"));
   for (const cong of [1, 2]) if (the(hoSoThe(KHONG_DOC, cong), path.join(d, 'scripts', 'gate-card.js')).includes(CO_THE)) return `Cổng ${cong}: đột biến không tắt cờ`;
   console.log('    · thẻ im khi danh sách không đọc được'); return true;
@@ -305,7 +305,7 @@ const CAU_HOI = 'Cau hoi co nhay du dai de khop';
 const MH_GOLD = [{ id: 'J1', criterion: 'AC-1', executor: 'judgment', question: `"${CAU_HOI}"`, ds: { inputs: ['README.md'] } },
   { id: 'J2', criterion: 'AC-1', executor: 'judgment', ds: { inputs: ['README.md'] } }];
 function khoGold(cach) { const d = L.tam('gold'); mkdirSync(path.join(d, '_acceptance', 'demo'), { recursive: true }); writeFileSync(path.join(d, '_acceptance', 'demo', 'evals.yaml'), L.vietMoHinh(cach, MH_GOLD)); return d; }
-const GOLD_MOI = glossCua(readFileSync(path.join(L.KIT, 'scripts', 'acceptance-gold.mjs'), 'utf8'));
+const GOLD_MOI = glossCua(readFileSync(path.join(L.KIT, 'plugins/acceptance-gate/scripts', 'acceptance-gold.mjs'), 'utf8'));
 ca('GD1', 'sát lề: nhãn là câu hỏi; thụt 4 cùng nhãn; tiêu chí không câu hỏi → không bịa, về rationale', () => {
   const a = GOLD_MOI(khoGold('satle'), 'demo', 'J1', 'RATIONALE'), b = GOLD_MOI(khoGold('thut4'), 'demo', 'J1', 'RATIONALE');
   if (a !== CAU_HOI) return `sát lề: ${a}`;
@@ -326,34 +326,34 @@ ca('GD2', 'chiều đỏ: glossOf của base trên sát lề rơi về rationale
 // và PHẢI đi qua MỘT bộ đọc ở lib · `truong-don` = chỉ đọc trường đơn (parseEvals/expectedExits/…)
 // · `khong-doc` = chỉ nhắc tên tệp, không đọc nội dung. Tệp mới chưa phân loại là ĐỎ.
 const BEN_DOC = {
-  'feature-loop/scripts/carry-plan.mjs': 'danh-sach',
-  'feature-loop/scripts/repin-lane.mjs': 'danh-sach',
-  'feature-loop/scripts/s4-args.mjs': 'danh-sach',
-  'lib/evidence-core.cjs': 'danh-sach',
-  'scripts/gate-card.js': 'danh-sach',
-  'lib/eval-yaml.cjs': 'truong-don',
-  'lib/lop-nhin-thay.cjs': 'truong-don',
-  'lib/nhan-canh-gay.cjs': 'truong-don',
-  'scripts/acceptance-gold.mjs': 'truong-don',
-  'scripts/eval-coverage-lint.js': 'truong-don',
-  'scripts/pre-merge-check.sh': 'truong-don',
-  'scripts/recheck-evidence.cjs': 'truong-don',
+  'plugins/feature-loop/scripts/carry-plan.mjs': 'danh-sach',
+  'plugins/feature-loop/scripts/repin-lane.mjs': 'danh-sach',
+  'plugins/feature-loop/scripts/s4-args.mjs': 'danh-sach',
+  'plugins/acceptance-gate/lib/evidence-core.cjs': 'danh-sach',
+  'plugins/acceptance-gate/scripts/gate-card.js': 'danh-sach',
+  'plugins/acceptance-gate/lib/eval-yaml.cjs': 'truong-don',
+  'plugins/acceptance-gate/lib/lop-nhin-thay.cjs': 'truong-don',
+  'plugins/acceptance-gate/lib/nhan-canh-gay.cjs': 'truong-don',
+  'plugins/acceptance-gate/scripts/acceptance-gold.mjs': 'truong-don',
+  'plugins/acceptance-gate/scripts/eval-coverage-lint.js': 'truong-don',
+  'plugins/acceptance-gate/scripts/pre-merge-check.sh': 'truong-don',
+  'plugins/acceptance-gate/scripts/recheck-evidence.cjs': 'truong-don',
   // Hàng X2 (hồ sơ trang-ho-so-mot-viec): mô-đun đọc hồ sơ chỉ đếm mã phép đo qua parseEvals của lib.
-  'scripts/ho-so-tom-tat.cjs': 'truong-don',
+  'plugins/acceptance-gate/scripts/ho-so-tom-tat.cjs': 'truong-don',
   // Hồ sơ bo-doc-ho-so-khoan-dung: bộ dò YAML chuẩn đọc từng dòng để NÓI RA chỗ không chuẩn — không lấy giá trị trường nào.
-  'scripts/yaml-chuan.cjs': 'truong-don',
+  'plugins/acceptance-gate/scripts/yaml-chuan.cjs': 'truong-don',
   // Hồ sơ ho-so-da-ky-giu-tuoi (K-A): luật nhãn đỏ sẵn trên nền chỉ BĂM nguyên khối `- id: <E>` để biết định nghĩa
   // eval có đổi không — không lấy giá trị trường nào, không đọc trường danh sách.
-  'lib/do-san-tren-nen.cjs': 'truong-don',
+  'plugins/acceptance-gate/lib/do-san-tren-nen.cjs': 'truong-don',
   // Lệnh giữ tươi (K-A) đọc `paths` của eval đỏ để quy về PR — đi qua evalPathsOf của lib, không tự đọc danh sách.
-  'feature-loop/scripts/giu-tuoi.mjs': 'danh-sach',
-  'feature-loop/scripts/chup-ho-so-da-thong.mjs': 'khong-doc',
-  'feature-loop/scripts/lib/phan-loai.mjs': 'khong-doc',
-  'feature-loop/workflows/acceptance-verify.js': 'khong-doc',
-  'lib/workspace-record.cjs': 'khong-doc',
-  'scripts/loi-ra-tran-luot.cjs': 'khong-doc',
+  'plugins/feature-loop/scripts/giu-tuoi.mjs': 'danh-sach',
+  'plugins/feature-loop/scripts/chup-ho-so-da-thong.mjs': 'khong-doc',
+  'plugins/feature-loop/scripts/lib/phan-loai.mjs': 'khong-doc',
+  'plugins/feature-loop/workflows/acceptance-verify.js': 'khong-doc',
+  'plugins/acceptance-gate/lib/workspace-record.cjs': 'khong-doc',
+  'plugins/acceptance-gate/scripts/loi-ra-tran-luot.cjs': 'khong-doc',
   // Hồ sơ kiem-ban-cai-sau-phat-hanh: lệnh kiểm bản cài VIẾT một evals.yaml tối thiểu cho kho giả lập, không đọc.
-  'scripts/kiem-ban-cai.mjs': 'khong-doc',
+  'plugins/acceptance-gate/scripts/kiem-ban-cai.mjs': 'khong-doc',
 };
 function benDocCua(root) {
   const out = [];
@@ -363,7 +363,7 @@ function benDocCua(root) {
     if (st.isDirectory()) { for (const n of readdirSync(abs)) if (n !== 'node_modules') di(path.join(rel, n)); return; }
     if (/\.(c?js|mjs|sh)$/.test(rel) && readFileSync(abs, 'utf8').includes('evals.yaml')) out.push(rel.split(path.sep).join('/'));
   };
-  for (const g of ['lib', 'scripts', 'feature-loop', 'hooks']) di(g);
+  for (const g of ['plugins/acceptance-gate/lib', 'plugins/acceptance-gate/scripts', 'plugins/feature-loop', 'plugins/acceptance-gate/hooks']) di(g);
   return out.sort();
 }
 // «Thật sự gọi» (lượt chấm 1, Hình dạng 3): bỏ dòng chú thích và chuỗi một dòng, rồi tìm một LỜI GỌI
@@ -390,20 +390,20 @@ ca('LB1', 'mọi tệp mã nhắc evals.yaml đều có trong bảng; tệp «da
 });
 ca('LB2', 'chiều đỏ: bản sao cây thêm một tệp đọc evals.yaml bằng biểu thức riêng → đỏ gọi tên', () => {
   const d = L.tam('luoi');
-  execFileSync('bash', ['-c', 'git -C "$1" archive HEAD lib scripts feature-loop hooks | tar -x -C "$2"', '_', L.KIT, d]);
+  execFileSync('bash', ['-c', 'git -C "$1" archive HEAD plugins/acceptance-gate/lib plugins/acceptance-gate/scripts plugins/feature-loop plugins/acceptance-gate/hooks | tar -x -C "$2"', '_', L.KIT, d]);
   if (luoiBenDoc(d).length) return `đối chứng dương hỏng: bản sao sạch đã đỏ — ${luoiBenDoc(d)[0]}`;
-  writeFileSync(path.join(d, 'scripts', 'doc-rieng.mjs'), "import fs from 'node:fs';\nconst t = fs.readFileSync('evals.yaml', 'utf8');\nexport const paths = t.match(/^    paths: (.*)$/m);\n");
+  writeFileSync(path.join(d, 'plugins/acceptance-gate/scripts', 'doc-rieng.mjs'), "import fs from 'node:fs';\nconst t = fs.readFileSync('evals.yaml', 'utf8');\nexport const paths = t.match(/^    paths: (.*)$/m);\n");
   const loi = luoiBenDoc(d);
-  if (!loi.includes('bên đọc chưa phân loại: scripts/doc-rieng.mjs')) return `lưới không bắt: ${J(loi)}`;
-  console.log('    · bên đọc chưa phân loại: scripts/doc-rieng.mjs');
+  if (!loi.includes('bên đọc chưa phân loại: plugins/acceptance-gate/scripts/doc-rieng.mjs')) return `lưới không bắt: ${J(loi)}`;
+  console.log('    · bên đọc chưa phân loại: plugins/acceptance-gate/scripts/doc-rieng.mjs');
   // Gỡ LỜI GỌI ở carry-plan nhưng giữ tên trong bảng hàm bắt buộc và chú thích → lưới vẫn phải đỏ.
-  const cp = path.join(d, 'feature-loop', 'scripts', 'carry-plan.mjs');
+  const cp = path.join(d, 'plugins/feature-loop', 'scripts', 'carry-plan.mjs');
   const s = readFileSync(cp, 'utf8'); const KIM = "const { byId } = R.evalListsOf(text, ['paths']);";
   if (s.split(KIM).length !== 2) return 'kim gỡ lời gọi carry-plan không khớp đúng một lần';
   writeFileSync(cp, s.replace(KIM, 'const byId = new Map();'));
   if (!/evalListsOf/.test(readFileSync(cp, 'utf8'))) return 'đột biến xoá cả tên — không thử được chuỗi-có-mặt';
-  if (!luoiBenDoc(d).includes('bên đọc danh sách không qua lib: feature-loop/scripts/carry-plan.mjs')) return 'lưới không bắt carry-plan gỡ lời gọi (còn tên trong chú thích)';
-  console.log('    · bên đọc danh sách không qua lib: feature-loop/scripts/carry-plan.mjs'); return true;
+  if (!luoiBenDoc(d).includes('bên đọc danh sách không qua lib: plugins/feature-loop/scripts/carry-plan.mjs')) return 'lưới không bắt carry-plan gỡ lời gọi (còn tên trong chú thích)';
+  console.log('    · bên đọc danh sách không qua lib: plugins/feature-loop/scripts/carry-plan.mjs'); return true;
 });
 
 console.log(`Results: ${pass} passed, ${fail} failed (evals-sat-le)`);

@@ -6,7 +6,7 @@
 // với tác tử giả, ta ghi nguyên `result.runLog` — dòng eval, dòng vang-mat, dòng round-tally
 // đều là đầu ra của bên viết thật (round-trip), không dựng tay. Bản thẻ «trước vòng» lấy TRỌN
 // scripts/ lib/ skills/ bằng `git archive` ở cha của commit đầu đưa chuỗi NHAN-CANH-GAY vào
-// scripts/gate-card.js — sha là đầu ra lệnh; không tìm ra → ca ĐỎ có tên.
+// plugins/acceptance-gate/scripts/gate-card.js — sha là đầu ra lệnh; không tìm ra → ca ĐỎ có tên.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -19,8 +19,8 @@ import { dungKho as nenKho, dungCache as nenCache, chayNen as nenChay } from './
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const WF = path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js');
-const GC = path.join(KIT, 'scripts', 'gate-card.js');
+const WF = path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
+const GC = path.join(KIT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
 const TMP = mkdtempSync(path.join(tmpdir(), 'ntr-the-'));
 let pass = 0; let fail = 0;
 const ok = (name, msg = '') => { pass += 1; console.log(`PASS: ${name} ${msg}`.trimEnd() + ' '); };
@@ -105,10 +105,10 @@ if (want('NC-AC4') || want('NC-AC4-cu')) {
     // Dòng thuoc-lech do thuoc-vat.mjs --write THẬT sinh sau một mũi tiêm (kho code sinh).
     const { d } = dungKho(mkdtempSync(path.join(TMP, 'k4-')), ['vat', 'implemented']);
     const ws = path.join(d, '_acceptance', SLUG_TV);
-    const r1 = spawnSync(process.execPath, [path.join(KIT, 'feature-loop/scripts/s4-args.mjs'), '--slug', SLUG_TV, '--root', d, '--ag-root', KIT, '--out', path.join(ws, 's4-args.json'), '--diff-base', 'main'], { encoding: 'utf8' });
+    const r1 = spawnSync(process.execPath, [path.join(KIT, 'plugins/feature-loop/scripts/s4-args.mjs'), '--slug', SLUG_TV, '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', path.join(ws, 's4-args.json'), '--diff-base', 'main'], { encoding: 'utf8' });
     if (r1.status !== 0) throw new Error('s4-args: ' + r1.stderr.split('\n')[0]);
     writeFileSync(path.join(ws, 'evals.yaml'), readFileSync(path.join(ws, 'evals.yaml'), 'utf8') + '# tiem\n');
-    const r2 = spawnSync(process.execPath, [path.join(KIT, 'feature-loop/scripts/thuoc-vat.mjs'), '--root', d, '--slug', SLUG_TV, '--ag-root', KIT, '--write'], { encoding: 'utf8' });
+    const r2 = spawnSync(process.execPath, [path.join(KIT, 'plugins/feature-loop/scripts/thuoc-vat.mjs'), '--root', d, '--slug', SLUG_TV, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--write'], { encoding: 'utf8' });
     if (r2.status !== 5) throw new Error(`thuoc-vat --write thoat ${r2.status}, mong 5`);
     const logLech = readFileSync(path.join(ws, 'run-log.jsonl'), 'utf8').split('\n').filter(Boolean);
     // Đặt dòng ấy (nguyên văn) vào hồ sơ PASS.
@@ -174,7 +174,7 @@ if (want('NC-AC5-nen')) {
     mkdirSync(path.join(kho, '_acceptance', SLUG), { recursive: true });
     writeFileSync(path.join(kho, '_acceptance', 'config.yaml'), 'schema_version: 1\nexecutors:\n  script:\n    e1: "true"\n    e2: "exit 127"\nfeature_loop:\n  suite_keys:\n    - executors.script.e2\n');
     git(kho, 'add', '-A'); git(kho, 'commit', '-qm', 'goc');
-    spawnSync(process.execPath, [path.join(KIT, 'feature-loop/scripts/duong-nen.mjs'), '--root', kho, '--slug', SLUG, '--ag-root', KIT], { encoding: 'utf8' });
+    spawnSync(process.execPath, [path.join(KIT, 'plugins/feature-loop/scripts/duong-nen.mjs'), '--root', kho, '--slug', SLUG, '--ag-root', `${KIT}/plugins/acceptance-gate`], { encoding: 'utf8' });
     const nenTxt = readFileSync(path.join(kho, '_acceptance', SLUG, 'duong-nen.md'), 'utf8');
     if (!nenTxt.includes('executors.script.e2')) throw new Error('duong-nen.mjs khong ghi chan do cho executors.script.e2 — fixture khong dung hinh');
     const coNen = hoSo({ verdict: 'BLOCKED', runLog: r.runLog, duongNen: nenTxt });
