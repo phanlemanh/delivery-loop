@@ -66,7 +66,8 @@ export const TEP_KIT = {
     '// chạy /dieu-phoi:mo-dot rồi dieu-phoi.mjs',
     '// bối cảnh: docs/reference/ghi-chu.md',
     "export const GHI_CHU = 'docs/reference/ghi-chu.md';",
-    'export const y = 2;', '',
+    'export const y = 2;',
+    "export const SK = path.join(__dirname, '..', 'skills', 'cat-luot', 'SKILL.md');", '',
   ].join('\n'),
   'commands/acceptance-init.md': 'Khởi tạo.\n\nBật `dieu-phoi@acceptance-gate-kit` khi kho muốn chạy đợt.\nKiểm: `node tests/a.test.mjs`.\nCòn gọi scripts/goi.mjs.\n',
   'dieu-phoi/.claude-plugin/plugin.json': json({ name: 'dieu-phoi', version: '2.39.0', description: 'Điều phối.' }),
@@ -76,11 +77,51 @@ export const TEP_KIT = {
   'dieu-phoi/types/index.d.ts': "interface S {\n    'dieu-phoi': { khung: K }\n}\n",
   'docs/reference/ghi-chu.md': 'Ghi chú cho người sửa kit.\n',
   'tests/a.test.mjs': '// kiểm scripts/cat-luot.mjs\n',
+  // B2 — hình dạng tệp kiểm bước 6 phải đổi hoặc phải giữ (hồ sơ bo-kiem-xanh-o-kho-moi, AC-1/AC-2).
+  'dieu-phoi/hooks/hooks.json': '{}\n',
+  'hooks/hooks.json': '{}\n',
+  'tests/scripts/run-tests.sh': [
+    '#!/usr/bin/env bash',
+    'HERE="$(cd "$(dirname "$0")" && pwd)"', 'ROOT="$(cd "$HERE/../.." && pwd)"',
+    'bc_tg_mo scripts all "$HERE/../.."',
+    'CHECK="$HERE/../../scripts/goi.mjs"',
+    'node "$ROOT/scripts/cat-luot.mjs"',
+    'git -C "$ROOT" show HEAD:scripts/goi.mjs >/dev/null',
+    'git -C "$ROOT" show "$BASE_SHA:scripts/cat-luot.mjs" >/dev/null',
+    'DP="$ROOT/dieu-phoi"; cat "$DP/hooks/hooks.json"',
+    'node x.mjs --ag-root "$ROOT" --slug a',
+    'echo "  PASS: S01 chay scripts/goi.mjs"', '',
+  ].join('\n'),
+  'tests/scripts/ban-sao.test.mjs': [
+    "import path from 'node:path';",
+    "const KIT = path.resolve('.');",
+    "export const MOT = path.join(KIT, 'scripts', 'goi.mjs');",
+    "export const CHEP = (c) => { for (const d of ['scripts', 'commands']) cp(path.join(KIT, d), path.join(c, d)); };",
+    "export const LENH = '/dieu-phoi:mo-dot';",
+    "export const VUNG = 'scripts';",
+    "export const SO = () => assert.equal(n, 3);",
+    "export const QUA_CHA = path.join(HERE, '..', '..', 'scripts', 'goi.mjs');",
+    "export const BAN_SAO = (c) => path.join(c, 'scripts', 'goi.mjs');",
+    "export const MO_HO = (DP) => path.join(DP, 'hooks', 'hooks.json');",
+    "export const AG = ['--ag-root', KIT];",
+    "export const ENV = { CLAUDE_PLUGIN_ROOT: KIT };",
+    "export const LENH_SH = `node x.mjs --ag-root \"${KIT}\" --slug b`;",
+    "export const SKILL_CAP = path.join(KIT, 'skills', 'cat-luot', 'SKILL.md');",
+    "export const THU_MUC = path.join(KIT, 'commands');", '',
+  ].join('\n'),
+  'tests/fixtures/repo/scripts/verify.sh': 'node scripts/goi.mjs\n',
+  'tests/plugins/kiem.py': "import pathlib\nroot = pathlib.Path('.')\nTEP = root / 'scripts' / 'goi.mjs'\nSK = root/'skills'/'cat-luot'/'SKILL.md'\n",
+  '.github/workflows/gate.yml': 'jobs:\n  tests:\n    steps:\n      - name: ban do\n        run: node scripts/goi.mjs --root . --check\n',
+  '_acceptance/config.yaml': 'executors:\n  script:\n    goi: node scripts/goi.mjs\n',
   'README.md': 'Cài: `claude plugin marketplace add phanlemanh/acceptance-gate-kit`.\nMở đợt: `/dieu-phoi:mo-dot`.\n',
   'CLAUDE.md': '# Luật\n\nGiữ nguyên.\n',
   '.claude/settings.json': json({ enabledPlugins: { 'acceptance-gate@acceptance-gate-kit': true, 'dieu-phoi@acceptance-gate-kit': true } }),
   '.gitignore': 'node_modules/\n',
 };
+
+// Bảng vá fixture: một mục thay đường mà luật chung không phủ (tên gốc trần trong một hằng).
+export const VA_FIXTURE = [{ tep: 'tests/scripts/ban-sao.test.mjs', cu: "export const VUNG = 'scripts';",
+  moi: "export const VUNG = 'plugins/acceptance-gate/scripts';", so_lan: 1, ly_do: 'hằng tên gốc trần — luật chung không đổi chữ đơn lẻ' }];
 
 export const BANG_TEN = {
   plugin: { 'dieu-phoi': 'dispatch' },
@@ -147,11 +188,14 @@ export function dungKhoFixture(thuMuc, tuyChon = {}) {
     ...goc,
     bang_ten: bangTenTep,
     thu_muc: { skills: 'plugins/acceptance-gate/skills', commands: 'plugins/acceptance-gate/commands',
-      scripts: 'plugins/acceptance-gate/scripts', 'dieu-phoi': 'plugins/dispatch' },
+      scripts: 'plugins/acceptance-gate/scripts', hooks: 'plugins/acceptance-gate/hooks', 'dieu-phoi': 'plugins/dispatch' },
     tep: { '.claude-plugin/plugin.json': 'plugins/acceptance-gate/.claude-plugin/plugin.json' },
-    giu: ['.claude-plugin/marketplace.json', '.claude', '.gitignore', 'CLAUDE.md', 'README.md', 'docs', 'tests'],
+    giu: ['.claude-plugin/marketplace.json', '.claude', '.gitignore', 'CLAUDE.md', 'README.md', 'docs', 'tests', '.github', '_acceptance'],
+    bo_kiem: { ...goc.bo_kiem, va: path.join(thuMuc, 'va-bo-kiem.json'), tu_dung: tuyChon.tuDung ? path.join(thuMuc, 'tu-dung-duong.txt') : undefined },
     khuon: { ...goc.khuon, ma: maRs, trung_duoc_phep: ['CLAUDE.md', 'README.md', '.claude/settings.json'] },
   };
+  fs.writeFileSync(path.join(thuMuc, 'va-bo-kiem.json'), json(tuyChon.va || VA_FIXTURE));
+  if (tuyChon.tuDung) fs.writeFileSync(path.join(thuMuc, 'tu-dung-duong.txt'), `# thử\n${tuyChon.tuDung.join('\n')}\n`);
   fs.writeFileSync(bangXep, json(bx));
   return { kho, nguon, rs, bangXep, bangTenTep };
 }

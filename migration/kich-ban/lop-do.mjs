@@ -1,7 +1,7 @@
 // lop-do.mjs — đối chiếu báo cáo lớp đỏ (ket-qua/lop-do.md) cho thuoc-that.mjs --lop-do (AC-10).
 //
-// kiemSoLieu(chữ báo cáo) — thuần: số học của báo cáo (đỏ thêm = đỏ mới − đỏ cả hai + mục bộ chạy; tổng các lớp = tổng
-// đỏ thêm; bảng chữ khớp khối số liệu máy đọc). kiemLopDo — thêm phép dựng lại cây trên nguồn của báo cáo.
+// kiemSoLieu(chữ báo cáo) — thuần: số học của báo cáo (đỏ thêm = tổng các lớp, theo túi khoá — B2 AC-5; «không chạy tới»
+// = lớp khong-chay-toi; tổng = tổng đỏ thêm; bảng chữ khớp khối số liệu máy đọc). kiemLopDo — thêm phép dựng lại cây trên nguồn của báo cáo.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,15 +20,16 @@ export function kiemSoLieu(chu) {
   if (!/^[0-9a-f]{40}$/.test(fm.nguon || '') || !/^[0-9a-f]{40}$/.test(fm.cay_moi || '')) loi.push('frontmatter thiếu nguon hoặc cay_moi 40-hex');
   if (fm.nguon !== so.nguon || fm.cay_moi !== so.cay_moi) loi.push('frontmatter lệch khối số liệu');
   let tong = 0; const theoLop = {};
+  const esc = (x) => x.replace(/[.*+?^${}()|[\]\\-]/g, '\\$&');
   for (const [bo, v] of Object.entries(so.bo)) {
-    const ky = v.do_moi - v.do_ca_hai + (v.lop['bo-chay'] || 0);
-    if (v.do_them !== ky) loi.push(`số học sai ở bộ ${bo}: đỏ thêm ${v.do_them} ≠ ${v.do_moi} − ${v.do_ca_hai}`);
+    // B2 AC-5: đỏ thêm = tổng các lớp (ca thiếu theo túi khoá + mục bộ chết); «không chạy tới» là đúng lớp ấy.
     const tongLop = Object.values(v.lop).reduce((a, b) => a + b, 0);
     if (tongLop !== v.do_them) loi.push(`số học sai ở bộ ${bo}: tổng các lớp ${tongLop} ≠ đỏ thêm ${v.do_them}`);
+    if ((v.lop['khong-chay-toi'] || 0) !== v.khong_chay_toi) loi.push(`số học sai ở bộ ${bo}: không chạy tới ${v.khong_chay_toi} ≠ lớp khong-chay-toi ${v.lop['khong-chay-toi'] || 0}`);
     for (const [l, n] of Object.entries(v.lop)) theoLop[l] = (theoLop[l] || 0) + n;
     tong += v.do_them;
-    const hang = chu.match(new RegExp(`^\\| ${bo} \\| [^|]* \\| [^|]* \\| (\\d+) \\| (\\d+) \\| (\\d+) \\| (\\d+) \\|`, 'm'));
-    if (!hang || [v.do_cu, v.do_moi, v.do_ca_hai, v.do_them].join() !== hang.slice(1, 5).join()) loi.push(`bảng chữ lệch khối số liệu ở bộ ${bo}`);
+    const hang = chu.match(new RegExp(`^\\| ${esc(bo)} \\| [^|]* \\| [^|]* \\| (\\d+) \\| (\\d+) \\| (\\d+) \\| (\\d+) \\|`, 'm'));
+    if (!hang || [v.dat_cu, v.dat_moi, v.khong_chay_toi, v.do_them].join() !== hang.slice(1, 5).join()) loi.push(`bảng chữ lệch khối số liệu ở bộ ${bo}`);
   }
   if (tong !== so.tong_do_them || String(tong) !== fm.tong_do_them) loi.push(`tổng đỏ thêm lệch: ${tong} · khối ${so.tong_do_them} · frontmatter ${fm.tong_do_them}`);
   for (const [l, n] of Object.entries(so.lop)) if ((theoLop[l] || 0) !== n) loi.push(`số lớp ${l} lệch: ${n} ≠ ${theoLop[l] || 0}`);
@@ -49,4 +50,11 @@ export function kiemLopDo({ kho, S, ra, loi, donNha, nhanh, tep = TEP_BAO_CAO })
     ra(`AC-10 đạt: báo cáo đo trên nguồn ${k.fm.nguon.slice(0, 8)}, cây mới ${cay.slice(0, 8)} dựng lại khớp; tổng đỏ thêm ${k.so.tong_do_them}`);
     ra('theo lớp: ' + Object.entries(k.so.lop).map(([l, n]) => `${l} ${n}`).join(' · '));
   }
+}
+
+// Dòng lệnh: node lop-do.mjs --kiem <tệp báo cáo> — thoát 0 khi số học khớp, 1 kèm từng lỗi (ghi-bao-cao.sh gọi trước khi thay).
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url) && process.argv[2] === '--kiem') {
+  const k = kiemSoLieu(fs.readFileSync(process.argv[3], 'utf8'));
+  for (const l of k.loi) process.stderr.write(`lop-do: ${l}\n`);
+  process.exit(k.loi.length ? 1 : 0);
 }

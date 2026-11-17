@@ -1,0 +1,16 @@
+# cây cũ
+7d2c06ab371b998da5a75624228e0d8b3a6458357cdf4a08d971238f3f281888  ketqua.tsv
+f995752ce28a3ac2853af38d4a2ca42a6cb46ea478efd9ccbfe58759ce571456  ../A-lai/ketqua.tsv
+244fb2f9466f06d10eddb0f699721d3c4af3fa4f3de718066386f7a7660e0565  thoi-gian-ca/scripts-tron.tsv
+0e9f294afcba38cf1e9e05159716efa99d141c45ff5086460e87f8a7f5511b3d  thoi-gian-ca/hooks-tron.tsv
+822cca834814687983a9d645f2f5fc672add4ed81577c95407b56c67a19c7427  thoi-gian-ca/plugins-tron.tsv
+d7acbadf2681bb309475dc4e63566875162c742c66196c7170abb998a73e490d  thoi-gian-ca/workflows-tron.tsv
+3d978446d8dbef7eb9e0e3909130c25137c9a7f1e6ac791cf4e7dded16a8374b  ../A-lai/dieu-phoi.log
+# cây mới
+054bbfba5aa5aeb070214746fbe856285e2126d5db33709fdb47968fcd80226d  ketqua.tsv
+6982a292bd0077afbcffe0d966b48cfb20e05724e0378243f8975cd05558abef  ../B-lai/ketqua.tsv
+ed119be629aaa8afcb87941891af0ca986b0e06dace6ae24e02d19c003fa0441  thoi-gian-ca/scripts-tron.tsv
+13a964d7d3d5dbc6d246b660603fe3ef829d4d6430368ecd2d8bf53addd8d0e2  thoi-gian-ca/hooks-tron.tsv
+4809d741ab9df91a639c3eefd7126feed9793b9f43188f2381c9ebbad571bf54  thoi-gian-ca/plugins-tron.tsv
+d1a3b5727b92ece20c36efa09030d6cc5b7de7b95c1c3c41f01fbac9009f9bb2  thoi-gian-ca/workflows-tron.tsv
+41eb44598c78450cb0a79acbe95815f6266c873e3f80be9d911e7729070030df  ../B-lai/dieu-phoi.log

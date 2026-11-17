@@ -12,7 +12,7 @@ flowchart TD
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
   B --> CD["Chờ duyệt phạm vi<br/>chưa có"] --> GP{"Cổng Phạm vi"}
   GP --> DL["Đang làm<br/>2 việc"] --> GB{"Cổng Bằng chứng"}
-  GB --> DG["Đã giao<br/>155 việc"]
+  GB --> DG["Đã giao<br/>156 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>73 việc"] --> GG{"Cổng Giá trị"}
   GG --> NT["Đã nghiệm thu giá trị<br/>7 việc"]
 ```
@@ -130,6 +130,7 @@ flowchart TD
 - Thẻ Cổng Bằng chứng in các mục ngoài hợp đồng thành một bảng có cột «Căn cứ» — mỗi mục một hàng (Mục · Người dùng gặp gì · Máy đề xuất · Căn cứ), mục cần người quyết lên đầu; căn cứ do tác tử phân loại viết và đi trọn đường tới thẻ, kể cả mục mang sang lượt sau (`bang-ngoai-n-co-can-cu`)
 - Làn đối chứng S4 (baseline:diffBase) chạy MỘT lệnh do kit sinh — có trần mỗi lệnh và trần tổng, bỏ qua eval trỏ tệp chưa có ở merge-base (ghi lý do vào báo cáo), tự dọn worktree tạm khi bị dừng/hỏng; lane không về trọn là BLOCKED hạ tầng có tên, lượt chấm vẫn ra báo cáo (`baseline-tran-bo-qua-don`)
 - Kit đọc hồ sơ thật của kho tiêu thụ không im lặng sai — evals.yaml không phải YAML chuẩn lên cờ vàng có tên (thẻ hai cổng + một lệnh kiểm kho tự bật trong CI), và chữ ký ghi ngày kiểu ngày/tháng/năm được bốn mặt đọc ra ngày qua một bộ đọc chung (`bo-doc-ho-so-khoan-dung`)
+- Kịch bản chuyển nhà thêm bước đổi đường dẫn và tên trong bộ kiểm theo bố cục mới; bộ kiểm sáu bước xanh trên cây kịch bản dựng từ kit-cu/main mà không bớt ca nào của kho cũ (thước giữ đủ khoá ca hai chiều); báo cáo lớp đỏ có chiều đỏ khi lượt chạy chết ngầm; --nhanh chỉ nhận don-nha/<tên>; tệp trạng thái sống của đợt không làm hồ sơ hoá cũ (`bo-kiem-xanh-o-kho-moi`) — đã giao — không đo, khai ở Cổng Đáng
 - Thẻ quyết định in đúng thứ hồ sơ viết — đường dẫn có dấu sao không còn bị cụt khi lột định dạng, và mọi hình dạng dấu sao khác đều có kỳ vọng đã khai trước thay vì tuỳ hệ quả (`card-text-fidelity`)
 - Kit thôi đo phút người ở mọi cổng — gỡ cả lớp HỎI lẫn lớp KHẲNG ĐỊNH về phút, giữ đường đọc-cũ cho hồ sơ đã ký và giữ nguyên mọi răng bằng chứng (`cat-hinh-thuc`) — đã giao — đã nghỉ, giữ sử liệu
 - Cắt khối 👉 VIỆC CỦA ANH khỏi TIN mời cổng — thay khuôn N-mục-3-vế bằng một câu «mời cổng như đồng nghiệp hỏi»; thẻ HTML giữ nguyên; chỉ TRỪ (`cat-khoi-viec-cua-anh-tren-tin`) — đã giao — đã nghỉ, giữ sử liệu
