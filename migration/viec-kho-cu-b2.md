@@ -215,3 +215,18 @@ kho cũ vẫn buộc vào bố cục cũ — tức đúng loại xanh mà cổng
 
 Bản gốc trên cây mới: KM 37/38 (KM-1 đỏ), CT 42/43 (CT-10-do đỏ). Không có lối nào ở kho mới mà không đi ngược lời khai của vòng
 ba: gỡ hai tệp khỏi danh sách tự đúng đường để vá thì phải áp lại luật đường lên cả tệp, mà hai tệp đã tự dịch qua `tests/bo-cuc.mjs`.
+
+### 4.7 43 khoá K4-MP là lỗi của thước, không phải ca thiếu (17/11, đọc trên túi lượt 4.5, không đo lại)
+
+Vòng bốn báo (phiên «Vòng bốn kho cũ», sau khi nhận hai dòng sửa ở §4.6). Tôi đã kiểm lại trên chính túi đã commit ở `0ab6f720`,
+và lời báo đúng:
+- Cả 43 khoá đều có dạng **túi cũ 2 · túi mới 1**. Ví dụ `scripts: BC plugins/acceptance-gate/skills/acceptance/SKILL.md · cây phẳng`.
+- Ở nhật ký thô, cả hai cây in **cùng hai tên**: `BC skills/acceptance/SKILL.md · cây phẳng` và
+  `BC plugins/acceptance-gate/skills/acceptance/SKILL.md · cây phẳng` (`out/A/scripts.log`, `out/B/scripts.log`).
+- Bên cũ, luật `tuiCu` dịch cả hai tên sang cùng một khoá, nên khoá ấy được đếm 2 lần. Bên mới, hai tên giữ nguyên là hai khoá,
+  mỗi khoá 1 lần. Kết quả: thước đòi khoá đã dịch phải có hai lần ở túi mới (thiếu 43), còn tên thô thì thành khoá thừa.
+
+Vòng bốn đo cả túi bằng một luật đổi đi, xét xem chỗ thiếu nằm ở đâu: luật hiện tại thiếu 57 / thừa 43, luật đổi thiếu 14 / thừa 0.
+Luật đổi nằm ở `rang/tui-cu-suc-chua.mjs` trong hồ sơ vòng bốn; lời hỏi chủ kho là Hỏi-1 ở Cổng Phạm vi của vòng ấy. **B2 không sửa
+thước ở đây**: đổi luật đếm của phép giữ khoá là đổi thước của chính vòng này, nên phải chờ chủ kho quyết. Nếu chủ kho duyệt Hỏi-1,
+phần dư của B2 còn 14 khoá: K4-TB 6, K4-DN 4 và bốn khoá CT-10-do/KM-1 đã có chủ ở `gui-b2.md` §3.4 của vòng bốn.
