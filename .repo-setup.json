@@ -1,0 +1,24 @@
+{
+  "tool": "repo-setup",
+  "version": "0.5.0",
+  "preset": "claude-plugin",
+  "level": "starter",
+  "adopt": true,
+  "archetype": "none",
+  "deploy": "none",
+  "capabilities": [],
+  "vars": {
+    "year": "2026",
+    "today": "2026-11-17",
+    "project_name": "delivery-loop",
+    "owner": "phanlemanh",
+    "description": "Claude Code plugin marketplace for an acceptance-gated feature loop: contracts, self-proving evidence, few real human decisions."
+  },
+  "files": {
+    ".claude/skills/review-change/SKILL.md": "152808a697e5689f76cef5cee48cce9bd366bc212010703e7976dbf522776a22",
+    ".editorconfig": "9749819ccdab74251bb7dc07520f50a8b775765b09d23003c7190eacd1308199",
+    "Makefile": "4cf32dc0c3e48ce0253386e2401f8ec14dd7d81c78ca7976c58a53ccd0769b48",
+    "tools/bump_version.py": "79b6f3921dbfe74be14e531ed93693d1f540a6197d2fa876e5bc2fa1cf011481",
+    "tools/plugin_lint.py": "383ce792c28c4f81861471d6a6a81a50e8516a4084b6fdbfc3c41237df9e79c6"
+  }
+}

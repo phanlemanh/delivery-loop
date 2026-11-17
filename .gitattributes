@@ -1,3 +1,16 @@
 # Hai tệp sinh của bản đồ: gộp không dừng, vẽ lại sau gộp — khối GITATTR-TEP-SINH ở GUIDE.md (cần lệnh cấu hình mỗi bản clone).
 PRODUCT-MAP.md merge=tep-sinh
 LO-TRINH.html merge=tep-sinh
+
+# Added by repo-setup
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+package-lock.json linguist-generated=true -diff
+pnpm-lock.yaml    linguist-generated=true -diff
+uv.lock           linguist-generated=true -diff
