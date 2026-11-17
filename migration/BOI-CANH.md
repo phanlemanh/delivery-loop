@@ -111,6 +111,26 @@ phép đo dài, và không để tệp do nghi thức ký ghi rơi vào tập «
 nên bước 7a-bis chạy ở chữ ký của B2: thước của B2 có luật nào quét `tests/` theo `diff …HEAD` thì phải kiểm trước khi
 ký. Còn «không mời ký khi CI chưa xanh» là sửa lệnh ký của kit, mọi kho tiêu thụ chịu: chỉ ghi ở đây, chờ chủ kho gọi tên.
 
+## Bẫy đã dẫm ở bước kiểm trước S4 (17/11, B2): chữ trạng thái đã-ký trong `migration/`
+
+Ca RT13 của kit (`tests/plugins/ra-co-ten.test.mjs`, phần iv «quét không gian mở») chạy `git grep -l` chữ trạng thái đã-ký
+của hợp đồng — từ tiếng Anh `signed` nối liền `-off` — trên TRỌN cây, rồi đòi mọi tệp chứa nó hoặc có ca, hoặc được khai
+gạch. Danh sách ngoài phép quét là `_acceptance/`, `docs/` và năm tệp gốc; `migration/` không có trong đó. Hệ quả: một tệp
+bất kỳ dưới `migration/` viết nguyên văn chữ ấy làm `plugins_vung_3` và `do-san` (E8s của B2) đỏ trên `chuyen-nha` và mọi
+nhánh cắt từ nó. Hai cây đo của B2 không có `migration/` nên không dính.
+
+- **Đã dẫm:** 17/11 13:37 phiên giữ đợt viết chữ ấy vào `TRANG-THAI.md` khi ghi chữ ký vòng bốn; B2 có thêm ba tệp. B2 gặp
+  ở bước kiểm trước S4 lúc 16:29 — chưa tốn lượt chấm nào. Tìm `RT13` trong hạt giống và `docs/findings/`: ba hạt giống nói
+  về phần đọc-cũ của RT13, chưa thấy mục nào nói về phần quét này với thư mục `migration/` — chưa thấy, không phải chắc chắn
+  chưa có.
+- **Nghiệm đang dùng (vật của kho tự lo trước, chưa sửa kit):** tệp trong `migration/` không viết nguyên văn chữ ấy — viết
+  «đã ký»; mã cần chuỗi thì nối hai nửa. Đây là dặn bằng lời nên kèm ngưỡng đang đếm: **≥ 1 lần nữa** RT13 đỏ vì một tệp
+  `migration/` trước ngày cắt sang → sửa đúng tầng ở kho cũ (thêm `migration/` vào danh sách ngoài phép quét, một dòng).
+- **Kiểm nhanh trước khi đẩy `chuyen-nha`:** `git grep -l` chữ ấy `-- migration` phải rỗng (vài phần trăm giây); chạy riêng
+  ca: `RT_CASES=RT13 node tests/plugins/ra-co-ten.test.mjs`.
+- **Ngày cắt sang:** nếu `migration/` còn nằm trong nhánh chính kho mới thì ngưỡng trên coi như chạm — sửa một dòng ấy đi
+  cùng việc cắt sang.
+
 ## Đầu vào cho B1 — sổ tra soát kho cũ (máy sinh, 12/11)
 
 Ba sổ ở `tra-soat/`: kiểm kê từng tệp của kit (sản phẩm thật, chưa rõ, gọi chéo giữa plugin, con trỏ sẽ treo), chỗ hai kho
