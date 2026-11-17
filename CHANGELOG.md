@@ -47,6 +47,11 @@ Gốc: kế hoạch chuyển nhà, mục 12, hàng B3 (`migration/KE-HOACH.md`);
   vào gốc bản kit; hai đường `feature-loop/…` và một liên kết QUICKSTART đổi theo. Đo bằng `guide-ci.sh` của hồ sơ.
 - **Dọn dấu vết đợt:** gỡ `.claude/rules/chuyen-nha.md`; `migration/` ở lại làm sử liệu và công cụ, ca RT13 thôi quét nó.
   `CLAUDE.md` đổi tiền tố đường ở đoạn «MỘT cây nguồn», không đổi luật.
+- **Ba đường bố cục cũ lượt ghim lại B1, B2 bắt được (17/11):** `kiem-ban-cai.mjs` lấy gốc kho mặc định từ `git rev-parse
+  --show-toplevel` thay vì thư mục cha của script (ở bố cục mới đó là thư mục plugin, `git archive` chỉ lấy cây con và
+  nguồn cài thiếu `marketplace.json`); ca lượt mốc của nó đọc số ở `plugins/acceptance-gate/.claude-plugin/plugin.json`,
+  về đường cũ khi gốc vòng còn bố cục cũ; ca P132 ghim dòng cài thủ công mới của README. `migration/kich-ban/tep-song.test.mjs`
+  suy bố cục từ vật có mặt nên chạy được trên cả `chuyen-nha` lẫn cây 3.0.
 - **Giới hạn đã khai:** ngưỡng thực tế của mốc — một vòng thật ở kho nhận gộp được trên 3.0, năm dòng số không xấu đi, chủ
   kho ghi trạng thái đã chạm bởi thực tế sau 14 ngày — là điều kiện đóng đợt, **chưa đo được** lúc cắt mốc; cách đo:
   `migration/cat-sang/nguong-thuc-te.mjs`.

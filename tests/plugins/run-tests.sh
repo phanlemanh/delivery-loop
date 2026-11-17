@@ -5173,7 +5173,7 @@ assert len(cmds) >= 7, f"sanity: chi thay {len(cmds)} lenh trong commands/ — b
 readme = (root / "README.md").read_text(encoding="utf-8")
 
 def check(text):
-    return [c for c in cmds if f"ln -s <kit>/commands/{c}" not in text]
+    return [c for c in cmds if f"ln -s <kit>/plugins/acceptance-gate/commands/{c}" not in text]
 
 missing = check(readme)
 assert missing == [], \

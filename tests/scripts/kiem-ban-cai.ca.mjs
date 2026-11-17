@@ -34,7 +34,15 @@ export function nhanDienLuotMoc(root) {
   if (!nhanh) return { ket: 'chay-tron', ly_do: 'không dò được nhánh chính' };
   const mb = git(root, ['merge-base', 'HEAD', nhanh]);
   if (mb.status !== 0) return { ket: 'chay-tron', ly_do: `không dò được gốc vòng với ${nhanh}` };
-  const doc = (ref) => { const r = git(root, ['show', `${ref}:.claude-plugin/plugin.json`]); try { return r.status === 0 ? JSON.parse(r.stdout).version : null; } catch { return null; } };
+  // Đường bố cục mới trước; gốc vòng có thể còn là cây bố cục cũ (lõi ở gốc kho) — đọc-cũ, không phải nhánh chết.
+  const doc = (ref) => {
+    for (const p of ['plugins/acceptance-gate/.claude-plugin/plugin.json', '.claude-plugin/plugin.json']) {
+      const r = git(root, ['show', `${ref}:${p}`]);
+      if (r.status !== 0) continue;
+      try { return JSON.parse(r.stdout).version; } catch { return null; }
+    }
+    return null;
+  };
   const so = doc('HEAD'), soGoc = doc(mb.stdout.trim());
   if (!so || !soGoc) return { ket: 'chay-tron', ly_do: 'không đọc được số phiên bản' };
   return so === soGoc ? { ket: 'bo-qua', so, soGoc } : { ket: 'chay-tron', so, soGoc, ly_do: `số ${soGoc} → ${so}` };
@@ -423,7 +431,7 @@ async function chayTron() {
         gitOk(d, ['add', '-A']); gitOk(d, ['commit', '-qm', 'f']);
         return d;
       };
-      const doiSo = (d) => { const f = path.join(d, '.claude-plugin', 'plugin.json'); const j = JSON.parse(fs.readFileSync(f, 'utf8')); j.version = '9.9.9'; fs.writeFileSync(f, JSON.stringify(j, null, 2) + '\n'); };
+      const doiSo = (d) => { const f = path.join(d, 'plugins/acceptance-gate', '.claude-plugin', 'plugin.json'); const j = JSON.parse(fs.readFileSync(f, 'utf8')); j.version = '9.9.9'; fs.writeFileSync(f, JSON.stringify(j, null, 2) + '\n'); };
       const caMoc = (d) => {
         const r = spawnSync(process.execPath, [path.join(d, 'tests', 'scripts', 'kiem-ban-cai.ca.mjs'), '--chi-luot-moc'], { cwd: d, encoding: 'utf8', timeout: 600_000 });
         return { ma: r.status, out: r.stdout || '', dong: (r.stdout || '').split('\n').filter(Boolean) };

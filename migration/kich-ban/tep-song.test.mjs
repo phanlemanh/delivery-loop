@@ -17,14 +17,19 @@ import { createRequire } from 'node:module';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DAY, '..', '..');
-const PM = path.join(ROOT, 'scripts', 'pre-merge-check.sh');
-const LANE = path.join(ROOT, 'feature-loop', 'scripts', 'repin-lane.mjs');
+// Tệp này chạy trên HAI bố cục: nhánh `chuyen-nha` (lõi ở gốc kho, `feature-loop/` ở gốc) và cây 3.0 (`plugins/<tên>/`).
+// Suy bố cục từ vật có mặt, không ghim một đường: lượt ghim lại B2 ở mốc 3.0 (17/11) đỏ đúng vì ba đường dưới ghim bố cục cũ.
+const MOI = fs.existsSync(path.join(ROOT, 'plugins', 'acceptance-gate', 'lib', 'evidence-core.cjs'));
+const KIT = MOI ? path.join(ROOT, 'plugins', 'acceptance-gate') : ROOT;
+const FL = MOI ? path.join(ROOT, 'plugins', 'feature-loop') : path.join(ROOT, 'feature-loop');
+const PM = path.join(KIT, 'scripts', 'pre-merge-check.sh');
+const LANE = path.join(FL, 'scripts', 'repin-lane.mjs');
 // Chữ trạng thái đã ký nối từ hai nửa: tệp này là fixture GHI hồ sơ đã ký, không phải bộ đọc trạng thái, mà RT13 (iv)
 // quét mọi tệp ngoài `_acceptance/`·`docs/` chứa nguyên chữ ấy (migration/BOI-CANH.md «Bẫy đã dẫm ở bước kiểm trước S4»).
 const DA_KY = 'signed' + '-off';
 const TEP_SONG = 'migration/TRANG-THAI.md';
 const TEP_VAT = 'migration/kich-ban/don-nha.mjs';
-const core = createRequire(import.meta.url)(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+const core = createRequire(import.meta.url)(path.join(KIT, 'lib', 'evidence-core.cjs'));
 const T1_THAT = core.resolveConfigList(fs.readFileSync(path.join(ROOT, '_acceptance', 'config.yaml'), 'utf8'), 'risk_tiers.t1_skip_globs');
 
 const tam = [];
@@ -52,7 +57,7 @@ function dungKho(globs) {
   ghi('_acceptance/feat/run-log.jsonl', JSON.stringify({ ts: '2026-11-14T00:00:00Z', kind: 'eval', run_id: 'r1-E1', sha: h1, eval: 'E1', exit_code: 0 }) + '\n');
   ghi('_acceptance/feat/evidence-report.md', `---\nschema_version: 1\nfeature_slug: feat\nverdict: PASS\nverified_commit: ${h1}\nhuman_signoff: Manh 2026-11-14\n---\n\n## Evidence\n- eval: E1\n  run_id: r1-E1\n  exit_code: 0\n  verifier: config:executors.script.rang_e1\n  verified_at: 2026-11-14\n\n## Iterations\n\nRound 1 — PASS.\n`);
   git('add', '-A'); git('commit', '-qm', 'evidence');
-  const w = spawnSync(process.execPath, [LANE, '--root', R, '--ag-root', ROOT, '--slug', 'feat', '--reason', 'ghim', '--write'], { encoding: 'utf8' });
+  const w = spawnSync(process.execPath, [LANE, '--root', R, '--ag-root', KIT, '--slug', 'feat', '--reason', 'ghim', '--write'], { encoding: 'utf8' });
   assert.equal(w.status, 0, `repin-lane thật không ghi được pin:\n${w.stderr}`);
   git('add', '-A'); git('commit', '-qm', 'repin');
   const pm = () => { const r = spawnSync('bash', [PM, R, '--base', base], { encoding: 'utf8' }); return r.stdout + r.stderr; };

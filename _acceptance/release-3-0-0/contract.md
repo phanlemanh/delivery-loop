@@ -92,4 +92,5 @@ chấm lại ở đây; mốc chỉ đòi chúng đúng là thứ kịch bản s
 - Giới hạn khai trước: AC-4, AC-5, AC-6 đọc thứ lượt kiểm tự động không có (remote `kit-cu`, bản kéo hai kho tiêu thụ, lệnh `claude`) — chỉ chạy được ở máy này; thiếu thì lệnh thoát 2 «không đọc được ở đây».
 - Giới hạn khai trước: AC-8 đo trên kho trần cục bộ và chính kho này làm kho tiêu thụ; lượt kiểm tự động thật của Quỹ hàng chỉ chạy sau thẻ.
 - Giới hạn khai trước: ba glob được sửa ở PR mốc, không ở kịch bản — kịch bản chuyển nhà chạy lại từ một nguồn mới vẫn sinh ba glob chết (mục B3 của thẻ Cổng Phạm vi). Ngưỡng đang đếm: ≥ 1 lần kịch bản chạy lại để dựng cây đi vào nhánh chính sau ngày cắt → sửa luật bước 6 của kịch bản.
+  Cùng giới hạn, cùng ngưỡng, cho ba đường lượt ghim lại B1, B2 bắt được ngày 17/11 (gốc mặc định của `kiem-ban-cai.mjs`, hai dòng đọc số trong ca lượt mốc, chuỗi ghim P132): sửa ở PR mốc, kịch bản chạy lại vẫn sinh chúng — luật đổi đường của kịch bản không phủ đường ghép từ gốc kho khi gốc kho cũ CHÍNH là lõi.
 - Lượt này phiên chấm chạy plugin `feature-loop` 2.38.1 từ chợ cũ, điều phối bằng tệp workflow của chính cây (`plugins/feature-loop/workflows/`).

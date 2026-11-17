@@ -222,7 +222,10 @@ const run = (cmd, args, opts) => spawnSync(cmd, args, { encoding: 'utf8', timeou
 function moTa(ds, n = 5) { return ds.slice(0, n).join(', ') + (ds.length > n ? ` … (+${ds.length - n})` : ''); }
 
 function docArgs(argv) {
-  const a = { ref: null, root: path.resolve(HERE, '..'), nguonCai: null, giu: false, may: false };
+  // Gốc mặc định = gốc kho git chứa script. Ở bố cục plugins/<tên>/ thì `HERE/..` là thư mục plugin, và `git archive`
+  // chạy từ thư mục con chỉ lấy cây con — nguồn cài thiếu `.claude-plugin/marketplace.json` (lượt ghim lại mốc 3.0, 17/11).
+  const top = spawnSync('git', ['-C', HERE, 'rev-parse', '--show-toplevel'], { encoding: 'utf8' });
+  const a = { ref: null, root: top.status === 0 ? top.stdout.trim() : path.resolve(HERE, '..'), nguonCai: null, giu: false, may: false };
   const giaTri = (i, k) => { const v = argv[i]; if (v === undefined || v.startsWith('--')) throw new KhongChay(`thiếu giá trị cho ${k}`); return v; };
   for (let i = 0; i < argv.length; i++) {
     const k = argv[i];
