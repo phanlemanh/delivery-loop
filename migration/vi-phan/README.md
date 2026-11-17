@@ -6,7 +6,7 @@ CÙNG một cây hồ sơ thật, so phán quyết. Chỉ phần lệch mới qu
 | Tệp | Việc |
 |---|---|
 | `vi-phan.mjs` | Chạy `pre-merge-check.sh . --recheck-all --base <nhánh chính>` (thêm `product-map --check` với `--ban-do`) bằng từng bản kit, so mã thoát · túi dòng `VIOLATION` · tập hồ sơ có dòng `OK` · dòng sổ luật. Thoát 0 không lệch · 1 lệch, nêu từng dòng · 2 không đọc được |
-| `tu-kiem.mjs` | Phá thử hai chiều thước trên trên bộ chặn gộp thật và hồ sơ thật — năm ca C0–C4 |
+| `tu-kiem.mjs` | Phá thử hai chiều thước trên bằng bộ chặn gộp thật và hồ sơ thật — sáu ca C0–C4b |
 | `duong-chet.mjs` | Quét đường và glob trong tệp cấu hình gốc của kho kit: khớp tệp ở cây cũ mà 0 tệp ở cây mới |
 
 Mọi lệnh chạy dưới Node 24 (`export PATH=/opt/homebrew/opt/node@24/bin:$PATH`).
@@ -40,9 +40,10 @@ A→B là phần đổi của bốn vòng kho cũ sau 2.39; B→C là phần đ�
 | C1 cùng bắt — tiêm bốn vi phạm vào bản sao cây hồ sơ (chữ ký rỗng · verdict FAIL · cưỡng chế tắt · có bypass) | cũ 4 `VIOLATION` thoát 1 · mới 4 `VIOLATION` thoát 1 · lệch 0 | như bên |
 | C2 độ nhạy — tắt luật «chữ ký rỗng» trong bản sao lõi mới | thước ĐỎ, 1 lệch, nêu đúng dòng của hồ sơ bị tiêm | như bên |
 | C3 độ đặc hiệu — bản sao lõi ở đường khác, đổi một dòng chú thích, thêm một tệp tài liệu | lệch 0, chỉ đọc 0 | như bên |
-| C4 không đọc được — thư mục không có bộ chặn gộp | thoát 2 («mã thoát 127»), không in «0 lệch» | như bên |
+| C4 không đọc được — thư mục không có bộ chặn gộp | báo cáo thoát 2 («mã thoát 127»), không in dòng «phán quyết lệch» | như bên |
+| C4b dừng sớm — bản chụp chỉ có `VIOLATION [config]`, không dòng sổ luật | không đọc được | như bên |
 
-5/5 ca đạt ở cả hai kho (khoảng 26 giây mỗi kho).
+6/6 ca đạt (chạy lại sau khi sửa thước: Quỹ hàng; crm đo ở bản thước trước khi sửa, 5/5).
 
 ```bash
 node migration/vi-phan/tu-kiem.mjs --kho <bản kéo kho tiêu thụ> --ref origin/main --base origin/main --cu <kit cũ> --moi <cây mới>/plugins/acceptance-gate
@@ -81,10 +82,22 @@ nói điều này — chưa thấy, không phải chắc chắn chưa có.
 trên commit dọn nhà — không sửa kịch bản. Lý do: sửa kịch bản làm đổi mã cây, hai báo cáo đã ký của B2 (`giu-khoa.md`,
 `lop-do.md` ghim `53031519`) phải đo lại một lượt 60–80 phút và B1, B2 phải ghim lại thêm lần nữa. Lên thẻ Cổng Phạm vi.
 
+## Lượt rà độc lập 17/11 và phần đã sửa
+
+Một tác tử rà mã đọc bốn tệp (không được cho biết kết quả đo). Sửa ngay các mục có thể cho xanh giả: bản chụp chỉ có
+`VIOLATION [config]` nay là «không đọc được» (trước đó hai bản kit cùng dừng sớm ra «0 lệch») · dòng thụt lề sau một
+`VIOLATION` tính vào chính vi phạm ấy, dấu `T1-ESCAPE` và mọi dòng `pre-merge-check:` tính vào sổ luật · hàm che chỉ che
+đường tuyệt đối · hai `--kit` trùng nhãn hay trùng đường bị từ chối · `tu-kiem.mjs` dọn cây tạm ở mọi lối ra và C4 gọi đúng
+hàm báo cáo · `duong-chet.mjs` cắt dấu phẩy dính cuối, nhận glob bắt đầu bằng `*` hay `{`, báo tệp cấu hình mất ở cây mới.
+Sau khi sửa, chạy lại trên bản chụp cũ: vẫn 0 lệch ở cả hai kho; `duong-chet.mjs` in thêm một dòng thứ tư (`evals/` trong
+dòng chú thích đứng trên chính glob ấy).
+
 ## Giới hạn đã khai
 
 - Phép so đọc đầu ra của bộ chặn gộp; nó không chạy lượt chấm S4, không chạy móc. Móc do bộ kiểm hooks giữ (71 ca, thuộc
   túi khoá B2); đường chấm chỉ được đo thật ở vòng đầu tiên của Quỹ hàng trên kit 3.0 (ngưỡng thực tế, vế 1).
 - Bản chụp đầu ra thô nằm ở thư mục tạm của phiên, không vào kho: nó mang tên hồ sơ và chữ ký của hai kho tiêu thụ, mà kho
   này có thể chuyển công khai. Chạy lại bằng `vi-phan.mjs` mất dưới 15 phút cho cả hai kho.
-- `duong-chet.mjs` đọc sáu tệp cấu hình ở gốc; đường ghép bằng biến lúc chạy thì lọt.
+- `duong-chet.mjs` đọc sáu tệp cấu hình ở gốc; đường ghép bằng biến lúc chạy thì lọt; chuỗi trong chú thích cũng được tính.
+- `vi-phan.mjs` chạy các bản kit lần lượt trên cùng một cây; nếu bộ chặn gộp ghi vào cây thì lượt sau thấy trạng thái đã đổi — chưa kiểm (sau ba lượt, `git status` của hai cây hồ sơ sạch).
+- `nguong-thuc-te.mjs`: giờ ký và giờ gộp là ngày commit (nhánh rebase sau chữ ký thì giờ ký trôi); hai commit gộp cùng một giây có thể gán nhầm mã cho nhau.

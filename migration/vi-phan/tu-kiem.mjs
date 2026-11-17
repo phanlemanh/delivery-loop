@@ -7,17 +7,18 @@
 //   C1 cùng bắt          tiêm bốn vi phạm vào bản sao cây hồ sơ: CẢ HAI bản kit ra đúng các dòng VIOLATION ấy, 0 lệch
 //   C2 độ nhạy           tắt một luật trong bản sao lõi mới: thước ĐỎ, nêu đúng dòng VIOLATION bên mới thiếu
 //   C3 độ đặc hiệu       bản sao lõi mới ở đường khác, chỉ đổi chú thích + thêm một tệp tài liệu: thước IM
-//   C4 không đọc được    trỏ một thư mục không có bộ chặn gộp: thoát 2, không in «0 lệch»
+//   C4 không đọc được    trỏ một thư mục không có bộ chặn gộp: báo cáo thoát 2, không in «phán quyết lệch»
+//   C4b dừng sớm         bản chụp chỉ có VIOLATION [config], không dòng sổ luật: không đọc được
 //
 //   node tu-kiem.mjs --kho <bản kéo git của kho tiêu thụ> --ref <mã> --base <ref> --cu <gốc lõi cũ> --moi <gốc lõi mới> [--tam <thư mục>]
 // Bộ tự tạo cây làm việc tạm (git worktree --detach) của kho ấy và gỡ khi xong; không commit, không đẩy gì.
-// Thoát: 0 cả năm ca đạt · 1 có ca trượt · 2 không đọc được ở đây (thiếu đối số, không tìm đủ bốn hồ sơ đã ký).
+// Thoát: 0 cả sáu ca đạt · 1 có ca trượt · 2 không đọc được ở đây (thiếu đối số, không tìm đủ bốn hồ sơ đã ký).
 
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { chup, che, so, tach, docDuoc } from './vi-phan.mjs';
+import { chup, che, so, tach, docDuoc, baoCao } from './vi-phan.mjs';
 
 const a = {};
 const v = process.argv.slice(2);
@@ -34,8 +35,9 @@ const ca = (ten, dat, chiTiet) => { process.stdout.write(`${dat ? 'PASS' : 'FAIL
 const doc = (s) => fs.readFileSync(s, 'utf8');
 const ghi = (s, c) => fs.writeFileSync(s, c);
 
-git(a.kho, ['worktree', 'add', '-q', '--detach', CAY, a.ref]);
+let khongDocDuoc = null;
 try {
+  git(a.kho, ['worktree', 'add', '-q', '--detach', CAY, a.ref]);
   // Bốn hồ sơ đã ký, verdict PASS, có verified_commit — theo thứ tự tên, tất định.
   const ds = fs.readdirSync(path.join(CAY, '_acceptance')).sort().filter(s => {
     const f = path.join(CAY, '_acceptance', s, 'evidence-report.md');
@@ -43,7 +45,7 @@ try {
     const d = doc(f).split('\n---')[0];
     return /^verdict: PASS$/m.test(d) && /^human_signoff: \S/m.test(d) && /^enforcement_mode: strict$/m.test(d) && /^bypass_used: false$/m.test(d);
   }).slice(0, 4);
-  if (ds.length < 4) { process.stderr.write(`không đọc được ở đây: chỉ tìm được ${ds.length}/4 hồ sơ đã ký trong ${a.ref}\n`); process.exit(2); }
+  if (ds.length < 4) { khongDocDuoc = `chỉ tìm được ${ds.length}/4 hồ sơ đã ký trong ${a.ref}`; throw new Error(khongDocDuoc); }
   const o = (goc) => ({ kit: [goc], kho: [CAY, fs.realpathSync(CAY)] });
   const chay = (goc) => { const c = chup({ kho: CAY, base: a.base, goc, slug: ds }); return { ...c, chu: che(c.chu, o(goc)) }; };
 
@@ -94,10 +96,17 @@ try {
 
   // C4 — không đọc được: thư mục không có bộ chặn gộp.
   const c4 = chup({ kho: CAY, base: a.base, goc: path.join(TAM, 'khong-co'), slug: ds });
-  ca('C4 không đọc được', docDuoc(c4) !== null, `thư mục không có bộ chặn gộp → ${docDuoc(c4)}`);
+  const in4 = [];
+  const ma4 = baoCao([{ nhan: 'doi-chung', ...c1[1] }, { nhan: 'khong-co', ...c4 }], (d) => in4.push(d));
+  ca('C4 không đọc được', docDuoc(c4) !== null && ma4 === 2 && !in4.some(d => /phán quyết lệch/.test(d)), `thư mục không có bộ chặn gộp → ${docDuoc(c4)} · báo cáo thoát ${ma4}, không in dòng «phán quyết lệch»`);
+  // Bản chụp chỉ có VIOLATION [config] (bộ chặn gộp dừng sớm) cũng phải là «không đọc được», không phải phán quyết.
+  ca('C4b dừng sớm', docDuoc({ ma: 1, chu: 'VIOLATION [config]: base "x" không resolve được\n' }) !== null, 'một dòng VIOLATION [config] không kèm sổ luật → không đọc được');
+} catch (e) {
+  if (!khongDocDuoc) throw e;
 } finally {
   try { git(a.kho, ['worktree', 'remove', '--force', CAY]); } catch { /* đã gỡ */ }
   fs.rmSync(TAM, { recursive: true, force: true });
 }
-process.stdout.write(`tu-kiem: ${5 - truot}/5 ca đạt\n`);
+if (khongDocDuoc) { process.stderr.write(`không đọc được ở đây: ${khongDocDuoc}\n`); process.exit(2); }
+process.stdout.write(`tu-kiem: ${6 - truot}/6 ca đạt\n`);
 process.exit(truot ? 1 : 0);

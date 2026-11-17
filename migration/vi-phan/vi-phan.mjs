@@ -15,7 +15,8 @@
 // Phán quyết (lệch = ĐỎ, thoát 1):
 //   · mã thoát của bộ chặn gộp          · túi dòng VIOLATION (đã che đường kit và đường cây)
 //   · tập hồ sơ có dòng OK              — hồ sơ bên cũ xét mà bên mới không xét là «ca không chạy tới», không phải «sạch»
-//   · dòng sổ luật «rules ran=»         — luật không chạy là luật không còn
+//   · sổ luật: «rules ran=», dấu T1-ESCAPE, dòng khai luật tắt — luật không chạy là luật không còn
+//   · dòng thụt lề sau một VIOLATION (danh sách tệp) tính vào chính vi phạm ấy
 //   · (--ban-do) mã thoát và đầu ra của product-map --check
 // Chỉ đọc (in ra, không làm đỏ): dòng NOTE và chữ của dòng OK.
 // Thoát: 0 không lệch · 1 có lệch (mỗi dòng stdout một lệch, tiền tố «LỆCH») · 2 không đọc được ở đây (một bản kit
@@ -30,26 +31,34 @@ export const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // Che những gì đổi theo chỗ đặt bản kit và cây hồ sơ — không phải phán quyết.
 export function che(dong, { kit = [], kho = [] } = {}) {
+  // Chỉ che đường TUYỆT ĐỐI: một đường tương đối như «.» sẽ nuốt mọi dấu chấm và làm hai dòng khác nhau thành giống nhau.
+  const tuyetDoi = (ds) => [...new Set(ds)].filter(k => typeof k === 'string' && path.isAbsolute(k) && k.length > 1).sort((a, b) => b.length - a.length);
   let s = dong;
-  for (const k of [...kit].sort((a, b) => b.length - a.length)) s = s.replace(new RegExp(esc(k), 'g'), '<KIT>');
-  for (const k of [...kho].sort((a, b) => b.length - a.length)) s = s.replace(new RegExp(esc(k), 'g'), '<KHO>');
+  for (const k of tuyetDoi(kit)) s = s.replace(new RegExp(esc(k), 'g'), '<KIT>');
+  for (const k of tuyetDoi(kho)) s = s.replace(new RegExp(esc(k), 'g'), '<KHO>');
   return s;
 }
 
 // Một đầu ra của pre-merge-check → các lớp dòng. Lớp = chữ in hoa đầu dòng; dòng không có thì là «khac».
 export function tach(chu) {
   const r = { viol: [], ok: new Map(), note: [], luat: [], khac: [] };
+  let truocLaViol = false;
   for (const d of chu.split('\n')) {
     if (!d.trim()) continue;
+    // Dòng thụt lề ngay sau một VIOLATION (danh sách tệp sau «Changed:») là một phần của chính vi phạm ấy.
+    if (truocLaViol && /^\s/.test(d)) { r.viol[r.viol.length - 1] += ' ⏎ ' + d.trim(); continue; }
     const m = d.match(/^([A-Z][A-Z-]+)\b/);
     const lop = m ? m[1] : null;
     const slug = (d.match(/^[A-Z-]+ \[([^\]]+)\]/) || [])[1];
+    truocLaViol = lop === 'VIOLATION';
     if (lop === 'VIOLATION') r.viol.push(d);
     else if (lop === 'OK' && slug) r.ok.set(slug, d);
-    else if (/^pre-merge-check: rules ran=/.test(d)) r.luat.push(d);
+    // Sổ luật: dòng «rules ran=», dòng khai luật tắt, và dấu T1-ESCAPE: NOT ENFORCED — luật không chạy là luật không còn.
+    else if (/^pre-merge-check: /.test(d) || /^T1-ESCAPE\b/.test(d)) r.luat.push(d);
     else if (lop === 'NOTE') r.note.push(d);
     else r.khac.push(d);
   }
+  r.coDongLuat = r.luat.some(d => /^pre-merge-check: rules ran=/.test(d));
   return r;
 }
 
@@ -81,11 +90,12 @@ export function so(dc, ms) {
 }
 const demLop = (t) => ({ VIOLATION: t.viol.length, OK: t.ok.size, NOTE: t.note.length, luat: t.luat.length });
 
-// Một bản chụp đọc được khi: mã thoát 0 hoặc 1, VÀ có ít nhất một dòng OK/VIOLATION hoặc một dòng sổ luật.
+// Một bản chụp đọc được khi: mã thoát 0 hoặc 1, VÀ có dòng sổ luật «rules ran=» (bộ chặn gộp đã đi tới cuối).
 export function docDuoc(c) {
   if (c.ma !== 0 && c.ma !== 1) return `mã thoát ${c.ma} (chỉ 0 và 1 là phán quyết)`;
   const t = tach(c.chu);
-  if (!t.viol.length && !t.ok.size && !t.luat.length) return 'không dòng OK, VIOLATION hay sổ luật nào — không luật nào chạy';
+  // Một dòng VIOLATION [config] (sai --base, sai cấu hình) KHÔNG đủ: hai bản kit cùng hỏng sẽ ra «0 lệch» mà chưa chấm hồ sơ nào.
+  if (!t.coDongLuat) return 'không có dòng sổ luật «rules ran=» — bộ chặn gộp dừng trước khi chấm hồ sơ';
   return null;
 }
 
@@ -95,7 +105,7 @@ export function chup({ kho, base, goc, slug = [], banDo = false }) {
   const t0 = Date.now();
   const doiSo = [kb, '.', ...(slug.length ? slug.flatMap(s => ['--slug', s]) : []), '--recheck-all', '--base', base];
   const r = spawnSync('bash', doiSo, { cwd: kho, encoding: 'utf8', maxBuffer: 1 << 28 });
-  const ra = { ma: r.status ?? 255, chu: (r.stdout || '') + (r.stderr || ''), giay: Math.round((Date.now() - t0) / 1000), lenh: `bash <KIT>/scripts/pre-merge-check.sh ${doiSo.slice(1).join(' ')}` };
+  const ra = { ma: r.status ?? 255, chu: [r.stdout || '', r.stderr || ''].filter(Boolean).map(x => x.replace(/\n?$/, '\n')).join(''), giay: Math.round((Date.now() - t0) / 1000), lenh: `bash <KIT>/scripts/pre-merge-check.sh ${doiSo.slice(1).join(' ')}` };
   if (banDo) {
     const b = spawnSync(process.execPath, [path.join(goc, 'scripts', 'product-map.mjs'), '--root', '.', '--check'], { cwd: kho, encoding: 'utf8', maxBuffer: 1 << 28 });
     ra.bd = { ma: b.status ?? 255, chu: (b.stdout || '') + (b.stderr || '') };
@@ -158,9 +168,10 @@ if (process.argv[1] && fs.realpathSync(process.argv[1]) === fs.realpathSync(file
     process.exit(2);
   }
   if (!a.so) {
+    if (new Set(a.kit.map(k => k[0])).size !== a.kit.length || new Set(a.kit.map(k => k[1])).size !== a.kit.length) { process.stdout.write('không đọc được ở đây: hai --kit trùng nhãn hoặc trùng đường — so một bản với chính nó luôn ra 0 lệch\n'); process.exit(2); }
     const kho = fs.realpathSync(a.kho);
     fs.mkdirSync(a.ra, { recursive: true });
-    fs.writeFileSync(path.join(a.ra, 'che.json'), JSON.stringify({ thu_tu: a.kit.map(k => k[0]), kit: Object.fromEntries(a.kit), kho: [kho, a.kho], base: a.base, slug: a.slug }, null, 2) + '\n');
+    fs.writeFileSync(path.join(a.ra, 'che.json'), JSON.stringify({ thu_tu: a.kit.map(k => k[0]), kit: Object.fromEntries(a.kit), kho: [kho, path.resolve(a.kho)], base: a.base, slug: a.slug }, null, 2) + '\n');
     for (const [n, goc] of a.kit) ghi(a.ra, n, chup({ kho, base: a.base, goc, slug: a.slug, banDo: a.banDo }));
   }
   process.exit(baoCao(docChup(a.so || a.ra)));

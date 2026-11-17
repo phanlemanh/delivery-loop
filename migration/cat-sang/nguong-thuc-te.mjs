@@ -12,6 +12,9 @@
 //            delivery-loop (thay cho trường «phiên bản plugin của phiên làm vòng» — chợ mới chỉ phát hành ≥ 3.0) · có hồ sơ
 //            ký SAU commit cài và gộp ở đúng commit ấy.
 // Thoát: 0 đạt / in xong · 1 vế 1 trượt (mỗi dòng một lý do) · 2 không đọc được ở đây.
+// Giới hạn đã khai (lượt rà 17/11): giờ ký và giờ gộp là NGÀY COMMIT — nhánh bị rebase sau chữ ký thì giờ ký trôi theo; bộ
+// đo của kit đọc trên đỉnh origin/<nhánh>, nên --den phải nằm trên nhánh ấy; hai commit gộp cùng một giây thì mã commit gộp
+// có thể gán nhầm cho nhau (giờ vẫn đúng); trung vị của tập chẵn lấy phần tử trên.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -35,6 +38,7 @@ const { soDoGop } = await import(pathToFileURL(tepGop).href);
 const { DA_THONG } = await import(pathToFileURL(tepLich).href);
 const NHANH = `origin/${a.nhanh}`;
 const cfg = { nhanh_chinh: a.nhanh };
+if (thu(['rev-parse', '--verify', '-q', NHANH]) === null) khongDoc(`bản kéo không có ${NHANH} — bộ đo ký→gộp của kit đọc lịch sử nhánh ấy`);
 const trungVi = (ds, p = 0.5) => { const s = [...ds].sort((x, y) => x - y); return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : null; };
 
 // Hồ sơ có commit gộp nằm trong (tu, den] trên lối cha-đầu.
@@ -54,6 +58,7 @@ function vongTrong(tu, den) {
 
 if (lenh === 'cua-so') {
   if (!a.tu || !a.den) khongDoc('cua-so cần --tu và --den');
+  if (thu(['merge-base', '--is-ancestor', a.den, NHANH]) === null) khongDoc(`--den ${a.den} không nằm trên ${NHANH}`);
   const ds = vongTrong(a.tu, a.den);
   process.stdout.write(`cửa sổ ${git(['rev-parse', '--short', a.tu]).trim()}..${git(['rev-parse', '--short', a.den]).trim()} trên ${NHANH}: ${ds.length} vòng gộp\n`);
   if (!ds.length) { process.stdout.write('cửa sổ rỗng — không có trung vị để so; đừng đọc thành «0 phút»\n'); process.exit(0); }
@@ -69,13 +74,14 @@ if (!a.gop || !a.cai) khongDoc('ve-1 cần --gop và --cai');
 const loi = [];
 const ci = thu(['show', `${a.gop}:.github/workflows/ci.yml`]);
 if (ci === null) khongDoc(`không đọc được ci.yml tại ${a.gop}`);
-const the = (ci.match(/KIT_TAG:\s*(\S+)/) || [])[1];
+// Dòng KIT_TAG đầu tiên không nằm trong chú thích; bỏ nháy quanh giá trị.
+const the = ((ci.split('\n').find(d => /^\s*KIT_TAG:/.test(d)) || '').match(/KIT_TAG:\s*["']?([^\s"'#]+)/) || [])[1];
 if (!/github\.com\/phanlemanh\/delivery-loop(?![\w-])/.test(ci)) loi.push('ci.yml không kéo kit từ kho delivery-loop');
 if (!/^v3\.0\.\d+$/.test(the || '')) loi.push(`KIT_TAG là «${the}», cần v3.0.x`);
 const st = thu(['show', `${a.gop}:.claude/settings.json`]);
 if (st === null) loi.push('không đọc được .claude/settings.json');
 else {
-  const bat = Object.keys(JSON.parse(st).enabledPlugins || {});
+  const bat = Object.entries(JSON.parse(st).enabledPlugins || {}).filter(([, v]) => v === true).map(([k]) => k);
   const cu = bat.filter(k => k.endsWith('@acceptance-gate-kit'));
   const moi = bat.filter(k => k.endsWith('@delivery-loop'));
   if (cu.length) loi.push(`còn ${cu.length} khoá bật plugin trỏ chợ cũ: ${cu.join(', ')}`);

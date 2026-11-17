@@ -20,7 +20,9 @@ const git = (kho, a) => execFileSync('git', ['-C', kho, ...a], { encoding: 'utf8
 export const TEP_MAC_DINH = ['_acceptance/config.yaml', '.github/workflows/', '.gitattributes', '.claude/settings.json', 'Makefile', '.repo-setup.json'];
 
 // Chuỗi trông như đường: có ít nhất một `/`, không phải URL, không bắt đầu bằng biến.
-const RE = /(?<![\w$@{}.:/-])((?:\.\/)?[A-Za-z_.][\w.*@-]*(?:\/[\w.*@{},-]+)+\/?)(?![\w/-])/g;
+// Đoạn đầu được bắt đầu bằng `*` hay `{` (glob `**/lib/**`, `{a,b}/x`); dấu phẩy và dấu chấm DÍNH CUỐI bị cắt (danh sách
+// `hooks/**, lib/**` không nháy; câu văn «xem lib/foo.»).
+const RE = /(?<![\w$@}.:/-])((?:\.\/)?[A-Za-z_.*{][\w.*@{},+-]*(?:\/[\w.*@{},+-]+)+\/?)(?![\w/-])/g;
 
 export function globThanhRe(g) {
   let s = g.replace(/^\.\//, '').replace(/\/$/, '');
@@ -33,7 +35,7 @@ export function rut(chu) {
   const ra = [];
   chu.split('\n').forEach((d, i) => {
     if (/https?:\/\//.test(d)) d = d.replace(/https?:\/\/\S+/g, ' ');
-    for (const m of d.matchAll(RE)) ra.push({ dong: i + 1, chuoi: m[1] });
+    for (const m of d.matchAll(RE)) { const c = m[1].replace(/[,.]+$/, ''); if (c.includes('/')) ra.push({ dong: i + 1, chuoi: c }); }
   });
   return ra;
 }
@@ -42,7 +44,10 @@ export function quet({ kho, cu, moi, tep = TEP_MAC_DINH }) {
   const ds = (ref) => git(kho, ['ls-tree', '-r', '--name-only', '-z', ref]).split('\0').filter(Boolean);
   const cayCu = ds(cu), cayMoi = ds(moi);
   const dem = (cay, re) => { let n = 0; for (const t of cay) if (re.test(t)) n++; return n; };
-  const tepXet = cayMoi.filter(t => tep.some(g => (g.endsWith('/') ? t.startsWith(g) : t === g)));
+  const thuoc = (t) => tep.some(g => (g.endsWith('/') ? t.startsWith(g) : t === g));
+  const tepXet = cayMoi.filter(thuoc);
+  // Tệp cấu hình có ở cây cũ mà mất ở cây mới: không quét được — nói ra, không im.
+  const tepMat = cayCu.filter(thuoc).filter(t => !cayMoi.includes(t));
   const chet = []; let tong = 0;
   const nho = new Map();
   for (const t of tepXet) {
@@ -53,7 +58,7 @@ export function quet({ kho, cu, moi, tep = TEP_MAC_DINH }) {
       if (nc > 0 && nm === 0) chet.push({ tep: t, dong, chuoi, cu: nc });
     }
   }
-  return { tepXet, tong, chet };
+  return { tepXet, tepMat, tong, chet };
 }
 
 if (process.argv[1] && fs.realpathSync(process.argv[1]) === fs.realpathSync(fileURLToPath(import.meta.url))) {
@@ -66,7 +71,8 @@ if (process.argv[1] && fs.realpathSync(process.argv[1]) === fs.realpathSync(file
   if (!a.kho || !a.cu || !a.moi) { process.stderr.write('dùng: node duong-chet.mjs --kho <git> --cu <ref> --moi <ref> [--tep <đường>]…\n'); process.exit(2); }
   const k = quet({ kho: a.kho, cu: a.cu, moi: a.moi, tep: a.tep.length ? a.tep : TEP_MAC_DINH });
   if (!k.tong) { process.stdout.write(`không đọc được ở đây: 0 chuỗi đường rút được từ ${k.tepXet.length} tệp\n`); process.exit(2); }
+  for (const t of k.tepMat) process.stdout.write(`TỆP MẤT ${t} · có ở cây cũ, không có ở cây mới — không quét được\n`);
   for (const c of k.chet) process.stdout.write(`ĐƯỜNG CHẾT ${c.tep}:${c.dong} · ${c.chuoi} · khớp ${c.cu} tệp ở cây cũ, 0 ở cây mới\n`);
   process.stdout.write(`duong-chet: ${k.tepXet.length} tệp cấu hình, ${k.tong} chuỗi đường, ${k.chet.length} đường chết\n`);
-  process.exit(k.chet.length ? 1 : 0);
+  process.exit(k.chet.length || k.tepMat.length ? 1 : 0);
 }
