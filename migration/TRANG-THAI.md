@@ -187,6 +187,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 17/11/2026 | Mac Studio | 21:42 — chủ kho bảo «Dọn các phiên đã hoàn tất» → lưu trữ năm phiên đã xong: `rs-5b-kieu-gop` (repo-standards PR #12 đã gộp), `phan-du-b2-kho-cu` (#505), `vong-ba-kho-cu` (#506), `vong-bon-kho-cu` (#507) và `b2-bo-kiem-xanh` (đã ký `d1f80644`, gộp `e1261675`). Kiểm trước khi lưu: cả bốn PR ở trạng thái đã gộp, năm cây làm việc không có thay đổi chưa commit hay tệp chưa theo dõi, đầu nhánh đều đã nằm trong nhánh đích. Lưu trữ đảo được; nhánh giữ nguyên; thư mục cây làm việc ứng dụng giữ lại làm kho dùng lại và tự dọn. Phiên B3 đang chạy, không đụng. |
 | 13/11/2026 | Mac Studio | Chủ kho hỏi chạy B1 theo hướng nào → khuyến nghị một vòng feature-loop ở phiên riêng (B1 một vòng, B2 nối đuôi — điều phối không có gì để chạy song song mà thêm hai thẻ khởi tạo/đóng đợt). Chủ kho: «Mở B1 kiểu này» → mở phiên B1. |
 | 13/11/2026 | Mac Studio | Chủ kho bảo «Mở PR Quỹ hàng» → PR #246 (hai luồng ghim thẻ, ghim lại một hồ sơ T3, sửa một ca phá thử ghi cứng thẻ); cài `gitleaks` lên máy cho móc trước-commit của Quỹ hàng. Chủ kho bảo «Gộp PR» → gộp `f1d123ee`, CI nhánh chính Quỹ hàng xanh. Điều kiện thứ nhất của B1 đạt. |
 | 13/11/2026 | Mac Studio | Mốc 2.39 cắt ở kho cũ (`0c4e503b`, thẻ `v2.39.0`); cập nhật `main` kho này theo. Chủ kho hỏi điều gì đang cản chuyển nhà → đo lại thước B1, thử trước PR nâng Quỹ hàng trên bản sao, chạy lại ba sổ tra soát, chấm lại `doctor` — đoạn «Sẵn sàng cho B1». |
