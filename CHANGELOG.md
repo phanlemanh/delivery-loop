@@ -44,7 +44,9 @@ Gốc: kế hoạch chuyển nhà, mục 12, hàng B3 (`migration/KE-HOACH.md`);
   xuống T2. Nay trỏ `plugins/acceptance-gate/…`. Đo bằng `_acceptance/release-3-0-0/hang-loi.sh` (T3 ở mốc, T2 ở cây trước
   khi sửa) và `migration/vi-phan/duong-chet.mjs` (0 đường chết).
 - **GUIDE §5.3:** lượt kiểm tự động của kho tiêu thụ đặt `CLAUDE_PLUGIN_ROOT` vào `<bản kit>/plugins/acceptance-gate`, không
-  vào gốc bản kit; hai đường `feature-loop/…` và một liên kết QUICKSTART đổi theo. Đo bằng `guide-ci.sh` của hồ sơ.
+  vào gốc bản kit. Ngoài §5.3, GUIDE đổi một lệnh `<kit>/feature-loop/…` (`giu-tuoi.mjs`) và một đường `feature-loop/…`
+  trong lời văn (`repin-lane.mjs`) sang `plugins/feature-loop/…`; QUICKSTART đổi một liên kết. Đo bằng `guide-ci.sh` của
+  hồ sơ.
 - **Dọn dấu vết đợt:** gỡ `.claude/rules/chuyen-nha.md`; `migration/` ở lại làm sử liệu và công cụ, ca RT13 thôi quét nó.
   `CLAUDE.md` đổi tiền tố đường ở đoạn «MỘT cây nguồn», không đổi luật.
 - **Ba đường bố cục cũ lượt ghim lại B1, B2 bắt được (17/11):** `kiem-ban-cai.mjs` lấy gốc kho mặc định từ `git rev-parse
@@ -128,9 +130,10 @@ nguyên, 0 hồ sơ đang mở dính.
 **Kho tiêu thụ làm gì khi nhận:**
 
 - **Lượt kiểm tự động:** đổi kho kéo kit sang `https://github.com/phanlemanh/delivery-loop`, ghim kit ở thẻ `v3.0.0` (khuôn GUIDE §5.3: `KIT_SHA` mang sha của thẻ, hoặc bước «Lấy kit» lấy
-  `refs/tags/v3.0.0`), gốc
-  plugin lõi sang `$RUNNER_TEMP/kit/plugins/acceptance-gate`, mọi đường `$CLAUDE_PLUGIN_ROOT/feature-loop/…` sang
-  `$RUNNER_TEMP/kit/plugins/feature-loop/…`. Hồ sơ nào có ca thử kéo kit theo thẻ thì ghim lại sau khi đổi.
+  `refs/tags/v3.0.0`), gốc plugin lõi sang `$RUNNER_TEMP/kit/plugins/acceptance-gate` — ba thứ ấy là toàn bộ khối mẫu
+  §5.3. Khối mẫu không gọi feature-loop; kho nào tự gọi thêm `$CLAUDE_PLUGIN_ROOT/feature-loop/…` ở bố cục cũ thì đổi sang
+  `$RUNNER_TEMP/kit/plugins/feature-loop/…` (bố cục mới, như lệnh `<kit>/plugins/feature-loop/scripts/giu-tuoi.mjs` của
+  GUIDE). Hồ sơ nào có ca thử kéo kit theo thẻ thì ghim lại sau khi đổi.
 - **`.claude/settings.json` của kho:** chợ `delivery-loop` và sáu khoá bật plugin tên mới; gỡ chợ cũ.
 - **Máy dev:** thêm chợ mới, cài sáu gói theo ĐÚNG THẺ `v3.0.0`, rồi `node <gốc gói acceptance-gate>/scripts/kiem-ban-cai.mjs
   --may --ref v3.0.0 --root <bản clone kit đã git fetch --tags>` — `TỔNG KẾT: ĐẠT …`. Mở phiên MỚI.
