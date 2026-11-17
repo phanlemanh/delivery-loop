@@ -173,3 +173,27 @@ evals:
       đúng kho kéo kit, thẻ v3.0.0, gốc plugin lõi và đường feature-loop như khối mẫu của GUIDE.md mục 5.3 (bước «Trong job
       CI») không? Trả PASS khi cả bốn vế đúng; FAIL nêu đúng vế và câu sai.
     evidence_required: [run_id, verdict, rationale]
+  # E11, E12 — thêm ở vòng 2 (chủ kho trả thẻ Cổng Bằng chứng vòng 1, nâng phạm vi sửa ngay Ngoài-1/-8 và Ngoài-7).
+  - id: E11
+    criterion: AC-11
+    executor: script
+    cmd: config:executors.script.rel300_duong_cu
+    paths: ["tests/plugins/run-tests.sh", "plugins/diagram-design/**", ".claude-plugin/marketplace.json", "_acceptance/release-3-0-0/duong-cu-con-sot.sh"]
+    expected: >
+      Exit 0 và dòng cuối «duong-cu-con-sot: đạt», sau năm dòng: «đạt (a): mã 0, có «so voi origin/main:plugins/diagram-design:
+      hash giu»» · «đạt (b): mã 1, có «tree-hash doi so voi origin/main ma version plugin van»» · «đạt (c): mã 1, …» (nhánh
+      chính bố cục cũ — đường đọc-cũ) · «đạt (d): mã 0, có «hash doi · version 0.0.1 -> 3.0.0»» (độ đặc hiệu) · «đạt (nền-b):
+      mã 0, có «origin/main chua co goi»» (chiều đỏ: đoạn kiểm P196 ở 6597f700 im trước đúng ca (b)).
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E12
+    criterion: AC-12
+    executor: test
+    cmd: config:executors.test.kiem_ban_cai
+    long_running: 15
+    paths: ["tests/scripts/kiem-ban-cai.ca.mjs", "plugins/acceptance-gate/scripts/kiem-ban-cai.mjs", "plugins/*/hooks/**", "plugins/*/.claude-plugin/**"]
+    expected: >
+      Exit 0, mọi dòng «PASS: KB-…», không dòng «FAIL:» và không ngoại lệ — gồm «PASS: KB-5 hook-goi», «PASS: KB-3 thieu-agents»,
+      «PASS: KB-13», «PASS: KB-4 thua», «PASS: KB-7 khac-so», «PASS: KB-7 checkout-that». Chiều đỏ đã đo 18/11 trên 6597f700
+      (cây trước khi sửa): thoát 1 với ba dòng FAIL (KB-3 thieu-agents, KB-13, KB-4 thua) rồi ENOENT tại
+      «<bản sao>/hooks/hooks.json» ở KB-5 hook-goi; sau khi sửa bốn ca ấy, hai ca KB-7 lộ đỏ (tên cũ dieu-phoi, tệp tiêm ở gốc kho).
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]

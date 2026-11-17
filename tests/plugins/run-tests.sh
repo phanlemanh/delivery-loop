@@ -10574,11 +10574,15 @@ H="$(bash "$PD/tree-hash.sh")"; NH="$(sed -n 's/^Tree-hash.*: \([0-9a-f]\{64\}\)
 so_ver_hash(){ # <baseHash> <baseVer> <curHash> <curVer> -> 0 ok / 1 do
   [ "$1" != "$3" ] && [ "$2" = "$4" ] && return 1; return 0; }
 CV="$(node -e 'console.log(require(process.argv[1]).version)' "$PD/.claude-plugin/plugin.json")"
-if git -C "$ROOT" cat-file -e origin/main:diagram-design/NOTICE 2>/dev/null; then
-  BH="$(git -C "$ROOT" show origin/main:diagram-design/NOTICE | sed -n 's/^Tree-hash.*: \([0-9a-f]\{64\}\)$/\1/p' | head -1)"
-  BV="$(git -C "$ROOT" show origin/main:diagram-design/.claude-plugin/plugin.json | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>console.log(JSON.parse(d).version))')"
+# Goi o origin/main: bo cuc moi (plugins/diagram-design) truoc, bo cuc cu (diagram-design) la duong doc-cu —
+# thieu nhanh moi thi sau ngay cat sang phep so tu tat ma van xanh (release-3-0-0 Ngoai-1).
+BP=""; for p in plugins/diagram-design diagram-design; do
+  git -C "$ROOT" cat-file -e "origin/main:$p/NOTICE" 2>/dev/null && { BP="$p"; break; }; done
+if [ -n "$BP" ]; then
+  BH="$(git -C "$ROOT" show "origin/main:$BP/NOTICE" | sed -n 's/^Tree-hash.*: \([0-9a-f]\{64\}\)$/\1/p' | head -1)"
+  BV="$(git -C "$ROOT" show "origin/main:$BP/.claude-plugin/plugin.json" | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>console.log(JSON.parse(d).version))')"
   so_ver_hash "$BH" "$BV" "$H" "$CV" || bad "tree-hash doi so voi origin/main ma version plugin van $CV — bump version"
-  echo "     P196: so voi origin/main: hash $( [ "$BH" = "$H" ] && echo giu || echo doi ) · version $BV -> $CV"
+  echo "     P196: so voi origin/main:$BP: hash $( [ "$BH" = "$H" ] && echo giu || echo doi ) · version $BV -> $CV"
 else echo "     P196: origin/main chua co goi — chan version-theo-hash chay tren cap base GIA duoi day (lan dau)"; fi
 if so_ver_hash "0000" "$CV" "$H" "$CV"; then bad "MUTANT-VERSION KHONG bi bat (hash doi, version giu ma xanh)"; else echo "     MUTANT-VERSION bi bat: hash doi + version giu -> do (qua CHINH so_ver_hash)"; fi
 # chan am: goi khong duoc mang hook/mcp/thu muc la vao may dong doi

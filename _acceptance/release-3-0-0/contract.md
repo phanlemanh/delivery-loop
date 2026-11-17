@@ -5,11 +5,11 @@ slug: release-3-0-0
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật của riêng mốc không chạm đường T3 (đo 17/11: --hang-pr với nền là commit gộp ra T2); PR số 1 thì bộ phân hạng trả «không rõ» — xem Notes
 surfaces: [cli]
-status: verified
+status: implemented
 approved_by:
 approved_at:
 veto_state: mo
-veto_opened_at: 2026-11-17T14:49:02Z
+veto_opened_at: 2026-11-17T22:36:07Z
 ---
 
 # Acceptance Contract: release-3-0-0
@@ -63,9 +63,13 @@ chấm lại ở đây; mốc chỉ đòi chúng đúng là thứ kịch bản s
 - AC-9: Given cây đã sửa, When chạy `_acceptance/release-3-0-0/don-dau-vet.sh`, Then thoát 0 — không còn `.claude/rules/chuyen-nha.md`; RT13 đạt trên cây nguyên vẹn; một tệp thử mang chữ trạng thái đã ký đặt dưới `migration/` không làm RT13 đỏ; cùng tệp ấy dời vào `plugins/acceptance-gate/scripts/` làm RT13 đỏ và nêu đúng tên tệp.
 - AC-10: Given mục `3.0.0` của `CHANGELOG.md` cùng nguồn nó chép, When đọc từng phần, Then (i) mỗi câu mô tả vòng (dòng «Gốc:», gạch «Vật:», giới hạn trích) là chữ của hợp đồng hay ô cơ hội của hồ sơ ấy, không nói rộng hơn; (ii) đoạn «Ai bị ảnh hưởng» kể đủ: tên chợ mới, ba plugin và mười hai lệnh đổi tên, hai skill đổi tên, gốc plugin lõi `plugins/acceptance-gate` trong lượt kiểm tự động, không có bí danh tên cũ, crm ở lại kit cũ; (iii) không câu nào nói ngưỡng thực tế của mốc đã đạt; (iv) đoạn «Kho tiêu thụ làm gì khi nhận» dặn đúng kho kéo kit, thẻ, gốc plugin lõi và đường feature-loop như GUIDE §5.3 của cùng cây. (judgment)
 
+- AC-11: Given cây đã sửa, When chạy `_acceptance/release-3-0-0/duong-cu-con-sot.sh --hai-chieu 6597f700`, Then thoát 0 — đoạn kiểm của ca P196 rút từ suite plugins của HEAD, chạy trên kho thử: nhánh chính ở bố cục mới cùng gói thì xanh và in «so voi origin/main:plugins/diagram-design: hash giu»; nhánh chính ở bố cục mới hay bố cục cũ, gói đổi hash mà giữ số, thì đỏ «tree-hash doi so voi origin/main ma version plugin van»; đổi hash mà đã nâng số thì xanh; và đoạn kiểm của nền `6597f700` trên ca bố cục mới đổi hash giữ số thì im («origin/main chua co goi»).
+- AC-12: Given cây đã sửa, When chạy khoá `kiem_ban_cai` (trọn bộ ca KB của `tests/scripts/kiem-ban-cai.ca.mjs`), Then thoát 0 — mọi ca PASS, kể cả KB-5 «hook-goi» phá `plugins/acceptance-gate/hooks/hooks.json`, KB-3 «thieu-agents», KB-13, KB-4 «thua», KB-7 «khac-so» và «checkout-that» đọc đúng bố cục mới; cùng lệnh trên nền `6597f700` thoát 1 (đo 18/11: ba FAIL rồi ngoại lệ ENOENT ở KB-5 «hook-goi», chưa tới KB-7).
+
 ## Coverage
 
 - Quét theo hai trục của nếp release-2-1-0→2-39-0, không quét lại: Trục A · vật của một lần cắt số (tệp khai | dòng khớp phiên bản | mô tả người-dùng-nhận-gì | cửa sổ hồ sơ | bản cài khớp thẻ) `[thước CE: ba mươi bảy mốc trước đã dùng thật]` → AC-1 · AC-2 · AC-3 · AC-7 · AC-10. Trục B · việc riêng của mốc chuyển nhà (cây trên nhánh chính đúng là cây kịch bản sinh | phán quyết trên kho tiêu thụ không đổi | phán quyết trên chính kho kit không đổi | kho tiêu thụ làm theo tài liệu thì chạy được | dọn dấu vết đợt) `[thước CE: bảng G1–G10 và K1–K5 của migration/KHAC-BIET-DU-KIEN.md]` → AC-4 · AC-5 · AC-6 · AC-8 · AC-9 — ô mới của mốc này, mỗi ô một tệp lệnh của hồ sơ có chiều đỏ trên nền `90c3f9f1` hoặc trên bản sao tiêm lỗi. Hai ô của nếp mốc trước để ngoài có lý do: «gói đổi / gói không đổi» và «lớp chép CI khớp ghi chú» — mọi tệp của mọi gói đã dời chỗ ở mốc này nên phép so theo đường dẫn không còn nghĩa (Out of scope).
+- Vòng 2 (chủ kho trả thẻ Cổng Bằng chứng vòng 1, 18/11, nâng phạm vi sửa ngay ba mục ngoài hợp đồng): Trục C · ca kiểm của kit còn đọc đường bố cục cũ (phép so trên nhánh chính sau ngày cắt | lượt kiểm bản cài trọn bộ) `[thước CE: Ngoài-1, Ngoài-7, Ngoài-8 của review-findings vòng 1]` → AC-11 · AC-12. Không quét lại mọi ca kiểm tìm đường cũ — giới hạn khai ở Notes.
 
 ## Đường đo
 
@@ -93,4 +97,11 @@ chấm lại ở đây; mốc chỉ đòi chúng đúng là thứ kịch bản s
 - Giới hạn khai trước: AC-8 đo trên kho trần cục bộ và chính kho này làm kho tiêu thụ; lượt kiểm tự động thật của Quỹ hàng chỉ chạy sau thẻ.
 - Giới hạn khai trước: ba glob được sửa ở PR mốc, không ở kịch bản — kịch bản chuyển nhà chạy lại từ một nguồn mới vẫn sinh ba glob chết (mục B3 của thẻ Cổng Phạm vi). Ngưỡng đang đếm: ≥ 1 lần kịch bản chạy lại để dựng cây đi vào nhánh chính sau ngày cắt → sửa luật bước 6 của kịch bản.
   Cùng giới hạn, cùng ngưỡng, cho ba đường lượt ghim lại B1, B2 bắt được ngày 17/11 (gốc mặc định của `kiem-ban-cai.mjs`, hai dòng đọc số trong ca lượt mốc, chuỗi ghim P132): sửa ở PR mốc, kịch bản chạy lại vẫn sinh chúng — luật đổi đường của kịch bản không phủ đường ghép từ gốc kho khi gốc kho cũ CHÍNH là lõi.
+- Vòng 2: chủ kho trả lời câu hỏi Cổng Bằng chứng vòng 1 ở phiên giữ đợt, 05:29 18/11, bằng «Trả lại» — câu hỏi nêu sửa
+  bốn chỗ lệch của ghi chú phát hành, gộp Ngoài-1, Ngoài-7, Ngoài-8 vào vòng sửa và cho chạy lượt dài thứ tư. Không ghi
+  trường ký nào (đường «Trả lại» của lệnh ký). AC-11, AC-12 thêm theo lối (c) «nâng phạm vi sửa ngay»; Cổng Phạm vi lại đi
+  làn V, cửa veto mở.
+- Giới hạn khai trước (vòng 2): lượt kiểm bản cài trọn bộ đỏ thêm năm ca ngoài KB-5 cùng lớp (KB-3, KB-13, KB-4 thua, hai ca KB-7 —
+  đường kịch bản đổi sai, tên plugin cũ, hay tệp tiêm nằm ngoài mọi gói), sửa cùng vòng. Không quét lại các ca kiểm khác tìm đường bố cục cũ; ngưỡng
+  đang đếm: ≥ 1 ca kiểm nữa lộ ra đọc đường cũ sau ngày cắt → mở hồ sơ quét theo lớp.
 - Lượt này phiên chấm chạy plugin `feature-loop` 2.38.1 từ chợ cũ, điều phối bằng tệp workflow của chính cây (`plugins/feature-loop/workflows/`).

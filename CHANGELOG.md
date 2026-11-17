@@ -61,20 +61,21 @@ Gốc: kế hoạch chuyển nhà, mục 12, hàng B3 (`migration/KE-HOACH.md`);
 Gốc: acceptance-gate-kit/_acceptance/release-2-39-0 — hồ sơ mốc 2.39 tự ghi nó chặn đợt chuyển nhà và «vòng B1 của đợt
 chỉ mở khi mốc 2.39 đã được một kho tiêu thụ cài».
 
-- **Vật:** Một kịch bản lấy nhánh chính kho cũ và dựng nhánh cục bộ don-nha/3.0 bằng năm commit dọn nhà tất định — sản phẩm vào plugins/<tên>/, tên chợ, plugin, lệnh, skill theo bảng tên, con trỏ sang kho cũ bằng đường dẫn đầy đủ, khuôn Repo Standards — kèm ba thước của B1 và số đo lớp ca kiểm đỏ do đổi bố cục
+- **Vật:** Một kịch bản lấy nhánh chính kho cũ và dựng nhánh cục bộ don-nha/3.0 bằng năm commit dọn nhà tất định — sản phẩm vào plugins/<tên>/, tên chợ, plugin, lệnh, skill theo bảng tên, con trỏ sang kho cũ bằng đường dẫn đầy đủ, khuôn Repo Standards — kèm ba thước của B1 và số đo lớp ca kiểm đỏ do đổi bố cục cho B2
 - Chạy hai lần ra cùng một cây; mọi tệp sản phẩm có đúng một chỗ ở cây mới; phiên mở trên chợ mới nạp đủ 6 plugin, 33 lệnh
   và skill, 3 tác tử của kho cũ sau khi đổi qua bảng tên. Bước thứ sáu (bộ kiểm theo bố cục mới) do B2 thêm.
 - **Giới hạn đã khai:** 4 giới hạn khai trước và 13 mục chọn ở Cổng Bằng chứng 14/11, ở Notes hợp đồng — đáng nhớ nhất:
   Ngoài-3 «Nếu một lượt chạy kiểm chết giữa chừng, báo cáo số ca đỏ thêm có thể ghi 0 và trông như sạch trong khi thực ra
-  chưa đo được.» (B2 sửa phần lớn; phần còn lại là Ngoài-1 của B2.)
+  chưa đo được.»
 
 ### Bộ kiểm xanh ở kho mới (hồ sơ `bo-kiem-xanh-o-kho-moi`, T2, vòng B2)
 
 Gốc: delivery-loop/_acceptance/kich-ban-chuyen-nha — hồ sơ B1 tự ghi việc này ở `## Out of scope` («Làm bộ kiểm xanh trên
 cây mới, đổi đường dẫn trong bộ kiểm và trong `_acceptance/config.yaml` của cây mới — vòng B2»).
 
-- **Vật:** Kịch bản chuyển nhà thêm bước đổi đường dẫn và tên trong bộ kiểm theo bố cục mới; bộ kiểm sáu bước xanh trên cây kịch bản dựng từ kit-cu/main mà không bớt ca nào của kho cũ (thước giữ đủ khoá ca hai chiều); báo cáo lớp đỏ có chiều đỏ khi lượt chạy chết ngầm; --nhanh chỉ nhận don-nha/<tên>
-- Trên nguồn `0fe48c14`: giữ đủ **5 807 / 5 807** khoá ca của kho cũ, danh sách bỏ rỗng; sáu bước thoát 0 ở cả hai cây.
+- **Vật:** Kịch bản chuyển nhà thêm bước đổi đường dẫn và tên trong bộ kiểm theo bố cục mới; bộ kiểm sáu bước xanh trên cây kịch bản dựng từ kit-cu/main mà không bớt ca nào của kho cũ (thước giữ đủ khoá ca hai chiều); báo cáo lớp đỏ có chiều đỏ khi lượt chạy chết ngầm; --nhanh chỉ nhận don-nha/<tên>; tệp trạng thái sống của đợt không làm hồ sơ hoá cũ
+- Trên nguồn thật: sáu bước của việc `tests` thoát 0 ở cả hai cây, phán quyết «giữ đủ <n>/<n> khoá, bỏ 0» với n bằng số
+  khoá đạt của cây cũ (AC-4 của hồ sơ); số đo của lượt ký nằm ở `migration/kich-ban/ket-qua/giu-khoa.md`.
 - **Giới hạn đã khai:** 6 giới hạn khai trước và 8 mục chọn ở Cổng Bằng chứng 17/11, ở Notes hợp đồng — đáng nhớ nhất:
   Ngoài-1 «Nếu một bộ kiểm của kho cũ chết giữa chừng sau khi đã chạy được vài ca, báo cáo vẫn có thể ghi «không có ca đỏ
   thêm» dù một phần ca của bộ ấy chưa được so.»
@@ -126,7 +127,8 @@ nguyên, 0 hồ sơ đang mở dính.
 
 **Kho tiêu thụ làm gì khi nhận:**
 
-- **Lượt kiểm tự động:** đổi kho kéo kit sang `https://github.com/phanlemanh/delivery-loop`, `KIT_TAG` sang `v3.0.0`, gốc
+- **Lượt kiểm tự động:** đổi kho kéo kit sang `https://github.com/phanlemanh/delivery-loop`, ghim kit ở thẻ `v3.0.0` (khuôn GUIDE §5.3: `KIT_SHA` mang sha của thẻ, hoặc bước «Lấy kit» lấy
+  `refs/tags/v3.0.0`), gốc
   plugin lõi sang `$RUNNER_TEMP/kit/plugins/acceptance-gate`, mọi đường `$CLAUDE_PLUGIN_ROOT/feature-loop/…` sang
   `$RUNNER_TEMP/kit/plugins/feature-loop/…`. Hồ sơ nào có ca thử kéo kit theo thẻ thì ghim lại sau khi đổi.
 - **`.claude/settings.json` của kho:** chợ `delivery-loop` và sáu khoá bật plugin tên mới; gỡ chợ cũ.
