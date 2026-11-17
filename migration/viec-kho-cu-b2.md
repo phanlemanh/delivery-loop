@@ -366,3 +366,43 @@ Kết quả:
 Dữ kiện cho hạt giống `docs/plans/2026-10-20-hat-giong-gt07-chap-chon.md`, ở đó nguyên nhân còn ghi «chưa đo»: chạy song song thì
 chênh 58–87 ms, chạy riêng thì chênh 8–11 ms. Theo đề nghị của phiên giữ đợt, B2 không ghi vào hạt giống bây giờ; việc ấy để sau
 ngày cắt sang.
+
+### 4.11 RT13 đỏ trên nhánh vì `migration/` — chặn S4 ở AC-8 (E8s), chỉ sửa đúng tầng ở kho cũ (17/11)
+
+Nhánh đã gộp `chuyen-nha` ở `aac562da`, gồm cả `0fe48c14`. Commit gộp là `16dafd99`; xung đột duy nhất là `LO-TRINH.html`, máy
+sinh, đã dựng lại và `--check` sạch. Trước khi khép S3, B2 chạy trọn `feature_loop.suite_keys` trên nhánh, lần lượt từng khoá:
+
+- Mười khoá thoát 0: `scripts_bash`, `scripts_mjs_1`, `scripts_mjs_2`, `scripts_mjs_3`, `hooks`, `plugins_vung_1`,
+  `plugins_vung_2`, `workflows`, `product_map`, `kiem_ban_cai_moc`.
+- `plugins_vung_3` thoát 1 vì đúng một ca, **RT13**. `do-san.mjs` (E8s) cũng đỏ RT13.
+
+Thước nguồn thật `--bo-kiem` đạt.
+
+Nguyên nhân: phần (iv) của RT13 quét mọi tệp chứa chuỗi `signed-off`. Danh sách bỏ qua `NGOAI` ở
+`tests/plugins/ra-co-ten.test.mjs:1063` chỉ có `_acceptance/`, `docs/` và năm tệp văn ở gốc, không có `migration/`. Chỗ khai gạch
+(`BO-DOC-KHAI-GACH`) nằm trong hồ sơ đã ký `ra-co-ten-lam-va-trao`. Có ba tệp bị bắt:
+
+| Tệp | Của ai | Vì sao chứa `signed-off` |
+|---|---|---|
+| `migration/TRANG-THAI.md` | phiên giữ đợt | văn trạng thái; ở `chuyen-nha` từ 11/11 |
+| `migration/kich-ban/ket-qua/va-luot-4/plugins.md` | B2 | nhật ký lượt 4 trích nguyên văn |
+| `migration/kich-ban/tep-song.test.mjs` | B2 | fixture «hồ sơ đã ký» của AC-7 |
+
+Không tệp nào là bộ đọc rẽ nhánh trên trạng thái, nên RT13 đỏ ở **chính `chuyen-nha`**, không riêng B2. Cây kho cũ và cây kịch
+bản dựng không có `migration/`, nên RT13 xanh ở cả hai cây đo (§4.10).
+
+Nghiệm đúng tầng là một dòng ở kho cũ: thêm `/^migration\//` vào `NGOAI`. Thử trên bản kéo riêng của HEAD nhánh này, không chạm
+cây làm việc:
+- trước khi sửa: `FAIL: [RT13] file lạ chứa "signed-off": migration/TRANG-THAI.md …`;
+- sau khi sửa: `PASS: [RT13] đọc-cũ: broken rỗng, khác biệt đúng khối; …`.
+
+Cân trên mọi kho: kho cũ không có `migration/`, nên dòng này không đổi hành vi ở đó. RT13 chỉ quét cây của chính kit, không quét
+kho tiêu thụ. Mất duy nhất: một bộ đọc trạng thái thật đặt dưới `migration/` sẽ không bị quét. Thư mục ấy là sổ của đợt chuyển
+nhà, không phải sản phẩm.
+
+Hai lối không khuyến nghị:
+- Đổi chữ ba tệp cho khỏi chứa chuỗi. Đó là né răng: fixture và nhật ký cần đúng chữ ấy, và `TRANG-THAI.md` không phải của B2.
+- Thu AC-8 thành giới hạn có tên. Lối này phải duyệt lại Cổng Phạm vi, và RT13 vẫn đỏ cho mọi vòng sau trên kho này tới ngày cắt
+  sang.
+
+B2 giữ hợp đồng ở `approved`, không chấm S4 cho tới khi có lời: lượt chấm bây giờ chắc chắn REJECT ở E8s.
