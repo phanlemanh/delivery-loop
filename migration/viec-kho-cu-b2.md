@@ -359,8 +359,9 @@ dựng lại từ cùng thư mục đo.
 
 Kết quả:
 - **Giữ khoá: thiếu 0 / 5 807, thừa 0, bỏ 0.** GT-07 vào túi hai cây.
-- `thuoc-that.mjs --giu-khoa` **thoát 0**: «AC-4 đạt … 6 bước thoát 0 ở cả hai cây, trong đó 1 bước đỏ ở cả hai cây đã chạy lại
-  một lần, lần lượt từng cây (dieu-phoi); giữ đủ 5807/5807 khoá, bỏ 0».
+- `thuoc-that.mjs --giu-khoa` **thoát 0**: «AC-4 đạt … 6 bước thoát 0 ở cả hai cây; giữ đủ 5807/5807 khoá, bỏ 0», kèm dòng
+  riêng «AC-4 chạy lại: bước dieu-phoi đỏ ở cả hai cây khi chạy song song (lần đầu 1 · 1), chạy lại một lần lần lượt từng cây:
+  0 · 0». Dòng «AC-4 đạt» giữ đúng khuôn E4t của `evals.yaml` đã duyệt, nên không phải sửa tệp tiêu chí.
 - `thuoc-that.mjs --lop-do` thoát 0, tổng đỏ thêm 0.
 
 Dữ kiện cho hạt giống `docs/plans/2026-10-20-hat-giong-gt07-chap-chon.md`, ở đó nguyên nhân còn ghi «chưa đo»: chạy song song thì

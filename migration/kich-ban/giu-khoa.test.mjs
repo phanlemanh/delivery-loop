@@ -268,7 +268,8 @@ test('BK-AC4-chay-lai', () => {
   assert.equal(dongBuoc(ra, 'ka'), 'ka\tbash\t0\t0\t-\t-');
   const k = kiem(ra);
   assert.deepEqual(k.loi, [], k.loi.join('\n'));
-  assert.ok(k.dong.some(d => /^AC-4 đạt: báo cáo đo trên nguồn aaaaaaaa, cây mới bbbbbbbb dựng lại khớp; 4 bước thoát 0 ở cả hai cây, trong đó 1 bước đỏ ở cả hai cây đã chạy lại một lần, lần lượt từng cây \(lc\); giữ đủ 7\/7 khoá, bỏ 0$/.test(d)), k.dong.join('\n'));
+  assert.ok(k.dong.some(d => /^AC-4 đạt: báo cáo đo trên nguồn aaaaaaaa, cây mới bbbbbbbb dựng lại khớp; 4 bước thoát 0 ở cả hai cây; giữ đủ 7\/7 khoá, bỏ 0$/.test(d)), k.dong.join('\n'));
+  assert.ok(k.dong.includes('AC-4 chạy lại: bước lc đỏ ở cả hai cây khi chạy song song (lần đầu 1 · 1), chạy lại một lần lần lượt từng cây: 0 · 0'), k.dong.join('\n'));
   assert.match(fs.readFileSync(path.join(ra, 'giu-khoa.md'), 'utf8'), /^\| lc \| tap \| 1 \| 1 \| 0 \| 0 \|$/m);
   const r2 = chayLai(T);
   assert.equal(r2.status, 2, r2.stdout);

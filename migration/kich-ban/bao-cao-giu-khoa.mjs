@@ -95,9 +95,10 @@ export function kiemGiuKhoa({ ra, nguon, cayDung, loi, ra_, bo = BO_KHOA, so = S
     if (la !== '0') loi.push(`bước ${t} chạy lại vẫn thoát ${la} ở cây cũ`);
     if (lb !== '0') loi.push(`bước ${t} chạy lại vẫn thoát ${lb} ở cây mới`);
   }
-  const daLai = buoc.filter(coLai).map(([t]) => t);
-  const lai = daLai.length ? `, trong đó ${daLai.length} bước đỏ ở cả hai cây đã chạy lại một lần, lần lượt từng cây (${daLai.join(', ')})` : '';
-  if (loi.length === truoc) ra_(`AC-4 đạt: báo cáo đo trên nguồn ${nguon.slice(0, 8)}, cây mới ${cayDung.slice(0, 8)} dựng lại khớp; ${buoc.length} bước thoát 0 ở cả hai cây${lai}; giữ đủ ${n}/${n} khoá, bỏ ${boDs.length}`);
+  if (loi.length !== truoc) return;
+  ra_(`AC-4 đạt: báo cáo đo trên nguồn ${nguon.slice(0, 8)}, cây mới ${cayDung.slice(0, 8)} dựng lại khớp; ${buoc.length} bước thoát 0 ở cả hai cây; giữ đủ ${n}/${n} khoá, bỏ ${boDs.length}`);
+  // Dòng riêng, để dòng «AC-4 đạt» giữ đúng khuôn evals.yaml (E4t) mà bước được chạy lại vẫn hiện ra.
+  for (const [t, , a, b, la, lb] of buoc.filter(coLai)) ra_(`AC-4 chạy lại: bước ${t} đỏ ở cả hai cây khi chạy song song (lần đầu ${a} · ${b}), chạy lại một lần lần lượt từng cây: ${la} · ${lb}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
