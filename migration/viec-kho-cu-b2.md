@@ -268,3 +268,47 @@ Ba mục khác của thư:
 - **§3.2:** `origin/main` của hai bản sao đo trỏ `909dffd8`. Không bắt buộc đổi; B2 giữ nguyên `do-lop-do.sh`.
 - **§3.3:** 45 dòng sổ ở 32 hồ sơ đã khép trỏ đường phẳng. Việc này chờ chủ kho chọn lối, ngoài phần của B2.
 - **§1, §2:** không thêm mục vá vào `va-bo-kiem.json` và không thêm tệp tự đúng đường.
+
+### 4.9 Lượt đo trên nguồn `0fe48c14` (chủ kho cho «Cho B2 đo», 17/11) — một lượt, luật so mới
+
+Lượt chạy `do-lop-do.sh` trên nguồn `0fe48c14`, tức nhánh chính kho cũ sau khi gộp #507. Cây mới dựng lại là `e3a7c105` (cây
+`53031519`). Thước giữ khoá đã mang luật so xét chỗ của §4.8. Lượt thoát 0.
+
+**Giữ khoá: thiếu 0 / 5 806, thừa 0, bỏ 0.** Cả 14 khoá §4.8 đã về: K4-TB 6, K4-DN 4, K4-LT 2, CT-10-do và KM-1. Vì thế ngưỡng
+mở lại vòng bốn không chạm.
+
+Tổng khoá lên từ 5 802 lên 5 806. Phần chênh là ca mới của #507, chủ yếu họ `BC …`. Ngoài ra hai ca có số đếm hồ sơ ngay trong tên
+(`P66`, `RT13`) đổi số.
+
+`ket-qua/lop-do.md` ghi tổng đỏ thêm 0. Năm trong sáu bước có số ca đạt bằng nhau ở hai cây:
+
+| Bước | Số ca đạt |
+|---|---|
+| scripts | 3 664 |
+| hooks | 80 |
+| plugins | 363 |
+| workflows | 1 036 |
+| ban-do | 1 |
+
+Bước còn lại là `dieu-phoi`: đạt 662 ở cả hai cây, đỏ đúng một ca ở cả hai cây.
+
+**Chỗ đỏ còn lại — không do dời bố cục:** `dieu-phoi: GT-07 tin-tu-den`. Đây là ca đo thời gian ở
+`tests/dieu-phoi/tin.test.mjs:932`: chênh trung vị giữa bản mới và bản cũ phải ≤ 20 ms.
+
+- Trong lượt đo, hai cây chạy bộ kiểm song song. Mỗi lần gọi mất khoảng 430–680 ms, chênh lên 58–87 ms, nên ca đỏ ở cả hai cây và
+  `dieu-phoi` thoát 1 ở cả hai cây.
+- Chạy riêng ca ấy, lần lượt từng cây, trên chính hai bản kéo của lượt, nó xanh ở cả hai: mỗi lần gọi khoảng 80–93 ms, chênh
+  8–11 ms.
+- Lượt §4.5 trên `3341b8dc` cũng chạy song song, nhưng ca này xanh và `dieu-phoi` thoát 0: đạt 663 ở cả hai cây. Ca này nhạy tải.
+  Nó không theo cây.
+
+Hệ quả cho thước: `thuoc-that.mjs --giu-khoa` vẫn thoát 1, vì vế «mọi bước thoát 0 ở cả hai cây» không đạt. Hai dòng nó báo là
+`bước dieu-phoi thoát 1 ở cây cũ` và `bước dieu-phoi thoát 1 ở cây mới`. Mọi vế khác của AC-4 đạt.
+
+B2 không sửa thước, và không sửa ca, vì ca là sản phẩm và chỉ sửa ở kho cũ. Hai lối còn mở:
+
+- **Lối (a):** một lượt đo dài nữa. Đây là lượt thứ hai, cần lời mới của chủ kho. Nó chỉ thông khi ca không gặp tải.
+- **Lối (b):** sửa ở tầng đúng, kho cũ. Hoặc nới ca GT-07 cho chịu được tải, hoặc để `chay-bo-kiem.sh` chạy hai cây lần lượt. Lối
+  thứ hai là sửa kịch bản `migration/`, nằm trong phần B2 được chạm, nhưng nó đổi thước nên phải có lời chủ kho.
+
+Khuyến nghị lối (b), sửa ca ở kho cũ. Lý do: ca đo thời gian sẽ đỏ trên mọi máy CI bận, không riêng đợt chuyển nhà.

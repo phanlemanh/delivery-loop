@@ -358,7 +358,6 @@
 1	dieu-phoi: GT-05-do dem-moi-ma
 1	dieu-phoi: GT-06 canh-chieu-do
 1	dieu-phoi: GT-06-do nuot-loi-gh
-1	dieu-phoi: GT-07 tin-tu-den
 1	dieu-phoi: GT-07-do bao-moi-lan
 1	dieu-phoi: GT-07-do cham
 1	dieu-phoi: GT-07-do chap-nhan-truoc
@@ -871,7 +870,7 @@
 1	plugins: P57 acceptance-init noi DUNG muc cuong che cua approvers
 1	plugins: P61 hai loi goi khop tren cay that; dot bien lam lech -> bat duoc
 1	plugins: P65 corpus 14 ca khop bang ghim
-1	plugins: P66 bao-tap: 0 mat, +116 dong criterion that, 0 rac
+1	plugins: P66 bao-tap: 0 mat, +117 dong criterion that, 0 rac
 1	plugins: P67 co judgment: 0 lat; dau trong code-span = trich dan
 1	plugins: P69 ca
 1	plugins: P70 moi contract cua kit dung '## Criteria'; doi chung duong bat duoc ban doi heading
@@ -994,7 +993,7 @@
 1	plugins: [RT10] hai tiền tố
 1	plugins: [RT11] ui/mobile + khai không-đo-được → cờ đỏ trên thẻ + cờ ở bộ quét, hồ sơ vẫn ở ô của nó; cli → không cờ
 1	plugins: [RT12] archived → đã đóng có hồ sơ; timebox hai dạng ngày; nghi thức nghiệm thu có mệnh đề sinh ra trạng thái đó
-1	plugins: [RT13] đọc-cũ: broken rỗng, khác biệt đúng khối; hồ sơ sinh sau mốc: 249
+1	plugins: [RT13] đọc-cũ: broken rỗng, khác biệt đúng khối; hồ sơ sinh sau mốc: 250
 1	plugins: [RT14] hồ sơ treo thoát bằng lối «không đo được» có vết; decision/người ký/ngày giữ nguyên
 1	plugins: [RT15] machine-cleared × chữ ký: hook hai chiều + lưới + bộ quét gọi hỏng; LỐI KÝ chạy thật theo thứ tự thân lệnh dạy
 1	plugins: [RT16] bản đồ ⇔ bộ quét đồng ô trên 8 fixture + hồ sơ thật; gỡ nhánh khong-do-duoc → phép so đỏ
@@ -1602,6 +1601,7 @@
 1	scripts: CT-1-do2
 1	scripts: CT-1-duong
 1	scripts: CT-10
+1	scripts: CT-10-do
 1	scripts: CT-2
 1	scripts: CT-2-do
 1	scripts: CT-2-do2
@@ -1663,7 +1663,7 @@
 1	scripts: CVS3 vetoOpenUnsigned của máy quét BẰNG tập tên dòng tổng của lưới
 1	scripts: CVS4 chiều đỏ: gỡ nhánh mới → lưới nói lại «cửa veto mở» cho hồ sơ đã ký
 1	scripts: CY1 _acceptance/config.yaml la YAML hop le voi bo doc chuan
-1	scripts: CY2 786 khoa executors: bo doc cua kit va bo doc chuan noi CUNG mot chuyen
+1	scripts: CY2 793 khoa executors: bo doc cua kit va bo doc chuan noi CUNG mot chuyen
 1	scripts: CY3 doi chung hai chieu: ban lanh XANH, ban tiem
 1	scripts: D01
 1	scripts: D02
@@ -1858,8 +1858,14 @@
 1	scripts: DV4a recheck MỚI trên MỌI evidence-report thật của repo -> 0 fail NGOÀI grandfather
 1	scripts: DV4b sanity: detector NHÌN THẤY section Re-pin cũ trên corpus thật
 1	scripts: DV4m mutant retro-enforce
+1	scripts: DV5 plugins/acceptance-gate/scripts/pre-merge-check.sh: diff so với base <sha> CHỈ THÊM
 1	scripts: DV5 plugins/acceptance-gate/scripts/recheck-evidence.cjs: diff so với base <sha> CHỈ THÊM
 1	scripts: DV5m mutant: bản sao sửa 1 dòng VIOLATION cũ → phép đo phải ĐỎ đích danh
+1	scripts: DV5q-co: cờ qua-dọn-nhà theo ma trận viết trước
+1	scripts: DV5q-do: cờ của ô gốc phẳng · cây phẳng, cùng văn bản → phép đo ĐỎ đích danh 2 dòng của DON_NHA_DOI
+1	scripts: DV5q-im: cờ của ô gốc phẳng · cây mới, đổi đúng 2 dòng của DON_NHA_DOI → phép đo rỗng
+1	scripts: DV5q-ngoai: cờ của ô gốc phẳng · cây mới, sửa thêm 1 dòng luật ngoài danh sách → ĐỎ đúng dòng ấy
+1	scripts: DV5qu: mỗi mục DON_NHA_DOI khớp đúng 1 dòng của bản gốc phẳng
 1	scripts: DV5u-mutant: một mục miễn trừ mơ hồ phải ĐỎ đích danh
 1	scripts: DV5u: không mục ALLOWED_REMOVALS nào MƠ HỒ
 1	scripts: EE1 vắng trường → 0, không lỗi
@@ -2526,6 +2532,7 @@
 1	scripts: KK-4-do
 1	scripts: KK-5 the-hoi
 1	scripts: KK-5-do
+1	scripts: KK-6 so-that
 1	scripts: KK-6 the-may-quyet
 1	scripts: KK-6-do
 1	scripts: KK-6-do so-that
@@ -2555,6 +2562,7 @@
 1	scripts: KL-8-nhay
 1	scripts: KL-9 bash
 1	scripts: KL-9 zsh
+1	scripts: KM-1
 1	scripts: KM-1-do
 1	scripts: KM-1-do2
 1	scripts: KM-1-do3
@@ -4410,6 +4418,8 @@
 1	scripts: [KK-4]
 1	scripts: [KK-5-do]
 1	scripts: [KK-5]
+1	scripts: [KK-6-do]
+1	scripts: [KK-6]
 1	scripts: [KK-7-do]
 1	scripts: [KK-7]
 1	scripts: [KK-8-do2]
@@ -4434,6 +4444,8 @@
 1	scripts: [KL-7-do3]
 1	scripts: [KL-7-do]
 1	scripts: [KL-7]
+1	scripts: [KL-8-do]
+1	scripts: [KL-8]
 1	scripts: [KL-9-do]
 1	scripts: [KL-9]
 1	scripts: [LIB-bam-tung-lop] đổi mỗi lớp
@@ -4463,6 +4475,7 @@
 1	scripts: [RN-4-do]
 1	scripts: [RN-4]
 1	scripts: [RN-6]
+1	scripts: additive-only.test.mjs
 1	scripts: ap-chinh-sach-lo-trinh.test.mjs
 1	scripts: ba-token-hop-le
 1	scripts: ban-do-khuon-roi-nhom.test.mjs
@@ -4471,6 +4484,7 @@
 1	scripts: bo-cuc.test.mjs
 1	scripts: bo-giai-nhay.test.mjs
 1	scripts: bo-qua-dinh-nghia-phep-do.test.mjs
+1	scripts: can-cu-s1.ca.mjs
 1	scripts: cat-luot-vung.test.mjs
 1	scripts: cay-doi-trong-luot.test.mjs
 1	scripts: cham-lai-khong-tu-doi.test.mjs
@@ -4486,6 +4500,7 @@
 1	scripts: cong-nguoi-doc-du-nguon.test.mjs
 1	scripts: consumer-esm.test.mjs
 1	scripts: core-untouched.test.mjs
+1	scripts: cua-tin-hieu-giua-chien-dich.test.mjs
 1	scripts: cua-tin-hieu-goc-moi-worktree.test.mjs
 1	scripts: cua-veto-sau-chu-ky.test.mjs
 1	scripts: dai-tom-tat-dem-dung.test.mjs
@@ -4524,8 +4539,11 @@
 1	scripts: hskt.test.mjs
 1	scripts: htkd.test.mjs
 1	scripts: kho-cam-ket-co-lo-trinh.test.mjs
+1	scripts: kho-moi-cai-goi-road-map.test.mjs
 1	scripts: kho-tri-thuc-va-lint.test.mjs
+1	scripts: khoi-khuon-tren-the-cong.test.mjs
 1	scripts: khuon-doc-ban-do-that.test.mjs
+1	scripts: khuon-loi.test.mjs
 1	scripts: kiem-ban-cai-loi-sua.test.mjs
 1	scripts: l1-khoi.test.mjs
 1	scripts: label-occlusion.test.mjs
@@ -4787,7 +4805,7 @@
 1	workflows: CTN-AC5 mot dong run-log kind chot-truong-nguoi, bon so bang dem doc lap
 1	workflows: CTN-AC5-im khong doi gi -> khong dong run-log nao
 1	workflows: CTN-AC6-dot-bien ban sao cham dong verdict -> phep im bao «cham dong ngoai bon khoa»
-1	workflows: CTN-AC6-kit chieu im tren 235 bao cao kit: chi dong bon khoa o vi tri truong doi
+1	workflows: CTN-AC6-kit chieu im tren 236 bao cao kit: chi dong bon khoa o vi tri truong doi
 1	workflows: CTN-AC7-can-vang ho so goc vang o moi ref -> ma rieng + «khong doc duoc o day»
 1	workflows: CTN-AC7-khong-git goc khong phai kho git -> ma rieng + «khong doc duoc o day»
 1	workflows: CTN-AC7-lanh doi chung duong: du ref, du hs goc -> thoat 0
