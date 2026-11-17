@@ -195,3 +195,23 @@ Nguyên nhân từng nhóm còn thiếu (đọc từ nhật ký cây mới; nguy
   dòng «kho chưa cài road-map ở phạm vi kho — không tạo lộ trình». Mỗi tệp một khoá cấp tệp (K4-LT) và một khoá ca (B2).
 - **K4-DN 4 — đổi nghĩa, ngoài vòng.** DV5/`additive-only.test.mjs` so `pre-merge-check.sh` với base lịch sử (dòng chú thích
   nhắc `tests/scripts/hang-pr.test.mjs` đổi theo luật đường); KK-6 so-that/`can-cu-s1.ca.mjs` đọc sổ thật qua lịch sử.
+
+### 4.6 CT-10-do và KM-1 — chỉ sửa đúng tầng được ở kho cũ (17/11, không phải lượt đo)
+
+Phiên giữ đợt giao (sau lời chủ kho «Mở vòng bốn»): sửa hai ca trong kịch bản B2 nếu làm được, nếu không thì báo kèm căn cứ.
+Kết luận: **không sửa ở kịch bản**. Lý do: cả hai tệp nằm trong `tu-dung-duong.txt` (vòng ba khai tự đúng đường, mục 2 của
+`gui-b2.md`). Với tệp loại này, bước 6 chỉ áp luật tên, và từ chối mọi mục vá (`vá trên tệp tự đúng đường`, ca
+BK-AC1-tu-dung-va). Lỗi nằm ở một chữ viết cứng trong chính tệp kiểm. Vá chữ đó ở kho mới sẽ làm xanh kho mới, trong khi tệp ở
+kho cũ vẫn buộc vào bố cục cũ — tức đúng loại xanh mà cổng ấy được dựng để chặn.
+
+| Ca | Tệp kiểm | Nguyên nhân (đọc + chạy riêng trên cây dựng sẵn) | Sửa ở kho cũ (một dòng) |
+|---|---|---|---|
+| KM-1 | `tests/scripts/kho-moi-cai-goi-road-map.test.mjs:24` | Sản phẩm in `DONG_CHUA_CAI` với tên gói theo vai (`HG.tenTheoVai('lo-trinh')` → `roadmap` ở kho mới); tệp kiểm viết cứng `'kho chưa cài road-map ở …'`. Luật tên của kịch bản chỉ đổi dạng có cấu trúc (`road-map:`, `road-map@`, `--plugin road-map`, …), cố ý không đổi chữ trần trong câu. | `` const CHUA_CAI = `kho chưa cài ${createRequire(import.meta.url)(tep('lib/ho-goi.cjs', { thuMuc: KIT })).tenTheoVai('lo-trinh')} ở phạm vi kho — không tạo lộ trình`; `` |
+| CT-10-do | `tests/scripts/cua-tin-hieu-giua-chien-dich.test.mjs:567` | Chiều đỏ tiêm `'../../scripts/tin-hieu-khoa.cjs'`, đường tương đối theo bố cục cũ. Ở kho mới, `plugins/dispatch/scripts/../../scripts/` không có tệp, nên bản sao hỏng ngay khi `nap(...)` — ngoài khối `try` của `ca10` — và lỗi không mang thông điệp đã ghim. | Chuỗi tiêm: `` `import _khoaKit from '${path.relative(path.dirname(raTep(KIT, CUA)), raTep(KIT, 'scripts/tin-hieu-khoa.cjs'))}';\nexport const CAU_DA_GHI` `` |
+
+Đã thử (bản chép `_thu-*.test.mjs` cạnh tệp gốc trong cây đo `ld3b-0618`, đã xoá sau khi chạy; node 24):
+- cây mới `32a5506f`: KM 38/38 (KM-1, KM-1-do, -do2, -do3 xanh), CT 43/43 (CT-10, CT-10-do xanh);
+- cây cũ `3341b8dc`: KM 38/38, CT 43/43.
+
+Bản gốc trên cây mới: KM 37/38 (KM-1 đỏ), CT 42/43 (CT-10-do đỏ). Không có lối nào ở kho mới mà không đi ngược lời khai của vòng
+ba: gỡ hai tệp khỏi danh sách tự đúng đường để vá thì phải áp lại luật đường lên cả tệp, mà hai tệp đã tự dịch qua `tests/bo-cuc.mjs`.
