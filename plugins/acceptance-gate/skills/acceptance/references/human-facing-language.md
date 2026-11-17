@@ -1,6 +1,6 @@
 # Ngôn ngữ mặt người — luật bắt buộc khi trình cho người
 
-Nguồn quyết định: `docs/specs/workflow-v2-spec.md` §4.1 (Manh, 2026-08-01).
+Nguồn quyết định: `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/specs/workflow-v2-spec.md` §4.1 (Manh, 2026-08-01).
 File này là **bản thi hành**: bộ dựng thẻ, bảng tóm tắt kế hoạch và báo cáo
 checkpoint NẠP file này trước khi viết chữ đầu tiên cho người đọc. Mỗi lần
 render là một lần đọc — luật không sống trong trí nhớ.

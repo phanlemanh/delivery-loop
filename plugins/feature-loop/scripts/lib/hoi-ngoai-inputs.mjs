@@ -5,7 +5,7 @@
 //
 // Hai bộ đọc nạp module này, không bộ nào giữ bản sao khuôn:
 //   · feature-loop/scripts/s4-args.mjs — răng: khớp → exit 2, không sinh args;
-//   · docs/findings/assets/2026-10-01-quet-judgment-hoi-ngoai-inputs.cjs — lệnh
+//   · https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/findings/assets/2026-10-01-quet-judgment-hoi-ngoai-inputs.cjs — lệnh
 //     đếm ngưỡng trên mọi kho (chặn oan · sót).
 //
 // Hai khuôn chép NGUYÊN VĂN từ script quét của bản ghi phát hiện (commit

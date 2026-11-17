@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // lo-trinh.mjs — ổ cắm ĐỌC tệp ý định của kho (lộ trình) + suy trạng thái từ hồ sơ + vẽ trang.
-// Hồ sơ: _acceptance/viec-ke-theo-plan/ · design: docs/superpowers/specs/2026-10-02-viec-ke-theo-plan-design.md
+// Hồ sơ: _acceptance/viec-ke-theo-plan/ · design: https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-02-viec-ke-theo-plan-design.md
 // Vòng sửa trên dữ liệu thật: _acceptance/lo-trinh-tren-du-lieu-that/ · design 2026-10-03-…-design.md —
 // so lời khai theo NHÓM, nối hai chiều hàng ↔ hồ sơ (`lo_trinh_ma`), nhiều lộ trình mỗi kho, mở ô
 // cơ hội từ hàng (`--mo-o`), dòng thẻ start dựng sẵn.

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // design-floor-s1.mjs — bước 0d của S1 trong feature-loop: định tuyến tri thức thiết kế có trần, kiểm kế hoạch dùng lại,
-// flow lint. Hồ sơ design-floor-moc-s0-s1 (FL4), thiết kế docs/superpowers/specs/2026-10-27-design-floor-moc-s0-s1-design.md.
+// flow lint. Hồ sơ design-floor-moc-s0-s1 (FL4), thiết kế https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-27-design-floor-moc-s0-s1-design.md.
 //
 // Kho M0 (scripts/design-floor-bac.mjs) → không in, không ghi. M1–M3 → ghi ĐÚNG hai thứ, cả hai trong hồ sơ:
 // `_acceptance/<slug>/design-floor.json` (thẻ Cổng Phạm vi đọc nó) và một dòng nối vào `usage-report.md` (số token đã nạp).

@@ -368,7 +368,7 @@ const bullets = arr => {
 //     nghiêng. Ba vòng trước chỉ đặt chốt ở dấu mở nên hình dạng đóng-sau-gạch
 //     -chéo vẫn lọt.
 //
-// Kỳ vọng cho TỪNG hình dạng nằm ở bộ kiểm P161 (tests/plugins/run-tests.sh),
+// Kỳ vọng cho TỪNG hình dạng nằm ở bộ kiểm P161 (https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/plugins/run-tests.sh),
 // và bảng hình dạng ở đó RÚT TỪ hồ sơ thật chứ không do người viết tự nghĩ.
 const MASK = '\u0000';
 const stripMd = s => {
@@ -527,7 +527,7 @@ const pl = plain || {};
 // Sổ ghi trước khuôn d-<UTC>-<n> có thể nhiều dòng chung một mã (release-2-11-0: 8 dòng/1 mã); tra
 // bằng mã trần thì một câu dịch hiện trên MỌI dòng cùng mã. Mã duy nhất → khoá = mã (overlay cũ đọc
 // y nguyên); mã trùng → `<id>#<k>` theo thứ tự dòng SỔ (không theo thứ tự hiển thị), overlay mã trần
-// của mã trùng bị bỏ qua — đường đọc-cũ in chữ gốc của sổ. Lưới: tests/scripts/gate-card-dec-key.test.mjs.
+// của mã trùng bị bỏ qua — đường đọc-cũ in chữ gốc của sổ. Lưới: https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/scripts/gate-card-dec-key.test.mjs.
 const decKeys = (() => {
   const total = new Map(); const seen = new Map(); const keys = new Map();
   for (const e of decsAll) total.set(e.id, (total.get(e.id) || 0) + 1);

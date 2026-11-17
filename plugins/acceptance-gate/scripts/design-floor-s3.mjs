@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // design-floor-s3.mjs — cuối S3 của feature-loop: autofix trang HTML mà vòng chạm, chạy các lệnh sinh lại tệp dẫn xuất
 // kho đã khai, rồi commit TRONG S3 — trước khi hợp đồng sang implemented (luật không ghi sau S4, ADR 0007). Hồ sơ
-// design-floor-moc-s3-s4 (FL5), thiết kế docs/superpowers/specs/2026-10-28-design-floor-moc-s3-s4-design.md.
+// design-floor-moc-s3-s4 (FL5), thiết kế https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-28-design-floor-moc-s3-s4-design.md.
 //
 //   M0 → không in, không ghi. M1–M3:
 //   1. chụp trạng thái cây (tệp đã sửa và tệp chưa theo dõi) — việc dở có sẵn không bị đụng, không vào commit máy;

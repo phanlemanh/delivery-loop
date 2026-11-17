@@ -2,7 +2,7 @@
 
 > Khuôn MỘT nguồn của kho tri thức: bên ghi (`/knowledge:ingest`, người) và bên đọc (`scripts/tri-thuc.mjs`, dòng
 > «Nguồn:» của ô, bước thiết kế) cùng rút các khối marker dưới đây lúc chạy. Đổi một khối là đổi cả hai bên.
-> Thiết kế: `docs/findings/2026-10-24-tang-tri-thuc-llm-wiki.md` (lượt cắt `tri-thuc-2410`, hàng TT1).
+> Thiết kế: `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/findings/2026-10-24-tang-tri-thuc-llm-wiki.md` (lượt cắt `tri-thuc-2410`, hàng TT1).
 >
 > Kho khai một lần trong `_acceptance/config.yaml`:
 >

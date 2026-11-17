@@ -89,7 +89,7 @@ function summarize(findings, failOn) {
 //   chu-gradient       the text is painted by a clipped background (background-clip:text or a transparent
 //                      -webkit-text-fill-color) — its contrast against any one colour is undefined.
 // Each branch is ONE line tagged `// nhánh: <name>`: the mutation cases in
-// tests/design-eval/khong-do-duoc.test.mjs remove exactly that line and expect exactly their cases to go red.
+// https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/design-eval/khong-do-duoc.test.mjs remove exactly that line and expect exactly their cases to go red.
 export const LY_DO = { css: 'css-khong-ap-duoc', nen: 'nen-to-tien-bi-bo', gradient: 'chu-gradient' };
 
 function parseRgb(s) {

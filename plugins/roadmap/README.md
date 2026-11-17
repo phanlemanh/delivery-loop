@@ -62,4 +62,4 @@ Khi bật, hồ sơ mới không thuộc hàng nào bị chặn lúc ghi tệp m
 máy tự thêm hàng. Tắt: `chan: false` hoặc xoá dòng. Giới hạn: tệp ghi bằng dòng lệnh né được kiểm lúc ghi — lưới
 trước-merge bắt lúc gộp.
 
-Hướng thiết kế: `docs/findings/2026-10-14-kien-truc-roadmap-plugin.md` (B′) · ADR 0025.
+Hướng thiết kế: `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/findings/2026-10-14-kien-truc-roadmap-plugin.md` (B′) · ADR 0025.

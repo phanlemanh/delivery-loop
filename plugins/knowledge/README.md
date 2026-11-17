@@ -10,4 +10,4 @@ Vỏ lệnh của tầng tri thức theo LLM Wiki (đợt `tri-thuc-2410`). Mã 
 | `/knowledge:health` | Kiểm kho tri thức — sáu lỗi cấu trúc, chỉ đọc |
 | `/knowledge:ingest` | Ghi nghiên cứu, thảo luận của phiên vào kho tri thức — tài liệu thô bất biến, trang tóm, commit tại máy, không vào chỗ công khai |
 
-Thiết kế: `docs/findings/2026-10-24-tang-tri-thuc-llm-wiki.md`.
+Thiết kế: `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/findings/2026-10-24-tang-tri-thuc-llm-wiki.md`.

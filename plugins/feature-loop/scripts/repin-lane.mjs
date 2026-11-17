@@ -113,7 +113,7 @@ agRoot = (() => { try { return fs.realpathSync(agRoot); } catch { return die(`--
 // ghi, từ cùng gốc) và sàn ngữ nghĩa readSignedReportFor: nó sinh cùng luật hai
 // vế của checkRepinEvals, evidence-core thiếu nó sẽ từ chối mã khác 0 đã khai
 // SAU khi làn đã ghi. Kiểm export có mặt, không kiểm chuỗi version: lớp vendored
-// không mang plugin.json. Tệp ca tests/scripts/repin-lane-lop-cu.test.mjs rút
+// không mang plugin.json. Tệp ca https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/scripts/repin-lane-lop-cu.test.mjs rút
 // hàng từ CHÍNH khối này; thêm một lời gọi vào bộ máy mà không thêm hàng là ca
 // GL03 đỏ gọi tên lời gọi đó.
 // <<<AG-ENGINE-TABLE

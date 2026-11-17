@@ -34,7 +34,7 @@ quyết định; đừng để người ký cảm thấy họ phải bảo vệ 
 - Sản phẩm thật đã chạy sau flag để người dự bấm được — điều kiện này đọc từ
   **nhật-ký-vấp** của Lái-thử Người-lạ, `_acceptance/<slug>/stranger-drive.md`
   (khuôn: `${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}/skills/acceptance/references/stranger-drive-template.md`;
-  nghi thức: `docs/reference/lai-thu-nguoi-la.md` của kit), không từ lời khai. Khoá máy đọc
+  nghi thức: `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/reference/lai-thu-nguoi-la.md` của kit), không từ lời khai. Khoá máy đọc
   từ nhật-ký (khai một chỗ, răng đối chiếu với khuôn):
   <!-- STRANGER-KEYS-READ: chan slug ran_at variant -->
   - `chan: 0` **và** `slug` khớp slug phiên **và** `ran_at` không cũ hơn

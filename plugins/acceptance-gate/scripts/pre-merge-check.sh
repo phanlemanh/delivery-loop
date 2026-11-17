@@ -12,7 +12,7 @@
 # Dùng CHÍNH bộ khớp, bộ đọc danh sách và khối «Phân loại diff-chịu-cổng» bên
 # dưới. Không chứng minh được thì `cham_vat=true` (nghi ngờ thì chạy đủ). Mọi
 # dòng của chế độ nằm giữa cặp marker HANG-PR: cắt hết các vùng ấy là được đúng
-# cổng không cờ (ca AC-8 của tests/scripts/hang-pr.test.mjs canh).
+# cổng không cờ (ca AC-8 của https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/scripts/hang-pr.test.mjs canh).
 # <<<HANG-PR-KHOA
 # hang: T1 ho-so T2 T3 khong-ro
 # cham_vat: true false

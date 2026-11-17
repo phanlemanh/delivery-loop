@@ -1,6 +1,6 @@
 # Gói `dieu-phoi` — tầng máy của Điều phối – Thợ
 
-Spec phương pháp: `docs/superpowers/specs/2026-10-05-orchestrator-workers-hai-tang-design.md` của kit.
+Spec phương pháp: `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-05-orchestrator-workers-hai-tang-design.md` của kit.
 Mã này **không** chứa gì riêng của kho. Mọi giá trị riêng nằm trong `dieu-phoi.config.json` và
 `hang-viec.json` của đợt.
 
@@ -188,7 +188,7 @@ Giới hạn đã khai, kèm ngưỡng mở lại:
   công cụ Write thay `cat <<EOF`. Luật «thân là dữ liệu» đã dựng rồi thu lại ở hồ sơ `dieu-phoi-lop-mod`: hai lượt
   chấm liền tìm ra lệnh S4 lọt qua bộ đọc đối số của trình thông dịch (cờ `-o pipefail`, chuyển hướng `2>&1` trên
   dòng mở). Ngưỡng mở lại (khuôn danh sách đóng bên tiêu thụ, ở hạt giống
-  `docs/plans/2026-10-11-hat-giong-lop-mod-ve-sau-dp6.md`): một lần đo lại bản ghi thấy > 10 lời gọi heredoc chặn
+  `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/plans/2026-10-11-hat-giong-lop-mod-ve-sau-dp6.md`): một lần đo lại bản ghi thấy > 10 lời gọi heredoc chặn
   nhầm.
 - **Mù — chưa đo: hộp quyền của tác tử Workflow có tới giám sát không.** Hook chờ người nghe sự kiện `Notification`
   (`permission_prompt`) của phiên; hộp quyền bật ra bên trong một tác tử của Workflow (lượt chấm S4 chạy như thế)
@@ -199,14 +199,14 @@ Giới hạn đã khai, kèm ngưỡng mở lại:
   chưa mang luật này; kho đã có nó trong luật đợt của mình thì giữ nguyên khi chuyển. Giữ cho tới khi phép đo trả
   «tới». Ngưỡng: đợt thử có ≥ 1 lượt S4 đứng vì
   hộp quyền mà không có tệp chờ người. Phép đo đã soạn ở hạt giống
-  `docs/plans/2026-10-11-hat-giong-lop-mod-ve-sau-dp6.md` (câu 1 §12.3).
+  `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/plans/2026-10-11-hat-giong-lop-mod-ve-sau-dp6.md` (câu 1 §12.3).
 - **Một số dạng cú pháp shell làm lệnh S4 thật lọt khoá** (đo lại trên bộ phân loại của bản này, 12/10):
   `--help` nằm trong chú thích `#` (miễn trừ `--help` đọc mọi từ sau tên script), here-string `<<<`,
   `env -S'<lệnh>'` dính liền cờ, `bash -o pipefail -c '…'` (có từ trước DP6). Giá khi lọt: hai S4 chạy chồng
   trên một máy — chậm hơn và dễ chạm trần thời gian, **không sai kết quả** (mỗi lượt chấm vẫn chấm đúng cây của
   nó). Ngược lại `command -v <đường>/repin-lane.mjs` bị chặn nhầm. Heredoc kèm chuyển hướng (`bash <<'EOF' 2>&1 |
   tail`) từng lọt dưới luật «thân là dữ liệu»; luật ấy đã thu lại nên dạng này nay bị chặn. Mỗi mục một dòng ở
-  `docs/research/known-limits-ledger.tsv` (hồ sơ `dieu-phoi-lop-mod`, Ngoài-1/2/3/18/27/29).
+  `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/research/known-limits-ledger.tsv` (hồ sơ `dieu-phoi-lop-mod`, Ngoài-1/2/3/18/27/29).
 - Bộ phân loại là bộ đọc cú pháp shell rút gọn: biến mở rộng thành tên script, `eval`, alias, lệnh bọc viết đủ
   đường (`/usr/bin/env -u X …`), cờ gộp (`env -iu X`) và `gtimeout` không được hiểu. Ngưỡng: ≥ 1 lời gọi S4
   thật lọt qua hook trong đợt thử.
@@ -215,7 +215,7 @@ Giới hạn đã khai, kèm ngưỡng mở lại:
   đọc cú pháp» đã đổi da ba lần trong một vòng (vỏ bọc mang cờ → thân heredoc cho trình thông dịch kèm cờ mang giá
   trị → heredoc kèm chuyển hướng), nên vá thêm bộ phân loại là đuổi theo tháp. Ngưỡng mở thành việc: ≥ 1 lượt S4
   thật lọt khoá sau khi DP6 gộp, đếm ở sổ chạy của đợt thử. Hạt giống: mục «S4 tự xưng» của
-  `docs/plans/2026-10-11-hat-giong-lop-mod-ve-sau-dp6.md`.
+  `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/plans/2026-10-11-hat-giong-lop-mod-ve-sau-dp6.md`.
 - Tệp chờ người do hộp xin quyền ghi chỉ gỡ khi người gửi một lời nhắc ở phiên thợ (`UserPromptSubmit`); duyệt
   hộp mà không gõ gì thì tệp ở lại tới lời nhắc kế, nên «việc chờ» có thể còn một mục đã xong. Gỡ theo lời gọi
   công cụ kế tiếp cần biết hộp thuộc tác tử nào — chưa đo (hạt giống, câu 1 §12.3). Ngưỡng: đợt thử có ≥ 1 lần

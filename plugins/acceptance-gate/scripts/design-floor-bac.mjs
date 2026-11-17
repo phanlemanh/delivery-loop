@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // design-floor-bac.mjs — S0 của feature-loop đọc bậc design-floor của kho (M0–M3). Hồ sơ design-floor-moc-s0-s1 (FL4),
-// thiết kế docs/superpowers/specs/2026-10-27-design-floor-moc-s0-s1-design.md. CHỈ ĐỌC: không ghi tệp nào.
+// thiết kế https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-27-design-floor-moc-s0-s1-design.md. CHỈ ĐỌC: không ghi tệp nào.
 //
 // Bậc đi theo khai báo của kho trong _acceptance/config.yaml, xét từ cao xuống; khai báo hỏng không nâng bậc:
 //   M3  design_floor.niem_phong khác rỗng, trên nền M2 (người ghi — lệnh này không có đường ghi)

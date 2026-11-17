@@ -10,7 +10,7 @@ gốc plugin — chính là thư mục này.
 **Vì sao bộ này tồn tại:** kit có 23 file SKILL.md/command là hành vi thật,
 nhưng cả 6 suite test chỉ đo được script và fixture — không suite nào chạy một
 skill rồi chấm đầu ra. Đây là tầng thước còn thiếu; hồ sơ đầy đủ ở
-[docs/findings/2026-08-30-ra-soat-tinh-nang-moi-anthropic.md](../docs/findings/2026-08-30-ra-soat-tinh-nang-moi-anthropic.md).
+[https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/findings/2026-08-30-ra-soat-tinh-nang-moi-anthropic.md](https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/findings/2026-08-30-ra-soat-tinh-nang-moi-anthropic.md).
 
 ## Lệnh chạy dự kiến (khi được bật)
 

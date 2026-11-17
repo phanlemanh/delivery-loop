@@ -5,7 +5,7 @@ feature rồi điền. **GIỮ NGUYÊN các dòng marker HTML-comment** (cả
 `UX-SPEC-TEMPLATE` lẫn `UX-STATE-TABLE`): chúng vô hình khi render nhưng là mỏ
 neo máy-đọc CHO VIỆC SAU — phép đo khớp vòng «trạng thái khai trước ↔ bài kiểm
 đo nó» chưa tồn tại (đề bài + điều kiện mở lại:
-`docs/plans/2026-08-24-hat-giong-khop-vong-dac-ta-ux.md`). Bản này KHÔNG có lưới
+`https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/plans/2026-08-24-hat-giong-khop-vong-dac-ta-ux.md`). Bản này KHÔNG có lưới
 máy nào cho đặc tả UX: chốt chặn là MẮT NGƯỜI duyệt tại Cổng Phạm vi.
 
 Ba dây nối máy-đọc đi kèm (S1 của feature-loop ghi cả ba):

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // tin-hieu.mjs — cửa tín hiệu của kho: bộ đọc tín hiệu, bộ đọc bản gom, răng phủ «mỗi tín hiệu ở đúng
 // một chỗ», và đường đi tín hiệu → nhóm → hàng → hồ sơ cho người gửi. Hồ sơ _acceptance/cua-tin-hieu-gom-nhom/
-// (hàng L3), design docs/superpowers/specs/2026-10-11-cua-tin-hieu-gom-nhom-design.md.
+// (hàng L3), design https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-11-cua-tin-hieu-gom-nhom-design.md.
 //
 // CHỈ ĐỌC: không ghi tệp nào, không gọi mô hình. Việc PHÁN (tín hiệu nào vào nhóm nào, tên nhóm) là của
 // phiên theo skill gom-tin-hieu; mã này chỉ kiểm và vẽ (kit render, không soạn).

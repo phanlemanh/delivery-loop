@@ -1,7 +1,7 @@
 // Khung lớp mod của gói (spec workflow §12.1, §16 T11; design DP4 «khung mod»). Claude Code nhận ĐÚNG MỘT module mod
 // mỗi gói (`hooks.json` → `modules`), nên gói có một `hooks/mod/register.ts` chỉ gọi từng PHẦN `hooks/mod/<phần>.ts`.
 // Mỗi phần khai ĐÚNG các sự kiện nó được nghe trong khối marker dưới — DP6 và các hàng sau thêm một dòng cho phần
-// của mình. Răng: `kiemKhungMod` (ca node DP4-13) và `tests/dieu-phoi/kiem-mod.mjs` (đối chiếu thêm với
+// của mình. Răng: `kiemKhungMod` (ca node DP4-13) và `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/dieu-phoi/kiem-mod.mjs` (đối chiếu thêm với
 // `claude plugin validate`). Luật an toàn: mod của kit không bao giờ trả lời «cho phép» thay người.
 import fs from 'node:fs';
 import path from 'node:path';

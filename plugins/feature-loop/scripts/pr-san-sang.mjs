@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // pr-san-sang.mjs — PR sẵn sàng NGAY lúc trình thẻ Cổng Bằng chứng (hồ sơ ky-den-gop, hạng H; đề xuất 5 của hạt giống
-// docs/plans/2026-10-11-hat-giong-northstar-tu-dot-crm-sau-14-10.md, «PR nháp tới lúc trình Cổng 2»).
+// https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/plans/2026-10-11-hat-giong-northstar-tu-dot-crm-sau-14-10.md, «PR nháp tới lúc trình Cổng 2»).
 //
 // Vì sao tồn tại: CI của PR chạy SAU chữ ký thì người ký xong vẫn chờ CI rồi mới gộp được — đoạn ký → gộp không có
 // thước, không có chủ máy (một kho tiêu thụ 19–23/10: PR mở → gộp trung vị 8,3 giờ). Lệnh này đẩy nhánh và chuyển PR sang sẵn sàng

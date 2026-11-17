@@ -8,7 +8,7 @@
 // luật đổi chữ sẽ không mang nó sang.
 //
 // Bên đọc: scripts/plugin-declare.mjs, scripts/lo-trinh-khoi-tao.mjs (khi gói không mang marketplace.json cạnh nó),
-// lib/chan-lo-trinh.cjs, scripts/start-scan.mjs. Răng: tests/scripts/mot-nguon-ten-va-hop-thu.test.mjs (GN-1) giữ bảng
+// lib/chan-lo-trinh.cjs, scripts/start-scan.mjs. Răng: https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/scripts/mot-nguon-ten-va-hop-thu.test.mjs (GN-1) giữ bảng
 // ≡ .claude-plugin/marketplace.json — cùng tên theo cùng thứ tự, cùng tập bật-theo-lựa-chọn, cùng tên chợ.
 const CHO = 'delivery-loop';
 const NGUON_CHO = { source: 'github', repo: 'phanlemanh/delivery-loop' };

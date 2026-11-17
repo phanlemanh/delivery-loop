@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Sinh workspace tối thiểu cho ca đo — fixture do code sinh (luật kit), cùng
-# khuôn với fixture gate-card trong tests/scripts/run-tests.sh.
+# khuôn với fixture gate-card trong https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/scripts/run-tests.sh.
 set -euo pipefail
 d="_acceptance/gfeat"
 mkdir -p "$d"

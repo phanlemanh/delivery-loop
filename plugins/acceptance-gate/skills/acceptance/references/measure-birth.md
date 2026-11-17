@@ -98,7 +98,7 @@ chạy → xanh; CH2 chỉ đổi đích sang `evidence/` của hồ sơ đã k�
 
 ## Bảng lớp lỗi — khuôn phải chặn được đúng những ca này
 
-Nguồn: `docs/research/known-limits-ledger.tsv` (sổ vòng đời corpus
+Nguồn: `https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/research/known-limits-ledger.tsv` (sổ vòng đời corpus
 known-limits; cột `class`). Mỗi lớp một ca đại diện còn SỐNG.
 
 Bảng này **không phải bản chép tay**: case `P177` buộc nó khớp HAI CHIỀU với

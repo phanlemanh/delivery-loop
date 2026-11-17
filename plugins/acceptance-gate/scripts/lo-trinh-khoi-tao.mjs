@@ -2,7 +2,7 @@
 // lo-trinh-khoi-tao.mjs — bước 5d của /acceptance-gate:acceptance-init (hồ sơ kho-moi-cai-goi-road-map, hàng RM4,
 // nấc 2 của ADR 0025): kho đã chọn gói `road-map` thì có sẵn tệp lộ trình rỗng đúng khuôn, khoá cấu hình, miễn trừ
 // trang, bản chép CI và trang — `product-map.mjs --check` xanh ngay ở commit khởi tạo. Thiết kế:
-// docs/superpowers/specs/2026-10-15-kho-moi-cai-goi-road-map-design.md.
+// https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-15-kho-moi-cai-goi-road-map-design.md.
 //
 // Bật CHỈ khi `.claude/settings.json` của kho (tệp đội commit) khai `enabledPlugins["roadmap@<marketplace>"] === true`;
 // tên gói và tên marketplace rút từ `.claude-plugin/marketplace.json` của gói. `settings.local.json` và phạm vi người

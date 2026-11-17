@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // tri-thuc-ghi.mjs — bên ghi của kho tri thức (tầng tri thức theo LLM Wiki). Hồ sơ ghi-tri-thuc (TT2), thiết kế
-// docs/superpowers/specs/2026-10-24-ghi-tri-thuc-design.md. Bên đọc scripts/tri-thuc.mjs giữ chỉ-đọc; tệp này nạp nó.
+// https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-24-ghi-tri-thuc-design.md. Bên đọc scripts/tri-thuc.mjs giữ chỉ-đọc; tệp này nạp nó.
 //
 // Khuôn một nguồn: skills/acceptance/references/tri-thuc-template.md — khối TRI-THUC-RAW (nguon.md), -RAW-DONG (dòng tệp),
 // -TRANG (frontmatter trang), -LOAI (loại trang), -NGUON (năm loại nguồn), -LUAT (TRI-THUC.md) rút LÚC CHẠY.

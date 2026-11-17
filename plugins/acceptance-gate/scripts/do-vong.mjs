@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // do-vong.mjs — đo giờ máy, giờ chờ và token thật của MỘT vòng từ bản ghi phiên Claude Code (hồ sơ lo-trinh-gio-may, AC-6/7).
-// Design: docs/superpowers/specs/2026-10-15-lo-trinh-gio-may-design.md.
+// Design: https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-15-lo-trinh-gio-may-design.md.
 //
 //   node scripts/do-vong.mjs --root <kho> --slug <s> [--write] [--projects <dir>] [--den <ISO>]
 //     In MỘT dòng JSON `kind:"gio-may"`; `--write` nối nó vào _acceptance/<s>/run-log.jsonl.

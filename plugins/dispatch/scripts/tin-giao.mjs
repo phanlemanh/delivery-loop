@@ -9,7 +9,7 @@ import { docPha } from './pha.mjs';
 import { DA_THONG } from './phat-lich.mjs';
 import { docVai } from './vai.mjs';
 
-// Chép từ hạt giống docs/plans/2026-10-17-hat-giong-luat-giao-tiep-giua-cac-phien.md §4.5.
+// Chép từ hạt giống https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/plans/2026-10-17-hat-giong-luat-giao-tiep-giua-cac-phien.md §4.5.
 export const DIEM_HOI = 'Phải HỎI (khai chặn): sắp chạm ngoài ranh giới · đổi lời một tiêu chí đã ký · việc khó đảo (gộp, cắt bản, xoá, đẩy lên kho khác) · hai nguồn nói trái nhau · lệnh giai đoạn trái với trạng thái git. Không hỏi: mọi thứ suy được từ ý định cộng luật đã khai cộng chính sách chủ kho.';
 export const NHAN_LOI_GIAO = ['Ý định', 'Kết quả', 'Ranh giới', 'Quyền', 'Điểm phải hỏi', 'Báo về'];
 // Trạng thái «đã xong» của hồ sơ: MỘT nguồn với bộ phát lịch.

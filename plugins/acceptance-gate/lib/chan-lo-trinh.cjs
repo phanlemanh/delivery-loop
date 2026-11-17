@@ -1,7 +1,7 @@
 // chan-lo-trinh.cjs — MỘT bộ đọc cho luật «kho cam kết có lộ trình thì hồ sơ mới phải thuộc một hàng» (hồ sơ
 // kho-cam-ket-co-lo-trinh, hàng RM5, nấc 4 + nấc 3 của ADR 0025). Ba bên gọi: hook ghi tệp (lúc MỞ hồ sơ), lưới
 // trước-merge (lúc GỘP, chế độ dòng lệnh dưới đây), `lo-trinh.mjs --them-hang` (nấc 3). Thiết kế:
-// docs/superpowers/specs/2026-10-16-kho-cam-ket-co-lo-trinh-design.md.
+// https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-16-kho-cam-ket-co-lo-trinh-design.md.
 //
 // BẬT = gói `road-map` bật ở `.claude/settings.json` của kho (tệp đội commit; local và phạm vi người dùng KHÔNG tính —
 // cùng luật `docBat` của scripts/lo-trinh-khoi-tao.mjs, RM4) VÀ `lo_trinh.chan: true` trong `_acceptance/config.yaml`.

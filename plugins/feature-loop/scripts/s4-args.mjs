@@ -2,7 +2,7 @@
 // s4-args.mjs — sinh TRỌN args cho workflow S4 (acceptance-verify.js) bằng máy.
 // Vì sao tồn tại: workflow script không có filesystem nên args phải chuẩn bị
 // từ ngoài; bản soạn-tay-theo-văn-xuôi là lớp lỗi có đo (điều tra 29/08 —
-// docs/findings/2026-08-29-dieu-tra-luat-hoi-tu.md). Script này fail-CLOSED:
+// https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/findings/2026-08-29-dieu-tra-luat-hoi-tu.md). Script này fail-CLOSED:
 // bất kỳ nguồn nào thiếu/ref nào không giải được → exit 2 kèm tên phần hỏng,
 // KHÔNG sinh tệp, KHÔNG đoán.
 //

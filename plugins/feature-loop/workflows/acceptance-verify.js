@@ -112,7 +112,7 @@ const blockedEarly = (cmd, reason) => ({
 //   tien-to            `judge_human_override: X` — khoá khác có đuôi trùng
 //   flow               `- {eval: E3, human_override: X}` — bản ghi một dòng
 //   trong-vo-huong     nội dung `output: |` — không bao giờ chạm
-// GIOI-HAN-CHOT>>> Ca vi phân tests/workflows/chot-truong-nguoi.test.mjs so chốt với bộ đọc
+// GIOI-HAN-CHOT>>> Ca vi phân https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/workflows/chot-truong-nguoi.test.mjs so chốt với bộ đọc
 // thật trên bảng hình dạng viết trước; khối này rút nguyên văn bởi chot-truong-nguoi-corpus.mjs.
 const KHOA_NGUOI = ['human_signoff', 'human_override', 'bypass_ack']
 const RONG_OVERRIDE = '  # chi nguoi ghi'

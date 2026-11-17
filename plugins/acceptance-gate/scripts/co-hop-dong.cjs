@@ -1,7 +1,7 @@
 'use strict';
 // co-hop-dong.cjs — cỡ hợp đồng: MỘT bộ đọc cho khoảng cỡ (khối CAT-LUOT-CO của SKILL cắt lượt), số tiêu
 // chí và dòng sổ «giữ cỡ». Hồ sơ _acceptance/vong-mo-thang-bang-feature-loop/ (hàng S3c), design
-// docs/superpowers/specs/2026-10-12-vong-mo-thang-bang-feature-loop-design.md.
+// https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-12-vong-mo-thang-bang-feature-loop-design.md.
 //
 // Ba bên đọc cùng nạp mô-đun này: thẻ Cổng Phạm vi (gate-card.js, CJS), đồng hồ cỡ (cat-luot.mjs, ESM qua
 // createRequire) và ca đo. Không số nào của khoảng, không bản sao nào của chuỗi giữ nằm ở bên đọc khác.

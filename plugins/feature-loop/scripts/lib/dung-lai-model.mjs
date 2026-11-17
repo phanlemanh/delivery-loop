@@ -1,6 +1,6 @@
 // dung-lai-model.mjs — làn ghim lại DÙNG LẠI kết quả eval model thật khi băm đầu vào không đổi (hồ sơ
 // eval-goi-model-that-khong-chay, hàng G3). Hàm thuần + ba khối marker: bên viết (repin-lane.mjs) và ma
-// trận ca (tests/scripts/repin-lane-dung-lai-model.test.mjs) rút từ CÙNG các khối này — thêm một lớp băm
+// trận ca (https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/tests/scripts/repin-lane-dung-lai-model.test.mjs) rút từ CÙNG các khối này — thêm một lớp băm
 // hay một lý do mà không thêm ca là ca «số ô lệch» đỏ.
 //
 // «Dùng lại» là carry theo nghĩa CONTEXT.md: phải minh bạch — làn nói ra từng lần dùng lại và nguồn của

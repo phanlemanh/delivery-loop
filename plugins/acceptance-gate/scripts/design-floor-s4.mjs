@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // design-floor-s4.mjs — S4 của feature-loop chấm tuân thủ design system bằng hex thô và độ phủ token, chặn theo bậc.
-// Hồ sơ design-floor-moc-s3-s4 (FL5), thiết kế docs/superpowers/specs/2026-10-28-design-floor-moc-s3-s4-design.md.
+// Hồ sơ design-floor-moc-s3-s4 (FL5), thiết kế https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/superpowers/specs/2026-10-28-design-floor-moc-s3-s4-design.md.
 // CHỈ ĐỌC: không ghi tệp nào (luật không ghi sau S4, ADR 0007). Kho nối lệnh thành executors.design.floor.
 //
 // Đích = tệp mà diff <base>...HEAD chạm, khớp design.surface_globs, còn trên đĩa.

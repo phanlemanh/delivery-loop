@@ -1,6 +1,6 @@
 # feature-loop
 
-Vòng lặp chuẩn phát triển 1 tính năng từ ý tưởng đến PR, điều phối **acceptance-gate** + **superpowers** + **Workflow orchestration** thành một loop mà người chỉ xuất hiện ở **bốn cổng** (xem [GUIDE §0](../GUIDE.md#bốn-cổng-người--nguồn-chuẩn-của-mô-hình-cổng)) — và chỉ khi cổng đó thật sự cần người: T2 đủ điều kiện thì máy chốt phạm vi và thông bằng chứng (**làn V**), báo một dòng, cửa veto vẫn mở.
+Vòng lặp chuẩn phát triển 1 tính năng từ ý tưởng đến PR, điều phối **acceptance-gate** + **superpowers** + **Workflow orchestration** thành một loop mà người chỉ xuất hiện ở **bốn cổng** (xem [GUIDE §0](https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/GUIDE.md#bốn-cổng-người--nguồn-chuẩn-của-mô-hình-cổng)) — và chỉ khi cổng đó thật sự cần người: T2 đủ điều kiện thì máy chốt phạm vi và thông bằng chứng (**làn V**), báo một dòng, cửa veto vẫn mở.
 
 ```
 /feature-loop <mô tả tính năng | slug để resume>
