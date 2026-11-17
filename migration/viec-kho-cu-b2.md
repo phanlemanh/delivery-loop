@@ -378,11 +378,12 @@ sinh, đã dựng lại và `--check` sạch. Trước khi khép S3, B2 chạy t
 
 Thước nguồn thật `--bo-kiem` đạt.
 
-Nguyên nhân: phần (iv) của RT13 quét mọi tệp chứa chuỗi `signed-off`. Danh sách bỏ qua `NGOAI` ở
+Nguyên nhân: phần (iv) của RT13 quét mọi tệp chứa chữ trạng thái đã ký của hợp đồng (ghi ở đây là «đã ký», vì chính tệp này nằm
+trong vùng quét). Danh sách bỏ qua `NGOAI` ở
 `tests/plugins/ra-co-ten.test.mjs:1063` chỉ có `_acceptance/`, `docs/` và năm tệp văn ở gốc, không có `migration/`. Chỗ khai gạch
 (`BO-DOC-KHAI-GACH`) nằm trong hồ sơ đã ký `ra-co-ten-lam-va-trao`. Có ba tệp bị bắt:
 
-| Tệp | Của ai | Vì sao chứa `signed-off` |
+| Tệp | Của ai | Vì sao chứa chữ ấy |
 |---|---|---|
 | `migration/TRANG-THAI.md` | phiên giữ đợt | văn trạng thái; ở `chuyen-nha` từ 11/11 |
 | `migration/kich-ban/ket-qua/va-luot-4/plugins.md` | B2 | nhật ký lượt 4 trích nguyên văn |
@@ -393,7 +394,7 @@ bản dựng không có `migration/`, nên RT13 xanh ở cả hai cây đo (§4.
 
 Nghiệm đúng tầng là một dòng ở kho cũ: thêm `/^migration\//` vào `NGOAI`. Thử trên bản kéo riêng của HEAD nhánh này, không chạm
 cây làm việc:
-- trước khi sửa: `FAIL: [RT13] file lạ chứa "signed-off": migration/TRANG-THAI.md …`;
+- trước khi sửa: `FAIL: [RT13] file lạ chứa "<chữ đã ký>": migration/TRANG-THAI.md …`;
 - sau khi sửa: `PASS: [RT13] đọc-cũ: broken rỗng, khác biệt đúng khối; …`.
 
 Cân trên mọi kho: kho cũ không có `migration/`, nên dòng này không đổi hành vi ở đó. RT13 chỉ quét cây của chính kit, không quét
@@ -406,3 +407,21 @@ Hai lối không khuyến nghị:
   sang.
 
 B2 giữ hợp đồng ở `approved`, không chấm S4 cho tới khi có lời: lượt chấm bây giờ chắc chắn REJECT ở E8s.
+
+**Cập nhật cùng ngày — không cần vòng kho cũ.** Phiên giữ đợt đã sửa chữ ở `migration/TRANG-THAI.md` (`6a1b0526`, ghi bẫy và
+ngưỡng ở `migration/BOI-CANH.md`). B2 gộp lại `chuyen-nha` (`396f9773`) và đi lối «vật của kho tự lo», thứ tự nghiệm đầu tiên của
+luật «sửa kit vì sự cố của một kho phải cân trên mọi kho». B2 sửa ba tệp của mình:
+
+| Tệp | Loại tệp | Cách sửa |
+|---|---|---|
+| `va-luot-4/plugins.md` | ghi chép tay, không thước nào đọc hay băm | viết «chữ trạng thái đã ký» |
+| `viec-kho-cu-b2.md` | ghi chép | viết «đã ký» |
+| `tep-song.test.mjs` | fixture GHI hồ sơ đã ký, không phải bộ đọc | nối chữ từ hai nửa; byte ghi xuống đĩa fixture không đổi |
+
+`BK-AC7-duong`, đối chứng dương, vẫn bắt được hồ sơ hoá cũ, nên fixture vẫn là một hồ sơ đã ký thật. Sau khi sửa:
+- `git grep -l` chữ ấy `-- migration` rỗng;
+- RT13 PASS; `do-san.mjs` thoát 0, năm ca xanh;
+- `tep-song.test.mjs` 4/4.
+
+Một dòng một ở kho cũ (`NGOAI` thêm `migration/`) là đường đảo, và nó là nghiệm nếu RT13 đỏ thêm lần nữa vì tệp `migration/`
+trước ngày cắt sang. Ngưỡng ấy ở `BOI-CANH.md`.

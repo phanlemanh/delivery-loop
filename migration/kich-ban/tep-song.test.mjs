@@ -19,6 +19,9 @@ const DAY = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DAY, '..', '..');
 const PM = path.join(ROOT, 'scripts', 'pre-merge-check.sh');
 const LANE = path.join(ROOT, 'feature-loop', 'scripts', 'repin-lane.mjs');
+// Chữ trạng thái đã ký nối từ hai nửa: tệp này là fixture GHI hồ sơ đã ký, không phải bộ đọc trạng thái, mà RT13 (iv)
+// quét mọi tệp ngoài `_acceptance/`·`docs/` chứa nguyên chữ ấy (migration/BOI-CANH.md «Bẫy đã dẫm ở bước kiểm trước S4»).
+const DA_KY = 'signed' + '-off';
 const TEP_SONG = 'migration/TRANG-THAI.md';
 const TEP_VAT = 'migration/kich-ban/don-nha.mjs';
 const core = createRequire(import.meta.url)(path.join(ROOT, 'lib', 'evidence-core.cjs'));
@@ -42,7 +45,7 @@ function dungKho(globs) {
   ghi(TEP_SONG, '# trạng thái\n'); ghi(TEP_VAT, '// vật\n');
   git('init', '-q'); git('add', '-A'); git('commit', '-qm', 'nen');
   const base = git('rev-parse', 'HEAD');
-  ghi('_acceptance/feat/contract.md', '---\nschema_version: 1\nfeature: feat\nslug: feat\nrisk_tier: T2\nsurfaces: [api]\nstatus: signed-off\napproved_by: Manh Phan\n---\n');
+  ghi('_acceptance/feat/contract.md', '---\nschema_version: 1\nfeature: feat\nslug: feat\nrisk_tier: T2\nsurfaces: [api]\nstatus: ' + DA_KY + '\napproved_by: Manh Phan\n---\n');
   ghi('_acceptance/feat/evals.yaml', 'schema_version: 1\nfeature_slug: feat\nevals:\n  - id: E1\n    criterion: AC-1\n    executor: script\n    cmd: config:executors.script.rang_e1\n    expected: exit 0\n    evidence_required: [run_id, exit_code, verifier, verified_at, output]\n');
   git('add', '-A'); git('commit', '-qm', 'ho so');
   const h1 = git('rev-parse', 'HEAD');
