@@ -22,8 +22,8 @@ const KIT = path.resolve(HERE, '..', '..');
 const RUNNER = path.join(HERE, 'run-tests.sh');
 const CONFIG = path.join(KIT, '_acceptance', 'config.yaml');
 const require = createRequire(import.meta.url);
-const { configList } = require(path.join(KIT, 'lib', 'workspace-record.cjs'));
-const { resolveConfigKey } = require(path.join(KIT, 'lib', 'evidence-core.cjs'));
+const { configList } = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs'));
+const { resolveConfigKey } = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
 const TMP = mkdtempSync(path.join(tmpdir(), 'htkd-'));
 let pass = 0; let fail = 0;
 const ok = (name, msg = '') => { pass += 1; console.log(`PASS: ${name} ${msg}`.trimEnd() + ' '); };
@@ -198,9 +198,9 @@ await ca('HT-AC3-dot-bien', () => {
 });
 
 // ── AC-4: s4-args thử lại CÙNG round ──────────────────────────────────────────
-const S4ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
-const WF = path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js');
-const NHAN = require(path.join(KIT, 'lib', 'nhan-canh-gay.cjs'));
+const S4ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
+const WF = path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
+const NHAN = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'nhan-canh-gay.cjs'));
 const gitC = (d, ...a) => execFileSync('git', ['-C', d, ...a], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 // Khoá dòng tally RÚT từ khối ROUND-TALLY-SCHEMA của bên viết — cùng cách round-tally-read.mjs rút.
 const KHOA_TALLY = (() => {
@@ -240,7 +240,7 @@ function khoS4({ baoCao = null, runLog = [] } = {}) {
 }
 function chayS4(d, { carry = true, script = S4ARGS } = {}) {
   const out = path.join(d, 'args.json');
-  const r = spawnSync(process.execPath, [script, '--slug', 'demo', '--root', d, '--ag-root', KIT, '--out', out, '--diff-base', 'main', ...(carry ? ['--no-carry'] : [])], { encoding: 'utf8' });
+  const r = spawnSync(process.execPath, [script, '--slug', 'demo', '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', out, '--diff-base', 'main', ...(carry ? ['--no-carry'] : [])], { encoding: 'utf8' });
   return { rc: r.status, err: r.stderr || '', round: r.status === 0 ? JSON.parse(readFileSync(out, 'utf8')).round : null };
 }
 const T1 = '2026-09-24T01:00:00Z', T2 = '2026-09-24T02:00:00Z';
@@ -333,9 +333,9 @@ await ca('HT-AC4-khu-hoi', async () => {
 });
 
 // ── AC-5: khuôn /goal — tính chất trên ba bản ────────────────────────────────────
-const SKILL_P = path.join(KIT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const SKILL_P = path.join(KIT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 const GUIDE_P = path.join(KIT, 'GUIDE.md');
-const GC_P = path.join(KIT, 'scripts', 'gate-card.js');
+const GC_P = path.join(KIT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
 const RX_MD = /<!-- <<<GOAL-TEMPLATE -->\n```\n([\s\S]*?)```\n<!-- GOAL-TEMPLATE>>> -->/;
 const RX_JS = /\/\/ <<<GOAL-TEMPLATE[^\n]*\n(?:\/\/ [^\n]*\n)*const GOAL_TEMPLATE = `([\s\S]*?)`;\n\/\/ GOAL-TEMPLATE>>>/;
 const rut = (rx, text, ten) => { const m = text.match(rx); assert(m, `${ten}: khong rut duoc khoi GOAL-TEMPLATE qua marker`); return m[1].trim(); };
@@ -350,7 +350,7 @@ function kiemKhuon(k) {
   if (/người chọn/iu.test(k)) loi.push('khuon con ve «người chọn»');
   if (/nêu\s+(?:tiền đề hay\s+)?lối/iu.test(k)) loi.push('khuon con ve «nêu lối»');
   // Trạng thái «đã ký» rút từ lib (nếp hskt): tệp ca không mang chuỗi trạng thái của riêng nó (RT13).
-  if (k.includes(require(path.join(KIT, 'lib', 'workspace-record.cjs')).DA_THONG_CONG_2[0])) loi.push('khuon nham dich trang thai da ky');
+  if (k.includes(require(path.join(KIT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs')).DA_THONG_CONG_2[0])) loi.push('khuon nham dich trang thai da ky');
   if (!k.includes('sau 15 turns')) loi.push('khuon mat loi thoat «sau 15 turns»');
   if (!k.includes('Cổng Bằng chứng')) loi.push('khuon khong neo «Cổng Bằng chứng»');
   const cau = k.split('\n').join(' ').split(/(?<=[.!?])\s+/);
@@ -416,7 +416,7 @@ await ca('HT-AC6-do', () => {
 });
 
 // ── AC-7: thẻ Cổng 1 của hồ sơ đã khép ─────────────────────────────────────────
-const WR = require(path.join(KIT, 'lib', 'workspace-record.cjs'));
+const WR = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs'));
 const hopDongG1 = (slug, status) => `---\nschema_version: 1\nslug: ${slug}\nfeature: viec ${slug}\nowner: x@y.z\nrisk_tier: T2\nsurfaces: [cli]\nstatus: ${status}\napproved_by: M\napproved_at: 2026-09-01T00:00:00Z\n---\n\n## Criteria\n\n- AC-1: Given a, When b, Then c.\n\n## Out of scope\n\n- khong gi\n`;
 const dongNghiG1 = () => JSON.stringify({ id: 'd-20260920T100000Z-1', type: 'nghi', stage: 'nghi', by: 'M', at: '2026-09-20T10:00:00Z', decision: 'tien de ngoai da chet' });
 // Vế dòng quan sát RÚT từ lib (THUC_TE_VE) — không gõ tay danh sách vế.

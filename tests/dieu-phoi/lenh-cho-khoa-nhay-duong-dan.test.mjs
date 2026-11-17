@@ -10,14 +10,14 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { chepLoi } from '../../dieu-phoi/scripts/dieu-phoi.mjs';
-import { lenhChoKhoa } from '../../dieu-phoi/scripts/lich.mjs';
-import { lenhBoc, TEP_GIU_NHIP } from '../../dieu-phoi/scripts/hook-chan-s4.mjs';
-import { motNhip } from '../../dieu-phoi/scripts/phat-lich.mjs';
+import { chepLoi } from '../../plugins/dispatch/scripts/dieu-phoi.mjs';
+import { lenhChoKhoa } from '../../plugins/dispatch/scripts/lich.mjs';
+import { lenhBoc, TEP_GIU_NHIP } from '../../plugins/dispatch/scripts/hook-chan-s4.mjs';
+import { motNhip } from '../../plugins/dispatch/scripts/phat-lich.mjs';
 import { CFG_PHAT_LICH } from './loi/mau-thu.mjs';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
-const SCRIPTS = path.resolve(DAY, '..', '..', 'dieu-phoi', 'scripts');
+const SCRIPTS = path.resolve(DAY, '..', '..', 'plugins/dispatch', 'scripts');
 // Trần «phải thoát»: rộng để máy bận không đỏ giả. Trần «phải treo»: đủ cho nhiều vòng kiểm, ca đọc số vòng đếm được.
 const TRAN_THOAT_MS = 15000;
 const TRAN_TREO_MS = 2000;

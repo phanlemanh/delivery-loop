@@ -20,12 +20,12 @@ let pass = 0; let fail = 0;
 const ok = (id, m) => { pass += 1; console.log(`  PASS: ${id} — ${m}`); };
 const bad = (id, m) => { fail += 1; console.log(`  FAIL: ${id} — ${m}`); };
 
-const khoaBat = (() => { const j = JSON.parse(readFileSync(path.join(KIT, '.claude-plugin', 'marketplace.json'), 'utf8')); return `road-map@${j.name}`; })();
+const khoaBat = (() => { const j = JSON.parse(readFileSync(path.join(KIT, '.claude-plugin', 'marketplace.json'), 'utf8')); return `roadmap@${j.name}`; })();
 writeFileSync(path.join(HOME, '.claude', 'settings.json'), JSON.stringify({ enabledPlugins: { [khoaBat]: true } }));
 const lenh = (() => {
-  const t = readFileSync(path.join(KIT, 'commands', 'acceptance-init.md'), 'utf8');
+  const t = readFileSync(path.join(KIT, 'plugins/acceptance-gate/commands', 'acceptance-init.md'), 'utf8');
   const m = t.match(/<!-- <<<INIT-LO-TRINH -->\n([\s\S]*?)<!-- INIT-LO-TRINH>>> -->/);
-  const d = m ? m[1].split('\n').map(x => x.trim()).filter(x => x.startsWith('node "${CLAUDE_PLUGIN_ROOT}/scripts/lo-trinh-khoi-tao.mjs"')) : [];
+  const d = m ? m[1].split('\n').map(x => x.trim()).filter(x => x.startsWith('node "${CLAUDE_PLUGIN_ROOT}/plugins/acceptance-gate/scripts/lo-trinh-khoi-tao.mjs"')) : [];
   if (d.length !== 1) { console.error(`khối INIT-LO-TRINH có ${d.length} dòng lệnh`); process.exit(2); }
   return d[0].split('${CLAUDE_PLUGIN_ROOT}').join(KIT);
 })();

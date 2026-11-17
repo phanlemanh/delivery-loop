@@ -31,7 +31,7 @@ const bad = (m, d) => { console.log(`  FAIL: ${m}${d ? ` (${d})` : ''}`); fail +
 const T = mkdtempSync(path.join(tmpdir(), 'finding-line-'));
 
 // ── khuôn dòng finding RÚT TỪ BÊN VIẾT ──────────────────────────────────────
-const WF = path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const wfSrc = readFileSync(WF, 'utf8');
 const KHOI = (() => {
   const a = wfSrc.indexOf('<<<FINDING-LINE');
@@ -85,7 +85,7 @@ function so(khong, co, ten, dauSong) {
   const a = path.join(T, 'a.jsonl'), b = path.join(T, 'b.jsonl');
   writeFileSync(a, `${EVAL}\n${TALLY}\n`);
   writeFileSync(b, `${EVAL}\n${dongFinding()}\n${dongFinding({ title: 'loi thu hai', file: 'src/b.js' })}\n${TALLY}\n`);
-  const chay = f => { try { return execFileSync(process.execPath, [path.join(ROOT, 'feature-loop', 'scripts', 'round-tally-read.mjs'), '--run-log', f], { encoding: 'utf8' }); } catch (e) { return `NEM LOI: ${String(e.stderr || e.message).slice(0, 100)}`; } };
+  const chay = f => { try { return execFileSync(process.execPath, [path.join(ROOT, 'plugins/feature-loop', 'scripts', 'round-tally-read.mjs'), '--run-log', f], { encoding: 'utf8' }); } catch (e) { return `NEM LOI: ${String(e.stderr || e.message).slice(0, 100)}`; } };
   const ra = chay(a), rb = chay(b);
   so(ra.replace(/"[^"]*a\.jsonl"/g, '"F"'), rb.replace(/"[^"]*b\.jsonl"/g, '"F"'), 'round-tally-read', '"tallies"');
   // Đối chứng dương: cùng bộ đọc PHẢI kêu khi sổ có dòng tally hỏng thật.
@@ -108,7 +108,7 @@ function so(khong, co, ten, dauSong) {
       `${EVAL}\n${themFinding ? dongFinding() + '\n' : ''}${TALLY}\n`);
     return root;
   };
-  const chay = r => { try { return execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'loop-health.mjs'), '--root', r], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }); } catch (e) { return `NEM LOI: ${String(e.stderr || e.message).slice(0, 140)}`; } };
+  const chay = r => { try { return execFileSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'loop-health.mjs'), '--root', r], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }); } catch (e) { return `NEM LOI: ${String(e.stderr || e.message).slice(0, 140)}`; } };
   const ra = chay(mk('lh-khong', false)), rb = chay(mk('lh-co', true));
   const chuanHoa = s => String(s).replace(/lh-(khong|co)/g, 'R');
   so(chuanHoa(ra), chuanHoa(rb), 'loop-health', '| T2 |');
@@ -128,7 +128,7 @@ function so(khong, co, ten, dauSong) {
       '  verifier: config:executors.test.api', '  verified_at: 2026-09-14T00:00:00Z', ''].join('\n'));
     return rp;
   };
-  const chay = rp => { try { return `exit0 ${execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'recheck-evidence.cjs'), rp], { encoding: 'utf8' })}`; } catch (e) { return `exit${e.status} ${String(e.stdout || '') + String(e.stderr || '')}`; } };
+  const chay = rp => { try { return `exit0 ${execFileSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), rp], { encoding: 'utf8' })}`; } catch (e) { return `exit${e.status} ${String(e.stdout || '') + String(e.stderr || '')}`; } };
   const ra = chay(mk('rc-khong', false)), rb = chay(mk('rc-co', true));
   const chuanHoa = s => String(s).replace(/rc-(khong|co)/g, 'R');
   so(chuanHoa(ra), chuanHoa(rb), 'recheck-evidence', 'L2');
@@ -145,7 +145,7 @@ function so(khong, co, ten, dauSong) {
 // Bộ đếm vật · thước · nhát nối một dòng vào sổ sau mỗi lượt chấm. Dòng dựng bằng CHÍNH hàm
 // của bên viết (`dongThuocVat`, rút khuôn marker THUOC-VAT-LINE) — không gõ tay khuôn.
 {
-  const { dongThuocVat } = await import(path.join(ROOT, 'feature-loop', 'scripts', 'thuoc-vat.mjs'));
+  const { dongThuocVat } = await import(path.join(ROOT, 'plugins/feature-loop', 'scripts', 'thuoc-vat.mjs'));
   const TV = dongThuocVat({ san: 'b'.repeat(40), vat: [3, 1], thuoc: [9, 2], hoSo: [40, 0], nhat: 2, lan: 1, tepThuoc: ['tests/a.test.mjs'] }, { round: 1, ts: '2026-09-17T00:00:00Z' });
   if (JSON.parse(TV).kind !== 'thuoc-vat') { bad('thuoc-vat: ben viet khong dung dong kind thuoc-vat'); }
   // round-tally-read
@@ -153,7 +153,7 @@ function so(khong, co, ten, dauSong) {
     const a = path.join(T, 'tv-a.jsonl'), b = path.join(T, 'tv-b.jsonl');
     writeFileSync(a, `${EVAL}\n${TALLY}\n`);
     writeFileSync(b, `${EVAL}\n${TALLY}\n${TV}\n`);
-    const chay = f => { try { return execFileSync(process.execPath, [path.join(ROOT, 'feature-loop', 'scripts', 'round-tally-read.mjs'), '--run-log', f], { encoding: 'utf8' }); } catch (e) { return `NEM LOI: ${String(e.stderr || e.message).slice(0, 100)}`; } };
+    const chay = f => { try { return execFileSync(process.execPath, [path.join(ROOT, 'plugins/feature-loop', 'scripts', 'round-tally-read.mjs'), '--run-log', f], { encoding: 'utf8' }); } catch (e) { return `NEM LOI: ${String(e.stderr || e.message).slice(0, 100)}`; } };
     so(chay(a).replace(/"[^"]*tv-a\.jsonl"/g, '"F"'), chay(b).replace(/"[^"]*tv-b\.jsonl"/g, '"F"'), 'thuoc-vat round-tally-read', '"tallies"');
   }
   // loop-health
@@ -165,7 +165,7 @@ function so(khong, co, ten, dauSong) {
       writeFileSync(path.join(root, '_acceptance', 'demo', 'run-log.jsonl'), `${EVAL}\n${TALLY}\n${them ? TV + '\n' : ''}`);
       return root;
     };
-    const chay = r => { try { return execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'loop-health.mjs'), '--root', r], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }); } catch (e) { return `NEM LOI: ${String(e.stderr || e.message).slice(0, 140)}`; } };
+    const chay = r => { try { return execFileSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'loop-health.mjs'), '--root', r], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }); } catch (e) { return `NEM LOI: ${String(e.stderr || e.message).slice(0, 140)}`; } };
     const chuanHoa = s => String(s).replace(/tvlh-(khong|co)/g, 'R');
     so(chuanHoa(chay(mk('tvlh-khong', false))), chuanHoa(chay(mk('tvlh-co', true))), 'thuoc-vat loop-health', '| T2 |');
   }
@@ -182,7 +182,7 @@ function so(khong, co, ten, dauSong) {
         '  verifier: config:executors.test.api', '  verified_at: 2026-09-14T00:00:00Z', ''].join('\n'));
       return rp;
     };
-    const chay = rp => { try { return `exit0 ${execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'recheck-evidence.cjs'), rp], { encoding: 'utf8' })}`; } catch (e) { return `exit${e.status} ${String(e.stdout || '') + String(e.stderr || '')}`; } };
+    const chay = rp => { try { return `exit0 ${execFileSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), rp], { encoding: 'utf8' })}`; } catch (e) { return `exit${e.status} ${String(e.stdout || '') + String(e.stderr || '')}`; } };
     const chuanHoa = s => String(s).replace(/tvrc-(khong|co)/g, 'R');
     so(chuanHoa(chay(mk('tvrc-khong', false))), chuanHoa(chay(mk('tvrc-co', true))), 'thuoc-vat recheck-evidence', 'L2');
   }
@@ -192,36 +192,36 @@ function so(khong, co, ten, dauSong) {
 // Một tệp mới đọc sổ mà không ai nhớ bổ sung phép đo thì lớp phình lặng lẽ; ca này buộc
 // nói ra. Đổi số = phải xem lại ba điểm-case ở trên có còn đại diện cho lớp không.
 {
-  // 9 từ 17/09: thêm feature-loop/scripts/thuoc-vat.mjs (bên đọc sha của lượt + bên ghi dòng
+  // 9 từ 17/09: thêm plugins/feature-loop/scripts/thuoc-vat.mjs (bên đọc sha của lượt + bên ghi dòng
   // kind thuoc-vat) — ba bộ đọc trên đã được đo lại với loại dòng mới ở khối 4.
-  // 10 từ 17/09 (cùng hồ sơ): thêm scripts/gate-card.js — thẻ Cổng Bằng chứng chỉ đọc dòng
+  // 10 từ 17/09 (cùng hồ sơ): thêm plugins/acceptance-gate/scripts/gate-card.js — thẻ Cổng Bằng chứng chỉ đọc dòng
   // `kind: thuoc-vat` (lọc theo kind), nên dòng finding và mọi loại dòng khác không đổi thẻ;
   // hai chiều của nó đo ở tests/scripts/gate-card-thuoc-vat.test.mjs (GT2 im · GT3 dòng hỏng).
-  // 11 từ 21/09 (hồ sơ nhan-trang-thai-va-reality): thêm lib/nhan-canh-gay.cjs — bộ phân nhãn
+  // 11 từ 21/09 (hồ sơ nhan-trang-thai-va-reality): thêm plugins/acceptance-gate/lib/nhan-canh-gay.cjs — bộ phân nhãn
   // cạnh gãy đọc dòng round-tally · vang-mat · thuoc-lech theo `kind`, và dòng eval (không kind);
   // dòng `kind: finding` không vào nhánh nào của nó. Hai chiều đo ở ntr-the-canh-gay / ntr-luoi.
-  // 13 từ 11/10 (hồ sơ eval-goi-model-that-khong-chay): thêm feature-loop/scripts/lib/dung-lai-model.mjs
-  // (bộ chọn nguồn dùng lại — chỉ xét dòng `kind: repin`/`repin-do`) và feature-loop/scripts/dem-dung-lai-model.mjs
+  // 13 từ 11/10 (hồ sơ eval-goi-model-that-khong-chay): thêm plugins/feature-loop/scripts/lib/dung-lai-model.mjs
+  // (bộ chọn nguồn dùng lại — chỉ xét dòng `kind: repin`/`repin-do`) và plugins/feature-loop/scripts/dem-dung-lai-model.mjs
   // (script đếm đường đo — cùng hai kind). Dòng `kind: finding` không vào nhánh nào của chúng; chiều im đo ở
   // ca LIB-chon-nguon (một dòng finding cùng băm không đổi nguồn được chọn).
-  // 17 từ 13/10 (hồ sơ dinh-tuyen-theo-ma-muc): thêm scripts/khong-can-nguoi.mjs, scripts/start-scan.mjs,
-  // scripts/product-map.mjs, scripts/dinh-tuyen-may.cjs — cả bốn chỉ đưa văn bản sổ cho bộ phân giải
-  // ganDinhTuyen của lib/out-of-contract.cjs, hàm luotCham chỉ lấy dòng `kind: round-tally`; dòng
+  // 17 từ 13/10 (hồ sơ dinh-tuyen-theo-ma-muc): thêm plugins/acceptance-gate/scripts/khong-can-nguoi.mjs, plugins/acceptance-gate/scripts/start-scan.mjs,
+  // plugins/acceptance-gate/scripts/product-map.mjs, plugins/acceptance-gate/scripts/dinh-tuyen-may.cjs — cả bốn chỉ đưa văn bản sổ cho bộ phân giải
+  // ganDinhTuyen của plugins/acceptance-gate/lib/out-of-contract.cjs, hàm luotCham chỉ lấy dòng `kind: round-tally`; dòng
   // `kind: finding` (và mọi kind khác) không vào nhánh nào. Chiều im đo ở ca DM3 hàng 10 (sổ chỉ có dòng
   // kind khác) và hàng 17 (dòng hỏng) của tests/scripts/dinh-tuyen-theo-ma-muc.test.mjs.
-  // 19 từ 15/10 (hồ sơ lo-trinh-gio-may): thêm scripts/do-vong.mjs (chỉ NỐI một dòng `kind: gio-may`, không đọc dòng nào) và
-  // scripts/gio-may.mjs (docDoVong chỉ lấy dòng có `kind: gio-may`, dòng hỏng bỏ). Dòng `kind: finding` không vào nhánh nào
+  // 19 từ 15/10 (hồ sơ lo-trinh-gio-may): thêm plugins/acceptance-gate/scripts/do-vong.mjs (chỉ NỐI một dòng `kind: gio-may`, không đọc dòng nào) và
+  // plugins/acceptance-gate/scripts/gio-may.mjs (docDoVong chỉ lấy dòng có `kind: gio-may`, dòng hỏng bỏ). Dòng `kind: finding` không vào nhánh nào
   // của chúng; chiều im đo ở GM-6 (sổ chạy của kho thử có sẵn một dòng kind khác, đầu ra chỉ một dòng gio-may).
-  // 20 từ 17/10 (hồ sơ ho-so-da-ky-giu-tuoi): thêm lib/do-san-tren-nen.cjs — docDongNen chỉ lấy dòng `kind: nen-do` có
+  // 20 từ 17/10 (hồ sơ ho-so-da-ky-giu-tuoi): thêm plugins/acceptance-gate/lib/do-san-tren-nen.cjs — docDongNen chỉ lấy dòng `kind: nen-do` có
   // `lenh_do`, dòng hỏng bỏ. Dòng `kind: finding` không vào nhánh nào của nó; chiều im đo ở GT0-dong-hong (sổ có dòng hỏng
   // xen giữa) của tests/scripts/ho-so-da-ky-giu-tuoi.test.mjs.
-  // 21 từ 18/10 (cùng hồ sơ, sau lượt chấm 1): thêm feature-loop/scripts/giu-tuoi.mjs — chỉ lấy dòng `kind: repin-do` có
+  // 21 từ 18/10 (cùng hồ sơ, sau lượt chấm 1): thêm plugins/feature-loop/scripts/giu-tuoi.mjs — chỉ lấy dòng `kind: repin-do` có
   // `lan_id` đúng lượt ghim của nó (dòng hỏng bỏ) và NỐI một dòng `kind: nen-do`. Dòng `kind: finding` không vào nhánh nào;
   // chiều im đo ở GT3 (sổ chạy của kho thử có sẵn dòng kind khác, lệnh chỉ thêm đúng một dòng nen-do).
   const BO_DOC_KHAI = 21;
   const goc = path.join(ROOT);
   const quet = (d) => execFileSync('bash', ['-c',
-    `grep -rl "run-log.jsonl" "${d}/scripts" "${d}/lib" "${d}/hooks" "${d}/feature-loop/scripts" 2>/dev/null | wc -l`],
+    `grep -rl "run-log.jsonl" "${d}/plugins/acceptance-gate/scripts" "${d}/plugins/acceptance-gate/lib" "${d}/plugins/acceptance-gate/hooks" "${d}/plugins/feature-loop/scripts" 2>/dev/null | wc -l`],
     { encoding: 'utf8' }).trim();
   const n = Number(quet(goc));
   if (n === BO_DOC_KHAI) ok(`dem LOP: ${n} tep cham run-log.jsonl, khop hang khai truoc`);

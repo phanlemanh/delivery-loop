@@ -1,6 +1,6 @@
 // ntr-hieu-chuan.test.mjs — hồ sơ nhan-trang-thai-va-reality, AC-13 (E13): dòng hiệu chuẩn
 // «ĐẠT đã ký → prod đỏ: k / N» (ADR 0020 Đ9). Dòng quan sát của fixture sinh từ khuôn RÚT
-// từ khối THUC-TE-LINE của commands/observed.md (bên viết) — không dựng tay.
+// từ khối THUC-TE-LINE của plugins/acceptance-gate/commands/observed.md (bên viết) — không dựng tay.
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const SCRIPT = path.join(KIT, 'scripts', 'hieu-chuan-moc.mjs');
+const SCRIPT = path.join(KIT, 'plugins/acceptance-gate/scripts', 'hieu-chuan-moc.mjs');
 const TMP = mkdtempSync(path.join(tmpdir(), 'ntr-hc-'));
 let pass = 0; let fail = 0;
 const ok = (name, msg = '') => { pass += 1; console.log(`PASS: ${name} ${msg}`.trimEnd() + ' '); };
@@ -17,8 +17,8 @@ const bad = (name, msg) => { fail += 1; console.log(`FAIL: ${name} — ${msg}`);
 const loi = e => String((e && (e.stderr || e.message)) || e).split('\n').slice(0, 3).join(' | ');
 
 const khuon = (() => {
-  const m = readFileSync(path.join(KIT, 'commands', 'observed.md'), 'utf8').match(/<!-- <<<THUC-TE-LINE -->\n\s*([^\n]+)\n\s*<!-- THUC-TE-LINE>>> -->/);
-  if (!m) throw new Error('khong rut duoc khoi THUC-TE-LINE tu commands/observed.md');
+  const m = readFileSync(path.join(KIT, 'plugins/acceptance-gate/commands', 'observed.md'), 'utf8').match(/<!-- <<<THUC-TE-LINE -->\n\s*([^\n]+)\n\s*<!-- THUC-TE-LINE>>> -->/);
+  if (!m) throw new Error('khong rut duoc khoi THUC-TE-LINE tu plugins/acceptance-gate/commands/observed.md');
   return m[1].trim();
 })();
 let n = 0;
@@ -56,7 +56,7 @@ try {
 
 try {
   const g = readFileSync(path.join(KIT, 'GUIDE.md'), 'utf8');
-  if (!/^\| 6 \| \*\*Hiệu chuẩn «đủ»\*\*.*scripts\/hieu-chuan-moc\.mjs/m.test(g)) bad('NH-AC13-guide', 'GUIDE khong co dong muc tieu tro scripts/hieu-chuan-moc.mjs');
+  if (!/^\| 6 \| \*\*Hiệu chuẩn «đủ»\*\*.*scripts\/hieu-chuan-moc\.mjs/m.test(g)) bad('NH-AC13-guide', 'GUIDE khong co dong muc tieu tro plugins/acceptance-gate/scripts/hieu-chuan-moc.mjs');
   else ok('NH-AC13-guide', '— GUIDE có dòng mục tiêu thứ sáu trỏ lệnh hiệu chuẩn');
 } catch (e) { bad('NH-AC13-guide', loi(e)); }
 

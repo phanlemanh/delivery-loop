@@ -6,9 +6,9 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { soDoGop } from '../../../dieu-phoi/scripts/do-gop.mjs';
-import { DA_THONG, motNhip } from '../../../dieu-phoi/scripts/phat-lich.mjs';
-import { demDot } from '../../../dieu-phoi/scripts/dem.mjs';
+import { soDoGop } from '../../../plugins/dispatch/scripts/do-gop.mjs';
+import { DA_THONG, motNhip } from '../../../plugins/dispatch/scripts/phat-lich.mjs';
+import { demDot } from '../../../plugins/dispatch/scripts/dem.mjs';
 import { CFG_PHAT_LICH as CFG_GOC } from './mau-thu.mjs';
 
 const CFG_PHAT_LICH = { ...CFG_GOC, nhanh_chinh: 'main' };

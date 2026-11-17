@@ -42,10 +42,10 @@ function banSao(kho) {
 async function mayGoc() {
   const d = path.join(TMP, 'goc');
   fs.mkdirSync(d);
-  execFileSync('tar', ['-x', '-C', d], { input: execFileSync('git', ['-C', KIT, 'archive', GOC, 'scripts', 'lib'], { maxBuffer: 256 * 1024 * 1024 }) });
+  execFileSync('tar', ['-x', '-C', d], { input: execFileSync('git', ['-C', KIT, 'archive', GOC, 'plugins/acceptance-gate/scripts', 'lib'], { maxBuffer: 256 * 1024 * 1024 }) });
   return d;
 }
-const nap = async kit => (await import(pathToFileURL(path.join(kit, 'scripts', 'design-floor-khuon.mjs')).href)).chamKho;
+const nap = async kit => (await import(pathToFileURL(path.join(kit, 'plugins/acceptance-gate/scripts', 'design-floor-khuon.mjs')).href)).chamKho;
 const so = ra => ({ lech: ra.lech_moi.length, no: ra.no_cu.length, theo: ra.theo_khuon.length });
 const inSo = s => `lệch ${s.lech} · nợ cũ ${s.no} · theo khuôn ${s.theo}`;
 
@@ -58,7 +58,7 @@ const ket = (ma, loi, them = '') => {
 const chamGoc = await nap(await mayGoc());
 const chamCay = await nap(KIT);
 // Quy mô phạm vi bị gỡ khỏi phép chấm: số mục rời nhóm (ngoai_le vắng khoi) bộ đọc của cây thấy trên bản đồ của kho.
-const docCay = createRequire(import.meta.url)(path.join(KIT, 'scripts', 'ban-do-khuon.cjs'));
+const docCay = createRequire(import.meta.url)(path.join(KIT, 'plugins/acceptance-gate/scripts', 'ban-do-khuon.cjs'));
 const demRoi = kho => docCay.docThuMuc(kho).nhom.reduce((n, g) => n + g.ngoai_le.filter(e => e.khoi === null).length, 0);
 
 // Kho thứ hai: TRƯỚC và SAU khớp số viết sẵn.

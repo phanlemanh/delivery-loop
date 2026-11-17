@@ -16,8 +16,8 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
-const CARD_REL = path.join('scripts', 'gate-card.js');
-const LANE_REL = path.join('feature-loop', 'scripts', 'repin-lane.mjs');
+const CARD_REL = path.join('plugins/acceptance-gate/scripts', 'gate-card.js');
+const LANE_REL = path.join('plugins/feature-loop', 'scripts', 'repin-lane.mjs');
 const CARD = path.join(ROOT, CARD_REL);
 const LANE = path.join(ROOT, LANE_REL);
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'xdqp-'));
@@ -181,7 +181,7 @@ const DUONG = [
 ];
 
 // ── bản sao + mutant ─────────────────────────────────────────────────
-const THU_MUC_THE = ['scripts', 'lib', 'skills'];
+const THU_MUC_THE = ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills'];
 function banSao(thuMuc, tepRel, bienDoi) {
   const d = mk('sao-');
   for (const t of thuMuc) fs.cpSync(path.join(ROOT, t), path.join(d, t), { recursive: true });
@@ -430,8 +430,8 @@ await ca('XD-7', 'repin-lane làn ghim lại đỏ > 64 KB qua pipe — JSON đ�
   const slugs = Array.from({ length: Math.ceil(2 * HE_SO) }, (_, i) => `lan-${String.fromCharCode(97 + i)}`);
   const kho = khoLan(slugs);
   const lyDo = `ca xa stdout — ${CHU.repeat(1100)}`;
-  const args = (lane) => [lane, '--root', kho, '--ag-root', ROOT, ...slugs.flatMap((s) => ['--slug', s]), '--reason', lyDo, '--run-id', 'xdqp-lan-1'];
-  const saoLan = banSao(['feature-loop'], LANE_REL, null);
+  const args = (lane) => [lane, '--root', kho, '--ag-root', `${ROOT}/plugins/acceptance-gate`, ...slugs.flatMap((s) => ['--slug', s]), '--reason', lyDo, '--run-id', 'xdqp-lan-1'];
+  const saoLan = banSao(['plugins/feature-loop'], LANE_REL, null);
   const ref = {};
   for (const [ten, lane] of [['cây thật', LANE], ['bản sao chưa tiêm', saoLan]]) {
     const tep = quaTep(args(lane));
@@ -450,7 +450,7 @@ await ca('XD-7', 'repin-lane làn ghim lại đỏ > 64 KB qua pipe — JSON đ�
     ref[ten] = tep.stdout.toString('utf8');
   }
   if (!NEN_CAT) return khongDoDuoc(`chiều đỏ: dò nhận ${N_DO} / ${P_DO} byte`);
-  const saoCat = banSao(['feature-loop'], LANE_REL, (s) => {
+  const saoCat = banSao(['plugins/feature-loop'], LANE_REL, (s) => {
     if (s.split('await xaRoiThoat(1);').length !== 2) throw new Error(`${KHONG_AP}: "await xaRoiThoat(1);" không xuất hiện đúng một lần`);
     return s.replace('await xaRoiThoat(1);', 'process.exit(1);');
   });

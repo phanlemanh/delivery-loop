@@ -20,13 +20,13 @@ const bad = (id, m) => { fail += 1; console.log(`  FAIL: ${id} — ${m}`); };
 const only = (process.env.CV_CASES || '').split(',').map(s => s.trim()).filter(Boolean);
 const want = id => !only.length || only.some(o => id === o || id.startsWith(o + '-'));
 const loi = e => String((e && (e.stack || e.message)) || e).split('\n').slice(0, 4).join(' | ');
-const nap = async goc => import(pathToFileURL(path.join(goc, 'scripts', 'cat-luot.mjs')).href + `?v=${++n}`);
+const nap = async goc => import(pathToFileURL(path.join(goc, 'plugins/acceptance-gate/scripts', 'cat-luot.mjs')).href + `?v=${++n}`);
 const khoi = (t, m) => { const r = String(t).match(new RegExp(`<!-- <<<${m} -->\\n([\\s\\S]*?)<!-- ${m}>>> -->`)); return r ? r[1] : null; };
 const khoiJs = (t, m) => { const r = String(t).match(new RegExp(`// <<<${m}[^\\n]*\\n([\\s\\S]*?)// ${m}>>>`)); return r ? r[1] : null; };
 
 function banSao() {
   const d = mkdtempSync(path.join(TMP, 'kit-'));
-  for (const t of ['scripts', 'lib', 'skills']) cpSync(path.join(KIT, t), path.join(d, t), { recursive: true });
+  for (const t of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(KIT, t), path.join(d, t), { recursive: true });
   return d;
 }
 function tiem(goc, tep, cu, moi) {
@@ -56,14 +56,14 @@ const dongVung = ds => ds.filter(l => /\[(vung-[a-z-]+|chua-khai-vung)\]/.test(l
 async function cv1(goc = KIT, bo = null) {
   const sai = [];
   const C = await nap(goc);
-  const tpl = JSON.parse(readFileSync(path.join(goc, 'skills', 'acceptance', 'references', 'lo-trinh-template.json'), 'utf8'));
+  const tpl = JSON.parse(readFileSync(path.join(goc, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'lo-trinh-template.json'), 'utf8'));
   if (bo) tpl.hang = tpl.hang.map(h => (h.ma === bo ? Object.fromEntries(Object.entries(h).filter(([k]) => k !== 'vung')) : h));
-  const sk = readFileSync(path.join(goc, 'skills', 'cat-luot', 'SKILL.md'), 'utf8');
+  const sk = readFileSync(path.join(goc, 'plugins/acceptance-gate/skills', 'scope-slice', 'SKILL.md'), 'utf8');
   const kv = khoi(sk, 'CAT-LUOT-VUNG');
   if (kv == null) sai.push('SKILL thiếu khối CAT-LUOT-VUNG');
   else if (!kv.includes('`vung`')) sai.push('khối CAT-LUOT-VUNG không nêu khoá `vung`');
   if (!bo) for (const h of tpl.hang) if (!Array.isArray(h.vung) || !h.vung.length || h.vung.some(g => typeof g !== 'string' || !g)) sai.push(`hàng khuôn ${h.ma}: vung không phải mảng chuỗi khác rỗng`);
-  const { loi: l, canhBao } = C.kiemCo({ dot: 'mau-1' }, tpl, C.napKhoang(path.join(goc, 'skills', 'cat-luot', 'SKILL.md')));
+  const { loi: l, canhBao } = C.kiemCo({ dot: 'mau-1' }, tpl, C.napKhoang(path.join(goc, 'plugins/acceptance-gate/skills', 'scope-slice', 'SKILL.md')));
   const v = dongVung([...l, ...canhBao]);
   if (v.length) sai.push(`răng trên khuôn: ${v.join(' | ')}`);
   return sai;
@@ -99,7 +99,7 @@ const hangMT = dot => MA_TRAN.map(([ma, vung], i) => ({ ma, cau_giao: 'Người 
 async function cv2(goc = KIT) {
   const sai = [];
   const C = await nap(goc);
-  const k = C.napKhoang(path.join(goc, 'skills', 'cat-luot', 'SKILL.md'));
+  const k = C.napKhoang(path.join(goc, 'plugins/acceptance-gate/skills', 'scope-slice', 'SKILL.md'));
   const { loi: l, canhBao } = C.kiemCo({ dot: 'd' }, { schema: 1, hang: hangMT('d') }, k);
   for (const [ma, , co, muc] of MA_TRAN) {
     const cua = [...l.map(x => ['lỗi', x]), ...canhBao.map(x => ['cảnh báo', x])].filter(([, x]) => x.startsWith(`hàng ${ma} [`) && /\[(vung-[a-z-]+|chua-khai-vung)\]/.test(x));
@@ -115,20 +115,20 @@ async function cv2(goc = KIT) {
   return sai;
 }
 if (want('CV-2') && await chay('CV-2', () => cv2())) ok('CV-2', `ma trận ${MA_TRAN.length} hàng × cờ khớp; cùng hàng ở đợt khác 0 cờ vùng`);
-if (want('CV-2-do')) await chayDo('CV-2-do', cv2, [['scripts/cat-luot.mjs', /export const coThuMucTinh = g => [^\n]*/, 'export const coThuMucTinh = g => true;']], 'R1 ["**"]', 'bản sao răng: phép thử thư mục tĩnh luôn đúng — CV-2-do: ** lot');
-if (want('CV-2-do2')) await chayDo('CV-2-do2', cv2, [['scripts/cat-luot.mjs', 'const rong = r.vung.filter(g => !coThuMucTinh(g));', 'const rong = r.vung.slice(0, 1).filter(g => !coThuMucTinh(g));']], 'R10 ["app/x/**","**"]', 'bản sao răng chỉ xét phần tử đầu — CV-2-do2: tron lot');
+if (want('CV-2-do')) await chayDo('CV-2-do', cv2, [['plugins/acceptance-gate/scripts/cat-luot.mjs', /export const coThuMucTinh = g => [^\n]*/, 'export const coThuMucTinh = g => true;']], 'R1 ["**"]', 'bản sao răng: phép thử thư mục tĩnh luôn đúng — CV-2-do: ** lot');
+if (want('CV-2-do2')) await chayDo('CV-2-do2', cv2, [['plugins/acceptance-gate/scripts/cat-luot.mjs', 'const rong = r.vung.filter(g => !coThuMucTinh(g));', 'const rong = r.vung.slice(0, 1).filter(g => !coThuMucTinh(g));']], 'R10 ["app/x/**","**"]', 'bản sao răng chỉ xét phần tử đầu — CV-2-do2: tron lot');
 
 // Chiều im: lộ trình chưa hàng nào khai `vung` (kho chưa dùng vùng, lộ trình cắt trước vòng) → răng không thêm dòng nào.
 async function cv2Im(goc = KIT) {
   const C = await nap(goc);
-  const k = C.napKhoang(path.join(goc, 'skills', 'cat-luot', 'SKILL.md'));
+  const k = C.napKhoang(path.join(goc, 'plugins/acceptance-gate/skills', 'scope-slice', 'SKILL.md'));
   const hang = hangMT('d').map(({ vung, ...r }) => r);
   const { loi: l, canhBao } = C.kiemCo({ dot: 'd' }, { schema: 1, hang }, k);
   const v = dongVung([...l, ...canhBao]);
   return v.length ? [`CV-2-im: lo trinh khong vung ma co ${v.length} dong vung — ${v[0]}`] : [];
 }
 if (want('CV-2-im') && await chay('CV-2-im', () => cv2Im())) ok('CV-2-im', 'lộ trình chưa hàng nào khai vung → 0 dòng cờ vùng');
-if (want('CV-2-im-do')) await chayDo('CV-2-im-do', cv2Im, [['scripts/cat-luot.mjs', 'const dungVung = hang.some(({ r }) => r.vung !== undefined);', 'const dungVung = true;']], 'CV-2-im: lo trinh khong vung', 'bản sao răng bật cờ vùng vô điều kiện');
+if (want('CV-2-im-do')) await chayDo('CV-2-im-do', cv2Im, [['plugins/acceptance-gate/scripts/cat-luot.mjs', 'const dungVung = hang.some(({ r }) => r.vung !== undefined);', 'const dungVung = true;']], 'CV-2-im: lo trinh khong vung', 'bản sao răng bật cờ vùng vô điều kiện');
 
 // Mã thoát của lệnh răng: 1 khi có lỗi vùng trong đợt, 0 khi chỉ cảnh báo vùng.
 function khoThu(hang) {
@@ -140,7 +140,7 @@ function khoThu(hang) {
   g('init', '-q'); g('add', '.'); g('-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-qm', 'thu');
   return d;
 }
-const rang = d => spawnSync(process.execPath, [path.join(KIT, 'scripts', 'cat-luot.mjs'), '--root', d, '--pham-vi', 'docs/pham-vi.md', '--lo-trinh', 'docs/lo-trinh.json'], { encoding: 'utf8', env: { ...process.env, ACCEPTANCE_TODAY: '2026-10-28' } });
+const rang = d => spawnSync(process.execPath, [path.join(KIT, 'plugins/acceptance-gate/scripts', 'cat-luot.mjs'), '--root', d, '--pham-vi', 'docs/pham-vi.md', '--lo-trinh', 'docs/lo-trinh.json'], { encoding: 'utf8', env: { ...process.env, ACCEPTANCE_TODAY: '2026-10-28' } });
 if (want('CV-2-thoat') && await chay('CV-2-thoat', () => {
   const sai = [];
   const h = hangMT('d');
@@ -156,7 +156,7 @@ const ba = (v3, so = 3) => ({ schema: 1, hang: [['A', ['app/khu/**']], ['B', ['a
 async function cv3(goc = KIT) {
   const sai = [];
   const C = await nap(goc);
-  const k = C.napKhoang(path.join(goc, 'skills', 'cat-luot', 'SKILL.md'));
+  const k = C.napKhoang(path.join(goc, 'plugins/acceptance-gate/skills', 'scope-slice', 'SKILL.md'));
   const moi = data => C.kiemCo({ dot: 'd' }, data, k).loi.filter(x => x.includes('[vung-trung-moi-hang]'));
   const a = moi(ba(['app/khu/a/x.tsx']));
   if (a.length !== 1 || !['A', 'B', 'C'].every(m => a[0].includes(m))) sai.push(`ba hàng mọi cặp chồng: mong một lỗi nêu A, B, C — được ${JSON.stringify(a)}`);
@@ -167,7 +167,7 @@ async function cv3(goc = KIT) {
   return sai;
 }
 if (want('CV-3') && await chay('CV-3', () => cv3())) ok('CV-3', 'ba hàng mọi cặp chồng → một lỗi nêu ba mã; một cặp không chồng → im; hai hàng → im');
-if (want('CV-3-do')) await chayDo('CV-3-do', cv3, [['scripts/cat-luot.mjs', /if \(coVung\.length >= 3 && [^\n]*\{/, 'if (false) {']], 'mong một lỗi nêu A, B, C', 'bản sao răng bỏ kiểm quan hệ — CV-3-do: moi cap chong lot');
+if (want('CV-3-do')) await chayDo('CV-3-do', cv3, [['plugins/acceptance-gate/scripts/cat-luot.mjs', /if \(coVung\.length >= 3 && [^\n]*\{/, 'if (false) {']], 'mong một lỗi nêu A, B, C', 'bản sao răng bỏ kiểm quan hệ — CV-3-do: moi cap chong lot');
 
 // ═══ CV-4: phép so chồng của răng là bản chép của phép so của lịch (AC-3) ═══════════════════════════════════════
 const CAP = [
@@ -189,13 +189,13 @@ const CAP = [
 async function cv4(goc = KIT) {
   const sai = [];
   const C = await nap(goc);
-  const T = await import(pathToFileURL(path.join(KIT, 'dieu-phoi', 'scripts', 'trung-tep.mjs')).href);
+  const T = await import(pathToFileURL(path.join(KIT, 'plugins/dispatch', 'scripts', 'trung-tep.mjs')).href);
   for (const [a, b] of CAP) if (C.mauGiao(a, b) !== T.mauGiao(a, b)) sai.push(`lech ${a} × ${b}: răng ${C.mauGiao(a, b)}, lịch ${T.mauGiao(a, b)}`);
-  const kh = khoiJs(readFileSync(path.join(goc, 'scripts', 'cat-luot.mjs'), 'utf8'), 'VUNG-GIAO-CHEP');
+  const kh = khoiJs(readFileSync(path.join(goc, 'plugins/acceptance-gate/scripts', 'cat-luot.mjs'), 'utf8'), 'VUNG-GIAO-CHEP');
   if (kh == null) return [...sai, 'răng thiếu khối VUNG-GIAO-CHEP'];
   const than = (t, ten) => { const i = t.indexOf(ten); if (i < 0) return null; const j = t.indexOf('\n}\n', i); return j < 0 ? null : t.slice(i, j + 2); };
-  const glob = readFileSync(path.join(KIT, 'dieu-phoi', 'scripts', 'glob.mjs'), 'utf8');
-  const tt = readFileSync(path.join(KIT, 'dieu-phoi', 'scripts', 'trung-tep.mjs'), 'utf8');
+  const glob = readFileSync(path.join(KIT, 'plugins/dispatch', 'scripts', 'glob.mjs'), 'utf8');
+  const tt = readFileSync(path.join(KIT, 'plugins/dispatch', 'scripts', 'trung-tep.mjs'), 'utf8');
   for (const [ten, nguon] of [['export function khop(', glob], ['export function mauGiao(', tt]]) {
     const g = than(nguon, ten); const c = than(kh, ten);
     if (!g || !c) sai.push(`thiếu thân ${ten}…`);
@@ -205,7 +205,7 @@ async function cv4(goc = KIT) {
   return sai;
 }
 if (want('CV-4') && await chay('CV-4', () => cv4())) ok('CV-4', `${CAP.length} cặp glob: răng = lịch; thân khop, mauGiao chép nguyên văn`);
-if (want('CV-4-do')) await chayDo('CV-4-do', cv4, [['scripts/cat-luot.mjs', 'return pa.startsWith(pb) || pb.startsWith(pa);', 'return pa === pb;']], 'lech', 'bản sao khối chép đổi startsWith thành === — CV-4-do: lech <cặp>');
+if (want('CV-4-do')) await chayDo('CV-4-do', cv4, [['plugins/acceptance-gate/scripts/cat-luot.mjs', 'return pa.startsWith(pb) || pb.startsWith(pa);', 'return pa === pb;']], 'lech', 'bản sao khối chép đổi startsWith thành === — CV-4-do: lech <cặp>');
 
 console.log(`\nCV Results: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Đồng bộ bản vendored của design-floor với bản ghim upstream — đường DUY NHẤT của bộ đo chạm mạng.
-//   --write  lấy bản ghim, chép đúng các tệp của tệp khoá vào design-floor/vendor/design-os, áp các bản vá
+//   --write  lấy bản ghim, chép đúng các tệp của tệp khoá vào plugins/acceptance-gate/design-floor/vendor/design-os, áp các bản vá
 //            `da-ap` của sổ LOCAL-PATCHES theo thứ tự khối máy, điền `truoc`/`sau` của từng tệp vá vào sổ,
-//            rồi dựng lại bản gói design-floor/dist/ui.mjs. Chạy khi đổi ghim, đổi tệp khoá hay đổi bản vá.
+//            rồi dựng lại bản gói plugins/acceptance-gate/design-floor/dist/ui.mjs. Chạy khi đổi ghim, đổi tệp khoá hay đổi bản vá.
 //   --kiem   làm đúng các bước ấy trong một thư mục tạm và so từng byte với cây đã commit (bản vendored,
 //            băm của sổ, bản gói). Thoát 0 «khớp» · 1 «LỆCH» kèm danh sách · 2 không chạy được (mạng…).
 // Dùng: node tests/design-floor/dong-bo.mjs --write|--kiem [--goc <gốc kit>] [--hop-dong <md>] [--khoa <json>]

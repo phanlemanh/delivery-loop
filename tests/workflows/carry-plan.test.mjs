@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const CP = path.join(HERE, '..', '..', 'feature-loop', 'scripts', 'carry-plan.mjs');
+const CP = path.join(HERE, '..', '..', 'plugins/feature-loop', 'scripts', 'carry-plan.mjs');
 const SHA = 'd'.repeat(40);
 let passed = 0, failed = 0;
 const check = (n, f, detail = '') => {
@@ -146,7 +146,7 @@ console.log('DV9c parser cross-layer đồng bộ chuẩn (fix S4-r1: parser th�
 // đây là dựng fixture theo khuôn bên đọc, và hai bên sẽ trôi khỏi nhau lặng lẽ.
 console.log('DV10 carriedFindings: ngoai hop dong + file khong doi (round-trip tu marker FINDING-LINE)');
 {
-  const WF = path.join(HERE, '..', '..', 'feature-loop', 'workflows', 'acceptance-verify.js');
+  const WF = path.join(HERE, '..', '..', 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
   const wfSrc = readFileSync(WF, 'utf8');
   const a0 = wfSrc.indexOf('<<<FINDING-LINE'), b0 = wfSrc.indexOf('FINDING-LINE>>>');
   check('DV10 rut duoc khoi marker FINDING-LINE tu ben viet', a0 !== -1 && b0 > a0,
@@ -197,7 +197,7 @@ console.log('DV11 noCarry (thieu sha) KHONG duoc keo theo carry FINDING');
   // `carriedFindings` — và CLI biến nó thành exit 3 không in gì. Hai đường carry độc
   // lập nhau (dòng `finding` không mang sha), nên một sổ thiếu sha làm rụng luôn khoản
   // tiền mà T5 sinh ra để cắt, và thông điệp chỉ nói về eval nên không ai thấy.
-  const WF = path.join(HERE, '..', '..', 'feature-loop', 'workflows', 'acceptance-verify.js');
+  const WF = path.join(HERE, '..', '..', 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
   const wfSrc = readFileSync(WF, 'utf8');
   const a0 = wfSrc.indexOf('<<<FINDING-LINE'), b0 = wfSrc.indexOf('FINDING-LINE>>>');
   const KHOA = [...new Set([...wfSrc.slice(a0, b0).matchAll(/(?:^|[{,]\s*)([a-zA-Z][a-zA-Z0-9]*):/gm)].map(m => m[1]))];

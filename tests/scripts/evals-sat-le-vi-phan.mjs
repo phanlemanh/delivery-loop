@@ -16,7 +16,7 @@ import { homedir } from 'node:os';
 import path from 'node:path';
 import * as L from './evals-sat-le-lib.mjs';
 import { createRequire } from 'node:module';
-const core = createRequire(import.meta.url)(path.join(L.KIT, 'lib', 'evidence-core.cjs'));
+const core = createRequire(import.meta.url)(path.join(L.KIT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
 
 const KHO_TIEU_THU = ['crm', 'oneflow', 'artifact-platform', 'radar', 'media-library', 'map'];
 const TONG_TOI_THIEU = 620;
@@ -41,7 +41,7 @@ for (const k of khos) if (!existsSync(path.join(k, '_acceptance'))) ket(2, `khô
 
 let base;
 try { base = L.dungBase(); } catch (e) { ket(2, `bản base: ${e.message}`); }
-const kq = L.viPhan({ khos, cu: L.docBase(base), moi: L.docLib(L.KIT) });
+const kq = L.viPhan({ khos, cu: L.docBase(base), moi: L.docLib(path.join(L.KIT, 'plugins/acceptance-gate')) });
 noi(`base ${L.BASE} · bộ đọc mới: ${L.KIT}`);
 for (const t of kq.theoKho) {
   let sha = '?', nhanh = '?';

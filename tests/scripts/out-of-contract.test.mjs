@@ -1,6 +1,6 @@
 // Ma trận bộ đọc mục «Ngoài hợp đồng» (hồ sơ loi-moi-cong-may-sinh, AC-5/AC-6).
 // Fixture CODE-SINH trong chính lần chạy; khuôn mục RÚT từ marker
-// OOC-ITEM-TEMPLATE trong feature-loop/workflows/acceptance-verify.js — không
+// OOC-ITEM-TEMPLATE trong plugins/feature-loop/workflows/acceptance-verify.js — không
 // viết tay khuôn của bên đọc (luật round-trip rút-từ-writer, mẫu P55).
 // Mọi assertion âm tính có đối chứng dương cùng harness.
 import { readFileSync } from 'node:fs';
@@ -10,13 +10,13 @@ import { createRequire } from 'node:module';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const ooc = createRequire(import.meta.url)(path.join(ROOT, 'lib', 'out-of-contract.cjs'));
+const ooc = createRequire(import.meta.url)(path.join(ROOT, 'plugins/acceptance-gate/lib', 'out-of-contract.cjs'));
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
 const die = m => { throw new Error(m); };
 
 // Khuôn mục rút từ bên VIẾT (acceptance-verify.js dạy S4 viết đúng khuôn này).
-const wf = readFileSync(path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
+const wf = readFileSync(path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
 const m = wf.match(/<<<OOC-ITEM-TEMPLATE\\n([\s\S]*?)\\nOOC-ITEM-TEMPLATE>>>/);
 if (!m) die('KHONG rut duoc OOC-ITEM-TEMPLATE tu acceptance-verify.js');
 const TPL = m[1].replace(/\\n/g, '\n').replace(/\\`/g, '`');
@@ -50,7 +50,7 @@ const M = [
 for (const [n, text, ok] of M) check(n, () => { const r = ooc.parse(text); if (!ok(r)) die(JSON.stringify(r)); });
 
 check('PROPOSALS + GLOSS xuat qua marker (mot nguon)', () => {
-  const src = readFileSync(path.join(ROOT, 'lib', 'out-of-contract.cjs'), 'utf8');
+  const src = readFileSync(path.join(ROOT, 'plugins/acceptance-gate/lib', 'out-of-contract.cjs'), 'utf8');
   if (!/<<<OOC-PROPOSALS[\s\S]*OOC-PROPOSALS>>>/.test(src)) die('thieu marker OOC-PROPOSALS');
   if (JSON.stringify(ooc.PROPOSALS) !== JSON.stringify(['known-limits', 'new-contract', 'wont-fix'])) die('PROPOSALS lech: ' + JSON.stringify(ooc.PROPOSALS));
   // Từ vựng NGƯỜI phải phủ đủ ba token — thẻ in chữ này, thân lệnh signoff dạy chữ này.

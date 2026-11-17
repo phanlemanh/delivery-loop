@@ -12,8 +12,8 @@ import { execFileSync as ex2 } from 'node:child_process';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const RC = path.join(ROOT, 'scripts', 'recheck-evidence.cjs');
-const SKILL = readFileSync(path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
+const RC = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs');
+const SKILL = readFileSync(path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
 const run = (report) => {
@@ -78,7 +78,7 @@ check('DV12+ đối chứng dương lặp lại sau đột biến: khuôn nguyê
   assert.equal(run(f.report).code, 0);
 });
 
-const CHECK = path.join(ROOT, 'scripts', 'pre-merge-check.sh');
+const CHECK = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh');
 const runPm = (root) => {
   try { return { code: 0, out: ex2('bash', [CHECK, root], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }) }; }
   catch (e) { return { code: e.status, out: String(e.stdout || '') + String(e.stderr || '') }; }

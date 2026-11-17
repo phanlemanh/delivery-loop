@@ -2,7 +2,7 @@
 // anh-co-that-kho.mjs — hồ sơ anh-co-that-trong-ho-so, AC-9: luật ảnh mới đổi cờ lớp nhìn-thấy trên bao nhiêu hồ sơ của MỘT
 // kho tiêu thụ (luật 26/09: sửa kit vì sự cố một kho phải cân trên mọi kho). So thẻ bản `main` trước vòng (git archive của
 // gốc vòng, bung trong lượt) với thẻ của cây này trên từng hồ sơ có eval ui-check, rồi đếm ĐỘC LẬP — luật viết riêng ở
-// đây, không gọi scripts/anh-ho-so.cjs — số hồ sơ phải đổi. Hai số lệch → thoát 1.
+// đây, không gọi plugins/acceptance-gate/scripts/anh-ho-so.cjs — số hồ sơ phải đổi. Hai số lệch → thoát 1.
 //
 // Kho khai bằng KHO_DO hoặc — khi biến vắng hẳn — tệp cục bộ .acceptance-runs/kho-do (thư mục ấy nằm trong .gitignore);
 // không có đường mặc định.
@@ -22,7 +22,7 @@ const gi = a.indexOf('--goc');
 const ROOT = gi >= 0 ? path.resolve(a[gi + 1]) : path.resolve(__dirname, '..', '..');
 const BASE = 'adab9a82'; // gốc vòng anh-co-that-trong-ho-so
 const require = createRequire(import.meta.url);
-const LNT = require(path.join(ROOT, 'lib', 'lop-nhin-thay.cjs'));
+const LNT = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'lop-nhin-thay.cjs'));
 
 const het = (ma, chu) => { process.stderr.write(`anh-co-that-kho: ${chu}\n`); process.exit(ma); };
 // KHO_DO có mặt (kể cả rỗng) thắng tệp cục bộ: ca đo đặt KHO_DO='' để chứng nhánh «không khai» trên mọi máy.
@@ -33,7 +33,7 @@ if (!kho || !existsSync(path.join(kho, '_acceptance'))) het(2, 'không có kho �
 const banCu = mkdtempSync(path.join(tmpdir(), 'anh-kho-'));
 const ar = spawnSync('bash', ['-c', `git -C "${ROOT}" archive ${BASE} scripts lib skills | tar -x -C "${banCu}"`], { encoding: 'utf8' });
 if (ar.status !== 0 || !existsSync(path.join(banCu, 'scripts', 'gate-card.js'))) het(2, `không dựng được bản main trước vòng (${BASE})`);
-const GC = { cu: path.join(banCu, 'scripts', 'gate-card.js'), moi: path.join(ROOT, 'scripts', 'gate-card.js') };
+const GC = { cu: path.join(banCu, 'scripts', 'gate-card.js'), moi: path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js') };
 // Thẻ mất ~15 s mỗi hồ sơ trên một kho lớn (đo 22/10: 338 lượt tuần tự = 91 phút) — các hồ sơ độc lập nên chạy song song.
 const uo = (ban, slug) => new Promise(res => { const c = spawn('node', [GC[ban], '--root', kho, '--slug', slug, '--gate', '2', '--extract']); let out = '';
   c.stdout.on('data', d => { out += d; }); c.stderr.resume(); c.on('close', code => { if (code !== 0) return res(null); try { res(JSON.parse(out).ui_observed || null); } catch (_) { res(null); } }); });

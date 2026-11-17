@@ -1,8 +1,8 @@
 // ntr-luoi.test.mjs — hồ sơ nhan-trang-thai-va-reality, hai bên đọc của lưới:
-// `scripts/pre-merge-check.sh` và `scripts/recheck-evidence.cjs <báo cáo>`.
+// `plugins/acceptance-gate/scripts/pre-merge-check.sh` và `plugins/acceptance-gate/scripts/recheck-evidence.cjs <báo cáo>`.
 // AC-8 (E8): ký trên cạnh gãy có tên. AC-10 (E10): hồ sơ đã chấm bởi thực tế.
 // Sổ chạy do bộ chấm THẬT sinh (harness tests/workflows với tác tử giả). Dòng sổ ký trên cạnh
-// gãy do khuôn RÚT từ khối CANH-GAY-REVISIT-LINE của commands/signoff.md (bên viết) — không gõ
+// gãy do khuôn RÚT từ khối CANH-GAY-REVISIT-LINE của plugins/acceptance-gate/commands/signoff.md (bên viết) — không gõ
 // tiền tố decision trong ca. Kho fixture là kho git do code sinh; đường suy từ vị trí tệp này.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, cpSync } from 'node:fs';
@@ -14,7 +14,7 @@ import { runWorkflow } from '../workflows/harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const WF = path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const TMP = mkdtempSync(path.join(tmpdir(), 'ntr-luoi-'));
 const require = createRequire(import.meta.url);
 let pass = 0; let fail = 0;
@@ -26,10 +26,10 @@ const want = name => !process.env.NTR_CASES || process.env.NTR_CASES.split(',').
 // ── khuôn bên viết (signoff.md) ─────────────────────────────────────────────
 const khuonKy = (signoffText) => {
   const m = String(signoffText).match(/<!-- <<<CANH-GAY-REVISIT-LINE -->\n\s*([^\n]+)\n\s*<!-- CANH-GAY-REVISIT-LINE>>> -->/);
-  if (!m) throw new Error('khong rut duoc khoi CANH-GAY-REVISIT-LINE tu commands/signoff.md');
+  if (!m) throw new Error('khong rut duoc khoi CANH-GAY-REVISIT-LINE tu plugins/acceptance-gate/commands/signoff.md');
   return m[1].trim();
 };
-const SIGNOFF = readFileSync(path.join(KIT, 'commands', 'signoff.md'), 'utf8');
+const SIGNOFF = readFileSync(path.join(KIT, 'plugins/acceptance-gate/commands', 'signoff.md'), 'utf8');
 let n = 0;
 const dongKy = (khuon, { nhan, E, AC }) => `{"id":"d-20260921T100000Z-${++n}",` + khuon
   .replace('<ISO>', '2026-09-21T10:00:00Z').replace('<nhãn>', nhan).replace('<E>', E)
@@ -46,7 +46,7 @@ const TRA = {
   reject: { 'cmd-2': { exitCode: 1, outputTail: 'fail', runId: '', cannotRun: false } },
 };
 // Trạng thái «đã ký» lấy từ NGUỒN DUY NHẤT của lib (DA_THONG_CONG_2), không gõ chuỗi.
-const DA_KY = require(path.join(KIT, 'lib', 'workspace-record.cjs')).DA_THONG_CONG_2.find(s => s !== 'machine-cleared');
+const DA_KY = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs')).DA_THONG_CONG_2.find(s => s !== 'machine-cleared');
 async function kho({ tra = TRA.lanh, soDong = [], status = DA_KY, chuKy = 'M 2026-09-21' } = {}) {
   const r = mkdtempSync(path.join(TMP, 'k-'));
   const g = (...a) => execFileSync('git', ['-C', r, ...a], { encoding: 'utf8' }).trim();
@@ -72,11 +72,11 @@ async function kho({ tra = TRA.lanh, soDong = [], status = DA_KY, chuKy = 'M 202
   g('add', '-A'); g('commit', '-qm', 'ho so');
   return { r, d, sha, g, verdict: res.verdict };
 }
-const luoi = (r, kit = KIT) => { const p = spawnSync('bash', [path.join(kit, 'scripts', 'pre-merge-check.sh'), r, '--no-t1-escape'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }); return { ma: p.status, out: `${p.stdout}${p.stderr}` }; };
-const kiemLai = (d, kit = KIT) => { const p = spawnSync(process.execPath, [path.join(kit, 'scripts', 'recheck-evidence.cjs'), path.join(d, 'evidence-report.md')], { encoding: 'utf8' }); return { ma: p.status, out: `${p.stdout}${p.stderr}` }; };
-const NHAN = require(path.join(KIT, 'lib', 'nhan-canh-gay.cjs')).NHAN;
+const luoi = (r, kit = KIT) => { const p = spawnSync('bash', [path.join(kit, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), r, '--no-t1-escape'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }); return { ma: p.status, out: `${p.stdout}${p.stderr}` }; };
+const kiemLai = (d, kit = KIT) => { const p = spawnSync(process.execPath, [path.join(kit, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), path.join(d, 'evidence-report.md')], { encoding: 'utf8' }); return { ma: p.status, out: `${p.stdout}${p.stderr}` }; };
+const NHAN = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'nhan-canh-gay.cjs')).NHAN;
 const soLanh = khuon => [dongKy(khuon, { nhan: NHAN.MU, E: 'E2', AC: 'AC-2' }), dongKy(khuon, { nhan: NHAN.MU, E: 'E3', AC: 'AC-3' })];
-const banSaoKit = () => { const s = mkdtempSync(path.join(TMP, 'sao-')); for (const x of ['scripts', 'lib', 'commands', 'skills', 'feature-loop']) cpSync(path.join(KIT, x), path.join(s, x), { recursive: true }); return s; };
+const banSaoKit = () => { const s = mkdtempSync(path.join(TMP, 'sao-')); for (const x of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/commands', 'plugins/acceptance-gate/skills', 'plugins/feature-loop']) cpSync(path.join(KIT, x), path.join(s, x), { recursive: true }); return s; };
 
 // ── AC-8 ────────────────────────────────────────────────────────────────────
 if (want('NL-AC8-lanh') || want('NL-AC8-thieu') || want('NL-AC8-reject') || want('NL-AC8-mot-nguon')) {
@@ -116,7 +116,7 @@ if (want('NL-AC8-lanh') || want('NL-AC8-thieu') || want('NL-AC8-reject') || want
       try {
         const sai = [];
         // (a) vị từ trong lib luôn khoá → cả hai bên đọc (của bản sao) đỏ ở ca lành.
-        const s = banSaoKit(); const f = path.join(s, 'lib', 'nhan-canh-gay.cjs');
+        const s = banSaoKit(); const f = path.join(s, 'plugins/acceptance-gate/lib', 'nhan-canh-gay.cjs');
         const src = readFileSync(f, 'utf8'); const KIM = "  else out.trangThai = 'mo';\n";
         if (src.split(KIM).length !== 2) throw new Error('kim vi tu khong khop dung 1 lan');
         writeFileSync(f, src.replace(KIM, "  else out.trangThai = 'khoa';\n"));
@@ -132,7 +132,7 @@ if (want('NL-AC8-lanh') || want('NL-AC8-thieu') || want('NL-AC8-reject') || want
         if (a2.ma === 0 || !/E2/.test(a2.out)) sai.push('(b) doi tien to ben viet ma pre-merge van 0');
         if (b2.ma === 0 || !/E2/.test(b2.out)) sai.push('(b) doi tien to ben viet ma recheck van 0');
         // (c) chuỗi máy-đọc trong lib khớp bộ chấm; mutant bộ chấm → lệch có tên.
-        const lib = require(path.join(KIT, 'lib', 'nhan-canh-gay.cjs'));
+        const lib = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'nhan-canh-gay.cjs'));
         const av = readFileSync(WF, 'utf8');
         if (lib.soKhopEngine(av).length) sai.push(`(c) lib lech bo cham: ${lib.soKhopEngine(av).join('; ')}`);
         if (!lib.soKhopEngine(av.replace("127: 'lenh/script", "126: 'lenh/script")).some(x => x.includes('mã hạ tầng lệch'))) sai.push('(c) mutant ma 127→126 khong bi goi ten');
@@ -144,11 +144,11 @@ if (want('NL-AC8-lanh') || want('NL-AC8-thieu') || want('NL-AC8-reject') || want
 }
 
 // ── AC-10 ───────────────────────────────────────────────────────────────────
-// Dòng quan sát do khuôn RÚT từ khối THUC-TE-LINE của commands/observed.md (bên viết).
-const OBSERVED = readFileSync(path.join(KIT, 'commands', 'observed.md'), 'utf8');
+// Dòng quan sát do khuôn RÚT từ khối THUC-TE-LINE của plugins/acceptance-gate/commands/observed.md (bên viết).
+const OBSERVED = readFileSync(path.join(KIT, 'plugins/acceptance-gate/commands', 'observed.md'), 'utf8');
 const khuonTT = (t) => {
   const m = String(t).match(/<!-- <<<THUC-TE-LINE -->\n\s*([^\n]+)\n\s*<!-- THUC-TE-LINE>>> -->/);
-  if (!m) throw new Error('khong rut duoc khoi THUC-TE-LINE tu commands/observed.md');
+  if (!m) throw new Error('khong rut duoc khoi THUC-TE-LINE tu plugins/acceptance-gate/commands/observed.md');
   return m[1].trim();
 };
 const ID_TT = 'd-20260921T110000Z-7';
@@ -188,7 +188,7 @@ for (const [ten, opt, mong] of MA_TT) {
       const x = luoi(dc.r);
       if (x.ma === 0 || !/VIOLATION \[s\]: hồ sơ có bằng chứng nhưng status chưa arm cổng/.test(x.out)) sai.push('doi chung approved khong ra VIOLATION chua arm');
       // Một nguồn: bản sao làm thucTe luôn null → cả hai bên đọc mất NOTE ở ca lành.
-      const sao = banSaoKit(); const f = path.join(sao, 'lib', 'workspace-record.cjs');
+      const sao = banSaoKit(); const f = path.join(sao, 'plugins/acceptance-gate/lib', 'workspace-record.cjs');
       const src = readFileSync(f, 'utf8'); const KIM = "  const tt = [...dong].reverse().find(e => e.type === 'thuc-te');\n";
       if (src.split(KIM).length !== 2) throw new Error('kim thucTe khong khop dung 1 lan');
       writeFileSync(f, src.replace(KIM, KIM + '  if (tt) return null;\n'));

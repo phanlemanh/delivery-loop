@@ -7,7 +7,7 @@ import { mkdtempSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { mkKho, boKiem, ok, lenhChau, lenhChapChon, song, choPid, choChet, ngu, LANE, ROOT } from './gia-lan-fixture.mjs';
 
-const { chayLenh, thuCay } = await import(path.join(ROOT, 'feature-loop', 'scripts', 'lib', 'chay-lenh.mjs'));
+const { chayLenh, thuCay } = await import(path.join(ROOT, 'plugins/feature-loop', 'scripts', 'lib', 'chay-lenh.mjs'));
 
 const ALL = ['AC2-lib-giet-cay', 'AC2-lib-bay-term', 'AC2-lib-in-nhieu',
   'AC2-B1', 'AC2-B2', 'AC2-B3', 'AC2-B3-tach-nhom', 'AC2-B4', 'AC2-B5', 'AC2-B6', 'AC2-B7',
@@ -70,7 +70,7 @@ await ca('AC2-B2', 'cháu bẫy SIGTERM → chết sau SIGKILL', async () => {
 });
 await ca('AC2-B3', 'làn LỒNG hai tầng → sau khi làn ngoài thoát 4, cháu tầng trong chết', async () => {
   const trong = mkKho({ suiteCmd: lenhChau('chau-trong.pid', { bayTerm: true }) });
-  const ngoai = mkKho({ suiteCmd: `"${process.execPath}" "${LANE}" --root "${trong.root}" --ag-root "${ROOT}" --slug feat --tran-phut 5` });
+  const ngoai = mkKho({ suiteCmd: `"${process.execPath}" "${LANE}" --root "${trong.root}" --ag-root "${ROOT}/plugins/acceptance-gate" --slug feat --tran-phut 5` });
   const r = ngoai.lane(['--tran-phut', TRAN], { env: { GG_DAU: trong.dau } });
   const pid = await choPid(trong, 'chau-trong.pid');
   ok(r.status === 4, `mã ${r.status}\n${r.stderr}`);

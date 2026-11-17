@@ -7,8 +7,8 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const GOC_KIT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-export const DUONG_HOP_DONG = join(GOC_KIT, 'design-floor/HOP-DONG-NHAP.md');
-export const DUONG_KHOA = join(GOC_KIT, 'design-floor/upstream.lock.json');
+export const DUONG_HOP_DONG = join(GOC_KIT, 'plugins/acceptance-gate/design-floor/HOP-DONG-NHAP.md');
+export const DUONG_KHOA = join(GOC_KIT, 'plugins/acceptance-gate/design-floor/upstream.lock.json');
 
 function docKhoi(duong, ten) {
   const mo = `<!-- <<<${ten} -->`;

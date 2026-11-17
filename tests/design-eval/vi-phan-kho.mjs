@@ -62,7 +62,7 @@ function cong(goc, dich) {
   return new Promise((xong) => {
     const chay = () => {
       dang++;
-      execFile(process.execPath, [path.join(goc, 'scripts', 'design-gate.mjs'), dich, '--jsdom', JSDOM_DIR],
+      execFile(process.execPath, [path.join(goc, 'plugins/acceptance-gate/scripts', 'design-gate.mjs'), dich, '--jsdom', JSDOM_DIR],
         { maxBuffer: 64 * 1024 * 1024, timeout: 180000 }, (_loi, stdout) => {
           dang--;
           let j = null;

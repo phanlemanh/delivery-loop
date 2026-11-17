@@ -1,8 +1,8 @@
-// hang-pr.test.mjs — hồ sơ ci-cua-kho-bo-job-nang: chế độ `--hang-pr` của scripts/pre-merge-check.sh
+// hang-pr.test.mjs — hồ sơ ci-cua-kho-bo-job-nang: chế độ `--hang-pr` của plugins/acceptance-gate/scripts/pre-merge-check.sh
 // (hàng lộ trình C1, 11/10/2026). CI của kho bỏ job nặng cho PR không chạm vật bằng MỘT cờ của chính cổng.
 //
 // Luật đo:
-//  - Kho mẫu là kho git THẬT dựng trong lần chạy; gọi CHÍNH scripts/pre-merge-check.sh (có cờ và không cờ).
+//  - Kho mẫu là kho git THẬT dựng trong lần chạy; gọi CHÍNH plugins/acceptance-gate/scripts/pre-merge-check.sh (có cờ và không cờ).
 //  - Ma trận + kỳ vọng VIẾT TRƯỚC (hằng dưới), không tính từ mã cổng; số khẳng định = số hàng.
 //  - Chiều đỏ: bản sao TRỌN `scripts/` + `lib/` bị tiêm đúng một kim (kim khớp đúng một lần, không thì ca đỏ
 //    vì hạ tầng ca), thông điệp ghim; bản nguyên vẹn cùng kho là đối chứng dương.
@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const GATE = path.join(KIT, 'scripts', 'pre-merge-check.sh');
+const GATE = path.join(KIT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh');
 const SLUG = 'ci-cua-kho-bo-job-nang';
 // Commit cố định trước vòng này (điểm cắt nhánh của vòng, 11/10) — chỉ dùng làm dữ liệu cho ca đỏ của vế lịch sử
 // và làm --base cho ca chạy trên cây kit; KHÔNG dùng làm mốc so «nhánh không đổi».
@@ -97,8 +97,8 @@ function kim(text, tu, thanh) {
 // Bản sao TRỌN scripts/ + lib/ của cây đang đo; mutate(text) đổi tệp cổng trong bản sao. Trả đường tệp cổng.
 function banSao(mutate) {
   const d = thuMuc('bansao');
-  fs.cpSync(path.join(KIT, 'scripts'), path.join(d, 'scripts'), { recursive: true });
-  fs.cpSync(path.join(KIT, 'lib'), path.join(d, 'lib'), { recursive: true });
+  fs.cpSync(path.join(KIT, 'plugins/acceptance-gate/scripts'), path.join(d, 'scripts'), { recursive: true });
+  fs.cpSync(path.join(KIT, 'plugins/acceptance-gate/lib'), path.join(d, 'lib'), { recursive: true });
   const f = path.join(d, 'scripts', 'pre-merge-check.sh');
   fs.writeFileSync(f, mutate(fs.readFileSync(f, 'utf8')));
   return f;

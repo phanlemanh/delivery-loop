@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');
 const FIX = path.join(KIT, 'tests', 'design-eval', 'fixtures');
-const VONG = path.join(KIT, 'scripts', 'design-gate.mjs');
+const VONG = path.join(KIT, 'plugins/acceptance-gate/scripts', 'design-gate.mjs');
 const CO = '--require-measured';
 
 let pass = 0, fail = 0;
@@ -203,8 +203,8 @@ bao('CC8', 'quan he tron ma tran', '12 dich x {static, dom}: co co → 5 khi va 
 function banSao(...cap) {
   const goc = tam('dg-cc-dot-bien-');
   mkdirSync(path.join(goc, 'scripts'));
-  symlinkSync(path.join(KIT, 'lib'), path.join(goc, 'lib'));
-  symlinkSync(path.join(KIT, 'vendor'), path.join(goc, 'vendor'));
+  symlinkSync(path.join(KIT, 'plugins/acceptance-gate/lib'), path.join(goc, 'lib'));
+  symlinkSync(path.join(KIT, 'plugins/acceptance-gate/vendor'), path.join(goc, 'vendor'));
   let s = readFileSync(VONG, 'utf8');
   for (let i = 0; i < cap.length; i += 2) {
     const [thay, bang] = [cap[i], cap[i + 1]];

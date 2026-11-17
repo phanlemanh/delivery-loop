@@ -22,7 +22,7 @@ case "${1:-}" in
   xfail-con) node "$HERE/hop-dong.mjs" --chi DF-01,DF-02,DF-03,DF-04,DF-05,DF-06,DF-09 ;;
   luat-gioi-han)
     node "$HERE/tu-thu.mjs" --chi LUAT || exit 1
-    md="$(cat design-floor/HOP-DONG-NHAP.md)"
+    md="$(cat plugins/acceptance-gate/design-floor/HOP-DONG-NHAP.md)"
     case "$md" in *pr_upstream*) echo 'HOP-DONG-NHAP.md còn pr_upstream'; exit 1 ;; esac
     case "$md" in *'"ban_va"'*|*'"gioi_han": []'*) echo 'HOP-DONG-NHAP.md: không còn pr_upstream, giới hạn mang ban_va' ;; *) echo 'HOP-DONG-NHAP.md thiếu ban_va'; exit 1 ;; esac
     node "$HERE/so-va.mjs" ;;

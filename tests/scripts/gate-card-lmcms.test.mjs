@@ -1,7 +1,7 @@
 // Lưới thường trực của hồ sơ loi-moi-cong-may-sinh (2.7): cờ fail-quiet của
 // thẻ, cột SẼ/KHÔNG, luật rơi bậc, câu gộp máy-sinh, bảng định tuyến.
 // Fixture CODE-SINH trong chính lần chạy; mọi chuỗi ghim RÚT từ hằng của
-// scripts/gate-card.js (khuôn gmpick) — không gõ literal ở phía test.
+// plugins/acceptance-gate/scripts/gate-card.js (khuôn gmpick) — không gõ literal ở phía test.
 import { spawnSync, spawn } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync } from 'node:fs';
 import { tmpdir, cpus } from 'node:os';
@@ -308,8 +308,8 @@ check('LM16 the Cong 1 co CO DO -> KHONG dien san (nhanh g1Blocked co rang)', ()
   // Cờ đỏ dùng ở đây: «khai KHÔNG ĐO ĐƯỢC nhưng hợp đồng có mặt người dùng» —
   // lối không-đo-được chỉ dành cho vòng không có người dùng cuối. Tiền tố rút
   // từ chính khuôn ô cơ hội, không gõ literal.
-  const NG1 = createRequire(import.meta.url)(path.join(ROOT, 'lib', 'nguong-o-co-hoi.cjs'));
-  const kd = NG1.prefixes(readFileSync(path.join(ROOT, 'skills/acceptance/references/opportunity-template.md'), 'utf8')).khongDo;
+  const NG1 = createRequire(import.meta.url)(path.join(ROOT, 'plugins/acceptance-gate/lib', 'nguong-o-co-hoi.cjs'));
+  const kd = NG1.prefixes(readFileSync(path.join(ROOT, 'plugins/acceptance-gate/skills/acceptance/references/opportunity-template.md'), 'utf8')).khongDo;
   const f = G1(PROBE('findings'));
   f['contract.md'] = f['contract.md'].replace('surfaces: [cli]', 'surfaces: [ui]');
   f['opportunity.md'] = `---\nschema_version: 1\nslug: g\nstage: decided\ndecision: build\n---\n\n## ${NG1.UAT_THRESHOLD_HEADING}\n\n- ${kd} vòng này không có người dùng cuối.\n`;
@@ -323,7 +323,7 @@ check('LM17 dieu khoan AC-8 co mat o NGUON va CA HAI ban chep', () => {
   // chép khai CÙNG MỘT LUẬT. Bản trước chỉ dò hai cụm chữ có mặt, nên một bản
   // chép đổi «ghi thẳng» thành «VẪN CHỜ XÁC NHẬN» — ngược hẳn nguồn — vẫn xanh,
   // vì cụm kia còn khớp một chỗ khác trong cùng file (S4-r2).
-  const LAW = path.join(ROOT, 'skills/acceptance/references/human-facing-language.md');
+  const LAW = path.join(ROOT, 'plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md');
   const src = readFileSync(LAW, 'utf8');
   const mm = src.match(/<!-- <<<IDENTITY-ECHO-RULE -->\n([\s\S]*?)\n<!-- IDENTITY-ECHO-RULE>>> -->/);
   if (!mm) die('ban luat thieu khoi marker IDENTITY-ECHO-RULE');
@@ -333,7 +333,7 @@ check('LM17 dieu khoan AC-8 co mat o NGUON va CA HAI ban chep', () => {
   // khớp) — nó biến mất cùng nhánh chờ, nên ghim nó ở đây sẽ giữ răng cho một luật đã chết.
   if (!/ghi thẳng/i.test(rule) || !/CẠN/.test(rule)) die('menh de nguon mat mot trong hai ve (ghi-thang / ca CAN)');
   if (/Enter xác nhận/i.test(rule)) die('khoi luat mang lai nhanh cho da go');
-  for (const p of ['commands/approve.md', 'commands/signoff.md']) {
+  for (const p of ['plugins/acceptance-gate/commands/approve.md', 'plugins/acceptance-gate/commands/signoff.md']) {
     const t2 = readFileSync(path.join(ROOT, p), 'utf8');
     const m2 = t2.match(/<!-- <<<IDENTITY-ECHO-RULE -->\n([\s\S]*?)\n<!-- IDENTITY-ECHO-RULE>>> -->/);
     if (!m2) die('ban chep thieu khoi marker IDENTITY-ECHO-RULE: ' + p);

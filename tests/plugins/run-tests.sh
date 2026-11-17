@@ -83,7 +83,7 @@ run "P07 vendor engine import graph resolves (vendor/ shipped)" \
   node --input-type=module -e "
 const m = await import(process.argv[1]);
 if (typeof m.detectHtml !== 'function') throw new Error('detectHtml missing');
-" "file://$ROOT/vendor/impeccable/engine/engines/static-html/detect-html.mjs"
+" "file://$ROOT/plugins/acceptance-gate/vendor/impeccable/engine/engines/static-html/detect-html.mjs"
 
 run "P08 every \${CLAUDE_PLUGIN_ROOT} path in commands/skills exists in ITS plugin root" \
   python3 - "$ROOT" <<'PY'
@@ -94,8 +94,8 @@ import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
 plugin_roots = [
-    root,                                   # acceptance-gate (source ./)
-    root / "feature-loop",
+    root / "plugins/acceptance-gate",                                   # acceptance-gate (source ./)
+    root / "plugins/feature-loop",
 ]
 pat = re.compile(r"\$\{CLAUDE_PLUGIN_ROOT\}/([A-Za-z0-9._/-]+)")
 bad = []
@@ -117,7 +117,7 @@ assert not bad, "unresolvable ${CLAUDE_PLUGIN_ROOT} paths:\n" + "\n".join(bad)
 
 # Bo dem tinh tao: vung quet phai thuc su co file, khong thi "0 vi pham" chi la
 # buoc quet hong (grep-sanity-counter).
-_skills = sorted((root / "skills").rglob("*.md"))
+_skills = sorted((root / "plugins/acceptance-gate/skills").rglob("*.md"))
 assert len(_skills) >= 5, f"bo dem tinh tao: quet ra {len(_skills)} file trong skills/ — nghi buoc quet hong"
 PY
 
@@ -125,7 +125,7 @@ run "P20 lane lookup table CT1 nhat quan trong feature-loop SKILL" \
   python3 - "$ROOT" <<'PY'
 import sys, pathlib
 root = pathlib.Path(sys.argv[1])
-fl = (root / "feature-loop/skills/feature-loop/SKILL.md").read_text()
+fl = (root / "plugins/feature-loop/skills/feature-loop/SKILL.md").read_text()
 assert fl.count("| **CT1") == 1, "bảng tra CT1 phải có đúng 1 lần"
 assert fl.count("| **CT2") == 0, "CT2 (nghi lễ design-of-record) đã khai tử — bảng tra không được mọc lại"
 assert "design_tier" not in fl, "không được lưu field tier"
@@ -137,9 +137,9 @@ run "P21 decisions.jsonl plumbing noi du 3 diem (script + command + SKILL)" \
   python3 - "$ROOT" <<'PY'
 import sys, pathlib
 root = pathlib.Path(sys.argv[1])
-assert "decisions.jsonl" in (root / "scripts/gate-card.js").read_text()
-assert "decisions_plain" in (root / "commands/acceptance-card.md").read_text()
-assert "decisions.jsonl" in (root / "feature-loop/skills/feature-loop/SKILL.md").read_text()
+assert "decisions.jsonl" in (root / "plugins/acceptance-gate/scripts/gate-card.js").read_text()
+assert "decisions_plain" in (root / "plugins/acceptance-gate/commands/acceptance-card.md").read_text()
+assert "decisions.jsonl" in (root / "plugins/feature-loop/skills/feature-loop/SKILL.md").read_text()
 PY
 
 run "P22 dinh tuyen model trong workflows + version feature-loop khong rong" \
@@ -150,16 +150,16 @@ root = Path(sys.argv[1])
 
 # version KHONG ghim literal: ghim literal bat moi lan bump phai sua suite, ma
 # suite doi la code doi that nen evidence stale.
-_fl_c = json.loads((root / "feature-loop/.claude-plugin/plugin.json").read_text())["version"]
+_fl_c = json.loads((root / "plugins/feature-loop/.claude-plugin/plugin.json").read_text())["version"]
 assert _fl_c, "feature-loop: version rong"
-assert "machine: 'haiku'" in (root / "feature-loop/workflows/acceptance-verify.js").read_text()
-assert "judge: 'sonnet'" in (root / "feature-loop/workflows/acceptance-verify.js").read_text()
-assert "executor: null" in (root / "feature-loop/workflows/execute-parallel.js").read_text()
+assert "machine: 'haiku'" in (root / "plugins/feature-loop/workflows/acceptance-verify.js").read_text()
+assert "judge: 'sonnet'" in (root / "plugins/feature-loop/workflows/acceptance-verify.js").read_text()
+assert "executor: null" in (root / "plugins/feature-loop/workflows/execute-parallel.js").read_text()
 PY
 
 
 run "P24 acceptance-init phat mac dinh nghiem (recheck strict; KHONG con khoa chu-ky cu)" \
-  python3 - "$ROOT/commands/acceptance-init.md" <<'PY'
+  python3 - "$ROOT/plugins/acceptance-gate/commands/acceptance-init.md" <<'PY'
 import sys, re
 from pathlib import Path
 text = Path(sys.argv[1]).read_text()
@@ -181,7 +181,7 @@ run "P25 hook manifest Claude giu goc plugin dung bien Claude" \
 import sys
 from pathlib import Path
 root = Path(sys.argv[1])
-claude_hooks = (root / "hooks/hooks.json").read_text()
+claude_hooks = (root / "plugins/acceptance-gate/hooks/hooks.json").read_text()
 assert "${CLAUDE_PLUGIN_ROOT}" in claude_hooks
 assert "acceptance-evidence-gate.js" in claude_hooks
 PY
@@ -190,7 +190,7 @@ PY
 
 
 run "P30 Claude decision commands ship and keep their invariants" \
-  python3 - "$ROOT/commands" "$ROOT" <<'PY'
+  python3 - "$ROOT/plugins/acceptance-gate/commands" "$ROOT" <<'PY'
 import sys, re
 from pathlib import Path
 cmds = Path(sys.argv[1])
@@ -210,25 +210,25 @@ root = Path(sys.argv[2])
 # "~300 giây" — vì đó là ngôn ngữ tự nhiên không có biên. Backstop cho lớp ấy
 # là eval hành vi E3b + mắt người ở Cổng 1, khai trong Known limits của hồ sơ.
 LOP_PHUT = re.compile(r"[0-9~]\s*phút|phút/cổng|[Mm]inutes|time_human_minutes")
-PHAM_VI = ["commands", "skills", "feature-loop", "scripts", "hooks", "lib",
+PHAM_VI = ["plugins/acceptance-gate/commands", "plugins/acceptance-gate/skills", "plugins/feature-loop", "plugins/acceptance-gate/scripts", "plugins/acceptance-gate/hooks", "plugins/acceptance-gate/lib",
            "GUIDE.md", "QUICKSTART.md", "README.md", "CONTEXT.md"]
 # Bản khai (tệp, từ khoá) — mỗi dòng một chỗ ĐƯỢC PHÉP, kèm lý do.
 MIEN_TRU = {
-    ("skills/acceptance/references/human-facing-language.md", "time_human_minutes"): "schema đọc-cũ cho hồ sơ đã ký (Out of scope hồ sơ 1a)",
-    ("skills/acceptance/SKILL.md", "minutes"): "nằm trong chính câu CẤM ghi phút",
-    ("skills/ux-ui-craft/references/guidance-craft.md", "phút"): "thời lượng tự-đồng-bộ của UI, không phải phút người ở cổng",
-    ("skills/ux-ui-craft/references/direction-craft.md", "minutes"): "lời khuyên thiết kế, không phải phút người ở cổng",
+    ("plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md", "time_human_minutes"): "schema đọc-cũ cho hồ sơ đã ký (Out of scope hồ sơ 1a)",
+    ("plugins/acceptance-gate/skills/acceptance/SKILL.md", "minutes"): "nằm trong chính câu CẤM ghi phút",
+    ("plugins/acceptance-gate/skills/ux-ui-craft/references/guidance-craft.md", "phút"): "thời lượng tự-đồng-bộ của UI, không phải phút người ở cổng",
+    ("plugins/acceptance-gate/skills/ux-ui-craft/references/direction-craft.md", "minutes"): "lời khuyên thiết kế, không phải phút người ở cổng",
     ("GUIDE.md", "phút"): "thời gian ĐỌC tài liệu + median phút/round của MÁY",
     ("QUICKSTART.md", "phút"): "thời gian ĐỌC tài liệu",
     ("README.md", "phút"): "thời gian ĐỌC tài liệu",
     ("README.md", "minutes"): "câu tuyên kit KHÔNG đo phút người",
-    ("scripts/loop-health.mjs", "minutes"): "phút MÁY giữa hai commit (làm-xong→quyết-được của luật (c)) — không phải phút NGƯỜI ở cổng",
-    ("feature-loop/scripts/lib/chay-lai.mjs", "phút"): "trần thời lượng MÁY của một lệnh trước khi được chạy lại (hồ sơ gia-lan-ghim-lai, AC-1) — không phải phút NGƯỜI ở cổng",
-    ("commands/acceptance-init.md", "minutes"): "trần MÁY của làn ghim lại (feature_loop.repin_budget_min, hồ sơ gia-lan-ghim-lai AC-2) — không phải phút NGƯỜI ở cổng",
-    ("skills/acceptance/references/eval-executors.md", "minutes"): "thời lượng MÁY tối đa của một lệnh eval (khoá long_running, hồ sơ lenh-dai-chay-rieng AC-8) — không phải phút NGƯỜI ở cổng",
-    ("skills/acceptance/references/tool-kill-rule.md", "phút"): "trần chờ MÁY cho lệnh bị đẩy sang nền (hồ sơ lenh-dai-chay-rieng AC-4) — không phải phút NGƯỜI ở cổng",
-    ("feature-loop/workflows/acceptance-verify.js", "phút"): "thời lượng MÁY của lệnh eval trong comment khối LENH-DAI (hồ sơ lenh-dai-chay-rieng) — không phải phút NGƯỜI ở cổng",
-    ("feature-loop/scripts/repin-lane.mjs", "phút"): "số đo GIỜ MÁY của làn (13 phút/làn, đo 14/09) trong comment giải thích vì sao có --skip-unchanged — dòng 5 của luật (c) đếm phút MÁY, không phải phút NGƯỜI ở cổng",
+    ("plugins/acceptance-gate/scripts/loop-health.mjs", "minutes"): "phút MÁY giữa hai commit (làm-xong→quyết-được của luật (c)) — không phải phút NGƯỜI ở cổng",
+    ("plugins/feature-loop/scripts/lib/chay-lai.mjs", "phút"): "trần thời lượng MÁY của một lệnh trước khi được chạy lại (hồ sơ gia-lan-ghim-lai, AC-1) — không phải phút NGƯỜI ở cổng",
+    ("plugins/acceptance-gate/commands/acceptance-init.md", "minutes"): "trần MÁY của làn ghim lại (feature_loop.repin_budget_min, hồ sơ gia-lan-ghim-lai AC-2) — không phải phút NGƯỜI ở cổng",
+    ("plugins/acceptance-gate/skills/acceptance/references/eval-executors.md", "minutes"): "thời lượng MÁY tối đa của một lệnh eval (khoá long_running, hồ sơ lenh-dai-chay-rieng AC-8) — không phải phút NGƯỜI ở cổng",
+    ("plugins/acceptance-gate/skills/acceptance/references/tool-kill-rule.md", "phút"): "trần chờ MÁY cho lệnh bị đẩy sang nền (hồ sơ lenh-dai-chay-rieng AC-4) — không phải phút NGƯỜI ở cổng",
+    ("plugins/feature-loop/workflows/acceptance-verify.js", "phút"): "thời lượng MÁY của lệnh eval trong comment khối LENH-DAI (hồ sơ lenh-dai-chay-rieng) — không phải phút NGƯỜI ở cổng",
+    ("plugins/feature-loop/scripts/repin-lane.mjs", "phút"): "số đo GIỜ MÁY của làn (13 phút/làn, đo 14/09) trong comment giải thích vì sao có --skip-unchanged — dòng 5 của luật (c) đếm phút MÁY, không phải phút NGƯỜI ở cổng",
 }
 def _quet():
     hits = []
@@ -284,8 +284,8 @@ text = (root / "README.md").read_text() + "\n" + (root / "GUIDE.md").read_text()
 for needle in [
     "claude plugin marketplace add",
     "claude plugin install",
-    "acceptance-gate@acceptance-gate-kit",
-    "feature-loop@acceptance-gate-kit",
+    "acceptance-gate@delivery-loop",
+    "feature-loop@delivery-loop",
 ]:
     assert needle in text, needle
 PY
@@ -295,11 +295,11 @@ run "P29 gap-probe S1 noi du 4 diem (card script, feature-loop SKILL, command, G
 import sys
 from pathlib import Path
 root = Path(sys.argv[1])
-gc = (root / "scripts/gate-card.js").read_text()
+gc = (root / "plugins/acceptance-gate/scripts/gate-card.js").read_text()
 assert "gap-probe" in gc and "Phản biện context sạch" in gc and "gap_probe" in gc
-fl = (root / "feature-loop/skills/feature-loop/SKILL.md").read_text()
+fl = (root / "plugins/feature-loop/skills/feature-loop/SKILL.md").read_text()
 assert "gap-probe" in fl and "bỏ gap-probe" in fl and "models.critic" in fl.replace("`", "")
-assert "gap_probe" in (root / "commands/acceptance-card.md").read_text()
+assert "gap_probe" in (root / "plugins/acceptance-gate/commands/acceptance-card.md").read_text()
 assert "Gap-probe S1" in (root / "GUIDE.md").read_text()
 PY
 
@@ -312,21 +312,21 @@ from pathlib import Path
 root = Path(sys.argv[1])
 LOCKED = ["approve", "signoff", "observed", "acceptance-init", "acceptance-status", "acceptance-report", "start"]
 for name in LOCKED:
-    t = (root / "commands" / f"{name}.md").read_text()
+    t = (root / "plugins/acceptance-gate/commands" / f"{name}.md").read_text()
     assert "disable-model-invocation: true" in t, f"commands/{name}.md lacks lock"
-card = (root / "commands/acceptance-card.md").read_text()
+card = (root / "plugins/acceptance-gate/commands/acceptance-card.md").read_text()
 assert "disable-model-invocation" not in card, \
     "acceptance-card must stay model-invocable (feature-loop invokes it at both Gates)"
 # Gói road-map (hồ sơ ap-chinh-sach-lo-trinh, CỘNG chủ kho duyệt 15/10): ba lệnh người khoá; xem giữ mở (chỉ đọc).
-LOCKED_ROAD_MAP = ["ghim", "bo-ghim", "tra-lai"]
+LOCKED_ROAD_MAP = ["pin", "unpin", "undo"]
 for name in LOCKED_ROAD_MAP:
-    t = (root / "road-map" / "commands" / f"{name}.md").read_text()
-    assert "disable-model-invocation: true" in t, f"road-map/commands/{name}.md lacks lock"
-xem = (root / "road-map/commands/xem.md").read_text()
-assert "disable-model-invocation" not in xem, "road-map/commands/xem.md must stay model-invocable (chỉ đọc)"
+    t = (root / "plugins/roadmap" / "commands" / f"{name}.md").read_text()
+    assert "disable-model-invocation: true" in t, f"plugins/roadmap/commands/{name}.md lacks lock"
+xem = (root / "plugins/roadmap/commands/status.md").read_text()
+assert "disable-model-invocation" not in xem, "plugins/roadmap/commands/status.md must stay model-invocable (chỉ đọc)"
 # Hồ sơ cua-tin-hieu-giua-chien-dich (RM3): gửi một ý không phải quyết định — lệnh gui giữ mở.
-gui = (root / "road-map/commands/gui.md").read_text()
-assert "disable-model-invocation" not in gui, "road-map/commands/gui.md must stay model-invocable (gửi ý, không phải quyết định)"
+gui = (root / "plugins/roadmap/commands/suggest.md").read_text()
+assert "disable-model-invocation" not in gui, "plugins/roadmap/commands/suggest.md must stay model-invocable (gửi ý, không phải quyết định)"
 PY
 
 run "P33 no source file globs the plugin cache (resolve-plugin.mjs is the only path)" \
@@ -336,8 +336,8 @@ from pathlib import Path
 import shutil, tempfile
 root = Path(sys.argv[1])
 # dieu-phoi: gói thứ tư (hồ sơ dieu-phoi-dong-goi-loi AC-9) — cùng luật «chỉ resolve-plugin.mjs».
-AREAS = ["skills", "feature-loop", "commands", "hooks", "lib", "scripts", "dieu-phoi"]
-ALLOW = {"feature-loop/scripts/resolve-plugin.mjs"}  # documents the pattern it replaces
+AREAS = ["plugins/acceptance-gate/skills", "plugins/feature-loop", "plugins/acceptance-gate/commands", "plugins/acceptance-gate/hooks", "plugins/acceptance-gate/lib", "plugins/acceptance-gate/scripts", "plugins/dispatch"]
+ALLOW = {"plugins/feature-loop/scripts/resolve-plugin.mjs"}  # documents the pattern it replaces
 
 def quet(goc):
     files = [p for a in AREAS for p in (goc / a).rglob("*")
@@ -358,14 +358,14 @@ def quet(goc):
 # resolve-plugin.mjs vào gói → offender nêu đúng tệp đó.
 tmp = Path(tempfile.mkdtemp(prefix="p33-"))
 try:
-    shutil.copytree(root / "dieu-phoi", tmp / "dieu-phoi")
+    shutil.copytree(root / "plugins/dispatch", tmp / "plugins/dispatch")
     f0, o0 = quet(tmp)
-    assert [p for p in f0 if "dieu-phoi" in p.parts], "P33 VUNG: ban sao khong quet tep nao duoi dieu-phoi/"
+    assert [p for p in f0 if "dispatch" in p.parts], "P33 VUNG: ban sao khong quet tep nao duoi dieu-phoi/"
     assert not o0, f"doi chung duong hong: ban sao lanh da co offender {o0}"
-    shutil.copy(root / "feature-loop/scripts/resolve-plugin.mjs", tmp / "dieu-phoi/scripts/resolve-plugin.mjs")
+    shutil.copy(root / "plugins/feature-loop/scripts/resolve-plugin.mjs", tmp / "plugins/dispatch/scripts/resolve-plugin.mjs")
     _, o1 = quet(tmp)
-    assert o1 == ["dieu-phoi/scripts/resolve-plugin.mjs"], f"chieu do khong chay: {o1}"
-    print("     P33 [chieu do] ban sao co dieu-phoi/scripts/resolve-plugin.mjs -> DO")
+    assert o1 == ["plugins/dispatch/scripts/resolve-plugin.mjs"], f"chieu do khong chay: {o1}"
+    print("     P33 [chieu do] ban sao co plugins/dispatch/scripts/resolve-plugin.mjs -> DO")
 finally:
     shutil.rmtree(tmp, ignore_errors=True)
 
@@ -375,7 +375,7 @@ assert files, "sanity: globbed zero source files — the scan itself is broken"
 assert not offenders, (
     "cache-glob resurfaced in: " + ", ".join(offenders) +
     " — use ${CLAUDE_PLUGIN_ROOT}/${PLUGIN_ROOT} for your own plugin, or "
-    "feature-loop/scripts/resolve-plugin.mjs for a sibling (ls order is lexical: "
+    "plugins/feature-loop/scripts/resolve-plugin.mjs for a sibling (ls order is lexical: "
     "it ranks 1.9.2 above 1.20.1). See docs/adr/0003.")
 PY
 
@@ -411,8 +411,8 @@ PY
 # ── P38: parity CẤU TRÚC — gate-card phải dùng lib, không giữ luật riêng ────
 # Contract v2 chết vì luật bị tách làm hai bản, parity giữ bằng comment. Đây là
 # răng máy cho lời hứa "một cài đặt" — comment không kiểm được, grep thì được.
-echo "P38 gate-card.js dung lib/gap-probe.cjs, khong con regex descope rieng"
-GC_SRC="$(cat "$ROOT/scripts/gate-card.js")"
+echo "P38 gate-card.js dung plugins/acceptance-gate/lib/gap-probe.cjs, khong con regex descope rieng"
+GC_SRC="$(cat "$ROOT/plugins/acceptance-gate/scripts/gate-card.js")"
 case "$GC_SRC" in
   *"require('../lib/gap-probe.cjs')"*|*'require("../lib/gap-probe.cjs")'*)
     pass "P38a gate-card require lib/gap-probe.cjs" ;;
@@ -429,7 +429,7 @@ fi
 # Repo khoi tao ma config khong co khoa `gap_probe` thi luat im lang o dung
 # nhung repo do.
 echo "P39 acceptance-init: khoa gap_probe + 3 mode"
-for f in "$ROOT/commands/acceptance-init.md"; do
+for f in "$ROOT/plugins/acceptance-gate/commands/acceptance-init.md"; do
   n="$(basename "$(dirname "$f")")/$(basename "$f")"
   if grep -q 'gap_probe:' "$f"; then pass "P39[$n:key]"; else fail "P39[$n:key]"; fi
   if grep -q 'required | advisory | off' "$f"; then pass "P39[$n:modes]"; else fail "P39[$n:modes]"; fi
@@ -488,7 +488,7 @@ run "P44 acceptance-init nhac co cho job push (khop GUIDE)" \
 import sys
 from pathlib import Path
 root = Path(sys.argv[1])
-for rel in ["commands/acceptance-init.md"]:
+for rel in ["plugins/acceptance-gate/commands/acceptance-init.md"]:
     t = (root / rel).read_text()
     assert "--no-t1-escape" in t, f"{rel} chua nhac co cho job push"
 # Parity GUIDE <-> acceptance-init: consumer chep snippet tu GUIDE §Wire CI, nen
@@ -511,7 +511,7 @@ p48_names() {
 }
 p48_exp() { sed -n 's/^LEDGER_EXPECTED="\(.*\)"$/\1/p' "$1" | tr ' ' '\n' | sort -u | tr '\n' ' '; }
 P48OK=1
-for f in "$ROOT/scripts/pre-merge-check.sh"; do
+for f in "$ROOT/plugins/acceptance-gate/scripts/pre-merge-check.sh"; do
   if [ ! -f "$f" ]; then echo "     thieu $f"; P48OK=0; continue; fi
   if [ -z "$(p48_exp "$f")" ]; then echo "     EXPECTED rong/khong parse duoc: $f"; P48OK=0; continue; fi
   if [ "$(p48_names "$f")" != "$(p48_exp "$f")" ]; then
@@ -524,7 +524,7 @@ done
 # LECH. Thieu no thi P48 chi chung minh "hai chuoi hom nay bang nhau", khong
 # chung minh phep so con song (bat bien #4 CLAUDE.md).
 P48CP="$(mktemp)"
-{ cat "$ROOT/scripts/pre-merge-check.sh"; printf '\nledger_mark ran khoi-moi\n'; } > "$P48CP"
+{ cat "$ROOT/plugins/acceptance-gate/scripts/pre-merge-check.sh"; printf '\nledger_mark ran khoi-moi\n'; } > "$P48CP"
 if [ "$(p48_names "$P48CP")" = "$(p48_exp "$P48CP")" ]; then
   echo "     dot bien KHONG bi phat hien — phep so da chet"
   P48OK=0
@@ -642,7 +642,7 @@ cat > "$P52WS/_acceptance/demo/review-findings.md" <<'EOF'
 
 ⚠ Cụm ngoài vùng phủ: 2/3 lỗi rơi vào file không bộ đo nào phủ (src/install.ts, docs/plugins.md) — dừng và quyết: mở rộng hợp đồng hay rút phạm vi.
 EOF
-P52OUT="$(node "$ROOT/scripts/gate-card.js" --root "$P52WS" --slug demo 2>&1)"
+P52OUT="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P52WS" --slug demo 2>&1)"
 printf '%s' "$P52OUT" | grep -q 'Ngoài hợp đồng — bạn quyết' || { echo "     dau ra render THIEU tieu de khoi"; P52OK=0; }
 # Cau NGON NGU SAN PHAM (truong plain) phai la chu nguoi quyet doc...
 printf '%s' "$P52OUT" | grep -q 'Bấm &quot;Cập nhật&quot; có thể làm mất tiện ích đang cài' \
@@ -657,9 +657,9 @@ for j in 'rmSync' 'globToRe' 'SyntaxError'; do
 done
 # Ba nhan lua chon RUT TU chi dan card (khong hardcode o day: hardcode thi test
 # chi tu khop voi chinh no, renderer troi khoi chi dan van xanh).
-P52LABELS="$(sed -n 's/.*(a) \*\*\([^*]*\)\*\*.*(b) \*\*\([^*]*\)\*\*.*(c) \*\*\([^*]*\)\*\*.*/\1|\2|\3/p' "$ROOT/commands/acceptance-card.md" | head -1)"
+P52LABELS="$(sed -n 's/.*(a) \*\*\([^*]*\)\*\*.*(b) \*\*\([^*]*\)\*\*.*(c) \*\*\([^*]*\)\*\*.*/\1|\2|\3/p' "$ROOT/plugins/acceptance-gate/commands/acceptance-card.md" | head -1)"
 if [ -z "$P52LABELS" ]; then
-  echo "     KHONG rut duoc 3 nhan tu commands/acceptance-card.md"
+  echo "     KHONG rut duoc 3 nhan tu plugins/acceptance-gate/commands/acceptance-card.md"
   P52OK=0
 else
   P52OIFS="$IFS"; IFS='|'
@@ -678,7 +678,7 @@ fi
 # Nhanh backward: file the he CU (khong co heading scope-triage) -> KHONG duoc
 # render khoi, KHONG duoc bao loi. Doi chung THAT: doi dau vao, do lai dau ra.
 printf '# Review Findings\n\n- **loi cu**\n  file: `a.ts`\n' > "$P52WS/_acceptance/demo/review-findings.md"
-P52OLD="$(node "$ROOT/scripts/gate-card.js" --root "$P52WS" --slug demo 2>&1)"
+P52OLD="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P52WS" --slug demo 2>&1)"
 P52OLDST=$?
 if [ "$P52OLDST" -ne 0 ]; then echo "     file the he cu lam gate-card loi (exit $P52OLDST)"; P52OK=0; fi
 if printf '%s' "$P52OLD" | grep -q 'Ngoài hợp đồng — bạn quyết'; then
@@ -756,17 +756,17 @@ fi
 
 # ── P55: ROUND-TRIP writer <-> reader cho review-findings.md ────────────────
 # Lop loi da tai dien BA round lien tiep ma khong eval nao do: ben VIET (prompt
-# synthesize trong acceptance-verify.js) va ben DOC (lib/out-of-contract.cjs) troi
+# synthesize trong acceptance-verify.js) va ben DOC (plugins/acceptance-gate/lib/out-of-contract.cjs) troi
 # khoi nhau, vi MOI test deu tu tay dung fixture DUNG KHUON READER. Case nay RUT
 # khuon tu chinh file writer roi cho reader that doc — hai dau khong the troi nua.
-echo "P55 round-trip: khuon prompt synthesize phai parse duoc bang lib/out-of-contract.cjs"
+echo "P55 round-trip: khuon prompt synthesize phai parse duoc bang plugins/acceptance-gate/lib/out-of-contract.cjs"
 run "P55 round-trip writer<->reader (khuon rut tu writer, doc bang reader that)" \
   node - "$ROOT" <<'JS'
 const fs = require('fs');
 const path = require('path');
 const root = process.argv[2];
-const wf = fs.readFileSync(path.join(root, 'feature-loop/workflows/acceptance-verify.js'), 'utf8');
-const parser = require(path.join(root, 'lib/out-of-contract.cjs'));
+const wf = fs.readFileSync(path.join(root, 'plugins/feature-loop/workflows/acceptance-verify.js'), 'utf8');
+const parser = require(path.join(root, 'plugins/acceptance-gate/lib/out-of-contract.cjs'));
 
 // 1. Rut khuon tu WRITER (khong hardcode o day).
 const m = wf.match(/<<<OOC-ITEM-TEMPLATE\\n([\s\S]*?)OOC-ITEM-TEMPLATE>>>/);
@@ -816,7 +816,7 @@ run "P57 acceptance-init noi DUNG muc cuong che cua approvers" \
 import sys, pathlib
 root = pathlib.Path(sys.argv[1])
 targets = [
-    root / "commands" / "acceptance-init.md",
+    root / "plugins/acceptance-gate/commands" / "acceptance-init.md",
 ]
 present = [p for p in targets if p.exists()]
 assert len(present) == 1, f"thieu ban acceptance-init: {[str(p) for p in targets if not p.exists()]}"
@@ -834,12 +834,12 @@ PY
 # ─── P65..P71 — gate-card doc dong criterion (slug gate-card-ac-visibility) ───
 # Corpus la BAT BUOC: contract cua chinh kit chi dung 2/5 khuon, nen chay eval
 # bao-tap tren _acceptance/ khong dung den 3 khuon da gay ra loi.
-AC_LIB="$ROOT/lib/ac-line.cjs"
+AC_LIB="$ROOT/plugins/acceptance-gate/lib/ac-line.cjs"
 AC_CORPUS="$ROOT/tests/plugins/fixtures/ac-line-corpus.md"
 
 echo "P65 corpus khuon dong criterion: id/gwt/judgment khop bang GHIM SAN"
 if [ ! -f "$AC_LIB" ] || [ ! -f "$AC_CORPUS" ]; then
-  fail "P65 thieu lib/ac-line.cjs hoac corpus fixture"
+  fail "P65 thieu plugins/acceptance-gate/lib/ac-line.cjs hoac corpus fixture"
 else
   P58OUT="$(node -e '
     const fs=require("fs"); const {parseAC}=require(process.argv[1]);
@@ -1033,7 +1033,7 @@ P61EOF
 P61SENT_A="zulufox yankeecrab whiskeyelk victorowl"
 P61SENT_B="zulufox yankeecrab xraymoose whiskeyelk victorowl"
 p61_probe() { # <thu-muc-goc> -> in cac sentinel VANG MAT o moi duong
-  local GCJ="$1/scripts/gate-card.js" miss=""
+  local GCJ="$1/plugins/acceptance-gate/scripts/gate-card.js" miss=""
   local g1 g2
   g1="$(node "$GCJ" --root "$P61WS" --slug twopath --gate 1 2>/dev/null)"
   g2="$(node "$GCJ" --root "$P61WS" --slug twopath --gate 2 2>/dev/null)"
@@ -1044,16 +1044,16 @@ p61_probe() { # <thu-muc-goc> -> in cac sentinel VANG MAT o moi duong
 }
 P61MISS="$(p61_probe "$ROOT")"
 # Dot bien: LAM LECH THAT duong critText (Cong 2) — bo moi criterion khuon `- **AC-n`
-P61MUT="$(mktemp -d)"; mkdir -p "$P61MUT/scripts" "$P61MUT/lib"
+P61MUT="$(mktemp -d)"; mkdir -p "$P61MUT/plugins/acceptance-gate/scripts" "$P61MUT/plugins/acceptance-gate/lib"
 # Chép TRỌN lib/ (mọi đuôi), không chỉ *.js: bộ đọc của thẻ nay là .cjs, và một
 # glob theo đuôi sẽ dựng bản đột biến THIẾU thư viện — bản ấy chết vì hạ tầng chứ
 # không vì mũi tiêm, mà câu báo lỗi lại nói về mũi tiêm (hồ sơ cong-nguoi-doc-du-nguon).
-cp -R "$ROOT"/lib/. "$P61MUT/lib/" 2>/dev/null
-cp "$ROOT/scripts/gate-card.js" "$P61MUT/scripts/gate-card.js"
+cp -R "$ROOT"/plugins/acceptance-gate/lib/. "$P61MUT/plugins/acceptance-gate/lib/" 2>/dev/null
+cp "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" "$P61MUT/plugins/acceptance-gate/scripts/gate-card.js"
 # Mũi tiêm bám đường critText của Cổng 2, nay đi qua parseACBlock: cho nó trả rỗng.
-perl -0pi -e 's/\Qfor (const ac of parseACBlock(contract)) { if (!critText\E/for (const ac of MUTDROP(parseACBlock(contract))) { if (!critText/' "$P61MUT/scripts/gate-card.js"
-perl -0pi -e 's/\Qconst { parseAC, parseACBlock, acBlindSpot, blindSpotText }\E/const MUTDROP = () => [];\nconst { parseAC, parseACBlock, acBlindSpot, blindSpotText }/' "$P61MUT/scripts/gate-card.js"
-if ! grep -q 'MUTDROP(parseACBlock(contract))' "$P61MUT/scripts/gate-card.js" || ! node --check "$P61MUT/scripts/gate-card.js" 2>/dev/null; then
+perl -0pi -e 's/\Qfor (const ac of parseACBlock(contract)) { if (!critText\E/for (const ac of MUTDROP(parseACBlock(contract))) { if (!critText/' "$P61MUT/plugins/acceptance-gate/scripts/gate-card.js"
+perl -0pi -e 's/\Qconst { parseAC, parseACBlock, acBlindSpot, blindSpotText }\E/const MUTDROP = () => [];\nconst { parseAC, parseACBlock, acBlindSpot, blindSpotText }/' "$P61MUT/plugins/acceptance-gate/scripts/gate-card.js"
+if ! grep -q 'MUTDROP(parseACBlock(contract))' "$P61MUT/plugins/acceptance-gate/scripts/gate-card.js" || ! node --check "$P61MUT/plugins/acceptance-gate/scripts/gate-card.js" 2>/dev/null; then
   fail "P68 dot bien KHONG ap duoc — doi chung duong vo hieu, khong the tin case nay"
 else
   P61MUTMISS="$(p61_probe "$P61MUT")"
@@ -1133,7 +1133,7 @@ run "P72 design-pass frontmatter + NOT-for + open invocation (E1)" \
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 N = lambda s: re.sub(r"\s+", " ", s)
 def check(text):
     tx = N(text); errs = []
@@ -1152,7 +1152,7 @@ run "P73 design-pass preflight: keys + {slug} template + DUNG + standalone slug 
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 N = lambda s: re.sub(r"\s+", " ", s)
 def check(text):
     tx = N(text); errs = []
@@ -1177,7 +1177,7 @@ run "P74 design-pass 2 nguon luat + thang DS + shadcn default (E3)" \
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 N = lambda s: re.sub(r"\s+", " ", s)
 def check(text):
     tx = N(text); errs = []
@@ -1198,7 +1198,7 @@ run "P75 design-pass thang vat lieu + khai material + cam tu dung (E4)" \
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 N = lambda s: re.sub(r"\s+", " ", s)
 def check(text):
     tx = N(text); errs = []
@@ -1219,7 +1219,7 @@ run "P76 design-pass 4 luat cung thanh van (E5)" \
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 N = lambda s: re.sub(r"\s+", " ", s)
 RULES = {
     "khong-hex-moi": "không hex mới",
@@ -1241,7 +1241,7 @@ run "P77 design-pass vong lap owner-phan-ung + cam tu cham (E6)" \
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 N = lambda s: re.sub(r"\s+", " ", s)
 def check(text):
     tx = N(text); errs = []
@@ -1259,7 +1259,7 @@ run "P78 design-pass ket phien: duong capture rieng + cam CT2 + provenance + sta
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 N = lambda s: re.sub(r"\s+", " ", s)
 def check(text):
     tx = N(text); errs = []
@@ -1282,7 +1282,7 @@ run "P79 design-pass khuon marker: round-trip + than tro toi marker (E8)" \
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 def extract(text):
     m = re.search(r"<<<DESIGN-PASS-NOTE-TEMPLATE\n(.*?)\nDESIGN-PASS-NOTE-TEMPLATE>>>", text, re.S)
     if not m:
@@ -1341,7 +1341,7 @@ run "P80 design-pass engine-clean + mot mat phang (E9)" \
 import sys
 from pathlib import Path
 root = Path(sys.argv[1])
-files = [root / "skills/design-pass/SKILL.md"]
+files = [root / "plugins/acceptance-gate/skills/design-pass/SKILL.md"]
 texts = {str(p.relative_to(root)): p.read_text(encoding="utf-8") for p in files}
 rt = (root / "tests/plugins/run-tests.sh").read_text(encoding="utf-8")
 # Marker GHÉP MẢNH — nếu để nguyên chuỗi, find() khớp chính literal trong
@@ -1368,7 +1368,7 @@ def check(text):
 assert len(texts) == 2 and all(len(x) > 200 for x in texts.values()), "sanity: vung quet rong/thieu"
 for name, text in texts.items():
     assert check(text) == [], f"{name}: {check(text)}"
-skill = texts["skills/design-pass/SKILL.md"]
+skill = texts["plugins/acceptance-gate/skills/design-pass/SKILL.md"]
 m1 = skill + "\nOne" + "Hub"
 assert any("vat lieu consumer/surface ngoai trong design-pass" in x for x in check(m1)), "tiem chuoi consumer khong do"
 m2 = skill + "\n/design" + "-sync"
@@ -1380,8 +1380,8 @@ run "P81 design-pass smoke DUONG ban nguon (E11)" \
 import sys
 from pathlib import Path
 root = Path(sys.argv[1])
-p = root / "skills/design-pass/SKILL.md"
-assert p.exists(), "cay nguon thieu skills/design-pass"
+p = root / "plugins/acceptance-gate/skills/design-pass/SKILL.md"
+assert p.exists(), "cay nguon thieu plugins/acceptance-gate/skills/design-pass"
 t = p.read_text(encoding="utf-8")
 assert "name: design-pass" in t, "SKILL.md khong doc duoc frontmatter name"
 assert "DESIGN-PASS-NOTE-TEMPLATE" in t, "SKILL.md thieu khuon marker"
@@ -1390,16 +1390,16 @@ PY
 
 # ── P82: ROUND-TRIP frontmatter opportunity-template <-> reader that ─────────
 # Khuon rut tu CHINH template (marker OPP-FRONTMATTER-TEMPLATE), doc bang
-# frontmatterField cua lib/evidence-core.cjs — reader ma hook/CI dung.
+# frontmatterField cua plugins/acceptance-gate/lib/evidence-core.cjs — reader ma hook/CI dung.
 # Doi chung duong chay truoc, dot bien mat frontmatter chay sau.
 run "P82 opportunity-template round-trip frontmatter (marker -> frontmatterField)" \
   node - "$ROOT" <<'JS'
 const fs = require('fs');
 const path = require('path');
 const root = process.argv[2];
-const tplPath = path.join(root, 'skills/acceptance/references/opportunity-template.md');
+const tplPath = path.join(root, 'plugins/acceptance-gate/skills/acceptance/references/opportunity-template.md');
 const tpl = fs.readFileSync(tplPath, 'utf8');
-const core = require(path.join(root, 'lib/evidence-core.cjs'));
+const core = require(path.join(root, 'plugins/acceptance-gate/lib/evidence-core.cjs'));
 const m = tpl.match(/<!-- <<<OPP-FRONTMATTER-TEMPLATE -->\n```yaml\n([\s\S]*?)```\n<!-- OPP-FRONTMATTER-TEMPLATE>>> -->/);
 if (!m) { console.error('KHONG rut duoc khuon OPP-FRONTMATTER-TEMPLATE tu template'); process.exit(1); }
 const SAMPLE = { slug: 'demo-coho', feature: 'Demo', owner: 'a@b.c', stage: 'decided',
@@ -1433,7 +1433,7 @@ run "P83 opportunity-template du muc V1 + luoi ke thua (kem doi chung am)" \
 import sys
 from pathlib import Path
 root = Path(sys.argv[1])
-text = (root / "skills/acceptance/references/opportunity-template.md").read_text(encoding="utf-8")
+text = (root / "plugins/acceptance-gate/skills/acceptance/references/opportunity-template.md").read_text(encoding="utf-8")
 
 REQUIRED = [
     "OPP-FRONTMATTER-TEMPLATE",
@@ -1472,7 +1472,7 @@ import sys
 from pathlib import Path
 root = Path(sys.argv[1])
 PINS = {
-    "feature-loop/skills/feature-loop/SKILL.md":
+    "plugins/feature-loop/skills/feature-loop/SKILL.md":
         "artifact có tuân chuẩn UI/plugin sẵn có của repo tiêu thụ không; skill/quy định nào của repo LẼ RA phải nạp mà chưa nạp",
 }
 for rel, needle in PINS.items():
@@ -1489,7 +1489,7 @@ PY
 # ── P85: GOAL-TEMPLATE — SKILL la nguon runtime, GUIDE ban nguoi doc, gate-card ban the ──
 # B4 (retro V1): package feature-loop KHONG ship GUIDE nen "in theo GUIDE" chet
 # o runtime — template nay nhung thang vao SKILL. Tu vu-trang-goal-luc-goi-ten (03/09)
-# co ban chep thu BA: hang GOAL_TEMPLATE trong scripts/gate-card.js (the Cong 1 in dong
+# co ban chep thu BA: hang GOAL_TEMPLATE trong plugins/acceptance-gate/scripts/gate-card.js (the Cong 1 in dong
 # goal). P85 giu 3 ban khop sau strip + dung 6 dong (duong truoc, dot bien BA CHIEU sau,
 # moi chieu goi ten dung ban lech) va noi LENH IN voi khoi (gap-probe F1).
 run "P85 GOAL-TEMPLATE 3 ban (SKILL · GUIDE · gate-card) khop sau strip, 6 dong, lenh in noi voi khoi" \
@@ -1498,13 +1498,13 @@ import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
 RX = re.compile(r"<!-- <<<GOAL-TEMPLATE -->\n```\n([\s\S]*?)```\n<!-- GOAL-TEMPLATE>>> -->")
-skill_p = "feature-loop/skills/feature-loop/SKILL.md"
+skill_p = "plugins/feature-loop/skills/feature-loop/SKILL.md"
 guide_p = "GUIDE.md"
 def block(rel, text):
     m = RX.search(text)
     assert m, f"{rel}: KHONG rut duoc khoi GOAL-TEMPLATE qua marker"
     return m.group(1).strip()
-card_p = "scripts/gate-card.js"
+card_p = "plugins/acceptance-gate/scripts/gate-card.js"
 RXJS = re.compile(r"// <<<GOAL-TEMPLATE[^\n]*\n(?:// [^\n]*\n)*const GOAL_TEMPLATE = `([\s\S]*?)`;\n// GOAL-TEMPLATE>>>")
 def block_js(rel, text):
     m = RXJS.search(text)
@@ -1557,9 +1557,9 @@ run "P85b GOAL-ARM: S1 khong hoi giua chung, Cong Dang vu trang /goal · S1#5 kh
 import sys
 from pathlib import Path
 root = Path(sys.argv[1])
-skill = (root / "feature-loop/skills/feature-loop/SKILL.md").read_text(encoding="utf-8")
+skill = (root / "plugins/feature-loop/skills/feature-loop/SKILL.md").read_text(encoding="utf-8")
 guide = (root / "GUIDE.md").read_text(encoding="utf-8")
-card = (root / "commands/acceptance-card.md").read_text(encoding="utf-8")
+card = (root / "plugins/acceptance-gate/commands/acceptance-card.md").read_text(encoding="utf-8")
 # (ten ve, van ban, chuoi neo) — chuoi neo la CAU, khong phai tu khoa roi.
 VE = [
   ("S1#1 khong hoi giua buoc thiet ke", "skill", "KHÔNG dừng xin duyệt thiết kế, KHÔNG hỏi «làm ngay chứ?»"),
@@ -1632,7 +1632,7 @@ import sys
 from pathlib import Path
 root = Path(sys.argv[1])
 CASES = {
-    "feature-loop/skills/feature-loop/SKILL.md": [
+    "plugins/feature-loop/skills/feature-loop/SKILL.md": [
         "feature_loop.ui_standards_skill",
         "BẮT BUỘC invoke skill đó ngay",
         "KHÔNG chặn",
@@ -1651,7 +1651,7 @@ for rel, pins in CASES.items():
     assert key not in text.replace(key, "ui_standards_key_bi_go"), f"{rel}: dot bien khong hieu luc"
 # Vi du trong van engine phai la placeholder TRUNG TINH — khong mang ten san
 # pham cua repo tieu thu (bat bien "kit khong chua", finding S4-r2 #3).
-for rel in ["feature-loop/skills/feature-loop/SKILL.md", "GUIDE.md"]:
+for rel in ["plugins/feature-loop/skills/feature-loop/SKILL.md", "GUIDE.md"]:
     t = (root / rel).read_text(encoding="utf-8")
     assert "create-onehub-plugin" not in t, f"{rel}: vi du mang ten repo tieu thu — dung placeholder create-<org>-plugin"
 assert "create-<org>-plugin" in (root / "GUIDE.md").read_text(encoding="utf-8"), "GUIDE mat vi du placeholder cho ui_standards_skill"
@@ -1666,7 +1666,7 @@ run "P87 lane S1-D tro design-pass + Gate 1 ban bam duoc (kem doi chung am)" \
 import sys
 from pathlib import Path
 root = Path(sys.argv[1])
-rel = "feature-loop/skills/feature-loop/SKILL.md"
+rel = "plugins/feature-loop/skills/feature-loop/SKILL.md"
 text = (root / rel).read_text(encoding="utf-8")
 # Lane moi: mot doan, du 3 ve. Neo vao HEADING dam cua doan — cac cho khac
 # trong file (bang tra CT1, S1#6) cung nhac cum "Nghi thức S1-D" khi tro ve day.
@@ -1712,8 +1712,8 @@ from pathlib import Path
 root = Path(sys.argv[1])
 def ver(rel):
     return tuple(int(x) for x in json.loads((root / rel).read_text())["version"].split("."))
-assert ver(".claude-plugin/plugin.json") >= (1, 29, 0), "acceptance-gate chua bump toi 1.29.0"
-assert ver("feature-loop/.claude-plugin/plugin.json") >= (1, 22, 0), "feature-loop chua bump toi 1.22.0"
+assert ver("plugins/acceptance-gate/.claude-plugin/plugin.json") >= (1, 29, 0), "acceptance-gate chua bump toi 1.29.0"
+assert ver("plugins/feature-loop/.claude-plugin/plugin.json") >= (1, 22, 0), "feature-loop chua bump toi 1.22.0"
 # Doi chung am cua phep so semver: version thap hon floor phai truot.
 assert not ((1, 20, 1) >= (1, 21, 0)), "phep so semver chet — tuple compare khong con dung"
 PY
@@ -1727,7 +1727,7 @@ run "P89 ban luat: neo vao dung vat — 6 luat, 2 phep thu (dinh nghia), vi du, 
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
 
 # NEO vao DUNG VAT, khong tim chuoi tren toan file. Round 3 bat hai lan cung mot
 # lop: "CONTEXT.md" va "Xoá-tên-máy" moi chuoi xuat hien HAI lan trong file, nen
@@ -1804,14 +1804,14 @@ run "P92 hai khuon trinh bay: marker duy nhat + round-trip bang 3 cot + so do me
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
 COLS = ["Người dùng thấy gì khác", "Đụng đâu", "Phục vụ tiêu chí"]
 
 def block(text, name):
     m = re.search(rf"<!-- <<<{name} -->\n([\s\S]*?)<!-- {name}>>> -->", text)
     return m.group(1) if m else None
 
-# luat tach o bang markdown cua kit — cung luat scripts/gate-card.js dung
+# luat tach o bang markdown cua kit — cung luat plugins/acceptance-gate/scripts/gate-card.js dung
 def rows(md):
     out = []
     for l in md.splitlines():
@@ -1910,7 +1910,7 @@ run "P96 tu dien: rut tu qua marker HFL-GLOSSARY-TERMS roi tra CONTEXT.md (E14)"
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-ref = (root / "skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
+ref = (root / "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
 ctx = (root / "CONTEXT.md").read_text(encoding="utf-8")
 m = re.search(r"<!-- <<<HFL-GLOSSARY-TERMS -->\n([\s\S]*?)<!-- HFL-GLOSSARY-TERMS>>> -->", ref)
 assert m, "KHONG rut duoc HFL-GLOSSARY-TERMS"
@@ -1966,16 +1966,16 @@ import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
 REF = "skills/acceptance/references/human-facing-language.md"
-SITES = ["commands/acceptance-card.md", "commands/acceptance-report.md",
-         "commands/acceptance-status.md",
-         "feature-loop/skills/feature-loop/SKILL.md"]
+SITES = ["plugins/acceptance-gate/commands/acceptance-card.md", "plugins/acceptance-gate/commands/acceptance-report.md",
+         "plugins/acceptance-gate/commands/acceptance-status.md",
+         "plugins/feature-loop/skills/feature-loop/SKILL.md"]
 LOOPS = (SITES[3],)
 assert len(SITES) == 4, "danh sach cho tro khong du 4"
 
 # Khuon cau-ve-hinh: rut tu BAN LUAT (ben viet), tim trong hai ban vong lap
 # (ben doc). Phep do DUONG thay cho ve phu dinh "khong ghim mot dinh dang nao" —
 # danh sach cam tren khong gian mo khong bao gio du (gap-probe P1).
-LAW = (root / REF).read_text(encoding="utf-8")
+LAW = (root / "plugins/acceptance-gate" / REF).read_text(encoding="utf-8")
 _m = re.search(r"<!-- <<<LOOP-PICTURE-CLAUSE -->\n([\s\S]*?)<!-- LOOP-PICTURE-CLAUSE>>> -->", LAW)
 CLAUSE = _m.group(1).strip() if _m else None
 # Mot nguon dem ban chep — dung chung voi P197 (siet-rang-cau-ve-hinh AC-2/AC-6)
@@ -2087,10 +2087,10 @@ def duong(rel, *co):
 GOC_LOI = Path(duong("lib")).parent          # gốc gói lõi, tương đối gốc kho («.» ở bố cục phẳng)
 def duong_goi(rel):
     return duong(rel, "--goi-goc", str(root / GOC_LOI), "--vai", "loi")
-SITES = ["commands/acceptance-card.md", "commands/acceptance-report.md",
-         "commands/acceptance-status.md",
-         "feature-loop/skills/feature-loop/SKILL.md"]
-RX = re.compile(re.escape(duong_goi("skills/acceptance/references")) + r"/[\w.-]+\.md")
+SITES = ["plugins/acceptance-gate/commands/acceptance-card.md", "plugins/acceptance-gate/commands/acceptance-report.md",
+         "plugins/acceptance-gate/commands/acceptance-status.md",
+         "plugins/feature-loop/skills/feature-loop/SKILL.md"]
+RX = re.compile(re.escape(duong_goi("plugins/acceptance-gate/skills/acceptance/references")) + r"/[\w.-]+\.md")
 
 # Ban sao soi guong cay dang chay (cung bo cuc), nen duong giai o root dung cho ca ban sao.
 def check(base):
@@ -2121,7 +2121,7 @@ try:
         (tmp / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(root / rel, tmp / rel)
     assert check(tmp) == [], f"ban sao NGUYEN VEN phai XANH truoc: {check(tmp)}"
-    victim = tmp / duong("skills/acceptance/references/human-facing-language.md")
+    victim = tmp / duong("plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md")
     victim.rename(victim.with_name("doi-ten.md"))
     errs = check(tmp)
     assert any("con tro tro file khong ton tai" in e for e in errs), \
@@ -2142,7 +2142,7 @@ def duong(rel):
     if rel not in _DUONG:
         _DUONG[rel] = subprocess.check_output(["node", str(root / "tests/bo-cuc.mjs"), "duong", rel, "--thu-muc", str(root)], text=True).strip()
     return _DUONG[rel]
-REF_REL = "skills/acceptance/references/human-facing-language.md"
+REF_REL = "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md"
 SPEC_REL = "docs/specs/workflow-v2-spec.md"
 RX = re.compile(r"<!-- <<<HFL-LAW-TABLE -->\n([\s\S]*?)<!-- HFL-LAW-TABLE>>> -->")
 
@@ -2214,8 +2214,8 @@ def scan(base):
         out.append(p)
     return out
 
-EXPECT_DIRS = ["skills", "commands", "feature-loop", "lib", "scripts",
-               "hooks", "docs", "vendor"]
+EXPECT_DIRS = ["plugins/acceptance-gate/skills", "plugins/acceptance-gate/commands", "plugins/feature-loop", "plugins/acceptance-gate/lib", "plugins/acceptance-gate/scripts",
+               "plugins/acceptance-gate/hooks", "docs", "plugins/acceptance-gate/vendor"]
 
 files = scan(root)
 # Dem theo TIEN TO duong cua tung thu muc o cay nay (qua bo dich), khong theo doan dau: o bo cuc moi
@@ -2336,7 +2336,7 @@ try:
     dung_ban_sao(root, dst)
     assert verdict(dst) == [], f"ban sao NGUYEN VEN phai XANH truoc: {verdict(dst)}"
     src = (dst / duong(REF_REL)).read_text(encoding="utf-8")
-    for rel in ("vendor/impeccable/BAN-SAO-THU.md",                   # r1 bo lot
+    for rel in ("plugins/acceptance-gate/vendor/impeccable/BAN-SAO-THU.md",                   # r1 bo lot
                 "docs/superpowers/plans/BAN-SAO-THU.md",               # r2 khoet ra
                 ".out-of-scope/BAN-SAO-THU.md"):                       # r3 bo lot
         plant = dst / duong(rel)
@@ -2367,7 +2367,7 @@ run "P94 quyen tra lai tai cong + tien to so tren the (E13)" \
 import sys
 from pathlib import Path
 root = Path(sys.argv[1])
-CARDS = ["commands/acceptance-card.md"]
+CARDS = ["plugins/acceptance-gate/commands/acceptance-card.md"]
 PREFIX = "lỗ-kit — ngôn ngữ mặt người"
 
 def check(read):
@@ -2436,7 +2436,7 @@ def check(pkg_ag, pkg_fl):
 # Hai goi Claude: acceptance-gate = goc repo (marketplace tro thang ./),
 # feature-loop = thu muc feature-loop/. Bat bien khong doi: goi nay khong duoc
 # ghep thang goc goi kia, phai di qua bo giai.
-AG, FL = root, root / "feature-loop"
+AG, FL = root / "plugins/acceptance-gate", root / "plugins/feature-loop"
 assert check(AG, FL) == [], check(AG, FL)                        # doi chung DUONG (goi that)
 tmp = Path(tempfile.mkdtemp())
 try:
@@ -2490,7 +2490,7 @@ run "P97 hinh theo mat phang: bang tra co co che cu the + hang hoi thoai mac din
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
 
 def block(text, name):
     m = re.search(rf"<!-- <<<{name} -->\n([\s\S]*?)<!-- {name}>>> -->", text)
@@ -2629,7 +2629,7 @@ const fs = require('fs'), path = require('path'), os = require('os');
 const crypto = require('crypto');
 const { execFileSync } = require('child_process');
 const root = process.argv[2];
-const SCAN = path.join(root, 'scripts/start-scan.mjs');
+const SCAN = path.join(root, 'plugins/acceptance-gate/scripts/start-scan.mjs');
 const die = m => { console.error(m); process.exit(1); };
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'p98-'));
@@ -2639,9 +2639,9 @@ const contract = (slug, status, extra = '') =>
   `---\nschema_version: 1\nfeature: f-${slug}\nslug: ${slug}\nowner: t@t\nrisk_tier: T2\nsurfaces: [cli]\nstatus: ${status}\n${extra}---\n# C\n`;
 // Section Ngưỡng RÚT TỪ KHUÔN (vao-co-o-ra-co-ten): opportunity chưa quyết chỉ là cổng
 // Cổng Đáng khi đủ ngưỡng; thiếu ngưỡng là ô «đang cân nhắc» (groups.considering).
-const { section: cutSection } = require(path.join(root, 'lib/md-section.cjs'));
+const { section: cutSection } = require(path.join(root, 'plugins/acceptance-gate/lib/md-section.cjs'));
 const NGUONG = '\n## Ngưỡng chết / ngưỡng UAT\n\n' + cutSection(
-  fs.readFileSync(path.join(root, 'skills/acceptance/references/opportunity-template.md'), 'utf8'),
+  fs.readFileSync(path.join(root, 'plugins/acceptance-gate/skills/acceptance/references/opportunity-template.md'), 'utf8'),
   'Ngưỡng chết / ngưỡng UAT').filter(l => /^\s*[-*]\s+[^:]+:/.test(l)).map(l => l.replace(/…\s*$/, 'x')).join('\n') + '\n';
 const opp = (slug, stage, decision, nguong = '') =>
   `---\nschema_version: 1\nslug: ${slug}\nfeature: f\nowner: t@t\nstage: ${stage}\ndecision: ${decision}\n---\n# O\n` + nguong;
@@ -2777,7 +2777,7 @@ const fs = require('fs'), path = require('path'), os = require('os');
 const { execFileSync } = require('child_process');
 const root = process.argv[2];
 const die = m => { console.error(m); process.exit(1); };
-const SOURCES = ['commands/start.md'];
+const SOURCES = ['plugins/acceptance-gate/commands/start.md'];
 
 const extractKeys = txt => {
   const m = txt.match(/<<<START-SCAN-KEYS\n([\s\S]*?)START-SCAN-KEYS>>>/);
@@ -2809,7 +2809,7 @@ W('.acceptance-runs/dot-p99/hang-viec.json', JSON.stringify({ dot: 'p99', day: [
 fs.symlinkSync(path.join(tmp, '.acceptance-runs', 'dot-p99'), path.join(tmp, '.acceptance-runs', 'dieu-phoi-hien-tai'));
 const ENV99 = { ...process.env, ACCEPTANCE_TODAY: '2026-10-02' };
 const outKhai = JSON.parse(execFileSync('node',
-  [path.join(root, 'scripts/start-scan.mjs'), '--root', tmp], { encoding: 'utf8', env: ENV99 }));
+  [path.join(root, 'plugins/acceptance-gate/scripts/start-scan.mjs'), '--root', tmp], { encoding: 'utf8', env: ENV99 }));
 // Khoá `loTrinhChuaKhai` (hồ sơ moc-la-chien-dich) chỉ có mặt khi kho CHƯA khai lộ trình — ngược với fixture trên.
 // Cùng nếp `dotDangChay`: dựng đúng trạng thái làm khoá có giá trị thật — một bản sao fixture bỏ khối lo_trinh, quét,
 // rồi soi trên đầu ra GỘP (khoá của bản sao chỉ lấp chỗ fixture chính không có; không ghi đè khoá nào).
@@ -2817,7 +2817,7 @@ const tmpK = fs.mkdtempSync(path.join(os.tmpdir(), 'p99k-'));
 fs.cpSync(path.join(tmp, '_acceptance'), path.join(tmpK, '_acceptance'), { recursive: true });
 fs.writeFileSync(path.join(tmpK, '_acceptance', 'config.yaml'), 'schema_version: 1\n');
 const outChuaKhai = JSON.parse(execFileSync('node',
-  [path.join(root, 'scripts/start-scan.mjs'), '--root', tmpK], { encoding: 'utf8', env: ENV99 }));
+  [path.join(root, 'plugins/acceptance-gate/scripts/start-scan.mjs'), '--root', tmpK], { encoding: 'utf8', env: ENV99 }));
 if (typeof outChuaKhai.loTrinhChuaKhai !== 'string' || 'loTrinhChuaKhai' in outKhai) die(`doi chung kho chua khai: ${JSON.stringify(outChuaKhai.loTrinhChuaKhai)} / ${'loTrinhChuaKhai' in outKhai}`);
 const outJson = { ...outChuaKhai, ...outKhai };
 
@@ -2860,20 +2860,20 @@ if (!e2.some(x => /khong rut duoc khoi START-SCAN-KEYS/.test(x)))
 // considering.push → marker that phai DO neu dung ten khoa (chung minh resolveKey soi toi mang moi)
 const mut3 = fs.mkdtempSync(path.join(os.tmpdir(), 'p99m-'));
 // TRON thu muc scripts + lib (luat «ban sao lay tron thu muc, khong chep danh sach tay», nhu P104/P105):
-// danh sach tay cu chet vi HA TANG khi lo-trinh.mjs nap them scripts/ho-so-tom-tat.cjs (hang X2).
-fs.cpSync(path.join(root, 'scripts'), path.join(mut3, 'scripts'), { recursive: true });
-fs.cpSync(path.join(root, 'lib'), path.join(mut3, 'lib'), { recursive: true });
-for (const rel of ['skills/acceptance/references/opportunity-template.md']) {
+// danh sach tay cu chet vi HA TANG khi lo-trinh.mjs nap them plugins/acceptance-gate/scripts/ho-so-tom-tat.cjs (hang X2).
+fs.cpSync(path.join(root, 'plugins/acceptance-gate/scripts'), path.join(mut3, 'plugins/acceptance-gate/scripts'), { recursive: true });
+fs.cpSync(path.join(root, 'plugins/acceptance-gate/lib'), path.join(mut3, 'plugins/acceptance-gate/lib'), { recursive: true });
+for (const rel of ['plugins/acceptance-gate/skills/acceptance/references/opportunity-template.md']) {
   fs.mkdirSync(path.dirname(path.join(mut3, rel)), { recursive: true });
   fs.copyFileSync(path.join(root, rel), path.join(mut3, rel));
 }
-const scanSrc = fs.readFileSync(path.join(root, 'scripts/start-scan.mjs'), 'utf8');
+const scanSrc = fs.readFileSync(path.join(root, 'plugins/acceptance-gate/scripts/start-scan.mjs'), 'utf8');
 // Neo bam vao CHINH cap khoa-gia-tri, khong bam vao duoi cau `})`: them mot khoa moi vao
 // cung dong (vd `flags`) lam duoi doi va ca do chet vi HA TANG chu khong vi vat — dung lop
 // «thuoc ghim vao thu SE DOI» (S4-r10, khi start-scan them flags cho o y-can-nhac).
 if (!scanSrc.includes(', ageDays: ageDays(s)')) die('dot bien dau ra: khong thay anchor ageDays trong start-scan');
-fs.writeFileSync(path.join(mut3, 'scripts/start-scan.mjs'), scanSrc.replace(', ageDays: ageDays(s)', ''));
-const outMut = JSON.parse(execFileSync('node', [path.join(mut3, 'scripts/start-scan.mjs'), '--root', tmp], { encoding: 'utf8', env: ENV99 }));
+fs.writeFileSync(path.join(mut3, 'plugins/acceptance-gate/scripts/start-scan.mjs'), scanSrc.replace(', ageDays: ageDays(s)', ''));
+const outMut = JSON.parse(execFileSync('node', [path.join(mut3, 'plugins/acceptance-gate/scripts/start-scan.mjs'), '--root', tmp], { encoding: 'utf8', env: ENV99 }));
 const eMut = checkOn(outMut, SOURCES.map(load));
 if (!eMut.some(x => /key groups\.considering\[\]\.ageDays khong co/.test(x)))
   die('dot bien bo khoa ageDays phia dau ra khong bi bat: ' + JSON.stringify(eMut));
@@ -2948,13 +2948,13 @@ def check_claude(pkg):
     return errs
 
 PKG_FILES = ["commands/start.md", SCAN, LAW, OPP]
-assert check_claude(root) == [], check_claude(root)      # doi chung DUONG goi Claude
+assert check_claude(root / "plugins/acceptance-gate") == [], check_claude(root / "plugins/acceptance-gate")      # doi chung DUONG goi Claude
 tmp = Path(tempfile.mkdtemp())
 try:
     c2 = tmp / "ag"
     for rel in PKG_FILES:            # ban sao do CODE sinh trong chinh lan chay
         (c2 / rel).parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(root / rel, c2 / rel)
+        shutil.copy2(root / "plugins/acceptance-gate" / rel, c2 / rel)
     assert check_claude(c2) == [], f"ban sao goi NGUYEN VEN phai XANH truoc: {check_claude(c2)}"
     (c2 / SCAN).rename(c2 / "scripts/doi-cho.mjs")       # dot bien 1: bo quet bien mat
     e1 = check_claude(c2)
@@ -2985,7 +2985,7 @@ from pathlib import Path
 root = Path(sys.argv[1])
 LAW = "human-facing-language.md"
 # (file, anchor cua khoi render) — buoc nap phai dung TRUOC anchor.
-RENDER = {"commands/start.md": "Trình MỘT thẻ"}
+RENDER = {"plugins/acceptance-gate/commands/start.md": "Trình MỘT thẻ"}
 
 def check_load(files):
     errs = []
@@ -3010,9 +3010,9 @@ def check_text(pairs):
 
 assert check_load(RENDER) == [], check_load(RENDER)      # doi chung DUONG
 # dot bien: xoa dong nap → DO dung thong diep
-t = (root / "commands/start.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/commands/start.md").read_text(encoding="utf-8")
 mut = t.replace(LAW, "khong-nap-gi.md")
-e1 = check_text({"(ban-xoa-nap)": (mut, RENDER["commands/start.md"])})
+e1 = check_text({"(ban-xoa-nap)": (mut, RENDER["plugins/acceptance-gate/commands/start.md"])})
 assert any("thieu buoc nap luat" in x for x in e1), f"dot bien xoa buoc nap khong bi bat: {e1}"
 
 # (E11) GUIDE + README co muc /start. Chan AM phai chay CHINH phep do tren ban
@@ -3052,7 +3052,7 @@ run "P102 start-scan: loi I/O neu ten file+ma loi; verdict la/vang bi goi ten (E
 const fs = require('fs'), path = require('path'), os = require('os');
 const { execFileSync } = require('child_process');
 const root = process.argv[2];
-const SCAN = path.join(root, 'scripts/start-scan.mjs');
+const SCAN = path.join(root, 'plugins/acceptance-gate/scripts/start-scan.mjs');
 const die = m => { console.error(m); process.exit(1); };
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'p102-'));
@@ -3179,7 +3179,7 @@ run "P103 start-scan argv: 5 loi chet exit 2 ghim thong diep + doi chung duong (
 const fs = require('fs'), path = require('path'), os = require('os');
 const { spawnSync } = require('child_process');
 const root = process.argv[2];
-const SCAN = path.join(root, 'scripts/start-scan.mjs');
+const SCAN = path.join(root, 'plugins/acceptance-gate/scripts/start-scan.mjs');
 const die = m => { console.error(m); process.exit(1); };
 const runScan = a => spawnSync('node', [SCAN, ...a], { encoding: 'utf8' });
 
@@ -3237,8 +3237,8 @@ run "P104 round-trip tu vung verdict: khuon writer <-> start-scan reader (E10)" 
 const fs = require('fs'), path = require('path'), os = require('os');
 const { execFileSync } = require('child_process');
 const root = process.argv[2];
-const SCAN = path.join(root, 'scripts/start-scan.mjs');
-const TPL = path.join(root, 'skills/acceptance/references/evidence-report-template.md');
+const SCAN = path.join(root, 'plugins/acceptance-gate/scripts/start-scan.mjs');
+const TPL = path.join(root, 'plugins/acceptance-gate/skills/acceptance/references/evidence-report-template.md');
 const die = m => { console.error(m); process.exit(1); };
 
 // 1. Rut tu vung tu WRITER (khong hardcode o day)
@@ -3290,36 +3290,36 @@ const e0 = check(SCAN);
 if (e0.length) die('doi chung DUONG that bai: ' + JSON.stringify(e0));   // ban that XANH
 
 // 3. Dot bien: go MOT verdict khoi tu vung cua reader -> phai DO dung thong diep.
-// Ban sao can lib/evidence-core.cjs giai duoc, nen dung cay tam co ca hai thu muc.
+// Ban sao can plugins/acceptance-gate/lib/evidence-core.cjs giai duoc, nen dung cay tam co ca hai thu muc.
 const mut = fs.mkdtempSync(path.join(os.tmpdir(), 'p104m-'));
 fs.mkdirSync(path.join(mut, 'scripts'), { recursive: true });
 fs.mkdirSync(path.join(mut, 'lib'), { recursive: true });
 // TRON thu muc truoc (luat «ban sao lay tron thu muc, khong chep danh sach tay»): vat them mot tep
-// ma start-scan nap (scripts/lo-trinh-khoa.cjs, ho so viec-ke-theo-plan) la ban sao chet vi HA TANG.
-fs.cpSync(path.join(root, 'scripts'), path.join(mut, 'scripts'), { recursive: true });
-fs.cpSync(path.join(root, 'lib'), path.join(mut, 'lib'), { recursive: true });
-fs.copyFileSync(path.join(root, 'lib/evidence-core.cjs'), path.join(mut, 'lib/evidence-core.cjs'));
-// start-scan nay dung LUAT CHUNG cho field dieu huong (lib/workspace-record.cjs)
+// ma start-scan nap (plugins/acceptance-gate/scripts/lo-trinh-khoa.cjs, ho so viec-ke-theo-plan) la ban sao chet vi HA TANG.
+fs.cpSync(path.join(root, 'plugins/acceptance-gate/scripts'), path.join(mut, 'plugins/acceptance-gate/scripts'), { recursive: true });
+fs.cpSync(path.join(root, 'plugins/acceptance-gate/lib'), path.join(mut, 'plugins/acceptance-gate/lib'), { recursive: true });
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/lib/evidence-core.cjs'), path.join(mut, 'plugins/acceptance-gate/lib/evidence-core.cjs'));
+// start-scan nay dung LUAT CHUNG cho field dieu huong (plugins/acceptance-gate/lib/workspace-record.cjs)
 // — ban sao chay thu phai co no, khong thi ket luan "chay duoc/khong" chi noi
 // ve viec thieu file chu khong ve hanh vi dang do.
-fs.copyFileSync(path.join(root, 'lib/workspace-record.cjs'), path.join(mut, 'lib/workspace-record.cjs'));
-// start-scan nhap TINH vi tu «khong can nguoi» (scripts/khong-can-nguoi.mjs, can
-// lib/md-section.cjs) — ban sao chay thu phai co ca hai, khong thi node chet o
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/lib/workspace-record.cjs'), path.join(mut, 'plugins/acceptance-gate/lib/workspace-record.cjs'));
+// start-scan nhap TINH vi tu «khong can nguoi» (plugins/acceptance-gate/scripts/khong-can-nguoi.mjs, can
+// plugins/acceptance-gate/lib/md-section.cjs) — ban sao chay thu phai co ca hai, khong thi node chet o
 // buoc nap module va ca nay do vi thieu file chu khong vi hanh vi dang do.
-fs.copyFileSync(path.join(root, 'scripts/khong-can-nguoi.mjs'), path.join(mut, 'scripts/khong-can-nguoi.mjs'));
-// start-scan cung nhap BANG CHU chung (scripts/trang-thai-ho-so.cjs) — thieu no thi
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/scripts/khong-can-nguoi.mjs'), path.join(mut, 'plugins/acceptance-gate/scripts/khong-can-nguoi.mjs'));
+// start-scan cung nhap BANG CHU chung (plugins/acceptance-gate/scripts/trang-thai-ho-so.cjs) — thieu no thi
 // ban sao chet vi HA TANG chu khong vi vat, va ca do bien thanh xanh-khong-chay.
-fs.copyFileSync(path.join(root, 'scripts/trang-thai-ho-so.cjs'), path.join(mut, 'scripts/trang-thai-ho-so.cjs'));
-// start-scan cung nhap LUAT NGUONG chung (lib/nguong-o-co-hoi.cjs, ho so ra-co-ten) —
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/scripts/trang-thai-ho-so.cjs'), path.join(mut, 'plugins/acceptance-gate/scripts/trang-thai-ho-so.cjs'));
+// start-scan cung nhap LUAT NGUONG chung (plugins/acceptance-gate/lib/nguong-o-co-hoi.cjs, ho so ra-co-ten) —
 // thieu no thi ban sao chet vi HA TANG chu khong vi vat.
 fs.mkdirSync(path.join(mut, 'lib'), { recursive: true });
-fs.copyFileSync(path.join(root, 'lib/nguong-o-co-hoi.cjs'), path.join(mut, 'lib/nguong-o-co-hoi.cjs'));
-fs.copyFileSync(path.join(root, 'lib/md-section.cjs'), path.join(mut, 'lib/md-section.cjs'));
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/lib/nguong-o-co-hoi.cjs'), path.join(mut, 'plugins/acceptance-gate/lib/nguong-o-co-hoi.cjs'));
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/lib/md-section.cjs'), path.join(mut, 'plugins/acceptance-gate/lib/md-section.cjs'));
 const src = fs.readFileSync(SCAN, 'utf8');
 const gone = VOCAB[VOCAB.length - 1];                     // go phan tu cuoi khuon writer
 const mutSrc = src.replace(new RegExp(`^\\s*'${gone}':.*$`, 'm'), '');
 if (mutSrc === src) die(`dot bien khong hieu luc — khong tim thay '${gone}' trong bang tra verdict cua reader`);
-const mutPath = path.join(mut, 'scripts/start-scan.mjs');
+const mutPath = path.join(mut, 'plugins/acceptance-gate/scripts/start-scan.mjs');
 fs.writeFileSync(mutPath, mutSrc);
 const e1 = check(mutPath);
 // Phai bat o CA HAI nhanh: mot bang tra dung chung thi go mot dong lam ca hai do.
@@ -3340,7 +3340,7 @@ run "P105 ma tran phan o: trang-thai × tinh-trang-artifact, ghim toan bo (E1,E2
 const fs = require('fs'), path = require('path'), os = require('os');
 const { execFileSync } = require('child_process');
 const root = process.argv[2];
-const SCAN = path.join(root, 'scripts/start-scan.mjs');
+const SCAN = path.join(root, 'plugins/acceptance-gate/scripts/start-scan.mjs');
 const die = m => { console.error(m); process.exit(1); };
 
 // Do nang luc chan quyen doc MOT lan (root/chmod-vo-hieu → bo RIENG cac o
@@ -3384,8 +3384,8 @@ Object.assign(MATRIX, {
   'implemented|blocked': 'prog:S4', 'verified|blocked': 'prog:S4',
 });
 // Nhanh opportunity (khong co contract.md)
-const { section: cutSection } = require(path.join(root, 'lib/md-section.cjs'));
-const OPP_TPL = 'skills/acceptance/references/opportunity-template.md';
+const { section: cutSection } = require(path.join(root, 'plugins/acceptance-gate/lib/md-section.cjs'));
+const OPP_TPL = 'plugins/acceptance-gate/skills/acceptance/references/opportunity-template.md';
 const NGUONG_DU = '\n## Ngưỡng chết / ngưỡng UAT\n\n' + cutSection(fs.readFileSync(path.join(root, OPP_TPL), 'utf8'), 'Ngưỡng chết / ngưỡng UAT')
   .filter(l => /^\s*[-*]\s+[^:]+:/.test(l)).map(l => l.replace(/…\s*$/, 'x')).join('\n') + '\n';
 const OPP_STATES = {
@@ -3457,26 +3457,26 @@ if (e0.length) die(`ma tran ghim ${Object.keys(MATRIX).length} o — ${e0.length
 const mut = fs.mkdtempSync(path.join(os.tmpdir(), 'p105m-'));
 fs.mkdirSync(path.join(mut, 'scripts')); fs.mkdirSync(path.join(mut, 'lib'));
 // TRON thu muc truoc (luat «ban sao lay tron thu muc, khong chep danh sach tay»): vat them mot tep
-// ma start-scan nap (scripts/lo-trinh-khoa.cjs, ho so viec-ke-theo-plan) la ban sao chet vi HA TANG.
-fs.cpSync(path.join(root, 'scripts'), path.join(mut, 'scripts'), { recursive: true });
-fs.cpSync(path.join(root, 'lib'), path.join(mut, 'lib'), { recursive: true });
-fs.copyFileSync(path.join(root, 'lib/evidence-core.cjs'), path.join(mut, 'lib/evidence-core.cjs'));
-// start-scan nay dung LUAT CHUNG cho field dieu huong (lib/workspace-record.cjs)
+// ma start-scan nap (plugins/acceptance-gate/scripts/lo-trinh-khoa.cjs, ho so viec-ke-theo-plan) la ban sao chet vi HA TANG.
+fs.cpSync(path.join(root, 'plugins/acceptance-gate/scripts'), path.join(mut, 'plugins/acceptance-gate/scripts'), { recursive: true });
+fs.cpSync(path.join(root, 'plugins/acceptance-gate/lib'), path.join(mut, 'plugins/acceptance-gate/lib'), { recursive: true });
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/lib/evidence-core.cjs'), path.join(mut, 'plugins/acceptance-gate/lib/evidence-core.cjs'));
+// start-scan nay dung LUAT CHUNG cho field dieu huong (plugins/acceptance-gate/lib/workspace-record.cjs)
 // — ban sao chay thu phai co no, khong thi ket luan "chay duoc/khong" chi noi
 // ve viec thieu file chu khong ve hanh vi dang do.
-fs.copyFileSync(path.join(root, 'lib/workspace-record.cjs'), path.join(mut, 'lib/workspace-record.cjs'));
-// start-scan nhap TINH vi tu «khong can nguoi» (scripts/khong-can-nguoi.mjs, can
-// lib/md-section.cjs) — ban sao chay thu phai co ca hai, khong thi node chet o
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/lib/workspace-record.cjs'), path.join(mut, 'plugins/acceptance-gate/lib/workspace-record.cjs'));
+// start-scan nhap TINH vi tu «khong can nguoi» (plugins/acceptance-gate/scripts/khong-can-nguoi.mjs, can
+// plugins/acceptance-gate/lib/md-section.cjs) — ban sao chay thu phai co ca hai, khong thi node chet o
 // buoc nap module va ca nay do vi thieu file chu khong vi hanh vi dang do.
-fs.copyFileSync(path.join(root, 'scripts/khong-can-nguoi.mjs'), path.join(mut, 'scripts/khong-can-nguoi.mjs'));
-// start-scan cung nhap BANG CHU chung (scripts/trang-thai-ho-so.cjs) — thieu no thi
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/scripts/khong-can-nguoi.mjs'), path.join(mut, 'plugins/acceptance-gate/scripts/khong-can-nguoi.mjs'));
+// start-scan cung nhap BANG CHU chung (plugins/acceptance-gate/scripts/trang-thai-ho-so.cjs) — thieu no thi
 // ban sao chet vi HA TANG chu khong vi vat, va ca do bien thanh xanh-khong-chay.
-fs.copyFileSync(path.join(root, 'scripts/trang-thai-ho-so.cjs'), path.join(mut, 'scripts/trang-thai-ho-so.cjs'));
-// start-scan cung nhap LUAT NGUONG chung (lib/nguong-o-co-hoi.cjs, ho so ra-co-ten) —
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/scripts/trang-thai-ho-so.cjs'), path.join(mut, 'plugins/acceptance-gate/scripts/trang-thai-ho-so.cjs'));
+// start-scan cung nhap LUAT NGUONG chung (plugins/acceptance-gate/lib/nguong-o-co-hoi.cjs, ho so ra-co-ten) —
 // thieu no thi ban sao chet vi HA TANG chu khong vi vat.
 fs.mkdirSync(path.join(mut, 'lib'), { recursive: true });
-fs.copyFileSync(path.join(root, 'lib/nguong-o-co-hoi.cjs'), path.join(mut, 'lib/nguong-o-co-hoi.cjs'));
-fs.copyFileSync(path.join(root, 'lib/md-section.cjs'), path.join(mut, 'lib/md-section.cjs'));
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/lib/nguong-o-co-hoi.cjs'), path.join(mut, 'plugins/acceptance-gate/lib/nguong-o-co-hoi.cjs'));
+fs.copyFileSync(path.join(root, 'plugins/acceptance-gate/lib/md-section.cjs'), path.join(mut, 'plugins/acceptance-gate/lib/md-section.cjs'));
 // start-scan doc KHUON opportunity-template luc chay (nhan bullet Nguong) — ban sao phai co khuon
 fs.mkdirSync(path.join(mut, path.dirname(OPP_TPL)), { recursive: true });
 fs.copyFileSync(path.join(root, OPP_TPL), path.join(mut, OPP_TPL));
@@ -3487,8 +3487,8 @@ const src = fs.readFileSync(SCAN, 'utf8');
 const anchor = 'if (DA_THONG_CONG_2.includes(status))';
 if (!src.includes(anchor)) die('mutant: khong tim thay anchor cho re trang thai');
 const hoist = "{ const __e = read(path.join(dir, 'evidence-report.md')); if (__e.err) { broken.push({ slug, file: 'evidence-report.md', reason: ioReason(__e.err) }); continue; } }\n    ";
-fs.writeFileSync(path.join(mut, 'scripts/start-scan.mjs'), src.replace(anchor, hoist + anchor));
-const e1 = checkMatrix(path.join(mut, 'scripts/start-scan.mjs'));
+fs.writeFileSync(path.join(mut, 'plugins/acceptance-gate/scripts/start-scan.mjs'), src.replace(anchor, hoist + anchor));
+const e1 = checkMatrix(path.join(mut, 'plugins/acceptance-gate/scripts/start-scan.mjs'));
 if (!e1.some(x => /\[(draft|approved|signed-off)\|(matquyen|lathumuc)\]/.test(x)))
   die('mutant keo chot len truoc cho re ma ma tran van XANH — thuoc chua gan vao vat: ' + JSON.stringify(e1.slice(0,3)));
 console.log(`P105 OK — ghim ${Object.keys(MATRIX).length} o${canBlockRead ? '' : ' (tru cac o mat-quyen)'}; mutant chot-sai-cho bi bat`);
@@ -3503,9 +3503,9 @@ const root = process.argv[2];  // dang stdin: argv[1] la "-"
 const path = await import("node:path");
 const { createRequire } = await import("node:module");
 const require = createRequire(import.meta.url);
-const { frontmatterField } = require(path.join(root, "lib/evidence-core.cjs"));
+const { frontmatterField } = require(path.join(root, "plugins/acceptance-gate/lib/evidence-core.cjs"));
 const { fileFromTemplate } = await import(path.join(root, "tests/fixtures/from-template.mjs"));
-const R = p => path.join(root, "skills/acceptance/references", p);
+const R = p => path.join(root, "plugins/acceptance-gate/skills/acceptance/references", p);
 const die = m => { console.error(m); process.exit(1); };
 
 const cases = [
@@ -3543,9 +3543,9 @@ run "P116 product-map bucket du moi hang + enum-lac tung field dieu huong (E1)" 
 const root = process.argv[2];  // dang stdin: argv[1] la "-"
 const fs = await import("node:fs"); const os = await import("node:os");
 const path = await import("node:path");
-const { renderProductMap } = await import(path.join(root, "scripts/product-map.mjs"));
+const { renderProductMap } = await import(path.join(root, "plugins/acceptance-gate/scripts/product-map.mjs"));
 const { fileFromTemplate } = await import(path.join(root, "tests/fixtures/from-template.mjs"));
-const R = p => path.join(root, "skills/acceptance/references", p);
+const R = p => path.join(root, "plugins/acceptance-gate/skills/acceptance/references", p);
 const die = m => { console.error(m); process.exit(1); };
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "p103-"));
@@ -3627,7 +3627,7 @@ for (const slug of Object.keys(EXPECT)) {
 // Bang fixture duoi day chi tra loi "do cap nay o workspace nao"; bang luat no
 // ra ma bang nay khong no theo thi case DUNG AM I, khong lang le bo qua.
 const { NAV_FIELDS } = (await import("node:module")).createRequire(
-  path.join(root, "lib/workspace-record.cjs"))(path.join(root, "lib/workspace-record.cjs"));
+  path.join(root, "plugins/acceptance-gate/lib/workspace-record.cjs"))(path.join(root, "plugins/acceptance-gate/lib/workspace-record.cjs"));
 const FIXTURE = {
   "contract.md/status":      "d-dang-dung",
   "opportunity.md/stage":    "a-can-nhac",
@@ -3678,14 +3678,14 @@ run "P117 map GIU NGUYEN qua approved->implemented->verified; DOI qua cong nguoi
 const root = process.argv[2];  // dang stdin: argv[1] la "-"
 const fs = await import("node:fs"); const os = await import("node:os");
 const path = await import("node:path");
-const { renderProductMap } = await import(path.join(root, "scripts/product-map.mjs"));
+const { renderProductMap } = await import(path.join(root, "plugins/acceptance-gate/scripts/product-map.mjs"));
 const { fileFromTemplate } = await import(path.join(root, "tests/fixtures/from-template.mjs"));
 const die = m => { console.error(m); process.exit(1); };
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "p104-"));
 const W = (rel, s) => { const p = path.join(tmp, rel);
   fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, s); };
 const contract = status => fileFromTemplate(
-  path.join(root, "skills/acceptance/references/contract-template.md"),
+  path.join(root, "plugins/acceptance-gate/skills/acceptance/references/contract-template.md"),
   "CONTRACT-FRONTMATTER-TEMPLATE",
   { feature: "viec x", slug: "x", owner: "o@o", risk_tier: "T2", surfaces: "cli", status });
 W("_acceptance/config.yaml", "schema_version: 1\n");
@@ -3715,14 +3715,14 @@ run "P118 render 2 lan giong het + sort theo slug + canh chi hien khi ho so co (
 const root = process.argv[2];  // dang stdin: argv[1] la "-"
 const fs = await import("node:fs"); const os = await import("node:os");
 const path = await import("node:path");
-const { renderProductMap } = await import(path.join(root, "scripts/product-map.mjs"));
+const { renderProductMap } = await import(path.join(root, "plugins/acceptance-gate/scripts/product-map.mjs"));
 const { fileFromTemplate } = await import(path.join(root, "tests/fixtures/from-template.mjs"));
 const die = m => { console.error(m); process.exit(1); };
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "p105-"));
 const W = (rel, s) => { const p = path.join(tmp, rel);
   fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, s); };
 const contract = (slug, extra = "") => fileFromTemplate(
-  path.join(root, "skills/acceptance/references/contract-template.md"),
+  path.join(root, "plugins/acceptance-gate/skills/acceptance/references/contract-template.md"),
   "CONTRACT-FRONTMATTER-TEMPLATE",
   { feature: "viec " + slug, slug, owner: "o@o", risk_tier: "T2", surfaces: "cli",
     status: "draft" }).replace("status: draft", "status: draft" + extra);
@@ -3761,7 +3761,7 @@ const path = await import("node:path");
 const { execFileSync } = await import("node:child_process");
 const { fileFromTemplate } = await import(path.join(root, "tests/fixtures/from-template.mjs"));
 const die = m => { console.error(m); process.exit(1); };
-const SCRIPT = path.join(root, "scripts/product-map.mjs");
+const SCRIPT = path.join(root, "plugins/acceptance-gate/scripts/product-map.mjs");
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "p106-"));
 const W = (rel, s) => { const p = path.join(tmp, rel);
   fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, s); };
@@ -3777,7 +3777,7 @@ if (r.code !== 0 || !/chưa dựng cổng/.test(r.out)) die("chua init: code=" +
 
 W("_acceptance/config.yaml", "schema_version: 1\n");
 W("_acceptance/x/contract.md", fileFromTemplate(
-  path.join(root, "skills/acceptance/references/contract-template.md"),
+  path.join(root, "plugins/acceptance-gate/skills/acceptance/references/contract-template.md"),
   "CONTRACT-FRONTMATTER-TEMPLATE",
   { feature: "viec x", slug: "x", owner: "o@o", risk_tier: "T2", surfaces: "cli", status: "draft" }));
 
@@ -3812,7 +3812,7 @@ const link = path.join(linkDir, "kit");
 fs.symlinkSync(root, link);
 let viaLink;
 try {
-  execFileSync("node", [path.join(link, "scripts/product-map.mjs"), "--root", tmp, "--check"],
+  execFileSync("node", [path.join(link, "plugins/acceptance-gate/scripts/product-map.mjs"), "--root", tmp, "--check"],
     { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
   viaLink = { code: 0, err: "" };
 } catch (e) { viaLink = { code: e.status, err: String(e.stderr || "") }; }
@@ -3943,8 +3943,8 @@ run "P120 uat-session giu chot spec §2.3 dung thu tu; skill MO nhu design-pass 
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-p = root / "skills/uat-session/SKILL.md"
-assert p.is_file(), "thieu skills/uat-session/SKILL.md"
+p = root / "plugins/acceptance-gate/skills/uat-session/SKILL.md"
+assert p.is_file(), "thieu plugins/acceptance-gate/skills/uat-session/SKILL.md"
 raw = p.read_text(encoding="utf-8")
 # Chuan hoa khoang trang TRUOC khi soi: lo hua la "than skill co chot X",
 # khong phai "chuoi X nam gon tren mot dong". Do nguyen van thi mot lan
@@ -3982,20 +3982,20 @@ assert t.find("product-map.mjs") > t.find("decided_by"), \
 
 # Con tro khuon phai GIAI DUOC tren dia — do DAU RA chu khong do CHI DAN.
 # Truoc S4-r7 than skill viet "references/uat-session-template.md" (tuong doi
-# voi thu muc skill) trong khi khuon nam o skills/acceptance/references/, nen
+# voi thu muc skill) trong khi khuon nam o plugins/acceptance-gate/skills/acceptance/references/, nen
 # agent chay that se doc truot va tu go frontmatter — mat luon seam ma P115
 # dung ra de giu ben viet va ben doc khop nhau.
 m = re.search(r"Chép khuôn từ `([^`]+)`", raw)
 assert m, "than skill khong con cau 'Chép khuôn từ `<duong-dan>`'"
 # Bóc MỌI dạng gốc-plugin, gồm dạng hai-harness ${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}
 ct = re.sub(r"^\$\{?CLAUDE_PLUGIN_ROOT(:-\$\{?PLUGIN_ROOT\}?)?\}?/", "", m.group(1))
-assert (root / ct).is_file(), f"con tro khuon KHONG giai duoc: {m.group(1)} -> {ct}"
+assert (root / "plugins/acceptance-gate" / ct).is_file(), f"con tro khuon KHONG giai duoc: {m.group(1)} -> {ct}"
 
 # skill MO: khong co co khoa invocation (doi chung duong tren mot lenh LOCKED)
 assert "disable-model-invocation" not in t, "uat-session bi khoa — tien le design-pass la MO"
-locked = (root / "commands/start.md").read_text(encoding="utf-8")
+locked = (root / "plugins/acceptance-gate/commands/start.md").read_text(encoding="utf-8")
 assert "disable-model-invocation: true" in locked, \
-    "doi chung duong hong: commands/start.md le ra phai co co khoa"
+    "doi chung duong hong: plugins/acceptance-gate/commands/start.md le ra phai co co khoa"
 
 # dot bien: bo mot chot thi phep do PHAI mat dau moc
 # Dua ban da tiem QUA CHINH vong kiem thu tu o tren — assert tren chuoi vua
@@ -4023,9 +4023,9 @@ const path = await import("node:path");
 const { execFileSync } = await import("node:child_process");
 const { fileFromTemplate } = await import(path.join(root, "tests/fixtures/from-template.mjs"));
 const die = m => { console.error(m); process.exit(1); };
-const SCAN = path.join(root, "scripts/start-scan.mjs");
-const MAP = path.join(root, "scripts/product-map.mjs");
-const R = p => path.join(root, "skills/acceptance/references", p);
+const SCAN = path.join(root, "plugins/acceptance-gate/scripts/start-scan.mjs");
+const MAP = path.join(root, "plugins/acceptance-gate/scripts/product-map.mjs");
+const R = p => path.join(root, "plugins/acceptance-gate/skills/acceptance/references", p);
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "p108-"));
 const W = (rel, s) => { const p = path.join(tmp, rel);
   fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, s); };
@@ -4126,9 +4126,9 @@ from pathlib import Path
 root = Path(sys.argv[1])
 # (than lenh, moc "ghi field cong" phai dung TRUOC buoc regen)
 BODIES = [
-    ("commands/approve.md", "approved_by"),
-    ("commands/signoff.md", "human_signoff"),
-    ("skills/uat-session/SKILL.md", "decided_by"),
+    ("plugins/acceptance-gate/commands/approve.md", "approved_by"),
+    ("plugins/acceptance-gate/commands/signoff.md", "human_signoff"),
+    ("plugins/acceptance-gate/skills/uat-session/SKILL.md", "decided_by"),
 ]
 for rel, anchor_field in BODIES:
     t = (root / rel).read_text(encoding="utf-8")
@@ -4169,7 +4169,7 @@ assert "executors.script.product_map" not in suite_keys(mut), \
 # kiem file ton tai.
 assert (root / "PRODUCT-MAP.md").is_file(), "kit chua commit PRODUCT-MAP.md cua chinh no"
 import subprocess
-rc = subprocess.run(["node", "scripts/product-map.mjs", "--root", ".", "--check"],
+rc = subprocess.run(["node", "plugins/acceptance-gate/scripts/product-map.mjs", "--root", ".", "--check"],
                     cwd=root, capture_output=True, text=True)
 assert rc.returncode == 0, f"PRODUCT-MAP.md cua kit lech voi ho so xuong: {rc.stderr.strip()}"
 PY109
@@ -4259,7 +4259,7 @@ for k, cmd in zip(keys, resolved):
             thieu.append("%s -> %s" % (k, sp))
 assert not thieu, "suite_key tro script KHONG TON TAI tren cay: %r" % thieu
 # chiều đỏ: trỏ một khoá sang script không tồn tại → phải đỏ NÊU ĐÍCH DANH tệp
-mut2 = cfg.replace('product_map: "node scripts/product-map.mjs',
+mut2 = cfg.replace('product_map: "node plugins/acceptance-gate/scripts/product-map.mjs',
                    'product_map: "node scripts/KHONG-TON-TAI-P195.mjs', 1)
 assert mut2 != cfg, "buoc tiem file-khong-ton-tai chua bao gio chay"
 thieu2 = []
@@ -4306,11 +4306,11 @@ const root = process.argv[2];  // dang stdin: argv[1] la "-"
 const fs = await import("node:fs"); const os = await import("node:os");
 const path = await import("node:path");
 const { execFileSync } = await import("node:child_process");
-const { renderProductMap } = await import(path.join(root, "scripts/product-map.mjs"));
+const { renderProductMap } = await import(path.join(root, "plugins/acceptance-gate/scripts/product-map.mjs"));
 const die = m => { console.error(m); process.exit(1); };
-const SCAN = path.join(root, "scripts/start-scan.mjs");
+const SCAN = path.join(root, "plugins/acceptance-gate/scripts/start-scan.mjs");
 const { createRequire } = await import("node:module");
-const LIB = path.join(root, "lib/workspace-record.cjs");
+const LIB = path.join(root, "plugins/acceptance-gate/lib/workspace-record.cjs");
 const { NAV_RULES, consumedTexts } = createRequire(LIB)(LIB);
 
 // Ban do va bo quet vao phien la HAI READER cua cung mot bo ho so; loi hua la
@@ -4566,7 +4566,7 @@ const root = process.argv[2];  // dang stdin: argv[1] la "-"
 const path = await import("node:path");
 const { createRequire } = await import("node:module");
 const require = createRequire(import.meta.url);
-const core = require(path.join(root, "lib/evidence-core.cjs"));
+const core = require(path.join(root, "plugins/acceptance-gate/lib/evidence-core.cjs"));
 const die = m => { console.error(m); process.exit(1); };
 const F = core.frontmatterField;
 
@@ -4598,7 +4598,7 @@ if (F("khong co frontmatter\n", "key") !== null) die("khong co frontmatter phai 
 
 // 5. Ca DAU-DEN-CUOI: uat-session chua ky (verdict rong, khong comment) phai
 // la ho so LANH MANH voi ca hai reader — day la ca that ma nghi thuc sinh ra.
-const { recordProblem } = require(path.join(root, "lib/workspace-record.cjs"));
+const { recordProblem } = require(path.join(root, "plugins/acceptance-gate/lib/workspace-record.cjs"));
 const p = recordProblem({ "contract.md": "---\nstatus: signed-off\n---\n",
                           "opportunity.md": "---\nstage: decided\ndecision: build\n---\n",
                           "uat-session.md": uat });
@@ -4612,9 +4612,9 @@ run "P125 ban do co HINH dan dau, hinh mang so THAT, chu tu viet qua N1/N2/N3 (E
 const root = process.argv[2];  // dang stdin: argv[1] la "-"
 const fs = await import("node:fs"); const os = await import("node:os");
 const path = await import("node:path");
-const { renderProductMap } = await import(path.join(root, "scripts/product-map.mjs"));
+const { renderProductMap } = await import(path.join(root, "plugins/acceptance-gate/scripts/product-map.mjs"));
 const { fileFromTemplate } = await import(path.join(root, "tests/fixtures/from-template.mjs"));
-const R = p => path.join(root, "skills/acceptance/references", p);
+const R = p => path.join(root, "plugins/acceptance-gate/skills/acceptance/references", p);
 const die = m => { console.error(m); process.exit(1); };
 
 // CHAN HINH cua AC-13 — do bang MAY, khong giao cho panel judge. 12 luot cham
@@ -4741,7 +4741,7 @@ assert "PRODUCT-MAP.md" in t1, f"PRODUCT-MAP.md chua duoc mien tru (thay: {t1})"
 #    ban do khop -> --check XANH; tiem lech -> --check DO. Khong co ve nay thi
 #    mien tru bien mot view may sinh thanh vung khong ai kiem.
 def check():
-    return subprocess.run(["node", "scripts/product-map.mjs", "--root", ".", "--check"],
+    return subprocess.run(["node", "plugins/acceptance-gate/scripts/product-map.mjs", "--root", ".", "--check"],
                           cwd=root, capture_output=True, text=True)
 r = check()
 assert r.returncode == 0, f"doi chung duong hong: ban do cua kit dang lech san ({r.stderr.strip()})"
@@ -4762,14 +4762,14 @@ try:
     # thiếu chúng là đỏ vì HẠ TẦNG, không vì bản đồ (chiến dịch ghim lại 2.25.0 bắt). Tên tệp rút bằng
     # chính bộ đọc khoá của kit, không chép tay.
     tep_lt = subprocess.run(["node", "-e", "const v=require(process.argv[1]).cacTepTuConfig(require('fs').readFileSync(process.argv[2],'utf8'));console.log(v?v.tep.join('\\n'):'')",
-                             str(root / "scripts/lo-trinh-khoa.cjs"), str(root / "_acceptance/config.yaml")],
+                             str(root / "plugins/acceptance-gate/scripts/lo-trinh-khoa.cjs"), str(root / "_acceptance/config.yaml")],
                             capture_output=True, text=True, check=True).stdout.split()
     for rel in tep_lt + (["LO-TRINH.html"] if tep_lt else []):
         if (root / rel).is_file():
             (tmp / rel).parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(root / rel, tmp / rel)
     def check_tmp():
-        return subprocess.run(["node", str(root / "scripts/product-map.mjs"), "--root", str(tmp), "--check"],
+        return subprocess.run(["node", str(root / "plugins/acceptance-gate/scripts/product-map.mjs"), "--root", str(tmp), "--check"],
                               cwd=root, capture_output=True, text=True)
     assert check_tmp().returncode == 0, "ban sao nguyen ven da lech san — doi chung duong hong"
     (tmp / "PRODUCT-MAP.md").write_text(
@@ -4787,7 +4787,7 @@ assert "product-map.mjs --root . --check" in ci, \
     "gate.yml khong chay --check — mien tru mat can cu (khong con cong nao canh o moi PR)"
 
 # 4. Mien tru KHONG duoc lan sang path khac o goc repo
-for xau in [".github/**", ".claude-plugin/plugin.json"]:
+for xau in [".github/**", "plugins/acceptance-gate/.claude-plugin/plugin.json"]:
     assert xau not in t1, f"{xau} da bi nuot vao t1_skip_globs — de xuat nay DA BI TU CHOI (.out-of-scope/)"
 
 # 5a. KHONG hai ADR nao duoc trung so — dinh danh trung lam hong chinh chuc
@@ -4818,7 +4818,7 @@ from pathlib import Path
 root = Path(sys.argv[1])
 
 # Than lenh cong NAO bat repo tieu thu commit ban do?
-BODIES = ["commands/approve.md", "commands/signoff.md"]
+BODIES = ["plugins/acceptance-gate/commands/approve.md", "plugins/acceptance-gate/commands/signoff.md"]
 bat_commit = [b for b in BODIES if "PRODUCT-MAP.md" in (root / b).read_text(encoding="utf-8")]
 assert bat_commit, "doi chung duong hong: khong than lenh nao nhac PRODUCT-MAP.md"
 
@@ -4828,7 +4828,7 @@ assert bat_commit, "doi chung duong hong: khong than lenh nao nhac PRODUCT-MAP.m
 #   (b) executor canh — ADR 0007 noi mien tru CHI an toan khi con cong doc lap.
 # Thieu mot trong hai la kit phat cho consumer mot cai bay ma chinh kit da
 # dam phai o S4-r4 va da ghi ADR de khoi ai dam lai.
-INITS = ["commands/acceptance-init.md"]
+INITS = ["plugins/acceptance-gate/commands/acceptance-init.md"]
 for rel in INITS:
     txt = (root / rel).read_text(encoding="utf-8")
     assert re.search(r'^\s*-\s*"PRODUCT-MAP\.md"\s*$', txt, re.M), \
@@ -4851,7 +4851,7 @@ assert "--check" in adr, "ADR 0007 khong neu cong canh"
 RE_REGEN = re.compile(r"product-map\.mjs --root \.(?!\s*--check)")
 THAN = sorted(
     p.relative_to(root).as_posix()
-    for d in ("commands", "skills")
+    for d in ("plugins/acceptance-gate/commands", "plugins/acceptance-gate/skills")
     for p in (root / d).rglob("*.md")
     if RE_REGEN.search(p.read_text(encoding="utf-8"))
 )
@@ -4894,7 +4894,7 @@ for rel in THAN:
 #     so do la hong. contract-template co loi dan tu dau, uat/opportunity thi
 #     khong (S4-r13) — cung mot lop, sua theo lop: danh sach lay bang QUET
 #     chinh cac file CO marker, nen khuon thu tu them sau nay tu dong bi do.
-REF = root / "skills/acceptance/references"
+REF = root / "plugins/acceptance-gate/skills/acceptance/references"
 KHUON = sorted(p.relative_to(root).as_posix() for p in REF.rglob("*.md")
                if re.search(r"<<<[A-Z0-9-]+-FRONTMATTER-TEMPLATE", p.read_text(encoding="utf-8")))
 assert len(KHUON) >= 3, f"quet ra {len(KHUON)} khuon co marker — mong >=3, nghi buoc quet hong: {KHUON}"
@@ -4935,7 +4935,7 @@ assert "t1_skip_globs" in docs_all and "0007" in docs_all, \
 #     ma bo quet THAT SU phat. `skipped[]` bi go o F-B; neu ai do them lai thi
 #     assert nay TU NOI LONG, khong phai sua test. (Blacklist tren khong gian mo
 #     thi va-roi-lai-thung; ghim quan he thi khong.)
-out = json.loads(subprocess.run(["node", str(root / "scripts/start-scan.mjs"), "--root", str(root)],
+out = json.loads(subprocess.run(["node", str(root / "plugins/acceptance-gate/scripts/start-scan.mjs"), "--root", str(root)],
                                 capture_output=True, text=True, check=True).stdout)
 khoa_that = set(out.keys()) | set(out.get("groups", {}).keys())
 assert "broken" in khoa_that and "map" in khoa_that, f"bo dem tinh tao: dau ra scan la {sorted(khoa_that)} — nghi buoc chay hong"
@@ -4946,7 +4946,7 @@ _tam = Path(tempfile.mkdtemp(prefix="p128-"))
 (_tam / "_acceptance").mkdir()
 (_tam / "_acceptance/config.yaml").write_text("schema_version: 1\nlo_trinh:\n  tep: lo-trinh.json\n", encoding="utf-8")
 (_tam / "lo-trinh.json").write_text(json.dumps({"schema": 1, "moc": [{"ten": "M", "ngay": "2026-01-01", "hang": ["1"]}], "hang": [{"ma": "1", "cau_giao": "c"}]}), encoding="utf-8")
-out_lt = json.loads(subprocess.run(["node", str(root / "scripts/start-scan.mjs"), "--root", str(_tam)], capture_output=True, text=True, check=True,
+out_lt = json.loads(subprocess.run(["node", str(root / "plugins/acceptance-gate/scripts/start-scan.mjs"), "--root", str(_tam)], capture_output=True, text=True, check=True,
                                    env={**os.environ, "ACCEPTANCE_TODAY": "2026-10-02"}).stdout)
 def _gom(v):
     if isinstance(v, dict):
@@ -4955,7 +4955,7 @@ def _gom(v):
         for x in v: _gom(x)
 assert out_lt.get("loTrinh"), f"bo dem tinh tao: kho tam khai lo_trinh ma loTrinh rong: {out_lt.get('loTrinh')}"
 _gom(out_lt["loTrinh"])
-BODIES = DOCS + ["scripts/start-scan.mjs", "commands/start.md"]
+BODIES = DOCS + ["plugins/acceptance-gate/scripts/start-scan.mjs", "plugins/acceptance-gate/commands/start.md"]
 for rel in BODIES:
     t = (root / rel).read_text(encoding="utf-8")
     for m in re.finditer(r"(?<![A-Za-z_])(\w+)\[\]", t):
@@ -4984,7 +4984,7 @@ run "P129 canh + ten viec doc tu ho so KHONG tieu thu; loi doc o do khong lam ho
 const root = process.argv[2];
 const fs = await import("node:fs"); const os = await import("node:os");
 const path = await import("node:path");
-const { renderProductMap } = await import(path.join(root, "scripts/product-map.mjs"));
+const { renderProductMap } = await import(path.join(root, "plugins/acceptance-gate/scripts/product-map.mjs"));
 const die = m => { console.error(m); process.exit(1); };
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "p129-"));
 const dir = path.join(tmp, "_acceptance", "x");
@@ -5069,7 +5069,7 @@ with tempfile.TemporaryDirectory() as td:
     shf = Path(td, "r.sh"); shf.write_text(BASH)
     for i, h in enumerate(HINH):
         cfg = Path(td, "c%d.yaml" % i); cfg.write_text("schema_version: 1\n" + h)
-        js = json.loads(subprocess.run(["node", str(jsf), str(root / "lib/workspace-record.cjs"), str(cfg)],
+        js = json.loads(subprocess.run(["node", str(jsf), str(root / "plugins/acceptance-gate/lib/workspace-record.cjs"), str(cfg)],
                                        capture_output=True, text=True, check=True).stdout)
         sh = [l for l in subprocess.run(["bash", str(shf), str(cfg)],
                                         capture_output=True, text=True).stdout.split("\n") if l]
@@ -5091,9 +5091,9 @@ with tempfile.TemporaryDirectory() as td:
     for i, h in enumerate(HINH):
         cfg = ws / "_acceptance" / "config.yaml"; cfg.write_text("schema_version: 1\n" + h)
         mong = "PRODUCT-MAP.md" in json.loads(subprocess.run(
-            ["node", str(jsf), str(root / "lib/workspace-record.cjs"), str(cfg)],
+            ["node", str(jsf), str(root / "plugins/acceptance-gate/lib/workspace-record.cjs"), str(cfg)],
             capture_output=True, text=True, check=True).stdout)
-        that = json.loads(subprocess.run(["node", str(root / "scripts/start-scan.mjs"), "--root", str(ws)],
+        that = json.loads(subprocess.run(["node", str(root / "plugins/acceptance-gate/scripts/start-scan.mjs"), "--root", str(ws)],
                                          capture_output=True, text=True, check=True).stdout)["map"]["enabled"]
         if that is not mong:
             lech2.append("  hinh %d: map.enabled=%r nhung luat chung noi %r\n    %r" % (i, that, mong, h))
@@ -5168,7 +5168,7 @@ run "P132 pilot block README symlink du moi lenh commands/*.md" \
 import sys
 from pathlib import Path
 root = Path(sys.argv[1])
-cmds = sorted(p.name for p in (root / "commands").glob("*.md"))
+cmds = sorted(p.name for p in (root / "plugins/acceptance-gate/commands").glob("*.md"))
 assert len(cmds) >= 7, f"sanity: chi thay {len(cmds)} lenh trong commands/ — bo quet hong?"
 readme = (root / "README.md").read_text(encoding="utf-8")
 
@@ -5205,7 +5205,7 @@ if "advisory by default" in readme:
     errs.append("README: cau cu 'advisory by default' quay lai — nguoc voi scaffold cua init")
 # 2. jsdom phải có mặt ở CẢ 3 điểm init (Claude acceptance-init, design-init 2 harness) —
 #    thiếu nó mọi design eval BLOCKED (design-gate.mjs DOM mode).
-for rel in ["commands/acceptance-init.md"]:
+for rel in ["plugins/acceptance-gate/commands/acceptance-init.md"]:
     if "jsdom" not in (root / rel).read_text(encoding="utf-8"):
         errs.append(f"{rel}: mat loi nhac jsdom")
 assert errs == [], errs                                   # doi chung DUONG
@@ -5231,7 +5231,7 @@ run "P134 context-ladder writer: khoa context + giai doan 0 + luat canh + mac-di
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+t = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 flat = lambda s: re.sub(r"\s+", " ", s)  # repo hard-wrap prose — pin phai chiu duoc xuong dong
 def check(text):
     m = re.search(r"<<<DESIGN-PASS-NOTE-TEMPLATE\n(.*?)\nDESIGN-PASS-NOTE-TEMPLATE>>>", text, re.S)
@@ -5280,7 +5280,7 @@ run "P135 context-ladder round-trip: khuon writer -> the render nhan tieng nguoi
 import re, subprocess, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1])
-skill = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+skill = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 block = re.search(r"<<<DESIGN-PASS-NOTE-TEMPLATE\n(.*?)\nDESIGN-PASS-NOTE-TEMPLATE>>>", skill, re.S).group(1)
 LABELS = {"standalone": "đứng một mình", "static-frame": "khung giả tĩnh", "host-embedded": "nhúng host thật"}
 SCENES_PH = "[<file cảnh trong evidence/design-pass/, trống nếu không standalone hoặc đã descope>]"
@@ -5316,7 +5316,7 @@ def mkfix(ctx, scenes, drop_context=False, ledger=None, cfg="schema_version: 1\n
         (ws / "decisions.jsonl").write_text(ledger, encoding="utf-8")
     return d
 def render(d):
-    r = subprocess.run(["node", str(root / "scripts/gate-card.js"), "--root", str(d), "--slug", "fx"],
+    r = subprocess.run(["node", str(root / "plugins/acceptance-gate/scripts/gate-card.js"), "--root", str(d), "--slug", "fx"],
                        capture_output=True, text=True)
     assert r.returncode == 0, f"gate-card exit {r.returncode}: {r.stderr}"
     return r.stdout
@@ -5333,7 +5333,7 @@ run "P136 context-ladder co vang standalone thieu canh: 3 nhanh fixture tu write
 import re, subprocess, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1])
-skill = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+skill = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 block = re.search(r"<<<DESIGN-PASS-NOTE-TEMPLATE\n(.*?)\nDESIGN-PASS-NOTE-TEMPLATE>>>", skill, re.S).group(1)
 SCENES_PH = "[<file cảnh trong evidence/design-pass/, trống nếu không standalone hoặc đã descope>]"
 BODY_PH = re.compile(r"- <file cảnh — [^\n]*>")
@@ -5364,7 +5364,7 @@ def mkfix(scenes, ledger=None):
         (ws / "decisions.jsonl").write_text(ledger, encoding="utf-8")
     return d
 def render(d):
-    r = subprocess.run(["node", str(root / "scripts/gate-card.js"), "--root", str(d), "--slug", "fx"],
+    r = subprocess.run(["node", str(root / "plugins/acceptance-gate/scripts/gate-card.js"), "--root", str(d), "--slug", "fx"],
                        capture_output=True, text=True)
     assert r.returncode == 0, f"gate-card exit {r.returncode}: {r.stderr}"
     return r.stdout
@@ -5399,7 +5399,7 @@ run "P137 context-ladder duong doc-cu + gia tri la: co vang co ten, khong chan (
 import re, subprocess, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1])
-skill = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+skill = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 block = re.search(r"<<<DESIGN-PASS-NOTE-TEMPLATE\n(.*?)\nDESIGN-PASS-NOTE-TEMPLATE>>>", skill, re.S).group(1)
 SCENES_PH = "[<file cảnh trong evidence/design-pass/, trống nếu không standalone hoặc đã descope>]"
 BODY_PH = re.compile(r"- <file cảnh — [^\n]*>")
@@ -5431,7 +5431,7 @@ def mkfix(ctx, drop_context=False):
     (ws / "design-pass.md").write_text(fx, encoding="utf-8")
     return d
 def render(d):
-    r = subprocess.run(["node", str(root / "scripts/gate-card.js"), "--root", str(d), "--slug", "fx"],
+    r = subprocess.run(["node", str(root / "plugins/acceptance-gate/scripts/gate-card.js"), "--root", str(d), "--slug", "fx"],
                        capture_output=True, text=True)
     assert r.returncode == 0, f"gate-card exit {r.returncode} (duong doc-cu PHAI khong chan): {r.stderr}"
     return r.stdout
@@ -5454,7 +5454,7 @@ run "P138 context-ladder socket host_embed: vang->co vang, con tro hong->neu ten
 import re, subprocess, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1])
-skill = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+skill = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 block = re.search(r"<<<DESIGN-PASS-NOTE-TEMPLATE\n(.*?)\nDESIGN-PASS-NOTE-TEMPLATE>>>", skill, re.S).group(1)
 SCENES_PH = "[<file cảnh trong evidence/design-pass/, trống nếu không standalone hoặc đã descope>]"
 BODY_PH = re.compile(r"- <file cảnh — [^\n]*>")
@@ -5486,7 +5486,7 @@ def mkfix(cfg, mkguide=None):
         p.write_text("huong dan nhung\n", encoding="utf-8")
     return d
 def render(d):
-    r = subprocess.run(["node", str(root / "scripts/gate-card.js"), "--root", str(d), "--slug", "fx"],
+    r = subprocess.run(["node", str(root / "plugins/acceptance-gate/scripts/gate-card.js"), "--root", str(d), "--slug", "fx"],
                        capture_output=True, text=True)
     assert r.returncode == 0, f"gate-card exit {r.returncode} (socket PHAI khong chan): {r.stderr}"
     return r.stdout
@@ -5523,7 +5523,7 @@ run "P139 context-ladder generic: fixture repo-la code-sinh (web app tron) + gre
 import re, subprocess, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1])
-skill = (root / "skills/design-pass/SKILL.md").read_text(encoding="utf-8")
+skill = (root / "plugins/acceptance-gate/skills/design-pass/SKILL.md").read_text(encoding="utf-8")
 block = re.search(r"<<<DESIGN-PASS-NOTE-TEMPLATE\n(.*?)\nDESIGN-PASS-NOTE-TEMPLATE>>>", skill, re.S).group(1)
 SCENES_PH = "[<file cảnh trong evidence/design-pass/, trống nếu không standalone hoặc đã descope>]"
 BODY_PH = re.compile(r"- <file cảnh — [^\n]*>")
@@ -5560,7 +5560,7 @@ def mkrepo(ctx, drop_context=False):
     (ws / "design-pass.md").write_text(fx, encoding="utf-8")
     return d
 def render(d):
-    r = subprocess.run(["node", str(root / "scripts/gate-card.js"), "--root", str(d), "--slug", "fx-web"],
+    r = subprocess.run(["node", str(root / "plugins/acceptance-gate/scripts/gate-card.js"), "--root", str(d), "--slug", "fx-web"],
                        capture_output=True, text=True)
     assert r.returncode == 0, f"gate-card exit {r.returncode} tren repo-la: {r.stderr}"
     return r.stdout
@@ -5580,8 +5580,8 @@ E = "# --- context-ladder cases " + "end ---"
 b = rt.find(B); e = rt.find(E, b + 1)
 assert b != -1 and e != -1 and e > b, "khong tim thay vung case context-ladder"
 srcs = {
-    "skills/design-pass/SKILL.md": skill,
-    "scripts/gate-card.js": (root / "scripts/gate-card.js").read_text(encoding="utf-8"),
+    "plugins/acceptance-gate/skills/design-pass/SKILL.md": skill,
+    "plugins/acceptance-gate/scripts/gate-card.js": (root / "plugins/acceptance-gate/scripts/gate-card.js").read_text(encoding="utf-8"),
     "tests:context-ladder-region": rt[b:e],
 }
 assert len(srcs) == 3, "sanity: so nguon quet phai la 3"
@@ -5593,7 +5593,7 @@ def guard(texts):
                 errs.append(f"tu vung host '{w}' lot vao {name}")
     return errs
 assert guard(srcs) == [], f"tu vung host lot vao nguon kit: {guard(srcs)}"
-mut = dict(srcs); mut["skills/design-pass/SKILL.md"] = skill + "\n" + BAD[0]
+mut = dict(srcs); mut["plugins/acceptance-gate/skills/design-pass/SKILL.md"] = skill + "\n" + BAD[0]
 assert any("tu vung host" in x and BAD[0] in x for x in guard(mut)), "guard khong do khi tiem tu vung host"
 print("P139 OK (3 phep do dung tren repo-la + guard co doi chung duong)")
 PY
@@ -5603,7 +5603,7 @@ run "P140 context-ladder wiring: checklist ket phien S1-D + resume-guard doc con
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-t = (root / "feature-loop/skills/feature-loop/SKILL.md").read_text(encoding="utf-8")
+t = (root / "plugins/feature-loop/skills/feature-loop/SKILL.md").read_text(encoding="utf-8")
 flat = lambda s: re.sub(r"\s+", " ", s)
 def check(text):
     ftext = flat(text)
@@ -5661,7 +5661,7 @@ root = Path(sys.argv[1])
 # mot-dong, khong thay ca am trong block scalar — cung lop bug parser gate-card,
 # chip sua rieng). Luat: canh bao cua context-ladder ⊆ {W3}; lint sua xong
 # (exit 0, khong W3) case nay VAN xanh — khong ghim bao gia thanh yeu cau.
-r = subprocess.run(["node", str(root / "scripts/eval-coverage-lint.js"), str(root), "--slug", "stop-patching-law"],  # context-ladder lưu kho 08/09 (ADR 0015) — hồ sơ sống, lint sạch, có Coverage
+r = subprocess.run(["node", str(root / "plugins/acceptance-gate/scripts/eval-coverage-lint.js"), str(root), "--slug", "stop-patching-law"],  # context-ladder lưu kho 08/09 (ADR 0015) — hồ sơ sống, lint sạch, có Coverage
                    capture_output=True, text=True)
 warns = [l for l in r.stdout.splitlines() if l.strip().startswith("[stop-patching-law]")]
 bad = [l for l in warns if " W3 " not in l]
@@ -5673,7 +5673,7 @@ ev = (root / "_acceptance/stop-patching-law/evals.yaml").read_text(encoding="utf
 d = Path(tempfile.mkdtemp())
 (d / "contract.md").write_text(ct.replace("## Coverage", "- AC-99: Given x, When đạt ngưỡng 5, Then y.\n\n## Coverage", 1), encoding="utf-8")
 (d / "evals.yaml").write_text(ev + "  - id: E99\n    criterion: AC-99\n    executor: script\n    cmd: config:executors.script.product_map\n    expected: chay xong la dat\n", encoding="utf-8")
-r2 = subprocess.run(["node", str(root / "scripts/eval-coverage-lint.js"), str(root), "--files", str(d / "contract.md"), str(d / "evals.yaml")],
+r2 = subprocess.run(["node", str(root / "plugins/acceptance-gate/scripts/eval-coverage-lint.js"), str(root), "--files", str(d / "contract.md"), str(d / "evals.yaml")],
                     capture_output=True, text=True)
 assert "W1" in r2.stdout and "AC-99" in r2.stdout, f"doi chung duong hong: tiem AC nguong ma W1 khong no: {r2.stdout[:300]}"
 print("P142 OK (chi W3 da-biet; doi chung duong W1 no dung)")
@@ -5707,7 +5707,7 @@ status: draft
 - AC-2: Given hạn mức 3 lần, When vượt hạn mức, Then hệ thống khoá phiên.
 EOF
 P143MSG='có ngưỡng/biên nhưng chưa có ca'
-p134_flags() { node "$ROOT/scripts/gate-card.js" --root "$P143WS" --slug demo --gate 1 2>&1 | grep -o "AC-[0-9]* $P143MSG" ; }
+p134_flags() { node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P143WS" --slug demo --gate 1 2>&1 | grep -o "AC-[0-9]* $P143MSG" ; }
 # (a) đối chứng dương: expected MỘT DÒNG thiếu ca âm → cờ PHẢI bắn cho cả 2 AC,
 # đúng thông điệp — chứng minh máy-cảnh-báo còn sống trước khi tin các case sạch.
 cat > "$P143WS/_acceptance/demo/evals.yaml" <<'EOF'
@@ -5789,7 +5789,7 @@ else
   fail "P143 covGaps doc duoc block scalar > va |, canh bao dung AC, than block khong cuop key"
 fi
 
-# ── P144: eval-coverage-lint W1/W3 — cùng lớp bug, cùng thuốc (lib/eval-yaml.cjs) ─
+# ── P144: eval-coverage-lint W1/W3 — cùng lớp bug, cùng thuốc (plugins/acceptance-gate/lib/eval-yaml.cjs) ─
 # Lint có BẢN SAO của parser gate-card (đã trôi cùng nhau); case này ghim phía
 # lint để hai bên không tách thuốc lần nữa: W1 không bắn giả khi ca âm nằm trong
 # block, W3 đếm được ca âm trong block, và cảnh báo thật vẫn đỏ đúng chỗ.
@@ -5814,7 +5814,7 @@ status: draft
 
 - không gửi lại cảnh báo trùng trong 24 giờ
 EOF
-p135_lint() { node "$ROOT/scripts/eval-coverage-lint.js" --files "$P144WS/contract.md" "$P144WS/evals.yaml" 2>&1; }
+p135_lint() { node "$ROOT/plugins/acceptance-gate/scripts/eval-coverage-lint.js" --files "$P144WS/contract.md" "$P144WS/evals.yaml" 2>&1; }
 # (a) đối chứng dương: một dòng, không ca âm → W1 cho cả 2 AC + W3, ghim thông điệp
 cat > "$P144WS/evals.yaml" <<'EOF'
 evals:
@@ -5892,7 +5892,7 @@ approved_by: tester
 - AC-1: Given form, When submit, Then DB có row mới (cross-layer).
 EOF
 P145MSG='AC-1 is tagged (cross-layer) but no eval of it declares layer: backend-effect'
-p136_hits() { bash "$ROOT/scripts/pre-merge-check.sh" "$P145WS" 2>&1 | grep -cF "$P145MSG"; }
+p136_hits() { bash "$ROOT/plugins/acceptance-gate/scripts/pre-merge-check.sh" "$P145WS" 2>&1 | grep -cF "$P145MSG"; }
 # (a) đối chứng dương: chỉ có layer ui → răng phải cắn, đúng thông điệp
 cat > "$P145WS/_acceptance/xl/evals.yaml" <<'EOF'
 evals:
@@ -5955,7 +5955,7 @@ done
 # đối chứng dương cho chính fixture: bản gốc PHẢI chứa bullet wrap đang kiểm
 grep -q 'AC-6 (sha vào$' "$P146WS/_acceptance/demo/contract.md" \
   || { echo "     artifact that khong con bullet wrap 'AC-6 (sha vào' cuoi dong — chon bullet khac cho case nay"; P146OK=0; }
-P146OUT="$(node "$ROOT/scripts/gate-card.js" --root "$P146WS" --slug demo --gate 1 2>&1)"; P146ST=$?
+P146OUT="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P146WS" --slug demo --gate 1 2>&1)"; P146ST=$?
 [ "$P146ST" -eq 0 ] || { echo "     gate-card exit $P146ST: $P146OUT"; P146OK=0; }
 # đối chứng dương: khối Coverage + gap-probe THẬT SỰ render (răng của các phép đo âm bên dưới)
 printf '%s' "$P146OUT" | grep -qF 'S — sự kiện re-pin' || { echo "     khoi Coverage khong render (doi chung duong chet)"; P146OK=0; }
@@ -5991,20 +5991,20 @@ done
 node - "$ROOT" <<'JS' || P147OK=0
 const fs = require('fs'), path = require('path');
 const root = process.argv[2];
-const doc = fs.readFileSync(path.join(root, 'commands/acceptance-card.md'), 'utf8');
+const doc = fs.readFileSync(path.join(root, 'plugins/acceptance-gate/commands/acceptance-card.md'), 'utf8');
 const m = doc.match(/<<<CARD-PLAIN-KEYS\n([\s\S]*?)CARD-PLAIN-KEYS>>>/);
-if (!m) { console.error('     KHONG rut duoc khuon CARD-PLAIN-KEYS tu commands/acceptance-card.md'); process.exit(1); }
+if (!m) { console.error('     KHONG rut duoc khuon CARD-PLAIN-KEYS tu plugins/acceptance-gate/commands/acceptance-card.md'); process.exit(1); }
 const keys = m[1].split(/\s+/).filter(k => /^[a-z_]+$/.test(k));
 if (!keys.includes('coverage_plain') || !keys.includes('gap_probe_plain')) {
   console.error('     khuon CARD-PLAIN-KEYS thieu coverage_plain/gap_probe_plain'); process.exit(1);
 }
-const gc = fs.readFileSync(path.join(root, 'scripts/gate-card.js'), 'utf8');
+const gc = fs.readFileSync(path.join(root, 'plugins/acceptance-gate/scripts/gate-card.js'), 'utf8');
 const used = [...new Set([...gc.matchAll(/\bpl\.([a-z_]+)/g)].map(x => x[1]))];
 for (const k of keys) if (!used.includes(k)) { console.error('     key trong khuon ma reader KHONG doc: ' + k); process.exit(1); }
 for (const k of used) if (!keys.includes(k)) { console.error('     reader doc key NGOAI khuon (writer khong duoc bao viet): ' + k); process.exit(1); }
 JS
 # overlay sinh bằng code từ extract: phủ TOÀN BỘ coverage, CHỈ row 0 của probe
-P147EX="$(node "$ROOT/scripts/gate-card.js" --root "$P147WS" --slug demo --gate 1 --extract 2>/dev/null)"
+P147EX="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P147WS" --slug demo --gate 1 --extract 2>/dev/null)"
 printf '%s' "$P147EX" | node -e '
 const d = JSON.parse(require("fs").readFileSync(0, "utf8"));
 if (!(d.coverage || []).length || !((d.gap_probe || {}).rows || []).length) {
@@ -6016,7 +6016,7 @@ const plain = {
 };
 require("fs").writeFileSync(process.argv[1], JSON.stringify(plain));
 ' "$P147WS/plain.json" || P147OK=0
-P147OUT="$(node "$ROOT/scripts/gate-card.js" --root "$P147WS" --slug demo --gate 1 --plain "$P147WS/plain.json" 2>&1)"; P147ST=$?
+P147OUT="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P147WS" --slug demo --gate 1 --plain "$P147WS/plain.json" 2>&1)"; P147ST=$?
 [ "$P147ST" -eq 0 ] || { echo "     gate-card --plain exit $P147ST: $P147OUT"; P147OK=0; }
 printf '%s' "$P147OUT" | grep -qF 'PHU-0 câu tiếng sản phẩm' || { echo "     overlay coverage_plain KHONG duoc render (key bi bo qua)"; P147OK=0; }
 printf '%s' "$P147OUT" | grep -qF 'DO-0 lỗ nặng nhất' || { echo "     overlay gap_probe_plain KHONG duoc render (key bi bo qua)"; P147OK=0; }
@@ -6062,7 +6062,7 @@ status: draft
   sau mới làm).
 EOF
 printf '%s\n' '{"id":"d-1","type":"descope","stage":"S1","decision":"KHÔNG làm **realtime**","impact":"chậm `5s`"}' > "$P148WS/_acceptance/g1/decisions.jsonl"
-P148G1="$(node "$ROOT/scripts/gate-card.js" --root "$P148WS" --slug g1 --gate 1 2>&1)"; P148ST=$?
+P148G1="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P148WS" --slug g1 --gate 1 2>&1)"; P148ST=$?
 [ "$P148ST" -eq 0 ] || { echo "     gate-card G1 exit $P148ST: $P148G1"; P148OK=0; }
 printf '%s' "$P148G1" | grep -qF 'thấy kết quả đúng' || { echo "     gwt fallback khong lot dau: thieu 'thấy kết quả đúng'"; P148OK=0; }
 printf '%s' "$P148G1" | grep -qF 'đợt sau mới làm' || { echo "     oos bullet wrap cat cut hoac khong lot dau: thieu 'đợt sau mới làm'"; P148OK=0; }
@@ -6098,7 +6098,7 @@ printf '%s\n%s\n%s\n' \
   '{"type":"seal","gate":"1"}' \
   '{"id":"d-2","type":"descope","stage":"S3","decision":"KHÔNG làm **offline**","impact":"cần `mạng`"}' \
   > "$P148WS/_acceptance/g2/decisions.jsonl"
-P148G2="$(node "$ROOT/scripts/gate-card.js" --root "$P148WS" --slug g2 --gate 2 2>&1)"; P148ST=$?
+P148G2="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P148WS" --slug g2 --gate 2 2>&1)"; P148ST=$?
 [ "$P148ST" -eq 0 ] || { echo "     gate-card G2 exit $P148ST: $P148G2"; P148OK=0; }
 printf '%s' "$P148G2" | grep -qF 'thấy kết quả đúng' || { echo "     critText fallback G2 khong lot dau"; P148OK=0; }
 printf '%s' "$P148G2" | grep -qF 'chọn đường A nhanh' || { echo "     decLine G2 (approved) khong lot dau"; P148OK=0; }
@@ -6119,7 +6119,7 @@ run "P149 fixture sinh-tu-khuon -> recheck clean; mutant token cam -> do" \
   node - "$ROOT" <<'NODE'
 const fs = require('fs'), path = require('path'), os = require('os'), cp = require('child_process');
 const ROOT = process.argv[2];
-const tpl = fs.readFileSync(path.join(ROOT, 'skills/acceptance/references/evidence-report-template.md'), 'utf8');
+const tpl = fs.readFileSync(path.join(ROOT, 'plugins/acceptance-gate/skills/acceptance/references/evidence-report-template.md'), 'utf8');
 const m = tpl.match(/<!-- <<<JUDGMENT-BLOCK-TEMPLATE -->([\s\S]*?)<!-- JUDGMENT-BLOCK-TEMPLATE>>> -->/);
 if (!m) { console.error('thieu marker JUDGMENT-BLOCK-TEMPLATE'); process.exit(1); }
 // SINH block tu khuon: thay placeholder {{...}} + dien override (round-trip writer that)
@@ -6134,7 +6134,7 @@ const verifier = path.join(root, 'verify.sh'); fs.writeFileSync(verifier, '#!/bi
 fs.writeFileSync(path.join(dir, 'run-log.jsonl'), JSON.stringify({ ts: 't', round: 1, evalId: 'E1', run_id: 'jr4-E1-001', exit_code: 0, cmd: 'x' }) + '\n');
 const report = `---\nschema_version: 1\nfeature_slug: feat-jr4\nverdict: PASS\nhuman_signoff: Manh 2026-08-05\n---\n\n## Evidence\n- eval: E1\n  run_id: jr4-E1-001\n  exit_code: 0\n  verifier: ${verifier}\n  verified_at: 2026-08-05\n${block}\n`;
 fs.writeFileSync(path.join(dir, 'evidence-report.md'), report);
-const run = (rp) => { try { cp.execFileSync('node', [path.join(ROOT, 'scripts/recheck-evidence.cjs'), rp], { stdio: 'ignore' }); return 0; } catch (e) { return e.status; } };
+const run = (rp) => { try { cp.execFileSync('node', [path.join(ROOT, 'plugins/acceptance-gate/scripts/recheck-evidence.cjs'), rp], { stdio: 'ignore' }); return 0; } catch (e) { return e.status; } };
 if (run(path.join(dir, 'evidence-report.md')) !== 0) { console.error('fixture sinh-tu-khuon bi evidence-core chan'); process.exit(1); }
 fs.writeFileSync(path.join(dir, 'evidence-report.md'), report + '\nghi chu: verdict: FAIL\n');
 if (run(path.join(dir, 'evidence-report.md')) !== 1) { console.error('mutant token cam khong bi chan'); process.exit(1); }
@@ -6150,7 +6150,7 @@ run "P150 required_evidence tren the + report cu render y het ban base" \
     printf -- "evals:\n  - id: EJ1\n    criterion: AC-1\n    executor: judgment\n    inputs: [contract.md]\n    question: \"on chua?\"\n" > "$T/ws/_acceptance/feat-jr5/evals.yaml"
     REP="$T/ws/_acceptance/feat-jr5/evidence-report.md"
     printf -- "---\nschema_version: 2\nfeature_slug: feat-jr5\nverdict: PENDING-JUDGMENT\n---\n\n| Eval | Criterion | Executor | Verdict |\n|---|---|---|---|\n| EJ1 | AC-1 | judgment | UNCERTAIN |\n\n## Evidence\n- eval: EJ1\n  judged_by: judge panel\n  verdict: UNCERTAIN\n  rationale: chua du can cu\n  required_evidence:\n    - anh chup man hinh saved-state — lay bang capture.ui\n  human_override:\n" > "$REP"
-    OUT_NEW=$(cd "$T/ws" && node "'"$ROOT"'/scripts/gate-card.js" --slug feat-jr5 2>/dev/null)
+    OUT_NEW=$(cd "$T/ws" && node "'"$ROOT"'/plugins/acceptance-gate/scripts/gate-card.js" --slug feat-jr5 2>/dev/null)
     echo "$OUT_NEW" | grep -q "Muốn máy đổi ý, cần:" || { echo "thieu khoi bang-chung-con-thieu"; exit 1; }
     echo "$OUT_NEW" | grep -q "saved-state" || { echo "thieu noi dung muc"; exit 1; }
     # report CU (khong field) → stdout == stdout cua gate-card TAI BASE COMMIT
@@ -6158,12 +6158,12 @@ run "P150 required_evidence tren the + report cu render y het ban base" \
     BASE=$(git -C "'"$ROOT"'" merge-base HEAD origin/main)
     mkdir -p "$T/base"
     # "Ban base" phai la MOT cay base TRON VEN, khong phai mot danh sach file chep tay.
-    # Tu vong start-bang-dieu-khien, the cong CHAY scripts/start-scan.mjs de hoi trang thai
+    # Tu vong start-bang-dieu-khien, the cong CHAY plugins/acceptance-gate/scripts/start-scan.mjs de hoi trang thai
     # lan V, va start-scan lai doc khuon opportunity-template — nen cay base thieu bat ky
     # mon nao se cam co canh bao HA TANG va ca do bien thanh "khac ban base": do vi THIEU DO
     # chu khong vi VAT. lib/ cung phai lay TAI CUNG BASE (dot .cjs 1.39.1 lam ban ghep chet).
     git -C "'"$ROOT"'" archive "$BASE" scripts lib skills/acceptance/references | tar -x -C "$T/base"
-    A=$(cd "$T/ws" && node "'"$ROOT"'/scripts/gate-card.js" --slug feat-jr5 2>/dev/null)
+    A=$(cd "$T/ws" && node "'"$ROOT"'/plugins/acceptance-gate/scripts/gate-card.js" --slug feat-jr5 2>/dev/null)
     B=$(cd "$T/ws" && node "$T/base/scripts/gate-card.js" --slug feat-jr5 2>/dev/null)
     [ -n "$A" ] || { echo "stdout moi rong"; exit 1; }
     # DOI-THUOC-CO-KHAI (chip (2) khoi-viec-cua-anh) — danh sach DONG cac thay
@@ -6196,7 +6196,7 @@ run "P150 required_evidence tren the + report cu render y het ban base" \
 
 echo "P151 (JR7) persona co required_evidence + luat actionable + chong evidence-shopping"
 run "P151 clauses + mutant per-clause" \
-  python3 - "$ROOT/skills/acceptance/references/judge-personas.md" <<'PY'
+  python3 - "$ROOT/plugins/acceptance-gate/skills/acceptance/references/judge-personas.md" <<'PY'
 import re, sys
 s = open(sys.argv[1], encoding='utf-8').read()
 clauses = [
@@ -6217,11 +6217,11 @@ run "P152 gold points tren corpus that + fixture doi chung" \
   node - "$ROOT" <<'NODE'
 const fs = require('fs'), path = require('path'), os = require('os'), cp = require('child_process');
 const ROOT = process.argv[2];
-const real = JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'scripts/acceptance-gold.mjs'), '--root', ROOT, '--json'], { encoding: 'utf8' }));
+const real = JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'plugins/acceptance-gate/scripts/acceptance-gold.mjs'), '--root', ROOT, '--json'], { encoding: 'utf8' }));
 // Chan sanity DOC LAP (measure-teeth-cleanup AC-6): judgedBlocks cu tang cung
 // nhip voi points (cung nhanh code) nen la hang dung; judgmentBlocks tu --stats
 // dem bang nhanh rieng — =0 trong khi corpus co block phan la reader hong.
-const st = JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'scripts/acceptance-gold.mjs'), '--root', ROOT, '--stats'], { encoding: 'utf8' }));
+const st = JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'plugins/acceptance-gate/scripts/acceptance-gold.mjs'), '--root', ROOT, '--stats'], { encoding: 'utf8' }));
 if (st.judgmentBlocks <= 0) { console.error('sanity doc lap: 0 block phan doc duoc (--stats)'); process.exit(1); }
 if (st.judgmentBlocks < real.points.length) { console.error('bat dang thuc vo: phan < diem'); process.exit(1); }
 if (real.points.length < 7) { console.error('corpus that <7 diem: ' + real.points.length); process.exit(1); }
@@ -6231,7 +6231,7 @@ const mk = (override) => {
   const dir = path.join(root, '_acceptance', 's1'); fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'evidence-report.md'),
     `---\nverdict: PASS\n---\n\n## Evidence\n- eval: EJ\n  judged_by: panel\n  verdict: FAIL\n  rationale: x\n${override ? '  human_override: Manh 2026-08-05 — dong y known-limits\n' : '  human_override:\n'}`);
-  return JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'scripts/acceptance-gold.mjs'), '--root', root, '--json'], { encoding: 'utf8' }));
+  return JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'plugins/acceptance-gate/scripts/acceptance-gold.mjs'), '--root', root, '--json'], { encoding: 'utf8' }));
 };
 const with_ = mk(true), without = mk(false);
 if (with_.points.length !== 1 || with_.points[0].machine !== 'FAIL' || !/known-limits/.test(with_.points[0].human)) { console.error('fixture co override phai ra dung 1 diem: ' + JSON.stringify(with_.points)); process.exit(1); }
@@ -6242,7 +6242,7 @@ const mkScalar = () => {
   const dir = path.join(root, '_acceptance', 's1'); fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'evidence-report.md'),
     `---\nverdict: PASS\n---\n\n## Evidence\n- eval: E1\n  run_id: x-001\n  exit_code: 0\n  output: |\n    trich log co chua:\n    judged_by: panel\n    verdict: FAIL\n    human_override: Ghost 2026-01-01 — diem bia tu log\n  verifier: v.sh\n`);
-  return JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'scripts/acceptance-gold.mjs'), '--root', root, '--json'], { encoding: 'utf8' }));
+  return JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'plugins/acceptance-gate/scripts/acceptance-gold.mjs'), '--root', root, '--json'], { encoding: 'utf8' }));
 };
 const scalar = mkScalar();
 if (scalar.points.length !== 0) { console.error('excerpt block-scalar duc ra diem vang bia: ' + JSON.stringify(scalar.points)); process.exit(1); }
@@ -6264,17 +6264,17 @@ mkws('sA', [panel('E1', ['PASS', 'PASS', 'PASS'])]);          // 3/3
 mkws('sB', [panel('E1', ['PASS', 'PASS', 'FAIL'])]);          // 2/1
 mkws('sC', [panel('E1', ['PASS', 'FAIL', 'UNCERTAIN'])]);     // phan ky
 mkws('sOld', null);                                            // log cu: khong run-log
-const d = JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'scripts/acceptance-gold.mjs'), '--root', root, '--json'], { encoding: 'utf8' }));
+const d = JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'plugins/acceptance-gate/scripts/acceptance-gold.mjs'), '--root', root, '--json'], { encoding: 'utf8' }));
 const b = d.agreement.buckets;
 if (d.agreement.sample !== 3 || b.unanimous !== 1 || b.majority !== 1 || b.split !== 1) { console.error('buckets sai: ' + JSON.stringify(d.agreement)); process.exit(1); }
 if (!d.noPanel.includes('sOld')) { console.error('grandfather: sOld phai nam trong noPanel'); process.exit(1); }
-const real = JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'scripts/acceptance-gold.mjs'), '--root', ROOT, '--json'], { encoding: 'utf8' }));
+const real = JSON.parse(cp.execFileSync('node', [path.join(ROOT, 'plugins/acceptance-gate/scripts/acceptance-gold.mjs'), '--root', ROOT, '--json'], { encoding: 'utf8' }));
 if (real.agreement.sample < 5) { console.error('corpus that <5 panel tuoi: ' + real.agreement.sample); process.exit(1); }
 NODE
 
 echo "P154 (JR10) lenh tong ket goi acceptance-gold + in 2 khoi tieng nguoi"
 run "P154 command clauses + mutant" \
-  python3 - "$ROOT/commands/acceptance-report.md" <<'PY'
+  python3 - "$ROOT/plugins/acceptance-gate/commands/acceptance-report.md" <<'PY'
 import re, sys
 s = open(sys.argv[1], encoding='utf-8').read()
 clauses = [r'acceptance-gold\.mjs --root', r'Sổ vàng', r'đồng thuận tới đâu', r'sổ vàng chưa đọc được']
@@ -6290,7 +6290,7 @@ run "P155 gloss marker subset + CONTEXT + mutant" \
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-law = (root / "skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
+law = (root / "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
 ctx = (root / "CONTEXT.md").read_text(encoding="utf-8")
 
 GLOSS_RE = r"<!-- <<<SIGNOFF-JARGON-GLOSS -->\n([\s\S]*?)<!-- SIGNOFF-JARGON-GLOSS>>> -->"
@@ -6351,8 +6351,8 @@ run "P156 khoi Tu dien round-trip + fallback" \
 import json, os, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1])
-GOLD = root / "scripts/acceptance-gold.mjs"
-law = (root / "skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
+GOLD = root / "plugins/acceptance-gate/scripts/acceptance-gold.mjs"
+law = (root / "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
 
 # term + chu giai rut TU MARKER THAT (khong chep tay khuon ben doc)
 m = re.search(r"<!-- <<<SIGNOFF-JARGON-GLOSS -->\n([\s\S]*?)<!-- SIGNOFF-JARGON-GLOSS>>> -->", law)
@@ -6445,7 +6445,7 @@ run "P157 verdict-vi + lens-per-line + noPanel" \
 import json, re, subprocess, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1])
-GOLD = root / "scripts/acceptance-gold.mjs"
+GOLD = root / "plugins/acceptance-gate/scripts/acceptance-gold.mjs"
 src = GOLD.read_text(encoding="utf-8")
 
 def run_gold(rootdir):
@@ -6547,7 +6547,7 @@ run "P158 bang vang quan he vao=>ra + fail-loud root" \
 import re, subprocess, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1])
-GOLD = root / "scripts/acceptance-gold.mjs"
+GOLD = root / "plugins/acceptance-gate/scripts/acceptance-gold.mjs"
 
 FIX = {"feature": "Việc mẫu số một", "question": "Câu hỏi chấm mẫu số một",
        "verdict": "FAIL", "human": "Manh Phan 2026-08-05 — quyết cho qua vì lý do mẫu"}
@@ -6630,7 +6630,7 @@ run "P159 agreement 4x3 ke ca nhanh chan" \
 const path = require('path');
 const ROOT = process.argv[2];
 (async () => {
-  const mod = await import(path.join(ROOT, 'scripts/acceptance-gold.mjs'));
+  const mod = await import(path.join(ROOT, 'plugins/acceptance-gate/scripts/acceptance-gold.mjs'));
   const { agreement } = mod;
   const L = ['domain-correctness', 'operational-feasibility', 'spec-alignment'];
   const v = (lens, verdict) => ({ lens, verdict });
@@ -6693,7 +6693,7 @@ run "P160 --json hinh dang cu + provenance gold-stdout" \
 import json, re, subprocess, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1])
-GOLD = root / "scripts/acceptance-gold.mjs"
+GOLD = root / "plugins/acceptance-gate/scripts/acceptance-gold.mjs"
 
 def gold(rootdir, js=False):
     cmd = ["node", str(GOLD), "--root", str(rootdir)] + (["--json"] if js else [])
@@ -6753,7 +6753,7 @@ with tempfile.TemporaryDirectory() as d:
     # dat ban base DUNG do sau trong cay lam viec de duong `..` cua no van tra
     # duoc human-facing-language.md — neu khong, khac biet se den tu duong dan
     # chu khong tu parser (do nham vat)
-    base_script = root / "scripts" / ".base-acceptance-gold.tmp.mjs"
+    base_script = root / "plugins/acceptance-gate/scripts" / ".base-acceptance-gold.tmp.mjs"
     base_script.write_text(show.stdout, encoding="utf-8")
     try:
         old_json = subprocess.run(["node", str(base_script), "--root", str(root), "--json"],
@@ -6790,7 +6790,7 @@ assert len(lens_lines) == len(real["agreement"]["lensTotal"]), \
 
 # ── (3) XUAT XU: van ban giam khao doc phai la ban MAY VUA IN, khong phai viet tay ──
 ev = root / "_acceptance/gold-output-measure/evidence/gold-stdout.txt"
-assert ev.exists(), "thieu evidence/gold-stdout.txt — sinh lai bang: node scripts/acceptance-gold.mjs --root . > <file>"
+assert ev.exists(), "thieu evidence/gold-stdout.txt — sinh lai bang: node plugins/acceptance-gate/scripts/acceptance-gold.mjs --root . > <file>"
 saved = ev.read_text(encoding="utf-8")
 # So XUAT XU truoc (judge J1-r1 doi dich danh): file ke ben ghi lenh + checksum
 # + do dai; khong khop = van ban da bi sua tay sau khi may in ra.
@@ -6856,11 +6856,11 @@ def duong_tai(rel, ref):
 GOC_LOI = root / pathlib.Path(duong("lib")).parent
 def duong_goi(rel):
     return duong(rel, "--goi-goc", str(GOC_LOI), "--vai", "loi")
-SC_REL = duong_goi("scripts/gate-card.js")      # scripts/gate-card.js tu goc goi
+SC_REL = duong_goi("plugins/acceptance-gate/scripts/gate-card.js")      # plugins/acceptance-gate/scripts/gate-card.js tu goc goi
 SC_DIR = pathlib.Path(SC_REL).parent
 LIB_DIR = pathlib.Path(duong_goi("lib"))
 WS = root / "_acceptance/card-text-fidelity"
-CARD = root / duong("scripts/gate-card.js")
+CARD = root / duong("plugins/acceptance-gate/scripts/gate-card.js")
 contract = (WS / "contract.md").read_text(encoding="utf-8")
 
 # ── nguon SU THAT cua ma tran: marker trong contract ──
@@ -6991,7 +6991,7 @@ def old_at(base, workdir):
     chk = subprocess.run(["git", "-C", str(workdir), "cat-file", "-e", base + "^{commit}"], capture_output=True)
     if chk.returncode != 0:
         return None, "khong lay duoc ban cu tai moc %s (cay thieu lich su)" % base
-    r = subprocess.run(["git", "-C", str(workdir), "show", "%s:%s" % (base, duong_tai("scripts/gate-card.js", base))],
+    r = subprocess.run(["git", "-C", str(workdir), "show", "%s:%s" % (base, duong_tai("plugins/acceptance-gate/scripts/gate-card.js", base))],
                        capture_output=True, text=True)
     if r.returncode != 0 or len(r.stdout) < 500:
         return None, "khong lay duoc ban cu tai moc %s (git show that bai)" % base
@@ -7408,7 +7408,7 @@ _base_calls = None
 try:
     _base = subprocess.run(["git", "-C", str(root), "merge-base", "HEAD", "origin/main"],
                            capture_output=True, text=True, check=True).stdout.strip()
-    _src = subprocess.run(["git", "-C", str(root), "show", f"{_base}:{duong_tai('scripts/gate-card.js', _base)}"],
+    _src = subprocess.run(["git", "-C", str(root), "show", f"{_base}:{duong_tai('plugins/acceptance-gate/scripts/gate-card.js', _base)}"],
                           capture_output=True, text=True, check=True).stdout
     _base_calls = len(re.findall(LOT_RE, _src))
 except Exception as e:
@@ -7431,7 +7431,7 @@ from pathlib import Path
 root = Path(sys.argv[1])
 # (file, anchor đầu đoạn lối (a), anchor cuối đoạn, câu phủ định phải có mặt)
 BODIES = [
-    ("commands/start.md", "Bắt đầu việc mới", "Dưới thẻ",
+    ("plugins/acceptance-gate/commands/start.md", "Bắt đầu việc mới", "Dưới thẻ",
      "KHÔNG dùng `superpowers:brainstorming`"),
 ]
 def segment(rel, txt, a, b):
@@ -7477,7 +7477,7 @@ const die = m => { console.error(m); process.exit(1); };
 // chuỗi đó. Thân lệnh đổi tên khoá mà reader không đổi ⇒ fixture khai khoá mới
 // ⇒ reader trả null ⇒ case ĐỎ. Bản cũ gõ tay 'brainstorm_skill' đúng khuôn bên
 // ĐỌC nên hai đầu không bao giờ được nối (bài "đo ở phía consumer").
-const BODIES = ['commands/start.md'];
+const BODIES = ['plugins/acceptance-gate/commands/start.md'];
 const declared = BODIES.map(rel => {
   const txt = fs.readFileSync(path.join(root, rel), 'utf8');
   const m = txt.match(/`discovery\.([a-z0-9_]+)`/);
@@ -7494,7 +7494,7 @@ const scan = cfg => {
   fs.writeFileSync(path.join(tmp, '_acceptance', 'config.yaml'), cfg);
   let out;
   try {
-    out = execFileSync('node', [path.join(root, 'scripts/start-scan.mjs'), '--root', tmp],
+    out = execFileSync('node', [path.join(root, 'plugins/acceptance-gate/scripts/start-scan.mjs'), '--root', tmp],
       { encoding: 'utf8' });
   } catch (e) { die(`start-scan văng lỗi (phải exit 0, JSON nguyên hình): ${e.message}`); }
   finally { fs.rmSync(tmp, { recursive: true, force: true }); }
@@ -7578,7 +7578,7 @@ if (scan(cfg(`  ${KEY}_doi_ten: ${NAME}\n`)) !== null)
 // "token có mặt" nữa. Nhánh CÓ và nhánh null phải nằm ĐÚNG phía của nó, và
 // mutant xoá/đảo phải ĐỎ.
 const SEG = [
-  { rel: 'commands/start.md', a: 'Bắt đầu việc mới', b: 'Dưới thẻ',
+  { rel: 'plugins/acceptance-gate/commands/start.md', a: 'Bắt đầu việc mới', b: 'Dưới thẻ',
     pos: /CÓ giá trị\s*→\s*mở buổi khai thác bằng đúng\s+skill đó/,
     neg: /`null`\s*→\s*khai thác theo khuôn/, tail: 'KHÔNG chặn',
     // Nhánh THỨ BA: đích khai mà phiên không có skill đó → NÓI THẲNG rồi khai thác theo khuôn.
@@ -7637,7 +7637,7 @@ import shutil, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1])
 BAD = ["product-management:", "pm-execution:"]
-TREES = ["commands", "skills", "feature-loop", "scripts", "lib", "hooks"]
+TREES = ["plugins/acceptance-gate/commands", "plugins/acceptance-gate/skills", "plugins/feature-loop", "plugins/acceptance-gate/scripts", "plugins/acceptance-gate/lib", "plugins/acceptance-gate/hooks"]
 # R4-1 (r5): DANH SÁCH LOẠI TRỪ, không phải danh sách cho phép. Bản cũ liệt 7
 # đuôi được quét và bỏ lọt 6 thân prompt agent .toml + .py + .tsv — đúng loại
 # file mà một tên plugin bên-thứ-ba sẽ bị nhét vào (kiểm tay: tiêm vào
@@ -7702,8 +7702,8 @@ for area in TREES:
 # lần dọn thư mục kế tiếp — đúng lớp lỗi mà chính nó sinh ra để chặn.
 tmp = Path(tempfile.mkdtemp(prefix="p167toml-"))
 try:
-    shutil.copytree(root / "commands", tmp / "commands")
-    v = tmp / "commands" / "agent-prompt-thu.toml"
+    shutil.copytree(root / "plugins/acceptance-gate/commands", tmp / "plugins/acceptance-gate/commands")
+    v = tmp / "plugins/acceptance-gate/commands" / "agent-prompt-thu.toml"
     v.write_text("[prompt]\nbody = \"\"\"\nproduct-management:brainstorm\n\"\"\"\n", encoding="utf-8")
     off_pos, counts_pos = sweep(tmp)
     assert any(v.name in o for o in off_pos), \
@@ -7714,7 +7714,7 @@ try:
     off_neg, counts_neg = sweep(tmp)
     assert not any(v.name in o for o in off_neg), \
         f"doi chung am .toml FAIL: file sach ma van bi neu ten — {off_neg[:3]}"
-    assert counts_neg.get("commands", 0) == counts_pos.get("commands", 0), \
+    assert counts_neg.get("plugins/acceptance-gate/commands", 0) == counts_pos.get("plugins/acceptance-gate/commands", 0), \
         "so file doc duoc doi giua hai lan — buoc quet khong on dinh"
 finally:
     shutil.rmtree(tmp)
@@ -7763,7 +7763,7 @@ import json, pathlib, re, subprocess, sys, tempfile
 root = pathlib.Path(sys.argv[1])
 
 # ══ E3+E4: ma tran thong diep — CHUOI ghim, khac nhau doi mot ══
-TOOL = root / "feature-loop/scripts/carry-plan.mjs"
+TOOL = root / "plugins/feature-loop/scripts/carry-plan.mjs"
 W = root / "_acceptance/card-text-fidelity"
 _lines = [json.loads(l) for l in (W / "run-log.jsonl").read_text(encoding="utf-8").split("\n") if l.strip()]
 _last = max(e.get("round", 0) for e in _lines if e.get("kind") is None and e.get("evalId"))
@@ -7795,7 +7795,7 @@ rc3, _ = run_tool(["--delta-files", "docs/x.md"])
 assert rc3 == 0, "doi chung duong: co dung phai chay duoc"
 
 # ══ E7: chan sanity DOC LAP — round-trip writer→reader ══
-GOLD = root / "scripts/acceptance-gold.mjs"
+GOLD = root / "plugins/acceptance-gate/scripts/acceptance-gold.mjs"
 def stats(gold_js, r):
     p = subprocess.run(["node", str(gold_js), "--root", str(r), "--stats"], capture_output=True, text=True)
     assert p.returncode == 0, "gold --stats loi: %s" % p.stderr[-200:]
@@ -7809,7 +7809,7 @@ assert s["judgmentBlocks"] > 0 and s["points"] > 0, "sanity corpus: %r" % s
 # Khuon block RUT TU TEMPLATE (S4-r1: ban truoc grep mot token roi viet tay
 # block — writer/reader troi khoi nhau van xanh). Lay nguyen khoi mau giua hai
 # marker JUDGMENT-BLOCK-TEMPLATE cua template that.
-tpl = (root / "skills/acceptance/references/evidence-report-template.md").read_text(encoding="utf-8")
+tpl = (root / "plugins/acceptance-gate/skills/acceptance/references/evidence-report-template.md").read_text(encoding="utf-8")
 mt = re.search(r"<!-- <<<JUDGMENT-BLOCK-TEMPLATE -->\n([\s\S]*?)<!-- JUDGMENT-BLOCK-TEMPLATE>>> -->", tpl)
 assert mt, "template khong co marker JUDGMENT-BLOCK-TEMPLATE"
 BLOCK_TPL = mt.group(1)
@@ -7861,7 +7861,7 @@ errs = []
 
 HARNESS = {
     'claude': {
-        'path': ROOT / 'feature-loop/skills/feature-loop/SKILL.md',
+        'path': ROOT / 'plugins/feature-loop/skills/feature-loop/SKILL.md',
         'cap': '**Tối đa 3 round**',
         'ideas': {
             'so-lop':   (r'so lớp lỗi vòng này với vòng trước',
@@ -8275,7 +8275,7 @@ ROOT = Path(sys.argv[1])
 EV = ROOT / '_acceptance/stop-patching-law/evidence'
 OPEN, CLOSE = '<!-- <<<STOP-PATCHING-CLAUSE -->', '<!-- STOP-PATCHING-CLAUSE>>> -->'
 SKILL = {
-    'claude': 'feature-loop/skills/feature-loop/SKILL.md',
+    'claude': 'plugins/feature-loop/skills/feature-loop/SKILL.md',
 }
 ARMS = [('A1', 'claude', 'co'),
         ('B1', 'claude', 'khong')]
@@ -8370,7 +8370,7 @@ def run(cmd, cwd=None):
 # chuoi trong test: test chep chuoi la them mot ban sao thu tu).
 labels = json.loads(run(["node", "-e",
     "const l=require(process.argv[1]);console.log(JSON.stringify(l.MAP_LABELS))",
-    str(root / "lib/workspace-record.cjs")]).stdout)
+    str(root / "plugins/acceptance-gate/lib/workspace-record.cjs")]).stdout)
 for k in ("dang-co", "da-xoa", "chua-bat"):
     if k not in labels: errs.append(f"MAP_LABELS thieu state {k}")
 
@@ -8390,12 +8390,12 @@ def dung_cay(td, cfg, co_git):
 for co_git in (True, False):
     with tempfile.TemporaryDirectory() as td:
         ws = dung_cay(td, CFG_BAT, co_git)
-        r = run(["node", str(root / "scripts/product-map.mjs"), "--root", str(ws), "--check"])
+        r = run(["node", str(root / "plugins/acceptance-gate/scripts/product-map.mjs"), "--root", str(ws), "--check"])
         if r.returncode != 1:
             errs.append(f"da-xoa (git={co_git}): --check exit {r.returncode}, phai 1")
         if labels["da-xoa"] not in (r.stderr + r.stdout):
             errs.append(f"da-xoa (git={co_git}): --check khong in nhan cua bang: {r.stderr.strip()[:80]}")
-        scan = json.loads(run(["node", str(root / "scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
+        scan = json.loads(run(["node", str(root / "plugins/acceptance-gate/scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
         if scan["map"]["state"] != "da-xoa" or scan["map"]["label"] != labels["da-xoa"]:
             errs.append(f"da-xoa (git={co_git}): /start noi {scan['map']} — khac bang nhan")
 
@@ -8409,10 +8409,10 @@ with tempfile.TemporaryDirectory() as td:
     run(["git", "add", "PRODUCT-MAP.md"], cwd=ws)
     run(["git", "-c", "user.email=a@b", "-c", "user.name=t", "commit", "-qm", "x"], cwd=ws)
     (ws / "PRODUCT-MAP.md").unlink()
-    r = run(["node", str(root / "scripts/product-map.mjs"), "--root", str(ws), "--check"])
+    r = run(["node", str(root / "plugins/acceptance-gate/scripts/product-map.mjs"), "--root", str(ws), "--check"])
     if r.returncode != 1 or labels["da-xoa"] not in (r.stderr + r.stdout):
         errs.append(f"da-xoa-khong-config: --check exit {r.returncode}: {r.stderr.strip()[:80]}")
-    scan = json.loads(run(["node", str(root / "scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
+    scan = json.loads(run(["node", str(root / "plugins/acceptance-gate/scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
     if scan["map"]["state"] != "da-xoa" or scan["map"]["label"] != labels["da-xoa"]:
         errs.append(f"da-xoa-khong-config: /start noi {scan['map']} — hai ben trai nhau dung ca S4-r1")
 
@@ -8420,33 +8420,33 @@ with tempfile.TemporaryDirectory() as td:
 # cung chu (AC-3) ─────────────────────────────────────────────────────────────
 with tempfile.TemporaryDirectory() as td:
     ws = dung_cay(td, CFG_TAT, False)
-    r = run(["node", str(root / "scripts/product-map.mjs"), "--root", str(ws), "--check"])
+    r = run(["node", str(root / "plugins/acceptance-gate/scripts/product-map.mjs"), "--root", str(ws), "--check"])
     if r.returncode != 0:
         errs.append(f"chua-bat: --check exit {r.returncode}, phai 0 (duong doc-cu hop le)")
     if labels["chua-bat"] not in (r.stdout + r.stderr):
         errs.append(f"chua-bat: --check khong in nhan cua bang: {r.stdout.strip()[:80]}")
-    scan = json.loads(run(["node", str(root / "scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
+    scan = json.loads(run(["node", str(root / "plugins/acceptance-gate/scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
     if scan["map"]["state"] != "chua-bat" or scan["map"]["label"] != labels["chua-bat"]:
         errs.append(f"chua-bat: /start noi {scan['map']} — khac bang nhan")
 
 # ── dang-co: doi chung duong ─────────────────────────────────────────────────
 with tempfile.TemporaryDirectory() as td:
     ws = dung_cay(td, CFG_BAT, False)
-    r = run(["node", str(root / "scripts/product-map.mjs"), "--root", str(ws)])
+    r = run(["node", str(root / "plugins/acceptance-gate/scripts/product-map.mjs"), "--root", str(ws)])
     if r.returncode != 0: errs.append(f"khong ve duoc ban do doi chung: {r.stderr[:80]}")
-    scan = json.loads(run(["node", str(root / "scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
+    scan = json.loads(run(["node", str(root / "plugins/acceptance-gate/scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
     if scan["map"]["state"] != "dang-co":
         errs.append(f"dang-co: /start noi {scan['map']['state']}")
-    r2 = run(["node", str(root / "scripts/product-map.mjs"), "--root", str(ws), "--check"])
+    r2 = run(["node", str(root / "plugins/acceptance-gate/scripts/product-map.mjs"), "--root", str(ws), "--check"])
     if r2.returncode != 0: errs.append(f"dang-co: --check do oan: {r2.stdout[:80]}{r2.stderr[:80]}")
 
 # ── AC-5: --root sai phai CHET TO exit 2, moi loi mot thong diep rieng ───────
-r = run(["node", str(root / "scripts/product-map.mjs"), "--root", "/khong/ton/tai/dau", "--check"])
+r = run(["node", str(root / "plugins/acceptance-gate/scripts/product-map.mjs"), "--root", "/khong/ton/tai/dau", "--check"])
 if r.returncode != 2 or "không tồn tại" not in r.stderr:
     errs.append(f"--root sai: exit {r.returncode}, stderr {r.stderr.strip()[:80]} — phai exit 2 + neu duong dan")
 with tempfile.TemporaryDirectory() as td:
     f = Path(td) / "file.txt"; f.write_text("x")
-    r = run(["node", str(root / "scripts/product-map.mjs"), "--root", str(f), "--check"])
+    r = run(["node", str(root / "plugins/acceptance-gate/scripts/product-map.mjs"), "--root", str(f), "--check"])
     if r.returncode != 2 or "không phải thư mục" not in r.stderr:
         errs.append(f"--root tro file: exit {r.returncode} — phai exit 2 + noi khong phai thu muc")
 
@@ -8462,7 +8462,7 @@ import json, re, subprocess, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1])
 errs = []
-tpl = (root / "skills/acceptance/references/uat-session-template.md").read_text()
+tpl = (root / "plugins/acceptance-gate/skills/acceptance/references/uat-session-template.md").read_text()
 
 # CHECKER duy nhat — dung cho ban that VA cho mutant (E19). Tra list loi.
 # Truoc day E19 (P173) tu chep danh sach buoc roi tu cham: hai ve cung mot
@@ -8504,7 +8504,7 @@ if not errs:
             "const l=require(process.argv[1]);"
             "const p=l.recordProblem({'contract.md':'---\\nstatus: signed-off\\n---\\n','opportunity.md':null,'uat-session.md':process.argv[2],'evidence-report.md':null});"
             "console.log(JSON.stringify(p))",
-            str(root / "lib/workspace-record.cjs"), txt], capture_output=True, text=True)
+            str(root / "plugins/acceptance-gate/lib/workspace-record.cjs"), txt], capture_output=True, text=True)
         return json.loads(out.stdout)
 
     p_dung = reader_noi_gi(dung)
@@ -8558,7 +8558,7 @@ run = lambda cmd, **kw: subprocess.run(cmd, capture_output=True, text=True, **kw
 # phai doi ket luan; ben nao khong doi la ben do giu ban sao luat rieng ───────
 with tempfile.TemporaryDirectory() as td:
     t = Path(td)
-    for d in ("lib", "scripts"):
+    for d in ("plugins/acceptance-gate/lib", "plugins/acceptance-gate/scripts"):
         shutil.copytree(root / d, t / d)
     ws = t / "ws"; (ws / "_acceptance" / "x").mkdir(parents=True)
     (ws / "_acceptance" / "config.yaml").write_text("schema_version: 1\n")
@@ -8566,7 +8566,7 @@ with tempfile.TemporaryDirectory() as td:
     (ws / "_acceptance" / "x" / "evidence-report.md").write_text("---\nverdict: PASS\n---\n")
 
     def hoi_hai_ben(base):
-        scan = json.loads(run(["node", str(base / "scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
+        scan = json.loads(run(["node", str(base / "plugins/acceptance-gate/scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
         s_hong = any(b["slug"] == "x" for b in scan["broken"])
         # argv[1] la tham so DEM: guard chay-nhu-CLI cua product-map so
         # import.meta.url voi argv[1] — truyen thang duong dan module vao do
@@ -8574,7 +8574,7 @@ with tempfile.TemporaryDirectory() as td:
         mp = run(["node", "--input-type=module", "-e",
             "const {renderProductMap} = await import(process.argv[2]);"
             "process.stdout.write(renderProductMap(process.argv[3]))",
-            "khong-phai-module", str(base / "scripts/product-map.mjs"), str(ws)])
+            "khong-phai-module", str(base / "plugins/acceptance-gate/scripts/product-map.mjs"), str(ws)])
         if mp.returncode != 0:
             errs.append(f"E3: renderProductMap sap: {mp.stderr.strip()[:120]}")
         m_hong = "`x`" in (mp.stdout.split("## Hồ sơ hỏng")[1] if "## Hồ sơ hỏng" in mp.stdout else "")
@@ -8585,7 +8585,7 @@ with tempfile.TemporaryDirectory() as td:
     if s0 or m0:
         errs.append(f"E3 doi chung duong: cay lanh ma quet={s0} bando={m0}")
     else:
-        lib = t / "lib" / "workspace-record.cjs"; src = lib.read_text()
+        lib = t / "plugins/acceptance-gate/lib" / "workspace-record.cjs"; src = lib.read_text()
         # Mutant THU HEP enum (bo 'blocked'): fixture verdict BLOCKED dang lanh
         # o ca hai ben, luat hep lai thi CA HAI phai doi sang hong — ben nao
         # khong doi la ben do giu ban sao luat rieng. (Khong dung mutant NOI
@@ -8610,7 +8610,7 @@ with tempfile.TemporaryDirectory() as td:
         lib.write_text(src.replace("enum: ['pass', 'pending-judgment', 'reject', 'blocked']",
                                    "enum: ['pass', 'pending-judgment', 'reject', 'blocked', 'ok-nhe']"))
         (ws / "_acceptance" / "x" / "evidence-report.md").write_text("---\nverdict: ok-nhe\n---\n")
-        r3 = run(["node", str(t / "scripts/start-scan.mjs"), "--root", str(ws)])
+        r3 = run(["node", str(t / "plugins/acceptance-gate/scripts/start-scan.mjs"), "--root", str(ws)])
         if r3.returncode != 0:
             errs.append(f"E3 bang-lech: bo quet SAP thay vi goi ten ({r3.stderr.strip()[:80]})")
         else:
@@ -8646,7 +8646,7 @@ with tempfile.TemporaryDirectory() as td:
     (ws / "_acceptance" / "x" / "contract.md").write_text("---\nstatus: signed-off\n---\n")
     (ws / "_acceptance" / "x" / "opportunity.md").write_text("---\nstage: decided\ndecision: build\n---\n")
     (ws / "_acceptance" / "x" / "uat-session.md").write_text("---\nstage: held\nverdict:\n---\n")
-    scan = json.loads(run(["node", str(root / "scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
+    scan = json.loads(run(["node", str(root / "plugins/acceptance-gate/scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
     g = next((g for g in scan["groups"]["gates"] if g["slug"] == "x"), None)
     if not g or g["gate"] != "gia-tri":
         errs.append(f"E15: fixture khong roi vao o cho-Cong-Gia-tri: {g}")
@@ -8655,7 +8655,7 @@ with tempfile.TemporaryDirectory() as td:
     # Doi chung duong: co decided_at thi since phai DUNG moc do
     (ws / "_acceptance" / "x" / "uat-session.md").write_text(
         "---\nstage: held\nverdict:\ndecided_at: 2026-01-02T03:04:05Z\n---\n")
-    scan2 = json.loads(run(["node", str(root / "scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
+    scan2 = json.loads(run(["node", str(root / "plugins/acceptance-gate/scripts/start-scan.mjs"), "--root", str(ws)]).stdout)
     g2 = next((g for g in scan2["groups"]["gates"] if g["slug"] == "x"), None)
     if not g2 or g2["since"] != "2026-01-02T03:04:05Z":
         errs.append(f"E15 doi chung duong: co decided_at ma since={g2 and g2['since']!r}")
@@ -8681,7 +8681,7 @@ run "P174 [MBC] E1 menh de MEASURE-BIRTH-CLAUSE trong SKILL Claude: 3 thanh phan
   python3 - "$ROOT" <<'P174PY'
 import re, sys, pathlib
 root = pathlib.Path(sys.argv[1])
-t = (root/'feature-loop/skills/feature-loop/SKILL.md').read_text()
+t = (root/'plugins/feature-loop/skills/feature-loop/SKILL.md').read_text()
 OPEN='<!-- <<<MEASURE-BIRTH-CLAUSE -->'; CLOSE='<!-- MEASURE-BIRTH-CLAUSE>>> -->'
 def measure(text):
     i, j = text.find(OPEN), text.find(CLOSE)
@@ -8714,7 +8714,7 @@ import re, sys, pathlib
 root = pathlib.Path(sys.argv[1])
 OPEN = '<!-- <<<MEASURE-BIRTH-CLAUSE -->'; CLOSE = '<!-- MEASURE-BIRTH-CLAUSE>>> -->'
 CANON = re.compile(r'<!-- MBC-CORE: pair-same-fixture \+ pinned-message \+ not-done-without-pair; objects: suite-case, eval, rule-script -->')
-SIDES = {'claude': 'feature-loop/skills/feature-loop/SKILL.md'}
+SIDES = {'claude': 'plugins/feature-loop/skills/feature-loop/SKILL.md'}
 def measure(texts):
     errs, anchors, blocks = [], {}, {}
     for side, text in texts.items():
@@ -8748,7 +8748,7 @@ run "P176 [MBC] E3 con tro S1 ve khuon trong ban chi dan" \
   python3 - "$ROOT" <<'P176PY'
 import sys, pathlib
 root = pathlib.Path(sys.argv[1])
-PTR = {'claude': ('feature-loop/skills/feature-loop/SKILL.md', 'Kế hoạch đo theo khuôn `MEASURE-BIRTH-CLAUSE`')}
+PTR = {'claude': ('plugins/feature-loop/skills/feature-loop/SKILL.md', 'Kế hoạch đo theo khuôn `MEASURE-BIRTH-CLAUSE`')}
 def measure(texts):
     return [f'ben {s}: doan viet evals.yaml THIEU con tro toi MEASURE-BIRTH-CLAUSE'
             for s, (p, needle) in PTR.items() if needle not in texts[s]]
@@ -8767,8 +8767,8 @@ run "P177 [MBC] E4 references measure-birth.md: resolver goc-trong-cay-kiem + 4 
   python3 - "$ROOT" <<'P177PY'
 import re, subprocess, sys, tempfile, pathlib
 root = pathlib.Path(sys.argv[1])
-REL = 'skills/acceptance/references/measure-birth.md'
-r = subprocess.run(['node', str(root/'feature-loop/scripts/resolve-plugin.mjs'),
+REL = 'plugins/acceptance-gate/skills/acceptance/references/measure-birth.md'
+r = subprocess.run(['node', str(root/'plugins/feature-loop/scripts/resolve-plugin.mjs'),
                     '--plugin', 'acceptance-gate', '--root', str(root), '--require', REL],
                    capture_output=True, text=True)
 assert r.returncode == 0, 'resolver fail tren cay that: ' + r.stderr[:200]
@@ -8837,7 +8837,7 @@ e4c = measure(m4c)
 assert e4c and any('van dan khong ghi' in x for x in e4c), \
     'mutant lech so van dan khong do: ' + repr(e4c)
 with tempfile.TemporaryDirectory() as d:
-    r2 = subprocess.run(['node', str(root/'feature-loop/scripts/resolve-plugin.mjs'),
+    r2 = subprocess.run(['node', str(root/'plugins/feature-loop/scripts/resolve-plugin.mjs'),
                          '--plugin', 'acceptance-gate', '--root', d, '--require', REL],
                         capture_output=True, text=True)
     # Ghim THONG DIEP, khong chi ma thoat (S4-r1 hinh dang 4): exit != 0 mot
@@ -9050,11 +9050,11 @@ import json, sys, pathlib
 root = pathlib.Path(sys.argv[1])
 ver = lambda s: tuple(int(x) for x in s.split('.'))
 GATES = [
-    ('feature-loop (Claude)', 'feature-loop/.claude-plugin/plugin.json', '1.27.0'),
-    ('acceptance-gate (Claude)', '.claude-plugin/plugin.json', '1.39.0'),
+    ('feature-loop (Claude)', 'plugins/feature-loop/.claude-plugin/plugin.json', '1.27.0'),
+    ('acceptance-gate (Claude)', 'plugins/acceptance-gate/.claude-plugin/plugin.json', '1.39.0'),
 ]
-clause = 'MEASURE-BIRTH-CLAUSE' in (root/'feature-loop/skills/feature-loop/SKILL.md').read_text()
-refs = (root/'skills/acceptance/references/measure-birth.md').exists()
+clause = 'MEASURE-BIRTH-CLAUSE' in (root/'plugins/feature-loop/skills/feature-loop/SKILL.md').read_text()
+refs = (root/'plugins/acceptance-gate/skills/acceptance/references/measure-birth.md').exists()
 assert clause and refs, 'tien de: khoi/references phai ton tai trong cay nay'
 def measure(versions):
     return [f'goi {name}: version {versions[name]} < moc {floor}'
@@ -9114,7 +9114,7 @@ P182PY
 # `grep -qx` so mã "AC-1" với TOÀN BỘ chuỗi criterion. Repo nào viết
 # `criterion: AC-1 (mô tả cho người đọc)` thì không bao giờ khớp → bắn
 # dương-tính-giả cho MỌI tiêu chí có nhãn (cross-layer). 1.38.0 upstream nửa
-# PHÂN TÍCH (lib/ac-line.cjs) nhưng nửa SO KHỚP vẫn nguyên lỗi.
+# PHÂN TÍCH (plugins/acceptance-gate/lib/ac-line.cjs) nhưng nửa SO KHỚP vẫn nguyên lỗi.
 # Nhánh (c) canh biên: neo `^AC-1` mà THIẾU biên không-phải-số thì AC-1 khớp
 # nhầm mục "AC-16 (...)" và tự tạo xanh-giả — đúng thứ răng này sinh ra để chặn.
 echo "P183 cross-layer pairing: dong criterion co chu mo ta van ghep doi dung"
@@ -9136,7 +9136,7 @@ approved_by: tester
 - AC-1: **(ghi sổ phía sau)** (cross-layer) Given form, When submit, Then DB có row mới.
 - AC-16: **(đường ảnh)** (cross-layer) Given upload, When commit, Then bucket có bytes.
 EOF
-p183_hits() { bash "$ROOT/scripts/pre-merge-check.sh" "$P183WS" 2>&1 | grep -cF "$1 is tagged (cross-layer) but no eval of it declares layer: backend-effect"; }
+p183_hits() { bash "$ROOT/plugins/acceptance-gate/scripts/pre-merge-check.sh" "$P183WS" 2>&1 | grep -cF "$1 is tagged (cross-layer) but no eval of it declares layer: backend-effect"; }
 # (a) đối chứng dương: criterion TRẦN + chỉ layer ui → răng phải cắn cả hai mã
 cat > "$P183WS/_acceptance/xld/evals.yaml" <<'EOF'
 evals:
@@ -9245,7 +9245,7 @@ human_signoff: tester 2026-08-07
 | E1 | AC-1 | test | PASS |
 EOF
 }
-p184_phantom_hits() { bash "$ROOT/scripts/pre-merge-check.sh" "$P184WS" 2>&1 | grep -ci "the pin is a phantom"; }
+p184_phantom_hits() { bash "$ROOT/plugins/acceptance-gate/scripts/pre-merge-check.sh" "$P184WS" 2>&1 | grep -ci "the pin is a phantom"; }
 p184_setup_repo() {
   git -C "$P184WS" init -q 2>/dev/null &&
   git -C "$P184WS" config user.email t@t.t &&
@@ -9291,7 +9291,7 @@ for P185ST_CASE in draft approved; do
   # thi ca hai vong lap chi do lai mot trang thai ma khong ai biet.
   grep -q "^status: $P185ST_CASE\$" "$P185WS/_acceptance/fx/contract.md" \
     || { echo "     fixture KHONG mang status=$P185ST_CASE — nhanh nay chua bao gio duoc do"; P185OK=0; }
-  P185OUT="$(node "$ROOT/scripts/gate-card.js" --root "$P185WS" --slug fx 2>&1)" || { echo "     exit khac 0 (status=$P185ST_CASE)"; P185OK=0; }
+  P185OUT="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P185WS" --slug fx 2>&1)" || { echo "     exit khac 0 (status=$P185ST_CASE)"; P185OK=0; }
   printf '%s' "$P185OUT" | node -e '
 const html = require("fs").readFileSync(0, "utf8");
 const st = process.argv[1];
@@ -9324,7 +9324,7 @@ console.error("     [" + st + "] khoi OK, 0 loi hua phut");
 done
 # chieu do: mutant go khoi trong BAN SAO tron scripts/ + lib/ (khong loc duoi)
 P185MUT="$(mktemp -d)"
-cp -R "$ROOT/scripts" "$P185MUT/scripts"; cp -R "$ROOT/lib" "$P185MUT/lib"
+cp -R "$ROOT/plugins/acceptance-gate/scripts" "$P185MUT/scripts"; cp -R "$ROOT/plugins/acceptance-gate/lib" "$P185MUT/lib"
 python3 - "$P185MUT/scripts/gate-card.js" <<'PYX' || P185OK=0
 import sys
 p = sys.argv[1]
@@ -9355,7 +9355,7 @@ P186WS="$(mktemp -d)"
 vca_scenario gate2-4loai "$P186WS" || { echo "     dung fixture that bai"; P186OK=0; }
 grep -q "PENDING-JUDGMENT" "$P186WS/_acceptance/fx/evidence-report.md" \
   || { echo "     fixture 4-loai hong (thieu verdict PENDING-JUDGMENT)"; P186OK=0; }
-P186OUT="$(node "$ROOT/scripts/gate-card.js" --root "$P186WS" --slug fx 2>&1)" || { echo "     exit khac 0"; P186OK=0; }
+P186OUT="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P186WS" --slug fx 2>&1)" || { echo "     exit khac 0"; P186OK=0; }
 printf '%s' "$P186OUT" | node -e '
 const html = require("fs").readFileSync(0, "utf8");
 const die = m => { console.error("     " + m); process.exit(1); };
@@ -9417,7 +9417,7 @@ if (!bOoc || !bOoc.includes("Ngoài-1")) die("khoi 👉 tro toi Ngoai-1 nhung kh
 ' || P186OK=0
 # mutant: go nhanh liet ke judgment -> khoi phai thieu E9 (di qua chinh script that)
 P186MUT="$(mktemp -d)"
-cp -R "$ROOT/scripts" "$P186MUT/scripts"; cp -R "$ROOT/lib" "$P186MUT/lib"
+cp -R "$ROOT/plugins/acceptance-gate/scripts" "$P186MUT/scripts"; cp -R "$ROOT/plugins/acceptance-gate/lib" "$P186MUT/lib"
 python3 - "$P186MUT/scripts/gate-card.js" <<'PYX' || P186OK=0
 import sys
 p = sys.argv[1]
@@ -9441,7 +9441,7 @@ process.exit(/Chấm E9/.test(seg) ? 0 : 1);'; then echo "     mutant van liet m
 # lib): mot gate-card.js dung le khong resolve noi ../lib/... nen no chet luc
 # nap, va khi ay "het hua phut" voi "crash" cho CUNG mot mau.
 P186MUTP="$(mktemp -d)"
-cp -R "$ROOT/scripts" "$P186MUTP/scripts"; cp -R "$ROOT/lib" "$P186MUTP/lib"
+cp -R "$ROOT/plugins/acceptance-gate/scripts" "$P186MUTP/scripts"; cp -R "$ROOT/plugins/acceptance-gate/lib" "$P186MUTP/lib"
 python3 - "$P186MUTP/scripts/gate-card.js" <<'PYX' || P186OK=0
 import sys
 p = sys.argv[1]
@@ -9484,7 +9484,7 @@ rm -rf "$P186MUTP"
 # MUTANT 2 (QUAN HE, S4-r1): go ma E9 khoi item than the -> phep do quan he
 # phai DO du khoi 👉 van tro toi E9.
 P186MUT2="$(mktemp -d)"
-cp -R "$ROOT/scripts" "$P186MUT2/scripts"; cp -R "$ROOT/lib" "$P186MUT2/lib"
+cp -R "$ROOT/plugins/acceptance-gate/scripts" "$P186MUT2/scripts"; cp -R "$ROOT/plugins/acceptance-gate/lib" "$P186MUT2/lib"
 python3 - "$P186MUT2/scripts/gate-card.js" <<'PYX' || P186OK=0
 import sys
 p = sys.argv[1]
@@ -9517,7 +9517,7 @@ grep -q "^verdict: PASS" "$P186WS/_acceptance/fx/evidence-report.md" \
   || { echo "     fixture PASS-thuan-may hong"; P186BOK=0; }
 [ ! -f "$P186WS/_acceptance/fx/review-findings.md" ] && [ ! -f "$P186WS/_acceptance/fx/decisions.jsonl" ] \
   || { echo "     fixture PASS-thuan-may van con viec-nguoi — kich ban sai"; P186BOK=0; }
-P186BOUT="$(node "$ROOT/scripts/gate-card.js" --root "$P186WS" --slug fx 2>&1)" || { echo "     exit khac 0"; P186BOK=0; }
+P186BOUT="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P186WS" --slug fx 2>&1)" || { echo "     exit khac 0"; P186BOK=0; }
 printf '%s' "$P186BOUT" | node -e '
 const html = require("fs").readFileSync(0, "utf8");
 const die = m => { console.error("     " + m); process.exit(1); };
@@ -9532,7 +9532,7 @@ if (!items[0].includes("Ký hay trả")) die("muc ky thieu");
 ' || P186BOK=0
 # mutant rieng cua nhanh rong: go muc Ky-hay-tra tren chinh fixture nay
 P186BMUT="$(mktemp -d)"
-cp -R "$ROOT/scripts" "$P186BMUT/scripts"; cp -R "$ROOT/lib" "$P186BMUT/lib"
+cp -R "$ROOT/plugins/acceptance-gate/scripts" "$P186BMUT/scripts"; cp -R "$ROOT/plugins/acceptance-gate/lib" "$P186BMUT/lib"
 python3 - "$P186BMUT/scripts/gate-card.js" <<'PYX' || P186BOK=0
 import sys
 p = sys.argv[1]
@@ -9577,7 +9577,7 @@ p187_expect() { case "$1" in
 esac; }
 for P187V in REJECT BLOCKED WEIRD; do
   p187_rep "$P187V"
-  P187OUT="$(node "$ROOT/scripts/gate-card.js" --root "$P187WS" --slug fx 2>&1)" || { echo "     exit khac 0 ($P187V)"; P187OK=0; }
+  P187OUT="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P187WS" --slug fx 2>&1)" || { echo "     exit khac 0 ($P187V)"; P187OK=0; }
   printf '%s' "$P187OUT" | P187_MINE="$(p187_expect "$P187V")" \
     P187_OTHER1="$(p187_expect REJECT)" P187_OTHER2="$(p187_expect BLOCKED)" P187_OTHER3="$(p187_expect WEIRD)" node -e '
 const html = require("fs").readFileSync(0, "utf8");
@@ -9598,7 +9598,7 @@ done
 # mutant QUAN HE: gop ba cau thanh MOT (moi verdict cung mot cau) -> vong 3
 # nhanh phai DO o it nhat mot nhanh; mutant phai chay duoc moi duoc cham.
 P187MUT="$(mktemp -d)"
-cp -R "$ROOT/scripts" "$P187MUT/scripts"; cp -R "$ROOT/lib" "$P187MUT/lib"
+cp -R "$ROOT/plugins/acceptance-gate/scripts" "$P187MUT/scripts"; cp -R "$ROOT/plugins/acceptance-gate/lib" "$P187MUT/lib"
 python3 - "$P187MUT/scripts/gate-card.js" <<'PYX' || P187OK=0
 import sys
 p = sys.argv[1]
@@ -9621,7 +9621,7 @@ rm -rf "$P187MUT"
 # "Máy đã lo (liếc qua, không cần làm gì)" co san tren the ky-duoc, grep toan
 # trang se trung oan)
 p187_rep PASS
-P187OUT="$(node "$ROOT/scripts/gate-card.js" --root "$P187WS" --slug fx 2>&1)"
+P187OUT="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P187WS" --slug fx 2>&1)"
 printf '%s' "$P187OUT" | node -e '
 const html = require("fs").readFileSync(0, "utf8");
 const die = m => { console.error("     " + m); process.exit(1); };
@@ -9651,7 +9651,7 @@ def duong(rel):
     if rel not in _DUONG:
         _DUONG[rel] = subprocess.check_output(["node", str(root / "tests/bo-cuc.mjs"), "duong", rel, "--thu-muc", str(root)], text=True).strip()
     return _DUONG[rel]
-law_p = "skills/acceptance/references/human-facing-language.md"
+law_p = "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md"
 law = (root / duong(law_p)).read_text(encoding="utf-8")
 RX = re.compile(r"<!-- <<<GATE-INVITE-CLAUSE -->\n([\s\S]*?)\n<!-- GATE-INVITE-CLAUSE>>> -->")
 m = RX.search(law)
@@ -9785,7 +9785,7 @@ assert any(x.startswith(vic2) for x in b2), "phep do MU voi site mat sach clause
 # chieu do 4 (chip (2)b — lo r3 hinh dang 5): go 1 trong 2 ban o site NGUON.
 # Truoc day chieu nay mo phong go-o-nguon-roi-sync (ban dung mat theo nen hai ve
 # cung giam); sau khi luu kho ban dung, no do thang quan he nguon-vs-manifest.
-vic4 = site("feature-loop/skills/feature-loop/SKILL.md")
+vic4 = site("plugins/feature-loop/skills/feature-loop/SKILL.md")
 assert vic4 in DECL and DECL[vic4] >= 2, "nan nhan chieu do 4 phai la site nguon khai >=2 ban: " + repr(DECL.get(vic4))
 mut4 = dict(texts)
 mut4[vic4] = texts[vic4].replace(clause, "", 1)
@@ -9901,7 +9901,7 @@ if [ "$P190OK" -eq 1 ]; then pass "P190 the bang chung E7 == ban render that (si
 # SLOTS->than-lenh). Moi mutant di qua chinh checker that + in xac-nhan.
 echo "P191 khoi ngu phap cau gop GATE-ONESHOT: cau truc + 8 neo luat (E1 mot-luot-go)"
 P191OK=1
-ONESHOT_LAW="$ROOT/skills/acceptance/references/human-facing-language.md"
+ONESHOT_LAW="$ROOT/plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md"
 P191TMP="$(mktemp -d)"
 cat > "$P191TMP/check-law.js" <<'P191JS'
 // checker P191: rut GRAMMAR + SLOTS qua marker tu file luat, assert cau truc.
@@ -10028,15 +10028,15 @@ P192WS2="$(mktemp -d)"; vca_scenario gate2-4loai "$P192WS2" || { echo "     dung
 # thẻ g2 luật sản phẩm (bat-bien-san-pham): render hai nhãn SP-<số> + Tệp luật
 P192WS4="$(mktemp -d)"; vca_scenario gate2-luat "$P192WS4" || { echo "     dung fixture g2l that bai"; P192OK=0; }
 P192WS3="$(mktemp -d)"; vca_scenario gate2-may-di-tiep "$P192WS3" || { echo "     dung fixture g2v that bai"; P192OK=0; }
-node "$ROOT/scripts/gate-card.js" --root "$P192WS1" --slug fx --gate 1 > "$P192TMP/card-g1.html" 2>/dev/null \
+node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P192WS1" --slug fx --gate 1 > "$P192TMP/card-g1.html" 2>/dev/null \
   || { echo "     render the g1 that bai"; P192OK=0; }
-node "$ROOT/scripts/gate-card.js" --root "$P192WS2" --slug fx --gate 2 > "$P192TMP/card-g2.html" 2>/dev/null \
+node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P192WS2" --slug fx --gate 2 > "$P192TMP/card-g2.html" 2>/dev/null \
   || { echo "     render the g2 that bai"; P192OK=0; }
 # the may-di-truoc: o cuoi la dong bao «đi tiếp hay kéo lại: đi tiếp» o dong lenh (duong-lui-phai-song
 # AC-7; nhan doi o ho so nhan-lan-v-theo-huong)
-node "$ROOT/scripts/gate-card.js" --root "$P192WS3" --slug fx --gate 2 > "$P192TMP/card-g2v.html" 2>/dev/null \
+node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P192WS3" --slug fx --gate 2 > "$P192TMP/card-g2v.html" 2>/dev/null \
   || { echo "     render the g2v that bai"; P192OK=0; }
-node "$ROOT/scripts/gate-card.js" --root "$P192WS4" --slug fx --gate 2 > "$P192TMP/card-g2l.html" 2>/dev/null \
+node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P192WS4" --slug fx --gate 2 > "$P192TMP/card-g2l.html" 2>/dev/null \
   || { echo "     render the g2l that bai"; P192OK=0; }
 grep -qF 'đi tiếp hay kéo lại: đi tiếp' "$P192TMP/card-g2v.html" || { echo "     the g2v khong in «đi tiếp hay kéo lại: đi tiếp» — fixture khong phai may-di-truoc"; P192OK=0; }
 grep -qF 'Trả lời mẫu' "$P192TMP/card-g1.html" && grep -qF 'Trả lời mẫu' "$P192TMP/card-g2.html" \
@@ -10096,7 +10096,7 @@ def duong(rel):
     if rel not in _DUONG:
         _DUONG[rel] = subprocess.check_output(["node", str(root / "tests/bo-cuc.mjs"), "duong", rel, "--thu-muc", str(root)], text=True).strip()
     return _DUONG[rel]
-law_p = "skills/acceptance/references/human-facing-language.md"
+law_p = "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md"
 law = (root / duong(law_p)).read_text(encoding="utf-8")
 def block(name, text):
     m = re.search(r"<!-- <<<" + name + r" -->\n([\s\S]*?)\n<!-- " + name + r">>> -->", text)
@@ -10185,10 +10185,10 @@ assert sai_so(texts) == [], "ban that sai so ban: " + repr(sai_so(texts))
 print("ONESHOT-SITES: 12 nguon (+6 suy ra)")
 # ---- 4 chieu do, moi chieu qua CHINH cac ham that o tren
 # MUTANT-D: dong manifest thieu so -> parser fail-loud dich danh
-vicD = site("commands/approve.md")
+vicD = site("plugins/acceptance-gate/commands/approve.md")
 law_mutD = law.replace(vicD + " " + str(DECL[vicD]), vicD, 1)
 assert law_mutD != law, "MUTANT-D khong tac dung"
-print("MUTANT-D: da xoa so ban khoi dong manifest commands/approve.md")
+print("MUTANT-D: da xoa so ban khoi dong manifest plugins/acceptance-gate/commands/approve.md")
 try:
     doc_manifest(law_mutD)
     raise SystemExit("MUTANT-D khong bi bat — manifest thieu so ma parser im")
@@ -10197,7 +10197,7 @@ except AssertionError as e:
 print("     MUTANT-D DO dung: site thieu so ban (fail-loud, khong default)")
 # MUTANT-E: mangle MOT ky tu cua clause trong MOT ban chep -> lech dich danh
 mutE = dict(texts)
-victimE = site("commands/signoff.md")
+victimE = site("plugins/acceptance-gate/commands/signoff.md")
 mutE[victimE] = mutE[victimE].replace("câu NGƯỜI gõ", "câu NGUOI gõ", 1)
 assert mutE[victimE] != texts[victimE], "MUTANT-E khong tac dung"
 print("MUTANT-E: da mangle 1 ky tu clause trong ban sao " + victimE)
@@ -10206,7 +10206,7 @@ assert bads and any(victimE in b for b in bads), "MUTANT-E khong bi bat dich dan
 print("     MUTANT-E DO dich danh file: " + bads[0])
 # MUTANT-F: go needle --repo khoi MOT ban sao -> quan he per-site do dich danh
 mutF = dict(texts)
-victimF = site("commands/acceptance-status.md")
+victimF = site("plugins/acceptance-gate/commands/acceptance-status.md")
 mutF[victimF] = mutF[victimF].replace("--repo", "--rep0")
 assert mutF[victimF] != texts[victimF], "MUTANT-F khong tac dung"
 print("MUTANT-F: da go needle --repo khoi ban sao " + victimF)
@@ -10215,7 +10215,7 @@ assert any(("site thieu needle --repo: " + victimF) == b for b in badsF), "MUTAN
 print("     MUTANT-F DO dich danh: site thieu needle --repo: " + victimF)
 # MUTANT-G: xoa nhan «Treo» khoi ban sao than signoff -> do dich danh nhan
 mutG = dict(texts)
-victimG = site("commands/signoff.md")
+victimG = site("plugins/acceptance-gate/commands/signoff.md")
 mutG[victimG] = mutG[victimG].replace("Treo", "Txeo")
 assert mutG[victimG] != texts[victimG], "MUTANT-G khong tac dung"
 print("MUTANT-G: da xoa nhan Treo khoi ban sao " + victimG)
@@ -10235,7 +10235,7 @@ run "P194 hai nguyen tac may-ganh-nguoi-quyet: neo grammar + 6 than lenh + truon
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-law_p = "skills/acceptance/references/human-facing-language.md"
+law_p = "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md"
 law = (root / law_p).read_text(encoding="utf-8")
 def grammar_of(law_text):
     m = re.search(r"<!-- <<<GATE-ONESHOT-GRAMMAR -->\n([\s\S]*?)\n<!-- GATE-ONESHOT-GRAMMAR>>> -->", law_text)
@@ -10292,9 +10292,9 @@ def check_grammar(law_text):
     return errs
 # ---- 3 than lenh co-cau-hoi
 SITES = {
-    "approve": ["commands/approve.md"],
-    "signoff": ["commands/signoff.md"],
-    "start": ["commands/start.md"],
+    "approve": ["plugins/acceptance-gate/commands/approve.md"],
+    "signoff": ["plugins/acceptance-gate/commands/signoff.md"],
+    "start": ["plugins/acceptance-gate/commands/start.md"],
 }
 texts = {rel: (root / rel).read_text(encoding="utf-8") for rels in SITES.values() for rel in rels}
 GATE_NEEDLES = [
@@ -10310,7 +10310,7 @@ FIELDS = {
 # Luat DOC-khong-bi-chan + nhanh CAN phai co trong than lenh. Hai needle mot
 # luat: doc-khong-bi-chan (lo hoi dong bat) va nhanh can (lo "bac thang het nac
 # thi lam gi" — file cu khong noi).
-CROSSCHECK = {"commands/": ["không điều kiện nào chặn việc đọc", "**CẠN**", "**CHỌN**",
+CROSSCHECK = {"plugins/acceptance-gate/commands/": ["không điều kiện nào chặn việc đọc", "**CẠN**", "**CHỌN**",
                             "**KHÔNG CẢNH BÁO**"]}
 # Neo AM per-site: cau hoi cu KHONG duoc quay lai trong bat ky than lenh nao.
 BODY_AM = [("enter-xac-nhan-cu", "Enter xác nhận"),
@@ -10373,7 +10373,7 @@ def check_bodies(mapping):
     # day buoc Cong 1 — no van hoi phut trong khi 6 lenh da thoi (bat boi
     # baseline 2 chieu, S4-r3). Ca init la NGOAI pham vi va khac nghia
     # (baseline_minutes cua repo, khong phai phut cua mot cong) — khong dinh.
-    for rel in ("skills/acceptance/SKILL.md",):
+    for rel in ("plugins/acceptance-gate/skills/acceptance/SKILL.md",):
         p = root / rel
         if not p.is_file():
             errs.append("thieu file duong-khac: " + rel)
@@ -10396,8 +10396,8 @@ print("MUT-1: da go neo PHAT NGON CUOI khoi ban sao ban luat")
 e1 = check_grammar(law_m1)
 assert any("GRAMMAR thieu neo phat-ngon-cuoi" in x for x in e1), "MUT-1 khong bi bat: " + repr(e1)
 print("     MUT-1 DO dung: GRAMMAR thieu neo phat-ngon-cuoi")
-# MUT-2 (E2): go khuon «voi danh tinh:» khoi ban sao commands/approve.md
-m2 = dict(texts); v2 = "commands/approve.md"
+# MUT-2 (E2): go khuon «voi danh tinh:» khoi ban sao plugins/acceptance-gate/commands/approve.md
+m2 = dict(texts); v2 = "plugins/acceptance-gate/commands/approve.md"
 m2[v2] = m2[v2].replace("với danh tính:", "voi danh tinh:")
 assert m2[v2] != texts[v2], "MUT-2 khong tac dung"
 print("MUT-2: da go khuon voi-danh-tinh khoi ban sao " + v2)
@@ -10405,23 +10405,23 @@ e2 = check_bodies(m2)
 assert ("site thieu khuon voi-danh-tinh: " + v2) in e2, "MUT-2 khong bi bat dich danh: " + repr(e2)
 print("     MUT-2 DO dich danh: site thieu khuon voi-danh-tinh: " + v2)
 # MUT-3 (E2): go needle --as khoi ban sao signoff
-m3 = dict(texts); v3 = "commands/signoff.md"
+m3 = dict(texts); v3 = "plugins/acceptance-gate/commands/signoff.md"
 m3[v3] = m3[v3].replace("--as", "--a_s")
 assert m3[v3] != texts[v3], "MUT-3 khong tac dung"
 print("MUT-3: da go needle --as khoi ban sao " + v3)
 e3 = check_bodies(m3)
 assert ("site thieu needle --as: " + v3) in e3, "MUT-3 khong bi bat dich danh: " + repr(e3)
 print("     MUT-3 DO dich danh: site thieu needle --as: " + v3)
-# MUT-4 (E2): go ca mau «khong cat» khoi ban sao commands/signoff.md
-m4 = dict(texts); v4 = "commands/signoff.md"
+# MUT-4 (E2): go ca mau «khong cat» khoi ban sao plugins/acceptance-gate/commands/signoff.md
+m4 = dict(texts); v4 = "plugins/acceptance-gate/commands/signoff.md"
 m4[v4] = m4[v4].replace("không cắt", "khong-cat-da-go")
 assert m4[v4] != texts[v4], "MUT-4 khong tac dung"
 print("MUT-4: da go ca mau khong-cat khoi ban sao " + v4)
 e4 = check_bodies(m4)
 assert ("than signoff thieu ca mau khong-cat: " + v4) in e4, "MUT-4 khong bi bat dich danh: " + repr(e4)
 print("     MUT-4 DO dich danh: than signoff thieu ca mau khong-cat: " + v4)
-# MUT-5 (E3): doi human_signoff -> human_sign0ff trong ban sao commands/signoff.md
-m5 = dict(texts); v5 = "commands/signoff.md"
+# MUT-5 (E3): doi human_signoff -> human_sign0ff trong ban sao plugins/acceptance-gate/commands/signoff.md
+m5 = dict(texts); v5 = "plugins/acceptance-gate/commands/signoff.md"
 m5[v5] = m5[v5].replace("human_signoff", "human_sign0ff")
 assert m5[v5] != texts[v5], "MUT-5 khong tac dung"
 print("MUT-5: da doi human_signoff -> human_sign0ff trong ban sao " + v5)
@@ -10430,7 +10430,7 @@ assert any(x.startswith("than signoff thieu truong ghi: human_signoff") for x in
 print("     MUT-5 DO dung: than signoff thieu truong ghi: human_signoff")
 # MUT-6 (E2 do-d): go phan nguon-suy khoi ban sao approve -> do dich danh
 # (khuon thieu xuat xu = sai-ten-am-tham tren may dung chung — yeu cau phien B)
-m6 = dict(texts); v6 = "commands/approve.md"
+m6 = dict(texts); v6 = "plugins/acceptance-gate/commands/approve.md"
 m6[v6] = m6[v6].replace("(từ <nguồn suy>)", "")
 assert m6[v6] != texts[v6], "MUT-6 khong tac dung"
 print("MUT-6: da go phan nguon-suy (tu <nguon suy>) khoi ban sao " + v6)
@@ -10440,7 +10440,7 @@ print("     MUT-6 DO dich danh: site thieu khuon nguon-suy: " + v6)
 # MUT-7 (lo hoi dong E7 bat o S4-r1): go luat doc-de-doi-chieu khoi ban sao
 # than signoff Claude -> do dich danh (bac thang mo ta chan-doc lam nhanh
 # canh-bao-lech thanh bat kha thi — hai vong judge doc lap cung neu)
-m7 = dict(texts); v7 = "commands/signoff.md"
+m7 = dict(texts); v7 = "plugins/acceptance-gate/commands/signoff.md"
 m7[v7] = m7[v7].replace("không điều kiện nào chặn việc đọc", "doc-co-dieu-kien-chan")
 assert m7[v7] != texts[v7], "MUT-7 khong tac dung"
 print("MUT-7: da go luat doc-khong-bi-chan khoi ban sao " + v7)
@@ -10449,7 +10449,7 @@ assert ("site thieu luat doc-khong-bi-chan: " + v7) in e7, "MUT-7 khong bi bat d
 print("     MUT-7 DO dich danh: site thieu luat doc-khong-bi-chan: " + v7)
 # MUT-8: go nhanh CAN khoi ban sao than approve -> do dich danh
 # (lo "bac thang het nac thi lam gi" — hoi dong E7 vong 3 neu, file cu im)
-m8 = dict(texts); v8 = "commands/approve.md"
+m8 = dict(texts); v8 = "plugins/acceptance-gate/commands/approve.md"
 m8[v8] = m8[v8].replace("**CẠN**", "CAN-da-go")
 assert m8[v8] != texts[v8], "MUT-8 khong tac dung"
 print("MUT-8: da go nhanh bac-thang-can khoi ban sao " + v8)
@@ -10459,7 +10459,7 @@ print("     MUT-8 DO dich danh: site thieu nhanh bac-thang-can: " + v8)
 # MUT-9: chep bac thang lan HAI vao ban sao than approve -> do dich danh
 # (chinh lop da de ra ca 5 finding cua hoi dong E7 vong 6: hai ban chep troi
 # khoi nhau, moi lan va chi trung mot ban)
-m9 = dict(texts); v9 = "commands/approve.md"
+m9 = dict(texts); v9 = "plugins/acceptance-gate/commands/approve.md"
 i9 = m9[v9].index("**CHỌN**")
 m9[v9] = m9[v9][:i9] + "**CHỌN** (bản chép thừa)\n" + m9[v9][i9:]
 assert m9[v9].count("**CHỌN**") == 2, "MUT-9 khong tac dung"
@@ -10469,7 +10469,7 @@ assert ("bac thang khai 2 lan (phai dung 1): " + v9) in e9, "MUT-9 khong bi bat:
 print("     MUT-9 DO dich danh: bac thang khai 2 lan (phai dung 1): " + v9)
 # MUT-10 (gap-probe P0 — NEO AM): chen LAI cau hoi phut cu vao ban sao than
 # approve. Moi neo duong van du -> khong neo am thi thuoc im, lenh lai hoi phut
-m10 = dict(texts); v10 = "commands/approve.md"
+m10 = dict(texts); v10 = "plugins/acceptance-gate/commands/approve.md"
 m10[v10] = m10[v10].replace("- `sửa: <điều cần đổi>`", "- Ask how many minutes Gate 1 took.\n- `sửa: <điều cần đổi>`", 1)
 assert m10[v10] != texts[v10], "MUT-10 khong tac dung"
 print("MUT-10: da chen LAI cau hoi phut cu vao ban sao " + v10)
@@ -10478,7 +10478,7 @@ assert any(x.startswith("than mang lai luat cu hoi-phut-quay-lai") for x in e10)
 print("     MUT-10 DO dung: than mang lai luat cu hoi-phut-quay-lai")
 # MUT-11 (gap-probe P1): hoan vi bac thang ve PHUONG AN DA LOAI (approvers
 # truoc git config) -> thu tu khong ghim thi mutant nay xanh
-m11 = dict(texts); v11 = "commands/signoff.md"
+m11 = dict(texts); v11 = "plugins/acceptance-gate/commands/signoff.md"
 i_g = m11[v11].find("git config user.name"); i_a = m11[v11].find("signoff.approvers")
 assert 0 <= i_a < i_g or i_g < i_a, "MUT-11 fixture bat thuong"
 m11[v11] = m11[v11][:i_g] + "signoff.approvers" + m11[v11][i_g + len("git config user.name"):]
@@ -10491,7 +10491,7 @@ print("     MUT-11 DO dung: thu tu bac thang sai (git config phai truoc approver
 # gom-duc-ket-2-10-0 (AC-4): luat doi chieu — than lenh phai noi RO la KHONG canh bao khi
 # ten ngoai `signoff.approvers` (danh sach do la thong tin, khong phai cuong che), nen
 # mutant phai go dung ve do; ban truoc go chuoi `signoff.approvers` con lai o nhanh khac.
-m12 = dict(texts); v12 = "commands/approve.md"
+m12 = dict(texts); v12 = "plugins/acceptance-gate/commands/approve.md"
 m12[v12] = m12[v12].replace("**KHÔNG CẢNH BÁO**", "**CẢNH BÁO**")
 assert m12[v12] != texts[v12], "MUT-12 khong tac dung"
 print("MUT-12: da lat nhanh khong-canh-bao thanh canh-bao trong ban sao " + v12)
@@ -10500,7 +10500,7 @@ assert ("site thieu nhanh khong-canh-bao-ngoai-danh-sach: " + v12) in e12, "MUT-
 print("     MUT-12 DO dich danh: site thieu nhanh khong-canh-bao-ngoai-danh-sach: " + v12)
 # MUT-13 (gap-probe P2): role start chua co mutant nao -> chung minh nhanh
 # `if role == "start"` that su chay
-m13 = dict(texts); v13 = "commands/start.md"
+m13 = dict(texts); v13 = "plugins/acceptance-gate/commands/start.md"
 m13[v13] = m13[v13].replace("nhóm đã khớp", "nhom-da-khop-da-go")
 assert m13[v13] != texts[v13], "MUT-13 khong tac dung"
 print("MUT-13: da go hien-thi-lai nhom khop khoi ban sao " + v13)
@@ -10521,15 +10521,15 @@ import builtins as _b
 _orig_read = type(root).read_text
 def _fake_read(self, *a, **k):
     s = _orig_read(self, *a, **k)
-    if self.name == "SKILL.md" and "skills/acceptance/SKILL.md" in str(self):
+    if self.name == "SKILL.md" and "plugins/acceptance-gate/skills/acceptance/SKILL.md" in str(self):
         s = s + "\n   ask the user how many minutes Gate 1 took.\n"
     return s
 type(root).read_text = _fake_read
-print("MUT-15: da chen LAI cau hoi phut vao duong khac (skills/acceptance/SKILL.md, ban doc gia lap)")
+print("MUT-15: da chen LAI cau hoi phut vao duong khac (plugins/acceptance-gate/skills/acceptance/SKILL.md, ban doc gia lap)")
 e15 = check_bodies(texts)
 type(root).read_text = _orig_read
-assert any(x == "duong khac van hoi phut: skills/acceptance/SKILL.md" for x in e15), "MUT-15 khong bi bat: " + repr(e15)
-print("     MUT-15 DO dich danh: duong khac van hoi phut: skills/acceptance/SKILL.md")
+assert any(x == "duong khac van hoi phut: plugins/acceptance-gate/skills/acceptance/SKILL.md" for x in e15), "MUT-15 khong bi bat: " + repr(e15)
+print("     MUT-15 DO dich danh: duong khac van hoi phut: plugins/acceptance-gate/skills/acceptance/SKILL.md")
 # So chieu do SUY tu chinh danh sach mutant da chay (lop tong-ket-khong-kem-
 # so-ca: in literal thi them/bot mutant ma dong tong ket van in so cu).
 MUTS = ["neo-grammar", "khuon-danh-tinh", "needle--as", "ca-mau-khong-cat",
@@ -10549,9 +10549,9 @@ P194PY
 P196TMP="$(mktemp -d)"
 cat > "$P196TMP/p196.sh" <<'P196SH'
 set -u
-ROOT="$1"; PD="$ROOT/diagram-design"; e=0
+ROOT="$1"; PD="$ROOT/plugins/diagram-design"; e=0
 bad(){ echo "     DO: $*"; e=1; }
-[ -f "$PD/.claude-plugin/plugin.json" ] || bad "thieu .claude-plugin/plugin.json"
+[ -f "$PD/.claude-plugin/plugin.json" ] || bad "thieu plugins/acceptance-gate/.claude-plugin/plugin.json"
 [ -f "$PD/skills/diagram-design/SKILL.md" ] || bad "thieu skills/diagram-design/SKILL.md"
 { [ -f "$PD/commands/export-diagram.md" ] && [ -f "$PD/commands/import-drawio.md" ]; } || bad "thieu 2 lenh export/import"
 { [ -f "$PD/NOTICE" ] && [ -x "$PD/vendor-sync.sh" ] && [ -x "$PD/tree-hash.sh" ]; } || bad "thieu NOTICE/vendor-sync/tree-hash"
@@ -10562,7 +10562,7 @@ const errs=[];
 if(p.name!=="diagram-design") errs.push("name");
 if(!/^\d+\.\d+\.\d+$/.test(p.version)) errs.push("version khong semver: "+p.version);
 if(p.license!=="MIT") errs.push("license phai MIT (upstream MIT), dang: "+p.license);
-if(!(m.plugins||[]).some(x=>x.name==="diagram-design"&&x.source==="./diagram-design")) errs.push("marketplace thieu entry diagram-design");
+if(!(m.plugins||[]).some(x=>x.name==="diagram-design"&&x.source==="./plugins/diagram-design")) errs.push("marketplace thieu entry diagram-design");
 const sk=fs.readFileSync(process.argv[1]+"/skills/diagram-design/SKILL.md","utf8");
 if(!/^name: diagram-design$/m.test(sk)) errs.push("SKILL.md name != diagram-design");
 if(errs.length){console.log(errs.join("; "));process.exit(1)}
@@ -10613,8 +10613,8 @@ run "P197 GATE 1 khoi hinh: clause mot-nguon · 5 nhan thu tu · 4 nguon ke · d
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-LOOP = "feature-loop/skills/feature-loop/SKILL.md"
-LAW  = (root / "skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
+LOOP = "plugins/feature-loop/skills/feature-loop/SKILL.md"
+LAW  = (root / "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md").read_text(encoding="utf-8")
 _m = re.search(r"<!-- <<<LOOP-PICTURE-CLAUSE -->\n([\s\S]*?)<!-- LOOP-PICTURE-CLAUSE>>> -->", LAW)
 assert _m, "khong rut duoc LOOP-PICTURE-CLAUSE tu ban luat"
 norm = lambda s: re.sub(r"\s+", " ", s).strip()
@@ -10831,18 +10831,18 @@ import json, os, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 root = Path(sys.argv[1]); errs = []
 def bad(m): errs.append(m); print("  P198 LOI: " + m)
-tpl = (root / "skills/acceptance/references/opportunity-template.md").read_text(encoding="utf-8")
+tpl = (root / "plugins/acceptance-gate/skills/acceptance/references/opportunity-template.md").read_text(encoding="utf-8")
 # round-trip writer->reader: (1) heading = hang so gate-card doc, PHAI ton tai trong KHUON dang '## <heading>';
-gc_src = (root / "scripts/gate-card.js").read_text(encoding="utf-8")
-# Heading nay SONG o lib/nguong-o-co-hoi.cjs (ho so ra-co-ten 24/08, AC-18 chong-chep):
+gc_src = (root / "plugins/acceptance-gate/scripts/gate-card.js").read_text(encoding="utf-8")
+# Heading nay SONG o plugins/acceptance-gate/lib/nguong-o-co-hoi.cjs (ho so ra-co-ten 24/08, AC-18 chong-chep):
 # gate-card HOI lib chu khong khai literal. Ca do vi the phai lay hang tu CHU SO HUU, va
 # van doi gate-card that su noi voi nguon do — chieu do giu nguyen: doi heading trong khuon
 # ma lib khong doi thi (2) ben duoi van bat.
 mh = re.search(r"UAT_THRESHOLD_HEADING = '([^']+)'", gc_src)
 if not mh:
-    lib_src = (root / "lib/nguong-o-co-hoi.cjs").read_text(encoding="utf-8")
+    lib_src = (root / "plugins/acceptance-gate/lib/nguong-o-co-hoi.cjs").read_text(encoding="utf-8")
     mh = re.search(r"UAT_THRESHOLD_HEADING = '([^']+)'", lib_src)
-    if not mh: bad("hang so UAT_THRESHOLD_HEADING khong khai o gate-card.js LAN lib/nguong-o-co-hoi.cjs"); print("\n".join(errs)); sys.exit(1)
+    if not mh: bad("hang so UAT_THRESHOLD_HEADING khong khai o gate-card.js LAN plugins/acceptance-gate/lib/nguong-o-co-hoi.cjs"); print("\n".join(errs)); sys.exit(1)
     if "NG1.UAT_THRESHOLD_HEADING" not in gc_src:
         bad("gate-card.js khong khai hang MA cung khong hoi lib — hai nguon lech duoc"); print("\n".join(errs)); sys.exit(1)
 HEAD = mh.group(1)
@@ -10949,11 +10949,11 @@ def matrix(gc, label):
     shutil.rmtree(base, ignore_errors=True)
     return out
 # doi chung duong: gate-card that phai xanh ca 8 o
-e = matrix(root / "scripts" / "gate-card.js", "that")
+e = matrix(root / "plugins/acceptance-gate/scripts" / "gate-card.js", "that")
 for x in e: bad(x)
 # 3 mutant tren BAN SAO gate-card (mutant phai CHAY DUOC: khong duoc crash)
 def mutant(name, fn, expect_substr):
-    tmp = Path(tempfile.mkdtemp()); shutil.copytree(root / "scripts", tmp / "scripts"); shutil.copytree(root / "lib", tmp / "lib")
+    tmp = Path(tempfile.mkdtemp()); shutil.copytree(root / "plugins/acceptance-gate/scripts", tmp / "scripts"); shutil.copytree(root / "plugins/acceptance-gate/lib", tmp / "lib")
     p = tmp / "scripts" / "gate-card.js"; s = p.read_text(encoding="utf-8"); s2 = fn(s)
     if s2 == s: bad("mutant %s khong ap duoc (neo doi?)" % name); shutil.rmtree(tmp, ignore_errors=True); return
     p.write_text(s2, encoding="utf-8")
@@ -11078,15 +11078,15 @@ const ROOT = process.argv[2];
 const ok = (m) => ({ ok: true, m });
 const red = (m) => ({ ok: false, m });
 const rd = (root, rel) => JSON.parse(fs.readFileSync(path.join(root, rel), 'utf8'));
-const AG = '.claude-plugin/plugin.json';
-const FL = 'feature-loop/.claude-plugin/plugin.json';
-const DD = 'diagram-design/.claude-plugin/plugin.json';
+const AG = 'plugins/acceptance-gate/.claude-plugin/plugin.json';
+const FL = 'plugins/feature-loop/.claude-plugin/plugin.json';
+const DD = 'plugins/diagram-design/.claude-plugin/plugin.json';
 // Gói thứ tư (hồ sơ dieu-phoi-dong-goi-loi AC-9): đi cùng số với feature-loop.
-const DP = 'dieu-phoi/.claude-plugin/plugin.json';
+const DP = 'plugins/dispatch/.claude-plugin/plugin.json';
 // Gói thứ năm (hồ sơ ra-soat-lo-trinh AC-10): vỏ lệnh road-map, đi cùng số với acceptance-gate.
-const RM = 'road-map/.claude-plugin/plugin.json';
+const RM = 'plugins/roadmap/.claude-plugin/plugin.json';
 // Gói thứ sáu (hồ sơ kho-tri-thuc-va-lint AC-9): vỏ lệnh tri-thuc, đi cùng số với acceptance-gate.
-const TT = 'tri-thuc/.claude-plugin/plugin.json';
+const TT = 'plugins/knowledge/.claude-plugin/plugin.json';
 // Mục của MỘT số trong mô tả = từ «v<số>» tới hết chuỗi (mô tả xếp theo thời gian).
 const muc = (mota, v) => { const i = mota.indexOf('v' + v); return i < 0 ? null : mota.slice(i); };
 
@@ -11279,7 +11279,7 @@ P201OK=1
 # (S4-r1: ban cu grep "'known-limits', 'new-contract', 'wont-fix'" nen khi ba ben
 # doc duoc gom ve mot hang, case do vi HINH DANG MA chu khong vi hanh vi —
 # dung lop «thuoc ghim vao thu se doi»).
-python3 - "$ROOT/feature-loop/workflows/acceptance-verify.js" <<'PYX' || P201OK=0
+python3 - "$ROOT/plugins/feature-loop/workflows/acceptance-verify.js" <<'PYX' || P201OK=0
 import re, sys
 src = open(sys.argv[1], encoding="utf-8").read()
 m = re.search(r"// <<<OOC-PROPOSAL-VALUES([\s\S]*?)// OOC-PROPOSAL-VALUES>>>", src)
@@ -11346,8 +11346,8 @@ const src = require("fs").readFileSync(process.argv[1], "utf8");
 const m = src.match(/proposal === .wont-fix. \? .([^\x27]+)./);
 if (!m) { console.error("gate-card.js khong co nhanh wont-fix"); process.exit(1); }
 process.stdout.write(m[1]);
-' "$ROOT/scripts/gate-card.js")" || P201OK=0
-P201OUT="$(node "$ROOT/scripts/gate-card.js" --root "$P201WS" --slug demo 2>&1)" || { echo "     gate-card exit khac 0 tren fixture wont-fix"; P201OK=0; }
+' "$ROOT/plugins/acceptance-gate/scripts/gate-card.js")" || P201OK=0
+P201OUT="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P201WS" --slug demo 2>&1)" || { echo "     gate-card exit khac 0 tren fixture wont-fix"; P201OK=0; }
 printf '%s' "$P201OUT" | grep -qF "$P201REC" \
   || { echo "     the KHONG in loi khuyen wont-fix (chuoi rut tu nguon): $P201REC"; P201OK=0; }
 printf '%s' "$P201OUT" | grep -qF "Ngoài hợp đồng — bạn quyết" \
@@ -11356,12 +11356,12 @@ printf '%s' "$P201OUT" | grep -qF "Ngoài hợp đồng — bạn quyết" \
 P201WS2="$(mktemp -d)"
 cp -R "$P201WS/_acceptance" "$P201WS2/_acceptance"
 sed -i.bak 's/Đề xuất: wont-fix/Đề xuất: known-limits/' "$P201WS2/_acceptance/demo/review-findings.md" && rm -f "$P201WS2/_acceptance/demo/review-findings.md.bak"
-P201OUT2="$(node "$ROOT/scripts/gate-card.js" --root "$P201WS2" --slug demo 2>&1)" || { echo "     duong doc-cu: exit khac 0"; P201OK=0; }
+P201OUT2="$(node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$P201WS2" --slug demo 2>&1)" || { echo "     duong doc-cu: exit khac 0"; P201OK=0; }
 printf '%s' "$P201OUT2" | grep -qF "Ngoài hợp đồng — bạn quyết" || { echo "     duong doc-cu: khoi bien mat"; P201OK=0; }
 printf '%s' "$P201OUT2" | grep -qF "$P201REC" && { echo "     duong doc-cu: loi khuyen wont-fix in nham cho file cu"; P201OK=0; }
 # (d) chieu do — mutant go nhanh render wont-fix tren BAN SAO cay tron
 P201MUT="$(mktemp -d)"
-cp -R "$ROOT/scripts" "$P201MUT/scripts"; cp -R "$ROOT/lib" "$P201MUT/lib"
+cp -R "$ROOT/plugins/acceptance-gate/scripts" "$P201MUT/scripts"; cp -R "$ROOT/plugins/acceptance-gate/lib" "$P201MUT/lib"
 python3 - "$P201MUT/scripts/gate-card.js" <<'PYX' || P201OK=0
 import sys
 p = sys.argv[1]

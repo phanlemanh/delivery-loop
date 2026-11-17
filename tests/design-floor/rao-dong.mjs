@@ -6,7 +6,7 @@
 //   FN-03 đóng kín giao đi không import mạng, không token mạng trong mã đã bỏ chú thích
 //   FN-04 đóng kín giao đi không vượt trần (tệp · dòng)
 //   BG-01 bản gói đã commit = bản dựng lại từ nguồn, từng byte — tại chỗ và từ một bản sao ở đường khác
-// Tệp khoá là DANH SÁCH CHÉP: đúng các tệp này nằm trong design-floor/vendor/design-os, mỗi tệp kèm băm.
+// Tệp khoá là DANH SÁCH CHÉP: đúng các tệp này nằm trong plugins/acceptance-gate/design-floor/vendor/design-os, mỗi tệp kèm băm.
 //
 // Dùng: node tests/design-floor/rao-dong.mjs [--write] [--chi VA-01,BG-01] [--hop-dong <md>] [--khoa <json>] [--goc <gốc kit>]
 //   --write  đo bản ghim upstream (qua mạng) và ghi lại tệp khoá — chỉ khi đổi ghim hay đổi vỏ, có chủ đích

@@ -20,8 +20,8 @@ import { mkRepinFixture, SHA_A, TS_NEW, evalsYamlWith } from './repin-fixture.mj
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
 const require = createRequire(import.meta.url);
-const RC = path.join(ROOT, 'scripts', 'recheck-evidence.cjs');
-const CHECK = path.join(ROOT, 'scripts', 'pre-merge-check.sh');
+const RC = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs');
+const CHECK = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh');
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
 const rc = (report, script = RC) => {
@@ -188,7 +188,7 @@ check('RE-EE1 hai vế ĐỦ: khai 2 + báo cáo đã ký ghi 2 + làn trả 2 �
   const evalsText = evalsYamlWithExpectedExit('E1', 2);
   const f = mkRepinFixture({ ts: TS_NEW, evalsYaml: evalsText, evalsExit: { E1: 2 } });
   signReportExit(f.report, 2);
-  const core = require(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+  const core = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   const entry = { run_id: f.runId, sha: f.sha, ts: TS_NEW, evals_exit: { E1: 2 } };
   const { errs } = core.checkRepinEvals(entry, evalsText, f.slug, readFileSync(f.report, 'utf8'));
   assert.equal(errs.length, 0, errs.join('\n'));
@@ -219,7 +219,7 @@ check('RE-EE3 vế một THIẾU (đối chứng đỏ khác của RE-EE1): eval
 });
 
 check('RE-EE4 đường đọc-cũ: gọi checkRepinEvals KHÔNG truyền reportText (bên gọi cũ/vắng thư viện) → mọi mã khác 0 vẫn ĐỎ dù đã khai đúng mã (fail-closed), và thông điệp phải rơi đúng nhánh «vế hai không kiểm được» — không phải lọt nhầm sang nhánh «chưa khai» hay «lệch mã đã khai»', () => {
-  const core = require(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+  const core = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   const evalsText = evalsYamlWithExpectedExit('E1', 2);
   const entry = { run_id: 'repin-test-1', sha: SHA_A, ts: TS_NEW, evals_exit: { E1: 2 } };
   const { errs } = core.checkRepinEvals(entry, evalsText, 'feat-repin'); // tham số 4 VẮNG
@@ -235,7 +235,7 @@ check('RE-EE-KL1 khai lệch đối chứng dương: evals.yaml khai E1=2, làn 
   const evalsText = evalsYamlWithExpectedExit('E1', 2);
   const f = mkRepinFixture({ ts: TS_NEW, evalsYaml: evalsText, evalsExit: { E1: 2 } });
   signReportExit(f.report, 2);
-  const core = require(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+  const core = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   const entry = { run_id: f.runId, sha: f.sha, ts: TS_NEW, evals_exit: { E1: 2 } };
   const { errs } = core.checkRepinEvals(entry, evalsText, f.slug, readFileSync(f.report, 'utf8'));
   assert.equal(errs.length, 0, errs.join('\n'));
@@ -247,7 +247,7 @@ check('RE-EE-KL2 khai lệch (một-biến so với KL1: chỉ đổi evals_exit
   const evalsText = evalsYamlWithExpectedExit('E1', 2);
   const f = mkRepinFixture({ ts: TS_NEW, evalsYaml: evalsText, evalsExit: { E1: 3 } });
   signReportExit(f.report, 2); // giữ nguyên như KL1 — không liên quan nhánh «khai lệch», chỉ evals_exit đổi
-  const core = require(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+  const core = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   const entry = { run_id: f.runId, sha: f.sha, ts: TS_NEW, evals_exit: { E1: 3 } };
   const { errs } = core.checkRepinEvals(entry, evalsText, f.slug, readFileSync(f.report, 'utf8'));
   assert.equal(errs.length, 1, errs.join('\n'));
@@ -264,8 +264,8 @@ check('RE-EE-KL2 khai lệch (một-biến so với KL1: chỉ đổi evals_exit
 // thư mục scripts/ + lib/ (không chép danh sách file tay — P150).
 function mutantTree(mutate) {
   const d = mkdtempSync(path.join(tmpdir(), 'repin-mut-'));
-  cpSync(path.join(ROOT, 'scripts'), path.join(d, 'scripts'), { recursive: true });
-  cpSync(path.join(ROOT, 'lib'), path.join(d, 'lib'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(d, 'scripts'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(d, 'lib'), { recursive: true });
   for (const [rel, from, to] of mutate) {
     const f = path.join(d, rel); const src = readFileSync(f, 'utf8');
     assert.ok(src.includes(from), `mutant không áp được — neo "${from.slice(0, 50)}" không còn trong ${rel}`);

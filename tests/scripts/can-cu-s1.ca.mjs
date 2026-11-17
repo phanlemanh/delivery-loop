@@ -516,13 +516,13 @@ check('CC-10', () => {
 
 // ── KK: vòng can-cu-s1-chay-moi-kho (KK-n = AC-n) — lệnh gọi bộ xếp chạy ở kho khách ─────────────────────
 // Kho thử do code sinh, KHÔNG có scripts/ của kit; HOME tạm mang bộ nhớ đệm plugin giả
-// (acceptance-gate-kit/acceptance-gate/9.9.9) — thư mục bản là thư mục THẬT vì bộ giải gói bỏ qua symlink ở
+// (delivery-loop/acceptance-gate/9.9.9) — thư mục bản là thư mục THẬT vì bộ giải gói bỏ qua symlink ở
 // cấp đó, chỉ scripts/ bên trong trỏ cây đang kiểm. Lệnh là lệnh RÚT từ SKILL lúc chạy.
 const FL_WF = tep('feature-loop/workflows', CAY);
 const lenhBoXep = t => [...t.matchAll(/`([^`]*\bnode\b[^`]*can-cu-s1\.cjs[^`]*)`/g)].map(m => m[1]);
 function nhaGia({ coBoXep = true } = {}) {
   const h = mkdtempSync(path.join(tmpdir(), 'kk-nha-'));
-  const ban = path.join(h, '.claude', 'plugins', 'cache', 'acceptance-gate-kit', 'acceptance-gate', '9.9.9');
+  const ban = path.join(h, '.claude', 'plugins', 'cache', 'delivery-loop', 'acceptance-gate', '9.9.9');
   mkdirSync(ban, { recursive: true });
   if (coBoXep) symlinkSync(tep('scripts', CAY), path.join(ban, 'scripts')); // bộ đệm plugin luôn là gốc gói (phẳng)
   else mkdirSync(path.join(ban, 'scripts'));

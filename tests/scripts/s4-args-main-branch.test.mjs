@@ -1,5 +1,5 @@
 // s4-args-main-branch.test.mjs — LƯỚI THƯỜNG TRỰC cho phép dò nhánh chính của
-// `feature-loop/scripts/s4-args.mjs` (hồ sơ nhanh-chinh-khong-ten-main, AC-7/AC-8/AC-9).
+// `plugins/feature-loop/scripts/s4-args.mjs` (hồ sơ nhanh-chinh-khong-ten-main, AC-7/AC-8/AC-9).
 //
 // Vì sao ở đây chứ không chỉ trong bộ răng hồ sơ: ADR 0011 — thứ gì phải đúng
 // SAU MERGE thì không được nằm trong răng hồ sơ, vì răng chết theo hồ sơ. Mã
@@ -16,7 +16,7 @@ import path from 'node:path';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');
-const S4ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
+const S4ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
 let pass = 0, fail = 0;
 const ok = (m) => { console.log(`  PASS: ${m}`); pass += 1; };
 const bad = (m, d) => { console.log(`  FAIL: ${m}${d ? ` (${d})` : ''}`); fail += 1; };
@@ -44,7 +44,7 @@ function buildRepo(branch) {
 function runArgs(repo, extra = []) {
   const out = path.join(TMP, `args-${Math.random().toString(36).slice(2)}.json`);
   try {
-    const stdout = execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', repo, '--ag-root', KIT, '--no-carry', '--out', out, ...extra],
+    const stdout = execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', repo, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--no-carry', '--out', out, ...extra],
       { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
     return { code: 0, text: stdout, out, wrote: existsSync(out) };
   } catch (e) {

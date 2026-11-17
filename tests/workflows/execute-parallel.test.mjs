@@ -1,4 +1,4 @@
-// Characterization tests for feature-loop/workflows/execute-parallel.js —
+// Characterization tests for plugins/feature-loop/workflows/execute-parallel.js —
 // args guards, result demotion, null-safety, and the routing facts (executors
 // inherit the session model + worktree isolation) pinned before Đợt 2 touches
 // routing.
@@ -7,7 +7,7 @@ import path from 'node:path';
 import { runWorkflow, check, summary } from './harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const WF = path.join(HERE, '..', '..', 'feature-loop', 'workflows', 'execute-parallel.js');
+const WF = path.join(HERE, '..', '..', 'plugins/feature-loop', 'workflows', 'execute-parallel.js');
 
 const task = (id, over = {}) => ({
   id, title: `T ${id}`, summary: 's', files: ['src/a.js'], verifyCmd: 'npm test', ...over,

@@ -5,12 +5,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { NHIP, PHUT_MS } from '../../../dieu-phoi/scripts/cau-hinh.mjs';
-import { LOAI_DON, kiemCauHinh, kiemHangViec } from '../../../dieu-phoi/scripts/hinh-dang.mjs';
-import { taoVong } from '../../../dieu-phoi/scripts/phat-lich.mjs';
+import { NHIP, PHUT_MS } from '../../../plugins/dispatch/scripts/cau-hinh.mjs';
+import { LOAI_DON, kiemCauHinh, kiemHangViec } from '../../../plugins/dispatch/scripts/hinh-dang.mjs';
+import { taoVong } from '../../../plugins/dispatch/scripts/phat-lich.mjs';
 import { CFG_BIEN, CFG_PHAT_LICH, hangViecHai } from './mau-thu.mjs';
 
-const MAU = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'dieu-phoi', 'scripts', 'mau');
+const MAU = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'plugins/dispatch', 'scripts', 'mau');
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp-')));
 const sao = (x) => JSON.parse(JSON.stringify(x));
 const NOW = Date.parse('2026-10-05T12:00:00Z');

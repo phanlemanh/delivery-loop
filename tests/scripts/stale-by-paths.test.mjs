@@ -3,8 +3,8 @@ import path from 'node:path'; import { fileURLToPath } from 'node:url'; import {
 import assert from 'node:assert/strict';
 const require = createRequire(import.meta.url);
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const core = createRequire(import.meta.url)(path.join(ROOT, 'lib', 'evidence-core.cjs'));
-const { globToRe } = await import(path.join(ROOT, 'feature-loop', 'scripts', 'carry-plan.mjs'));
+const core = createRequire(import.meta.url)(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
+const { globToRe } = await import(path.join(ROOT, 'plugins/feature-loop', 'scripts', 'carry-plan.mjs'));
 const Y = (blocks) => `evals:\n${blocks}`;
 const ev = (id, ex, paths, extra = '') => `  - id: ${id}\n    criterion: AC-1\n    executor: ${ex}\n${paths}${extra}`;
 let pass = 0; const ca = (n, f) => { f(); pass++; console.log('  PASS: ' + n); };
@@ -93,7 +93,7 @@ ca('SBP15 thư mục trần có thật → giữ tệp bên trong; thư mục kh
   assert.equal(r2.apply, false); assert.equal(r2.reason, 'paths-khong-tro-toi-tep:E1:src/zz');
 });
 ca('SBP16 khối marker PATHS-LY-DO là nguồn của mảng xuất ra', () => {
-  const src = require('node:fs').readFileSync(path.join(ROOT, 'lib', 'evidence-core.cjs'), 'utf8');
+  const src = require('node:fs').readFileSync(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'), 'utf8');
   const m = src.match(/<<<PATHS-LY-DO\n[^\n]*\[([^\]]*)\]/);
   assert.ok(m, 'không rút được khối PATHS-LY-DO');
   assert.deepEqual(m[1].split(',').map(x => x.trim().replace(/^'|'$/g, '')), core.PATHS_LY_DO);

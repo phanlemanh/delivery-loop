@@ -18,7 +18,7 @@ const GOC = readFileSync(path.join(KIT, '_acceptance', 'kho-cam-ket-co-lo-trinh'
 const KHO_GOC = path.resolve(process.env.KHO_GOC || path.join(homedir(), 'dev'));
 const TMP = realpathSync(mkdtempSync(path.join(tmpdir(), 'ck6-')));
 const HOME = path.join(TMP, 'home'); mkdirSync(path.join(HOME, '.claude'), { recursive: true });
-const LIB = createRequire(import.meta.url)(path.join(KIT, 'lib', 'chan-lo-trinh.cjs'));
+const LIB = createRequire(import.meta.url)(path.join(KIT, 'plugins/acceptance-gate/lib', 'chan-lo-trinh.cjs'));
 let pass = 0; let fail = 0;
 const ok = (id, m) => { pass += 1; console.log(`  PASS: ${id} — ${m}`); };
 const bad = (id, m) => { fail += 1; console.log(`  FAIL: ${id} — ${m}`); };
@@ -58,7 +58,7 @@ function hook(kit, d, l) {
   const fp = path.join(d, l.file);
   const ti = l.tool === 'Edit' ? { file_path: fp, old_string: l.old, new_string: l.moi } : { file_path: fp, content: l.content };
   const e = { ...process.env, HOME }; delete e.ACCEPTANCE_GATE_BYPASS;
-  const r = spawnSync(process.execPath, [path.join(kit, 'hooks', 'acceptance-evidence-gate.js')], { input: JSON.stringify({ tool_name: l.tool, tool_input: ti }), encoding: 'utf8', cwd: d, env: e });
+  const r = spawnSync(process.execPath, [path.join(kit, 'plugins/acceptance-gate/hooks', 'acceptance-evidence-gate.js')], { input: JSON.stringify({ tool_name: l.tool, tool_input: ti }), encoding: 'utf8', cwd: d, env: e });
   return `${r.status}\0${r.stdout}\0${r.stderr}`;
 }
 
@@ -77,10 +77,10 @@ for (const ten of khoThat) {
     soLenh += 1;
     if (hook(KIT, d, l) !== hook(GOC_DIR, d, l)) sai.push(`${ten}: hook khác bộ máy gốc ở «${l.tool} ${l.file}»`);
   }
-  const b = spawnSync(process.execPath, [path.join(KIT, 'lib', 'chan-lo-trinh.cjs'), '--root', d, '--base', 'HEAD'], { encoding: 'utf8', env: { ...process.env, HOME } });
+  const b = spawnSync(process.execPath, [path.join(KIT, 'plugins/acceptance-gate/lib', 'chan-lo-trinh.cjs'), '--root', d, '--base', 'HEAD'], { encoding: 'utf8', env: { ...process.env, HOME } });
   if (b.status !== 0 || b.stdout !== '') sai.push(`${ten}: bộ đọc --base HEAD thoát ${b.status}, stdout «${b.stdout.trim()}»`);
   const h = bam(d);
-  const t = spawnSync(process.execPath, [path.join(KIT, 'scripts', 'lo-trinh.mjs'), '--root', d, '--them-hang', '--slug', 'thu-ck6'], { input: 'Một câu', encoding: 'utf8', env: { ...process.env, HOME } });
+  const t = spawnSync(process.execPath, [path.join(KIT, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs'), '--root', d, '--them-hang', '--slug', 'thu-ck6'], { input: 'Một câu', encoding: 'utf8', env: { ...process.env, HOME } });
   if (t.status !== 1 || bam(d) !== h) sai.push(`${ten}: --them-hang thoát ${t.status}, cây ${bam(d) === h ? 'giữ' : 'ĐỔI'} ${t.stderr.trim()}`);
 }
 const khong = khoThat.length - bat.length;

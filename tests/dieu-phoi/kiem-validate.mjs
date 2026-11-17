@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const i = process.argv.indexOf('--root');
 const GOC = path.resolve(i > -1 ? process.argv[i + 1] : path.join(DAY, '..', '..'));
-const GOI = path.join(GOC, 'dieu-phoi');
+const GOI = path.join(GOC, 'plugins/dispatch');
 
 let loi = 0;
 const ket = (ok, ten, chi) => {

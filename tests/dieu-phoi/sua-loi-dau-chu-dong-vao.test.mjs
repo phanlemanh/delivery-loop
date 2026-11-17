@@ -10,13 +10,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { chonHangKe, hangKeTuTiep } from '../../dieu-phoi/scripts/lich.mjs';
-import { gop } from '../../dieu-phoi/scripts/gop.mjs';
-import { motNhip } from '../../dieu-phoi/scripts/phat-lich.mjs';
+import { chonHangKe, hangKeTuTiep } from '../../plugins/dispatch/scripts/lich.mjs';
+import { gop } from '../../plugins/dispatch/scripts/gop.mjs';
+import { motNhip } from '../../plugins/dispatch/scripts/phat-lich.mjs';
 import { CFG_PHAT_LICH, hangViecHai } from './loi/mau-thu.mjs';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
-const GOI = path.resolve(DAY, '..', '..', 'dieu-phoi');
+const GOI = path.resolve(DAY, '..', '..', 'plugins/dispatch');
 const CLI = path.join(GOI, 'scripts', 'dieu-phoi.mjs');
 const canDon = [];
 after(() => {

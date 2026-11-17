@@ -13,11 +13,11 @@ import { fileFromTemplate } from '../fixtures/from-template.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
-const SCAN = path.join(ROOT, 'scripts', 'start-scan.mjs');
-const TEMPLATE = path.join(ROOT, 'skills', 'acceptance', 'references', 'opportunity-template.md');
-const START_MD = path.join(ROOT, 'commands', 'start.md');
+const SCAN = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'start-scan.mjs');
+const TEMPLATE = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'opportunity-template.md');
+const START_MD = path.join(ROOT, 'plugins/acceptance-gate/commands', 'start.md');
 const require = createRequire(import.meta.url);
-const { section } = require(path.join(ROOT, 'lib', 'md-section.cjs'));
+const { section } = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'md-section.cjs'));
 const HEADING = 'Ngưỡng chết / ngưỡng UAT';
 const MARKER = 'OPP-FRONTMATTER-TEMPLATE';
 
@@ -52,7 +52,7 @@ const stub = (values = {}, { filled = false, tpl = TEMPLATE, body = '' } = {}) =
 // Bản sao cây plugin (scripts + lib + references) để đột biến script/khuôn mà không chạm cây thật
 const pluginCopy = ({ script, template } = {}) => {
   const r = tmp();
-  for (const d of ['scripts', 'lib', 'skills/acceptance/references']) cpSync(path.join(ROOT, d), path.join(r, d), { recursive: true });
+  for (const d of ['scripts', 'lib', 'skills/acceptance/references']) cpSync(path.join(ROOT, 'plugins/acceptance-gate', d), path.join(r, d), { recursive: true });
   const sp = path.join(r, 'scripts', 'start-scan.mjs'), tp = path.join(r, 'skills', 'acceptance', 'references', 'opportunity-template.md');
   if (script) writeFileSync(sp, script(readFileSync(sp, 'utf8')));
   if (template) writeFileSync(tp, template(readFileSync(tp, 'utf8')));
@@ -226,7 +226,7 @@ if (want('VC6')) {
 // ---------- VC7: quan hệ bộ quét ↔ bản đồ (AC-7)
 if (want('VC7')) {
   const errs = [];
-  const { renderProductMap } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'product-map.mjs')).href);
+  const { renderProductMap } = await import(pathToFileURL(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'product-map.mjs')).href);
   const count = (md, label) => { const m = md.match(new RegExp(`${label}<br/>(chưa có|(\\d+) việc)`)); return m ? (m[2] ? Number(m[2]) : 0) : null; };
   const root = fx();
   W(root, '_acceptance/w-idea/opportunity.md', stub());

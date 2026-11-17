@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { giuPid, motNhip, taoVong, trangThaiHopDong } from '../../../dieu-phoi/scripts/phat-lich.mjs';
+import { giuPid, motNhip, taoVong, trangThaiHopDong } from '../../../plugins/dispatch/scripts/phat-lich.mjs';
 import { CFG_PHAT_LICH, hangViecHai } from './mau-thu.mjs';
 
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp-')));

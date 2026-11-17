@@ -18,9 +18,9 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SELF_ROOT = path.resolve(HERE, '..', '..');
 const ROOT = process.env.ETB_ROOT ? path.resolve(process.env.ETB_ROOT) : SELF_ROOT;
 const SELF_FILE = fileURLToPath(import.meta.url);
-const lane = (root) => path.join(root, 'feature-loop', 'scripts', 'repin-lane.mjs');
-const recheck = (root) => path.join(root, 'scripts', 'recheck-evidence.cjs');
-const premerge = (root) => path.join(root, 'scripts', 'pre-merge-check.sh');
+const lane = (root) => path.join(root, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs');
+const recheck = (root) => path.join(root, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs');
+const premerge = (root) => path.join(root, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh');
 
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'etb-'));
 process.on('exit', () => { try { fs.rmSync(TMP, { recursive: true, force: true }); } catch { /* dọn tạm */ } });
@@ -120,7 +120,7 @@ function chay(cmd, args, cwd) {
   return { code: r.status === null ? 1 : r.status, stdout: r.stdout || '', stderr: r.stderr || '' };
 }
 function chayLan(kho, extra = [], cwd, root = ROOT, slugs = ['ho-so-cu']) {
-  return chay(process.execPath, [lane(root), '--root', kho.dir, ...slugs.flatMap(s => ['--slug', s]), '--ag-root', root, '--reason', 'ca kiểm', ...extra], cwd || kho.dir);
+  return chay(process.execPath, [lane(root), '--root', kho.dir, ...slugs.flatMap(s => ['--slug', s]), '--ag-root', path.join(root, 'plugins/acceptance-gate'), '--reason', 'ca kiểm', ...extra], cwd || kho.dir);
 }
 function chayRecheck(kho, slug = 'ho-so-cu', cwd, root = ROOT) {
   return chay(process.execPath, [recheck(root), path.join(kho.dir, '_acceptance', slug, 'evidence-report.md')], cwd || kho.dir);
@@ -152,7 +152,7 @@ function kiemNhan(root = ROOT) {
 }
 test('T01', 'nhan — con trỏ hợp lệ: làn --write 0, recheck 0, lưới trước-merge không vi phạm làn-eval cho ho-so-cu', () => kiemNhan());
 test('T01', 'nhan — mutant lib bỏ bước xét con trỏ → ĐỎ «ô thay bởi hợp lệ vẫn bị chặn»', () => {
-  const goc = banSaoBoMay([[path.join('lib', 'evidence-core.cjs'), '    const ct = conTroCua.get(id);', "    const ct = '';"]]);
+  const goc = banSaoBoMay([[path.join('plugins/acceptance-gate/lib', 'evidence-core.cjs'), '    const ct = conTroCua.get(id);', "    const ct = '';"]]);
   let loi = null;
   try { kiemNhan(goc); } catch (e) { loi = e.message; }
   if (!loi || !loi.startsWith('ô thay bởi hợp lệ vẫn bị chặn')) fail(`mutant không bị bắt đúng thông điệp: «${loi}»`);
@@ -179,7 +179,7 @@ test('T02', 'dang — con trỏ bọc nháy đơn vẫn được nhận', () => 
 const docCu = (k) => [fs.readFileSync(path.join(k.wsCu, 'evals.yaml'), 'utf8'), fs.readFileSync(path.join(k.wsCu, 'evidence-report.md'), 'utf8')];
 function kiemBenGoiCu(root = ROOT) {
   const k = dungKho();
-  const core = require(path.join(root, 'lib', 'evidence-core.cjs'));
+  const core = require(path.join(root, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   const r = core.notRunConflicts(...docCu(k));
   if (!r.xungDot.includes('E3')) fail(`bên gọi cũ bị nới lặng: notRunConflicts hai đối số nhận ô — ${JSON.stringify(r)}`);
   if (!(r.lyDo || []).some(l => l.startsWith('E3: khong-tra-duoc ('))) fail(`thiếu lý do khong-tra-duoc: ${JSON.stringify(r)}`);
@@ -189,7 +189,7 @@ function kiemBenGoiCu(root = ROOT) {
 }
 test('T03', 'ben-goi-cu — notRunConflicts hai đối số và checkRepinEvals bốn đối số: ô vẫn xung đột, lý do khong-tra-duoc', () => kiemBenGoiCu());
 test('T03', 'ben-goi-cu — mutant lib coi «không tra được» là nhận → ĐỎ «bên gọi cũ bị nới lặng»', () => {
-  const goc = banSaoBoMay([[path.join('lib', 'evidence-core.cjs'), '    if (r.ok) out.thayBoi.push({ id, thay: r.thay, ac: r.ac });', "    if (r.ok || r.lyDo === 'khong-tra-duoc') { out.thayBoi.push({ id, thay: r.thay || '?', ac: r.ac || '?' }); continue; }"]]);
+  const goc = banSaoBoMay([[path.join('plugins/acceptance-gate/lib', 'evidence-core.cjs'), '    if (r.ok) out.thayBoi.push({ id, thay: r.thay, ac: r.ac });', "    if (r.ok || r.lyDo === 'khong-tra-duoc') { out.thayBoi.push({ id, thay: r.thay || '?', ac: r.ac || '?' }); continue; }"]]);
   let loi = null;
   try { kiemBenGoiCu(goc); } catch (e) { loi = e.message; }
   if (!loi || !loi.startsWith('bên gọi cũ bị nới lặng')) fail(`mutant không bị bắt đúng thông điệp: «${loi}»`);
@@ -199,7 +199,7 @@ test('T03', 'ben-goi-cu — lib thiếu ac-line.cjs hoặc workspace-record.cjs:
   const [ev, rp] = docCu(k);
   for (const thieu of ['ac-line.cjs', 'workspace-record.cjs']) {
     const lib = path.join(TMP, `lib-thieu-${thieu}`);
-    fs.cpSync(path.join(ROOT, 'lib'), lib, { recursive: true });
+    fs.cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), lib, { recursive: true });
     fs.rmSync(path.join(lib, thieu));
     if (fs.existsSync(path.join(lib, thieu))) fail('bước gỡ tệp chưa bao giờ chạy');
     const core = require(path.join(lib, 'evidence-core.cjs'));
@@ -207,7 +207,7 @@ test('T03', 'ben-goi-cu — lib thiếu ac-line.cjs hoặc workspace-record.cjs:
     try { r = core.notRunConflicts(ev, rp, { root: k.dir, slug: 'ho-so-cu' }); } catch (e) { fail(`thiếu ${thieu} thì ném: ${e.message}`); }
     if (!(r.lyDo || []).some(l => l.startsWith('E3: khong-tra-duoc ('))) fail(`thiếu ${thieu} mà không ra khong-tra-duoc: ${JSON.stringify(r)}`);
   }
-  const core = require(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+  const core = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   const r = core.notRunConflicts(ev, rp, { root: k.dir, slug: 'ho-so-cu' });
   if (r.xungDot.length || !(r.thayBoi || []).some(t => t.id === 'E3' && t.thay === 'ho-so-thay' && t.ac === 'AC-2')) fail(`đối chứng dương hỏng (đủ tệp + gốc cây phải nhận): ${JSON.stringify(r)}`);
 });
@@ -260,7 +260,7 @@ function khoDaGhimRoiDoi(opts, base = {}) {
 function kiemMaTranKhop() {
   if (MA_TRAN.length !== SO_HANG_TU_CHOI) fail(`số ca lệch: MA_TRAN có ${MA_TRAN.length} hàng, hằng viết trước ${SO_HANG_TU_CHOI}`);
   if (NHAN_THEM.length !== SO_HANG_NHAN) fail(`số ca lệch: NHAN_THEM có ${NHAN_THEM.length} hàng, hằng viết trước ${SO_HANG_NHAN}`);
-  const core = require(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+  const core = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   const lib = new Set(core.THAY_BOI_LY_DO || []);
   const maTran = new Set(MA_TRAN.map(h => h.lyDo).concat(['khong-tra-duoc']));
   const thieu = [...lib].filter(x => !maTran.has(x)); const la = [...maTran].filter(x => !lib.has(x));
@@ -314,7 +314,7 @@ const MUTANT = [
 ];
 function banSaoBoMay(tiem) {
   const goc = fs.mkdtempSync(path.join(TMP, 'bo-may-'));
-  for (const d of ['lib', 'scripts', path.join('feature-loop', 'scripts')]) fs.cpSync(path.join(ROOT, d), path.join(goc, d), { recursive: true });
+  for (const d of ['plugins/acceptance-gate/lib', 'plugins/acceptance-gate/scripts', path.join('plugins/feature-loop', 'scripts')]) fs.cpSync(path.join(ROOT, d), path.join(goc, d), { recursive: true });
   for (const [rel, tu, thanh] of tiem) {
     const f = path.join(goc, rel); const t = fs.readFileSync(f, 'utf8');
     const n = t.split(tu).length - 1;
@@ -346,7 +346,7 @@ test('T02', 'ma-tran — chân đếm: bớt một hàng hay thêm một lý do 
 test('T02', 'mutant — gỡ từng điều kiện thì đúng hàng của nó lọt qua (đường né đo mở)', () => {
   for (const m of MUTANT) {
     const h = MA_TRAN.find(x => x.ten === m.hang) || fail(`không có hàng ${m.hang}`);
-    const goc = banSaoBoMay([[path.join('lib', 'evidence-core.cjs'), m.tu, m.thanh]]);
+    const goc = banSaoBoMay([[path.join('plugins/acceptance-gate/lib', 'evidence-core.cjs'), m.tu, m.thanh]]);
     kiemHang(h);                                   // bộ máy thật: hàng xanh
     let loi = null;
     try { kiemHang(h, goc); } catch (e) { loi = e.message; }
@@ -358,7 +358,7 @@ test('T02', 'mutant — gỡ từng điều kiện thì đúng hàng của nó l
 // Khoá của dòng pin rút từ khối REPIN-TEMPLATE của SKILL feature-loop (đường suy từ ROOT) —
 // dòng JSON ĐẦU trong khối là dòng `kind: repin`.
 function khoaKhuonRepin(root = ROOT) {
-  const t = fs.readFileSync(path.join(root, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
+  const t = fs.readFileSync(path.join(root, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
   const khoi = (t.split('<!-- <<<REPIN-TEMPLATE -->')[1] || '').split('<!-- REPIN-TEMPLATE>>> -->')[0];
   const dong = khoi.split('\n').find(l => l.startsWith('{') && l.includes('"kind":"repin"'));
   if (!dong) fail('không rút được dòng repin của khối REPIN-TEMPLATE');
@@ -391,8 +391,8 @@ function kiemPinNoiRa(root = ROOT) {
 }
 test('T06', 'pin-noi-ra — evals_not_run có E3, không khoá mới, dòng sha: nói «E3→ho-so-thay#AC-2»; vắng khi không có ô thay bởi', () => kiemPinNoiRa());
 test('T06', 'pin-noi-ra — mutant bỏ nối hậu tố → ĐỎ «pin im lặng về ô thay bởi»', () => {
-  const goc = banSaoBoMay([[path.join('feature-loop', 'scripts', 'repin-lane.mjs'), '${veBoQua}${veThayBoi}', '${veBoQua}']]);
-  for (const d of [path.join('feature-loop', 'skills')]) fs.cpSync(path.join(ROOT, d), path.join(goc, d), { recursive: true });
+  const goc = banSaoBoMay([[path.join('plugins/feature-loop', 'scripts', 'repin-lane.mjs'), '${veBoQua}${veThayBoi}', '${veBoQua}']]);
+  for (const d of [path.join('plugins/feature-loop', 'skills')]) fs.cpSync(path.join(ROOT, d), path.join(goc, d), { recursive: true });
   let loi = null;
   try { kiemPinNoiRa(goc); } catch (e) { loi = e.message; }
   if (!loi || !loi.startsWith('pin im lặng về ô thay bởi')) fail(`mutant không bị bắt đúng thông điệp: «${loi}»`);
@@ -419,10 +419,10 @@ function kiemChungSong(root = ROOT) {
 }
 test('T07', 'chung-song — hồ sơ thay nghỉ hoặc lùi trạng thái sau ghim → recheck pin cũ đỏ, gọi đúng lý do', () => kiemChungSong());
 test('T07', 'chung-song — mutant bên đọc tin hậu tố sha: → ĐỎ «lời hứa thay đã hết mà pin vẫn xanh»', () => {
-  const goc = banSaoBoMay([[path.join('lib', 'evidence-core.cjs'),
+  const goc = banSaoBoMay([[path.join('plugins/acceptance-gate/lib', 'evidence-core.cjs'),
     '    const r = chungThayBoi({ root: opts && opts.root, slug: opts && opts.slug, id, conTro: ct });',
     "    if (/thay bởi hồ sơ đã ký:/.test(reportText)) { out.thayBoi.push({ id, thay: '?', ac: '?' }); continue; }\n    const r = chungThayBoi({ root: opts && opts.root, slug: opts && opts.slug, id, conTro: ct });"]]);
-  fs.cpSync(path.join(ROOT, 'feature-loop', 'skills'), path.join(goc, 'feature-loop', 'skills'), { recursive: true });
+  fs.cpSync(path.join(ROOT, 'plugins/feature-loop', 'skills'), path.join(goc, 'plugins/feature-loop', 'skills'), { recursive: true });
   let loi = null;
   try { kiemChungSong(goc); } catch (e) { loi = e.message; }
   if (!loi || !loi.startsWith('lời hứa thay đã hết mà pin vẫn xanh')) fail(`mutant không bị bắt đúng thông điệp: «${loi}»`);
@@ -469,7 +469,7 @@ test('T08', 'vi-phan — lưới + recheck: bộ hồ sơ kit và fixture không
   console.log(`    (đã so ${n} hồ sơ kit tại HEAD với mốc ${MOC_TRUOC.slice(0, 8)})`);
 });
 test('T08', 'vi-phan — mutant đổi một chữ thông điệp xung đột cũ → ĐỎ «kho không dùng trường đổi đầu ra»', () => {
-  const goc = banSaoBoMay([[path.join('lib', 'evidence-core.cjs'), 'hai vế mâu thuẫn; sửa hồ sơ rồi chạy làn MỚI', 'hai vế mâu thuẫn; sửa hồ sơ rồi chạy làn mới!']]);
+  const goc = banSaoBoMay([[path.join('plugins/acceptance-gate/lib', 'evidence-core.cjs'), 'hai vế mâu thuẫn; sửa hồ sơ rồi chạy làn MỚI', 'hai vế mâu thuẫn; sửa hồ sơ rồi chạy làn mới!']]);
   let loi = null;
   try { kiemViPhan(goc); } catch (e) { loi = e.message; }
   if (!loi || !loi.startsWith('kho không dùng trường đổi đầu ra')) fail(`mutant không bị bắt đúng thông điệp: «${loi}»`);
@@ -496,7 +496,7 @@ function kiemKhuon(root = ROOT) {
 test('T09', 'khuon-tai-lieu — rút khối GUIDE §7.1, điền chỗ trống, chạy làn thật → xanh', () => kiemKhuon());
 test('T09', 'khuon-tai-lieu — mutant đổi tên trường trong khuôn → ĐỎ «khuôn tài liệu không khớp bộ đọc»', () => {
   const goc = banSaoBoMay([]);
-  fs.cpSync(path.join(ROOT, 'feature-loop', 'skills'), path.join(goc, 'feature-loop', 'skills'), { recursive: true });
+  fs.cpSync(path.join(ROOT, 'plugins/feature-loop', 'skills'), path.join(goc, 'plugins/feature-loop', 'skills'), { recursive: true });
   const g = fs.readFileSync(path.join(ROOT, 'GUIDE.md'), 'utf8');
   const tiem = g.replace('    superseded_by: <slug thay>#<AC-n>', '    supersede_by: <slug thay>#<AC-n>');
   if (tiem === g) fail('bước tiêm chưa bao giờ chạy — khuôn không có dòng trường con trỏ');
@@ -574,7 +574,7 @@ test('T10', 'hinh-dang-crm — đối chứng: cùng kho không con trỏ → l�
   if (r.code !== 2 || !r.stderr.includes(`repin-lane: the-gop-y-okr: eval E2`) || !r.stderr.includes(XUNG_DOT_CU)) fail(`đối chứng hỏng: exit ${r.code} — ${r.stderr.slice(0, 300)}`);
 });
 test('T10', 'hinh-dang-crm — mutant bỏ bước xét con trỏ → ĐỎ «hinh-dang-crm»', () => {
-  const goc = banSaoBoMay([[path.join('lib', 'evidence-core.cjs'), '    const ct = conTroCua.get(id);', "    const ct = '';"]]);
+  const goc = banSaoBoMay([[path.join('plugins/acceptance-gate/lib', 'evidence-core.cjs'), '    const ct = conTroCua.get(id);', "    const ct = '';"]]);
   let loi = null;
   try { kiemHinhDangCrm(goc); } catch (e) { loi = e.message; }
   if (!loi || !loi.startsWith('hinh-dang-crm:')) fail(`mutant không bị bắt đúng thông điệp: «${loi}»`);
@@ -601,7 +601,7 @@ test('T04', 'mot-nguon — chân bảng bộ máy: ca thường trực lớp-cũ
   if (r.code !== 0) fail(`ca lớp-cũ đỏ: ${(r.stdout + r.stderr).split('\n').filter(l => /FAIL/.test(l)).join(' | ')}`);
 });
 test('T04', 'mot-nguon — mutant recheck không truyền gốc cây → ĐỎ «ba bên trả phán quyết khác nhau»', () => {
-  const goc = banSaoBoMay([[path.join('scripts', 'recheck-evidence.cjs'), "{ root: path.resolve(dir, '..', '..') }", '{}']]);
+  const goc = banSaoBoMay([[path.join('plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), "{ root: path.resolve(dir, '..', '..') }", '{}']]);
   let loi = null;
   try { kiemMotNguon(goc); } catch (e) { loi = e.message; }
   if (!loi || !loi.startsWith('ba bên trả phán quyết khác nhau')) fail(`mutant không bị bắt đúng thông điệp: «${loi}»`);
@@ -634,7 +634,7 @@ function kiemCayDangKiem(root = ROOT) {
 }
 test('T05', 'cay-dang-kiem — K2 (hồ sơ thay chưa ký) chạy từ cwd K1 (đã ký): làn, recheck, lưới đều từ chối ho-so-thay-chua-ky', () => kiemCayDangKiem());
 test('T05', 'cay-dang-kiem — mutant lib đọc hồ sơ thay từ process.cwd() → ĐỎ «đọc nhầm cây»', () => {
-  const goc = banSaoBoMay([[path.join('lib', 'evidence-core.cjs'), '  const goc = path.resolve(root);', '  const goc = process.cwd();']]);
+  const goc = banSaoBoMay([[path.join('plugins/acceptance-gate/lib', 'evidence-core.cjs'), '  const goc = path.resolve(root);', '  const goc = process.cwd();']]);
   let loi = null;
   try { kiemCayDangKiem(goc); } catch (e) { loi = e.message; }
   if (!loi || !loi.startsWith('đọc nhầm cây')) fail(`mutant không bị bắt đúng thông điệp: «${loi}»`);

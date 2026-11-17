@@ -1,4 +1,4 @@
-// Tests for feature-loop/scripts/claim-scan.mjs — fixture SINH BẰNG CODE,
+// Tests for plugins/feature-loop/scripts/claim-scan.mjs — fixture SINH BẰNG CODE,
 // assertion âm tính luôn có đối chứng dương + ghim thông điệp (CLAUDE.md).
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const SCAN = path.join(HERE, '..', '..', 'feature-loop', 'scripts', 'claim-scan.mjs');
+const SCAN = path.join(HERE, '..', '..', 'plugins/feature-loop', 'scripts', 'claim-scan.mjs');
 let passed = 0, failed = 0;
 function check(name, fn) {
   try { fn(); passed++; console.log(`  PASS: ${name}`); }
@@ -407,7 +407,7 @@ const row = (sev, tag) => ({ sev, artifact: 'evals', gap: `gap-${tag}`, fail: `f
 // ---- FSB7: round-trip ranh giới xuyên package (claim-scan ↔ lib/md-section) ----
 {
   const ROOT2 = path.join(HERE, '..', '..');
-  const libText = readFileSync(path.join(ROOT2, 'lib', 'md-section.cjs'), 'utf8');
+  const libText = readFileSync(path.join(ROOT2, 'plugins/acceptance-gate/lib', 'md-section.cjs'), 'utf8');
   // Rút luật TỪ MARKER của writer, áp bằng reader độc lập — không chép tay.
   const table = (() => {
     const m = libText.match(/<<<SECTION-BOUNDARY-TABLE\n([\s\S]*?)SECTION-BOUNDARY-TABLE>>>/);
@@ -419,10 +419,10 @@ const row = (sev, tag) => ({ sev, artifact: 'evals', gap: `gap-${tag}`, fail: `f
     }
     return out;
   })();
-  // Đọc bằng CHÍNH reader được giao (lib/md-section.cjs), không viết lại luật:
+  // Đọc bằng CHÍNH reader được giao (plugins/acceptance-gate/lib/md-section.cjs), không viết lại luật:
   // reader tự viết từng lệch với lib ở ca h1 → FSB7 không thể đỏ khi section()
   // hồi quy (S4-r2, đúng lớp 'thước phải gắn vào vật được giao').
-  const { section } = createRequire(import.meta.url)(path.join(ROOT2, 'lib', 'md-section.cjs'));
+  const { section } = createRequire(import.meta.url)(path.join(ROOT2, 'plugins/acceptance-gate/lib', 'md-section.cjs'));
   const rowsByRule = (text, rule) => {
     const lines = rule === 'any-heading'
       ? section(text, 'Findings')
@@ -444,7 +444,7 @@ const row = (sev, tag) => ({ sev, artifact: 'evals', gap: `gap-${tag}`, fail: `f
   check('FSB7 đối chứng đột biến: bản sao lib đổi luật Findings → lệch, đúng thông điệp', () => {
     const tmp = mkdtempSync(path.join(tmpdir(), 'fsb7m-'));
     const libCopy = path.join(tmp, 'md-section.cjs');
-    writeFileSync(libCopy, readFileSync(path.join(ROOT2, 'lib', 'md-section.cjs'), 'utf8')
+    writeFileSync(libCopy, readFileSync(path.join(ROOT2, 'plugins/acceptance-gate/lib', 'md-section.cjs'), 'utf8')
       .replace('Findings -> any-heading', 'Findings -> same-or-higher'));
     const mutatedSection = createRequire(import.meta.url)(libCopy).section;
     const mutatedRows = mutatedSection(readFileSync(path.join(root, '_acceptance', 'rt', 'gap-probe.md'), 'utf8'), 'Findings')

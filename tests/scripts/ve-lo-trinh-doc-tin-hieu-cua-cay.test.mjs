@@ -128,7 +128,7 @@ async function ca1(may) {
   // Chân khởi tạo lộ trình: trang vắng, kho bật road-map ở phạm vi kho → bước 5d vẽ trang bằng hàm vẽ chung.
   rmSync(path.join(w, 'LO-TRINH.html'));
   mkdirSync(path.join(w, '.claude'), { recursive: true });
-  writeFileSync(path.join(w, '.claude', 'settings.json'), `${JSON.stringify({ enabledPlugins: { 'road-map@acceptance-gate-kit': true } }, null, 2)}\n`);
+  writeFileSync(path.join(w, '.claude', 'settings.json'), `${JSON.stringify({ enabledPlugins: { 'roadmap@delivery-loop': true } }, null, 2)}\n`);
   const kt = spawnSync(process.execPath, [tepO('scripts/lo-trinh-khoi-tao.mjs', may), '--root', w, '--write'], { encoding: 'utf8' });
   const t2 = await trangCua(w);
   if (kt.status !== 0) sai.push(`khởi tạo thoát ${kt.status}: ${(kt.stderr || kt.stdout).trim().slice(0, 160)}`);

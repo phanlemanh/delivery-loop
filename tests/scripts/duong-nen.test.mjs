@@ -1,4 +1,4 @@
-// duong-nen.test.mjs — đường nền hạ tầng bốn chân (feature-loop/scripts/duong-nen.mjs),
+// duong-nen.test.mjs — đường nền hạ tầng bốn chân (plugins/feature-loop/scripts/duong-nen.mjs),
 // hồ sơ thuoc-co-cua AC-6 (E8: NEN0 NEN1 NEN2 NEN3 NEN4 NEN4b NEN8) và AC-7
 // (E9: NEN5 NEN5-IM NEN6 NEN6-IM NEN7 NEN9); hồ sơ nen-cong-cu-lenh-shell AC-1 AC-3
 // AC-4 AC-5 AC-6 AC-9 (NEN-TD1…NEN-TD6 — luật «từ đầu phải là TÊN CHƯƠNG TRÌNH mới tra»);
@@ -178,7 +178,7 @@ const KB_CB2 = { giuaA: 'echo x >> README.md\n', banSan: true };
 /** banDotBienCB() — bản chép `feature-loop` với khối SUITE-TRANG-THAI đọc lại qua gitTry() (có trim). */
 function banDotBienCB() {
   const d = tamDir('duong-nen-cb-mut-');
-  cpSync(path.join(KIT, 'feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
   const f = path.join(d, 'feature-loop', 'scripts', 'duong-nen.mjs');
   const src = readFileSync(f, 'utf8');
   const MO = '// <<<SUITE-TRANG-THAI', DONG = '// SUITE-TRANG-THAI>>>';
@@ -195,7 +195,7 @@ function banDotBienCB() {
 {
   try {
     const d = tamDir('duong-nen-cb-base-');
-    cpSync(path.join(KIT, 'feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
+    cpSync(path.join(KIT, 'plugins/feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
     const fSach = path.join(d, 'feature-loop', 'scripts', 'duong-nen.mjs');
     const loiSach = kiemReadme('NEN-CB5', chayCB({ ...KB_CB1, script: fSach }), [], ' M README.md')
       || kiemReadme('NEN-CB5', chayCB({ ...KB_CB2, script: fSach }), [' M vat.txt'], ' M README.md');
@@ -221,7 +221,7 @@ function banDotBienCB() {
 {
   try {
     const d = tamDir('duong-nen-mut-');
-    cpSync(path.join(KIT, 'feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
+    cpSync(path.join(KIT, 'plugins/feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
     const f = path.join(d, 'feature-loop', 'scripts', 'duong-nen.mjs');
     const src = readFileSync(f, 'utf8');
     const MO = '// <<<SUITE-TUAN-TU\n', DONG = '// SUITE-TUAN-TU>>>\n';
@@ -334,9 +334,9 @@ function banDotBienCB() {
   const soBam = r => { const m = r.stderr.match(/engine: bam (\d+) tep/); return m ? Number(m[1]) : null; };
   try {
     const ag = tamDir('duong-nen-ag-');
-    for (const d of ['commands', 'lib', 'scripts']) cpSync(path.join(KIT, d), path.join(ag, d), { recursive: true });
+    for (const d of ['commands', 'lib', 'scripts']) cpSync(path.join(KIT, 'plugins/acceptance-gate', d), path.join(ag, d), { recursive: true });
     mkdirSync(path.join(ag, 'skills', 'acceptance', 'references'), { recursive: true });
-    cpSync(path.join(KIT, 'skills', 'acceptance', 'references', 'duong-nen-template.md'),
+    cpSync(path.join(KIT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'duong-nen-template.md'),
       path.join(ag, 'skills', 'acceptance', 'references', 'duong-nen-template.md'));
     const f = path.join(ag, 'commands', 'acceptance-init.md');
     const s = readFileSync(f, 'utf8');
@@ -349,8 +349,8 @@ function banDotBienCB() {
     const r = chayNen(k, { cache: CACHE, agRoot: ag });
     const n0 = soBam(r0), n1 = soBam(r);
     // Số mong đợi RÚT từ chính khối marker (mỗi mục một dòng «→ `…/`»), không gõ con số:
-    // danh sách chép CI tăng 9 → 10 ở hồ sơ nhan-trang-thai-va-reality (lib/nhan-canh-gay.cjs).
-    // Đích có thể là thư mục con (`scripts/hop-thu/`, hồ sơ goi-cheo-loi-dieu-phoi) — vẫn là một tệp bản lạnh bám.
+    // danh sách chép CI tăng 9 → 10 ở hồ sơ nhan-trang-thai-va-reality (plugins/acceptance-gate/lib/nhan-canh-gay.cjs).
+    // Đích có thể là thư mục con (`plugins/acceptance-gate/scripts/hop-thu/`, hồ sơ goi-cheo-loi-dieu-phoi) — vẫn là một tệp bản lạnh bám.
     const soMuc = (khoi.match(/→ `(lib|scripts)\/[\w/-]*`/g) || []).length;
     if (!soMuc || n0 !== soMuc) bad('NEN7 ban lanh phai bam du tep cua danh sach chep CI', `n0=${n0} soMuc=${soMuc} stderr=${r0.stderr.slice(-300)}`);
     else if (n1 !== n0 - 1) bad('NEN7 bo mot dong marker ma so tep bam khong giam dung mot', `n0=${n0} n1=${n1} ${tomTat(r)}`);
@@ -452,7 +452,7 @@ const rTD3 = chayNen(kTD3, { cache: CACHE });
  */
 function banDotBien() {
   const d = tamDir('duong-nen-td-mut-');
-  cpSync(path.join(KIT, 'feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
   const f = path.join(d, 'feature-loop', 'scripts', 'duong-nen.mjs');
   const src = readFileSync(f, 'utf8');
   const MO = '// <<<CONG-CU-TU-DAU\n', DONG = '// CONG-CU-TU-DAU>>>\n';
@@ -471,7 +471,7 @@ function banDotBien() {
 {
   try {
     const d = tamDir('duong-nen-td-base-');
-    cpSync(path.join(KIT, 'feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
+    cpSync(path.join(KIT, 'plugins/feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
     const fSach = path.join(d, 'feature-loop', 'scripts', 'duong-nen.mjs');
     const kSach = dungKho({ config: cfgVoi(LENH_TD1) });
     const rSach = chayNen(kSach, { cache: CACHE, script: fSach });
@@ -524,7 +524,7 @@ const CRM_ZQW_YAML = `'B=$(git merge-base HEAD origin/onehub) && { git diff --qu
 const CRM_ZQW_SHA256 = '652e6eccb66fa661478ede817b496b72cae36638e024bff9da48fb6165d64379';
 const DOI_CHUNG = '${X_KHONG_CO:-git} --version';
 const DONG_DOI_CHUNG = 'cong-cu: bo qua executors.script.lc_doi_chung — tu dau «${X_KHONG_CO:-git}» dung cu phap shell, khong phai ten chuong trinh';
-const { resolveConfigKey } = createRequire(import.meta.url)(path.join(KIT, 'lib', 'evidence-core.cjs'));
+const { resolveConfigKey } = createRequire(import.meta.url)(path.join(KIT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
 
 // Dòng bỏ-tra của ĐÚNG khoá đã cho (so tiền tố có khoảng trắng — `executors.script.lc` là
 // tiền tố chữ của `executors.script.lc_doi_chung`, `includes` sẽ đếm lẫn).
@@ -647,7 +647,7 @@ const chanKhacNEN0 = (r) => BON_CHAN.filter(c => fm(r.tep, c) !== fm(r0.tep, c))
  */
 function banDotBienDangNhap() {
   const d = tamDir('duong-nen-env-mut-');
-  cpSync(path.join(KIT, 'feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
   const fSach = path.join(d, 'feature-loop', 'scripts', 'duong-nen.mjs');
   const fMut = path.join(d, 'feature-loop', 'scripts', 'duong-nen-dang-nhap.mjs');
   const src = readFileSync(fSach, 'utf8');
@@ -742,7 +742,7 @@ const theDieuKien = (txt) => {
   }
   return ra;
 };
-const THE = theDieuKien(readFileSync(path.join(KIT, 'commands', 'acceptance-init.md'), 'utf8'));
+const THE = theDieuKien(readFileSync(path.join(KIT, 'plugins/acceptance-gate/commands', 'acceptance-init.md'), 'utf8'));
 const TEP_THE = [...THE.keys()];
 const tepCua = khoa => TEP_THE.filter(t => THE.get(t) === khoa).sort();
 const dongDkBoQua = (stderr) => String(stderr || '').split('\n').filter(l => l.startsWith('engine: bo-qua '));
@@ -804,9 +804,9 @@ for (const [khoa, them] of [['tin_hieu', 'tin_hieu:\n  nguon: [x]\n  gom: y\n'],
 {
   try {
     const ag = tamDir('duong-nen-ag-dk-');
-    for (const d of ['commands', 'lib', 'scripts']) cpSync(path.join(KIT, d), path.join(ag, d), { recursive: true });
+    for (const d of ['commands', 'lib', 'scripts']) cpSync(path.join(KIT, 'plugins/acceptance-gate', d), path.join(ag, d), { recursive: true });
     mkdirSync(path.join(ag, 'skills', 'acceptance', 'references'), { recursive: true });
-    cpSync(path.join(KIT, 'skills', 'acceptance', 'references', 'duong-nen-template.md'),
+    cpSync(path.join(KIT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'duong-nen-template.md'),
       path.join(ag, 'skills', 'acceptance', 'references', 'duong-nen-template.md'));
     const f = path.join(ag, 'commands', 'acceptance-init.md');
     const s0 = readFileSync(f, 'utf8');
@@ -853,7 +853,7 @@ function doChanLe(script) {
     const kDo = dungKho({ bo: [...TEP_THE, 'scripts/trang-thai-ho-so.cjs'] });
     const rDo = pmChay(kDo.dir);
     const d = tamDir('duong-nen-mut-dk-');
-    cpSync(path.join(KIT, 'feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
+    cpSync(path.join(KIT, 'plugins/feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
     const f = path.join(d, 'feature-loop', 'scripts', 'duong-nen.mjs');
     const src = readFileSync(f, 'utf8');
     const muiTiem = "const khoKhai = khoa => new RegExp(`^${khoa}:`, 'm').test(configText);";
@@ -873,7 +873,7 @@ function doChanLe(script) {
 // dung). Đối chứng đỏ: bản sao product-map tiêm một dòng import tĩnh → phép quét nêu đúng tệp và dòng.
 function quetNapTinh(goc, chiSo) {
   const ten = TEP_THE.map(t => path.basename(t));
-  const khongThe = [...khoiInit(readFileSync(path.join(KIT, 'commands', 'acceptance-init.md'), 'utf8')).matchAll(/\$\{CLAUDE_PLUGIN_ROOT\}\/((?:scripts|lib)\/[^`]+)`/g)]
+  const khongThe = [...khoiInit(readFileSync(path.join(KIT, 'plugins/acceptance-gate/commands', 'acceptance-init.md'), 'utf8')).matchAll(/\$\{CLAUDE_PLUGIN_ROOT\}\/((?:scripts|lib)\/[^`]+)`/g)]
     .map(m => m[1]).filter(t => !THE.has(t));
   const loi = [];
   for (const t of khongThe) {
@@ -889,11 +889,11 @@ function quetNapTinh(goc, chiSo) {
 }
 {
   try {
-    const that = quetNapTinh(KIT, {});
+    const that = quetNapTinh(path.join(KIT, 'plugins/acceptance-gate'), {});
     const d = tamDir('duong-nen-nap-');
-    const src = readFileSync(path.join(KIT, 'scripts', 'product-map.mjs'), 'utf8');
+    const src = readFileSync(path.join(KIT, 'plugins/acceptance-gate/scripts', 'product-map.mjs'), 'utf8');
     writeFileSync(path.join(d, 'pm.mjs'), src.replace("import { createRequire } from 'node:module';\n", "import { createRequire } from 'node:module';\nimport { docPhamVi } from './cat-luot.mjs';\n"));
-    const dot = quetNapTinh(KIT, { 'scripts/product-map.mjs': path.join(d, 'pm.mjs') });
+    const dot = quetNapTinh(path.join(KIT, 'plugins/acceptance-gate'), { 'scripts/product-map.mjs': path.join(d, 'pm.mjs') });
     if (that.loi.length) bad('NEN-DK6 muc khong the nap tinh tep mang the', that.loi.join(' | '));
     else if (that.soTep < 10) bad('NEN-DK6 doi chung: rut duoc qua it muc khong the', String(that.soTep));
     else if (!dot.loi.some(l => /^scripts\/product-map\.mjs:\d+ nạp tĩnh cat-luot\.mjs$/.test(l))) bad('NEN-DK6 dot bien import tinh ma phep quet khong neu', dot.loi.join(' | ') || 'im');
@@ -902,7 +902,7 @@ function quetNapTinh(goc, chiSo) {
 }
 
 // ══ NEN-TV* — hồ sơ nen-khong-tinh-tep-cua-vong: dòng của CHÍNH vòng vào mục «Dòng vàng» ══════════
-const TCV = path.join(KIT, 'feature-loop', 'scripts', 'lib', 'tep-cua-vong.mjs');
+const TCV = path.join(KIT, 'plugins/feature-loop', 'scripts', 'lib', 'tep-cua-vong.mjs');
 const napTcv = async () => { try { return await import(TCV); } catch (e) { return { loi: String(e.message || e) }; } };
 
 // ── NEN-TV8 — phát lại 230 dòng CAY BAN lịch sử thật qua CHÍNH vị từ (AC-10) ──
@@ -955,7 +955,7 @@ const napTcv = async () => { try { return await import(TCV); } catch (e) { retur
 // ── NEN-TV7 — khuôn mục «Dòng vàng» một nguồn: rỗng → «không có»; mã/khối vắng → mã 2, không ghi tệp (AC-6) ──
 {
   const ag = tamDir('duong-nen-ag-tv7-');
-  for (const d of ['skills', 'commands', 'lib', 'scripts']) cpSync(path.join(KIT, d), path.join(ag, d), { recursive: true });
+  for (const d of ['skills', 'commands', 'lib', 'scripts']) cpSync(path.join(KIT, 'plugins/acceptance-gate', d), path.join(ag, d), { recursive: true });
   const KHUON = path.join(ag, 'skills', 'acceptance', 'references', 'duong-nen-template.md');
   const goc = readFileSync(KHUON, 'utf8');
   const loi = [];
@@ -1107,7 +1107,7 @@ Object.assign(KIEM_TV, {
 // ── NEN-TV6 — bốn đột biến trên bản sao vị từ; phép đo là CHÍNH hàm kiểm của TV1/TV4/TV3b/TV5e (AC-8) ──
 {
   const sao = tamDir('duong-nen-dot-bien-');
-  cpSync(path.join(KIT, 'feature-loop', 'scripts'), path.join(sao, 'scripts'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/feature-loop', 'scripts'), path.join(sao, 'scripts'), { recursive: true });
   const LIB = path.join(sao, 'scripts', 'lib', 'tep-cua-vong.mjs');
   const goc = readFileSync(LIB, 'utf8');
   const script = path.join(sao, 'scripts', 'duong-nen.mjs');
@@ -1275,7 +1275,7 @@ const xVang = chayTT(TT_VANG_KHOA);
   const loi = [];
   try {
     const d = tamDir('duong-nen-tt-mut-');
-    cpSync(path.join(KIT, 'feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
+    cpSync(path.join(KIT, 'plugins/feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
     const f = path.join(d, 'feature-loop', 'scripts', 'duong-nen.mjs');
     const goc = readFileSync(f, 'utf8');
     const MO = '// <<<CONG-CU-DUONG-TEP\n', DONG = '// CONG-CU-DUONG-TEP>>>\n';

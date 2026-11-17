@@ -9,8 +9,8 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
-const TPL = path.join(ROOT, 'skills', 'acceptance', 'references', 'ux-spec-template.md');
-const SKILL = path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const TPL = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'ux-spec-template.md');
+const SKILL = path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 const MIEN = 'bỏ đặc-tả-UX — ';
 
 let failures = 0;
@@ -126,7 +126,7 @@ if (want('UX3')) {
   // a2-đỏ: thay mệnh đề resolve bằng đường cache cứng (resolve-plugin.mjs vẫn còn chỗ khác)
   const mutA2 = s.replace(
     /\(resolve bằng `AGX=[\s\S]*?KHÔNG dừng vòng\)/,
-    '(đọc thẳng ~/.claude/plugins/cache/acceptance-gate-kit/acceptance-gate/2.3.0/skills/acceptance/references/ux-spec-template.md)');
+    '(đọc thẳng ~/.claude/plugins/cache/delivery-loop/acceptance-gate/2.3.0/skills/acceptance/references/ux-spec-template.md)');
   ok(!checks.a2(mutA2), 'UX3a2-đỏ bản sao hardcode path cache → phép kiểm bắt được');
   // d-đỏ: chèn một câu state-matrix MỒ CÔI (xa con trỏ) → d phải trượt
   const mutD = s + '\n\nFeature chạm UI thì design-doc phải có dòng state-matrix.\n';

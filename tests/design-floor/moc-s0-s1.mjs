@@ -14,7 +14,7 @@ import { khoiTriThuc } from './lib/khoa.mjs';
 
 const KIT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const TMP = mkdtempSync(join(tmpdir(), 'df-moc-'));
-const KHOA_THAT = JSON.parse(readFileSync(join(KIT, 'design-floor', 'upstream.lock.json'), 'utf8'));
+const KHOA_THAT = JSON.parse(readFileSync(join(KIT, 'plugins/acceptance-gate/design-floor', 'upstream.lock.json'), 'utf8'));
 const SLUG = 'vd';
 const bam = (p) => createHash('sha256').update(readFileSync(p)).digest('hex');
 
@@ -90,11 +90,11 @@ const ketS1 = (R) => JSON.parse(readFileSync(join(R, '_acceptance', SLUG, 'desig
 // đột biến được chép rồi sửa. `sua` = [tệp, [chuỗi cũ, chuỗi mới]...]; chuỗi cũ phải có (không thì đột biến hỏng).
 function kitDotBien(tep, ...cap) {
   const K = mkdtempSync(join(TMP, 'kit-'));
-  for (const d of ['lib', 'design-floor', 'skills', 'feature-loop', 'commands', 'hooks', 'tests', 'docs']) if (existsSync(join(KIT, d))) symlinkSync(join(KIT, d), join(K, d));
+  for (const d of ['plugins/acceptance-gate/lib', 'plugins/acceptance-gate/design-floor', 'plugins/acceptance-gate/skills', 'plugins/feature-loop', 'plugins/acceptance-gate/commands', 'plugins/acceptance-gate/hooks', 'tests', 'docs']) if (existsSync(join(KIT, d))) symlinkSync(join(KIT, d), join(K, d));
   for (const f of ['CONTEXT.md', 'package.json']) if (existsSync(join(KIT, f))) symlinkSync(join(KIT, f), join(K, f));
   mkdirSync(join(K, 'scripts'));
-  for (const f of readdirSync(join(KIT, 'scripts'))) if (f !== tep) symlinkSync(join(KIT, 'scripts', f), join(K, 'scripts', f));
-  let noi = readFileSync(join(KIT, 'scripts', tep), 'utf8');
+  for (const f of readdirSync(join(KIT, 'plugins/acceptance-gate/scripts'))) if (f !== tep) symlinkSync(join(KIT, 'plugins/acceptance-gate/scripts', f), join(K, 'scripts', f));
+  let noi = readFileSync(join(KIT, 'plugins/acceptance-gate/scripts', tep), 'utf8');
   for (const [cu, moi] of cap) {
     if (!noi.includes(cu)) throw new Error(`đột biến hỏng: không thấy «${cu.slice(0, 60)}» trong ${tep}`);
     noi = noi.split(cu).join(moi);
@@ -298,11 +298,11 @@ function hoSoThe() {
   return R;
 }
 function theHtml(kit, R) {
-  const r = spawnSync(process.execPath, [join(kit, 'scripts', 'gate-card.js'), '--root', R, '--slug', 'design-floor-moc-s0-s1', '--gate', '1'], { encoding: 'utf8' });
+  const r = spawnSync(process.execPath, [join(kit, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '--root', R, '--slug', 'design-floor-moc-s0-s1', '--gate', '1'], { encoding: 'utf8' });
   return (r.stdout || '').split(kit).join('<KIT>');
 }
 function theExtract(kit, R) {
-  const r = spawnSync(process.execPath, [join(kit, 'scripts', 'gate-card.js'), '--root', R, '--slug', 'design-floor-moc-s0-s1', '--gate', '1', '--extract'], { encoding: 'utf8' });
+  const r = spawnSync(process.execPath, [join(kit, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '--root', R, '--slug', 'design-floor-moc-s0-s1', '--gate', '1', '--extract'], { encoding: 'utf8' });
   return JSON.parse(r.stdout);
 }
 // Bản gốc: scripts + lib + skills của điểm rẽ khỏi nhánh chính, lấy TRỌN thư mục (git archive).
@@ -330,7 +330,7 @@ function kiemSkill(kit, skillPath, khoiTen, tepLenh, doiSo) {
   const m = /```\n([\s\S]*?)\n```/.exec(md.slice(a, b));
   if (!m || !m[1].includes(`scripts/${tepLenh}`)) return `${id}: khối ${khoiTen} không gọi scripts/${tepLenh}`;
   const lenh = m[1].trim()
-    .replace('"$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs"', JSON.stringify(join(kit, 'feature-loop', 'scripts', 'resolve-plugin.mjs')))
+    .replace('"$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs"', JSON.stringify(join(kit, 'plugins/feature-loop', 'scripts', 'resolve-plugin.mjs')))
     .replace('--plugin acceptance-gate', `--plugin acceptance-gate --root ${JSON.stringify(kit)}`)
     .replace("'<slug>'", SLUG);
   const { G, khoa } = triThucFixture();
@@ -346,7 +346,7 @@ function kiemSkill(kit, skillPath, khoiTen, tepLenh, doiSo) {
 }
 
 // ── nhãn: chiều xanh + đột biến ─────────────────────────────────────────────────────────────────────
-const SKILL = join(KIT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const SKILL = join(KIT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 const NHAN = {
   BAC: { xanh: ['BAC-M0', 'BAC-M1', 'BAC-M2', 'BAC-M3', 'BAC-CHU-THICH'], dot: [['BAC-DOT', () => kitDotBien('design-floor-bac.mjs', ['} else if (niemPhong) {', '} else if (false) {']), 'BAC-M3', 'BAC-M3: ra M2, mong M3']] },
   'BAC-HONG': { xanh: ['BAC-HONG'], dot: [] },
@@ -391,7 +391,7 @@ function khoaSuaBam() {
 function chayCa(id, kit = KIT, them = {}) {
   try {
     if (id.startsWith('SKILL-')) return CA[id](kit, them.skill || SKILL);
-    if (id === 'TT-THAT') return CA[id](kit, them.khoa || join(KIT, 'design-floor', 'upstream.lock.json'));
+    if (id === 'TT-THAT') return CA[id](kit, them.khoa || join(KIT, 'plugins/acceptance-gate/design-floor', 'upstream.lock.json'));
     return CA[id](kit);
   } catch (e) {
     return `${id}: ca hỏng — ${String(e.message).split('\n')[0]}`;

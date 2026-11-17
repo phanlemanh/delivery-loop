@@ -44,7 +44,7 @@ const dong1 = s => String(s || '').trim().split('\n')[0];
 // ── Ma trận viết trước ──────────────────────────────────────────────────────────────────────────────────────────────
 // Khoá mong đợi theo bố cục (tên gói lộ trình @ tên chợ của bảng tên cây ấy).
 // Tên viết trước lấy từ bảng đổi tên đã chép của kịch bản chuyển nhà (luat-doi-chu.mjs, ngoài tests/): kịch bản áp luật đổi
-// tên lên mọi tệp dưới tests/, nên một chuỗi «road-map@…kit» viết cứng ở đây thành tên mới ở kho mới trong khi cây phẳng vẫn
+// tên lên mọi tệp dưới tests/, nên một chuỗi «roadmap@…kit» viết cứng ở đây thành tên mới ở kho mới trong khi cây phẳng vẫn
 // mang tên cũ (hồ sơ phan-du-bo-cuc-moi-vong-ba). Giá trị bằng đúng hai chuỗi cũ.
 const [GOI_CU, GOI_MOI] = Object.entries(PLUGIN).find(([, m]) => m === 'roadmap');
 const MONG = { 'cũ': `${GOI_CU}@${CHO_CU}`, 'mới': `${GOI_MOI}@${CHO_MOI}` };

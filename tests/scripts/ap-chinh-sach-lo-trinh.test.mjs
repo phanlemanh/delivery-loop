@@ -596,7 +596,7 @@ const MONG_8 = [
   '  · B1 — bác: hồ sơ b1-bac đã bác',
   'Tự áp — chiến dịch Toi 30/10: tuổi 30 · trần kế tiếp — · nhịp 1 ngày · trần áp 5/ngày',
   '  · B1 — sẽ bác từ 22/10/2026: hồ sơ b1-bac đã bác',
-  '  · M1 — đã dời mốc 21/10/2026 — trả lại: /road-map:tra-lai M1',
+  '  · M1 — đã dời mốc 21/10/2026 — trả lại: /roadmap:undo M1',
 ];
 const GM_BO = await import(pathToFileURL(path.join(HERE, 'lo-trinh-gio-may-bo.mjs')).href);
 async function ap8(kit) {
@@ -642,7 +642,7 @@ if (want('AP-9') && await chayCa('AP-9', async kit => {
   const MONG = ['Tự áp: 2 báo trước (áp từ 21/10/2026) · 1 đã áp 7 ngày qua',
     '  · T1 — sẽ chờ điều kiện từ 21/10/2026: 49 ngày chưa ai sửa (lần cuối 01/09/2026)', // căn cứ chụp lúc báo trước (20/10)
     '  · X2 — sẽ chờ điều kiện từ 21/10/2026: 49 ngày chưa ai sửa (lần cuối 01/09/2026)', // căn cứ chụp lúc báo trước (20/10)
-    '  · M1 — đã dời mốc 21/10/2026 — trả lại: /road-map:tra-lai M1'];
+    '  · M1 — đã dời mốc 21/10/2026 — trả lại: /roadmap:undo M1'];
   const i = dong.findIndex(d => d.startsWith('Rà soát:')); const j = dong.indexOf(MONG[0]);
   if (j < 0) return [`thiếu dòng tổng tự áp: ${JSON.stringify(dong)}`];
   if (!deq(dong.slice(j, j + 4), MONG)) sai.push(`dòng tự áp khác viết sẵn: ${JSON.stringify(dong.slice(j, j + 4))}`);

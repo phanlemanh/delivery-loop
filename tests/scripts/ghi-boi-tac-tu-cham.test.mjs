@@ -19,10 +19,10 @@ import { dungKho, SLUG } from './thuoc-vat-fixture.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const S4ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
-const THUOC_VAT = path.join(KIT, 'feature-loop', 'scripts', 'thuoc-vat.mjs');
-const GHI_BOI = path.join(KIT, 'feature-loop', 'scripts', 'lib', 'ghi-boi.mjs');
-const WF = path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const S4ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
+const THUOC_VAT = path.join(KIT, 'plugins/feature-loop', 'scripts', 'thuoc-vat.mjs');
+const GHI_BOI = path.join(KIT, 'plugins/feature-loop', 'scripts', 'lib', 'ghi-boi.mjs');
+const WF = path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const MAU_0710 = path.join(KIT, 'tests', 'fixtures', 'ghi-boi', '0710-agent-ae624896.jsonl');
 const GOC_0710 = '/Users/manhphan/dev/acceptance-gate-kit/.claude/worktrees/gifted-euler-725261';
 const TMP = mkdtempSync(path.join(tmpdir(), 'ghi-boi-'));
@@ -52,10 +52,10 @@ function kho() {
   return d;
 }
 const HOME_RONG = () => mkdtempSync(path.join(TMP, 'home-'));
-const sinhArgs = d => spawnSync(process.execPath, [S4ARGS, '--slug', SLUG, '--root', d, '--ag-root', KIT, '--out', path.join(WS(d), 's4-args.json'), '--diff-base', 'main', '--no-carry'], { encoding: 'utf8' });
+const sinhArgs = d => spawnSync(process.execPath, [S4ARGS, '--slug', SLUG, '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', path.join(WS(d), 's4-args.json'), '--diff-base', 'main', '--no-carry'], { encoding: 'utf8' });
 const docArgs = d => JSON.parse(readFileSync(path.join(WS(d), 's4-args.json'), 'utf8'));
 const sauLuot = (d, { transcript = [], home = HOME_RONG() } = {}) => spawnSync(process.execPath,
-  [THUOC_VAT, '--root', d, '--slug', SLUG, '--ag-root', KIT, '--write', ...transcript.flatMap(t => ['--transcript', t])],
+  [THUOC_VAT, '--root', d, '--slug', SLUG, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--write', ...transcript.flatMap(t => ['--transcript', t])],
   { encoding: 'utf8', env: { ...process.env, HOME: home } });
 const dongSo = (d, kind) => readFileSync(path.join(WS(d), 'run-log.jsonl'), 'utf8').split('\n').filter(Boolean)
   .map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(o => o && o.kind === kind);

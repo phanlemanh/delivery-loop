@@ -13,7 +13,7 @@ import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { mkKho, boKiem, ok, ROOT } from './gia-lan-fixture.mjs';
 
-const SCRIPTS = path.join(ROOT, 'feature-loop', 'scripts');
+const SCRIPTS = path.join(ROOT, 'plugins/feature-loop', 'scripts');
 const CHAY_LAI = path.join(SCRIPTS, 'lib', 'chay-lai.mjs');
 const BAN_GHI = path.join(ROOT, 'tests', 'scripts', 'fixtures', 'ten-ca-turbo', 'turbo-bun.log');
 const DU_PHONG = 'không rút được tên ca';
@@ -42,7 +42,7 @@ function pha(file, cach) {
   ok(moi !== goc, `bản tiêm «${cach}» không khác bản gốc — không tìm thấy chỗ tiêm trong ${path.basename(file)}`);
   writeFileSync(file, moi);
 }
-// Bản sao trọn thư mục `feature-loop/scripts` (chép cả thư mục, không danh sách tệp), phá nếu có `cach`.
+// Bản sao trọn thư mục `plugins/feature-loop/scripts` (chép cả thư mục, không danh sách tệp), phá nếu có `cach`.
 function banSaoScripts(cach) {
   const d = path.join(mkdtempSync(path.join(tmpdir(), 'tctt-')), 'scripts');
   cpSync(SCRIPTS, d, { recursive: true });

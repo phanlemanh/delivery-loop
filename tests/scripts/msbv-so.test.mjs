@@ -33,7 +33,7 @@ ca('MS-AC1-recipe', () => {
 
 ca('MS-AC1-lib-im', () => {
   const require = createRequire(import.meta.url);
-  const WR = require(path.join(ROOT, 'lib', 'workspace-record.cjs'));
+  const WR = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs'));
   const cu = [
     '{"id":"d-1","type":"descope","stage":"S1","at":"2026-09-01T00:00:00Z","decision":"bo X","impact":"y"}',
     '{"id":"d-2","type":"seal","gate":1,"at":"2026-09-01T00:30:00Z"}',
@@ -56,7 +56,7 @@ ca('MS-AC7-van-ban', () => {
   if (r.includes('"impact"')) die('recipe con o impact');
   const s3 = skill.slice(skill.indexOf('## S3 — EXECUTE'), skill.indexOf('## S4 — VERIFY'));
   if (s3.split('cau-noi-ruling.mjs').length !== 2) die('S3 phai neu cau-noi-ruling.mjs dung mot lan');
-  const card = readFileSync(path.join(ROOT, 'commands', 'acceptance-card.md'), 'utf8');
+  const card = readFileSync(path.join(ROOT, 'plugins/acceptance-gate/commands', 'acceptance-card.md'), 'utf8');
   if (!card.includes('chỉ phát khoá cho dòng thiếu `why`')) die('acceptance-card.md thieu cau DEC-PLAIN ve dong thieu why');
   // CHIỀU ĐỎ: bản sao SKILL gỡ câu S3 → ca phải đỏ đúng thông điệp.
   const mut = skill.replace(/[^\n]*cau-noi-ruling\.mjs[^\n]*\n/, '\n');

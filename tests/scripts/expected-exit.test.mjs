@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 const require = createRequire(import.meta.url);
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const EY = require(path.join(HERE, '..', '..', 'lib', 'eval-yaml.cjs'));
+const EY = require(path.join(HERE, '..', '..', 'plugins/acceptance-gate/lib', 'eval-yaml.cjs'));
 
 let pass = 0, fail = 0;
 const ok = (id, m) => { console.log(`  PASS: ${id} ${m}`); pass++; };
@@ -82,7 +82,7 @@ for (const [i, x] of [['a', 'judgment'], ['b', 'ui-check']]) {
 {
   const fs = require('node:fs');
   const wf = fs.readFileSync(
-    path.join(HERE, '..', '..', 'feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
+    path.join(HERE, '..', '..', 'plugins/feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
   const blk = (wf.split('// <<<INFRA-EXIT-CODES')[1] || '').split('// INFRA-EXIT-CODES>>>')[0];
   const keys = [...blk.matchAll(/^\s*(\d+):/gm)].map(m => Number(m[1])).sort((a, b) => a - b);
   const banned = [...EY.EXPECTED_EXIT_BANNED].sort((a, b) => a - b);

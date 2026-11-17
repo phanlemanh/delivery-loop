@@ -15,7 +15,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const i = process.argv.indexOf('--root');
 const GOC = path.resolve(i > -1 ? process.argv[i + 1] : path.join(DAY, '..', '..'));
-const GOI = path.join(GOC, 'dieu-phoi');
+const GOI = path.join(GOC, 'plugins/dispatch');
 const FX_TEP = path.join(GOC, 'tests', 'dieu-phoi', 'fixtures', 'rate-limits-mod.json');
 const CA_TEP = path.join(GOC, 'tests', 'dieu-phoi', 'mod', 'doc-muc-dung.test.ts');
 const ENV = Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('GIT_') && k !== 'NODE_TEST_CONTEXT'));

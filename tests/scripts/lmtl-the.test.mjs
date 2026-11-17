@@ -5,7 +5,7 @@
 // đường gate-card.js và trả danh sách sai, nên cùng ca chạy được trên cây thật (đối chứng dương)
 // và trên bản sao `scripts lib skills` đã tiêm một đột biến (chiều đỏ — design doc §5).
 // Bản thẻ «trước vòng» lấy trọn `scripts lib skills` bằng `git archive` ở cha của commit đầu đưa
-// chuỗi `loi-ra-tran-luot` vào scripts/gate-card.js — sha là đầu ra lệnh; không tìm ra → ca đỏ có tên.
+// chuỗi `loi-ra-tran-luot` vào plugins/acceptance-gate/scripts/gate-card.js — sha là đầu ra lệnh; không tìm ra → ca đỏ có tên.
 // Chọn ca: LMTL_CASES=<tên,…>; ca được gọi tên mà không in PASS/FAIL → «ca không chạy», thoát 1.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, cpSync, appendFileSync } from 'node:fs';
@@ -18,10 +18,10 @@ import { dungKho, SLUG as SLUG_TV } from './thuoc-vat-fixture.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const WF = path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js');
-const GC = path.join(KIT, 'scripts', 'gate-card.js');
-const MOD_REL = path.join('scripts', 'loi-ra-tran-luot.cjs');
-const SKILL = path.join(KIT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const WF = path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
+const GC = path.join(KIT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
+const MOD_REL = path.join('plugins/acceptance-gate/scripts', 'loi-ra-tran-luot.cjs');
+const SKILL = path.join(KIT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 const LRM = createRequire(import.meta.url)(path.join(KIT, MOD_REL));
 const TMP = mkdtempSync(path.join(tmpdir(), 'lmtl-'));
 const SLUG = 's';
@@ -119,7 +119,7 @@ async function dungPhut() {
     invoked[round] = new Date(Date.now() - truoc * 60000).toISOString().slice(0, 19) + 'Z';
     const r = await cham(round, { 'cmd-e2': DO(1) }, { invokedAt: invoked[round] });
     appendFileSync(rl, r.runLog.map(x => x + '\n').join(''));
-    const w = spawnSync(process.execPath, [path.join(KIT, 'feature-loop/scripts/thuoc-vat.mjs'), '--root', d, '--slug', SLUG_TV, '--ag-root', KIT, '--write'], { encoding: 'utf8' });
+    const w = spawnSync(process.execPath, [path.join(KIT, 'plugins/feature-loop/scripts/thuoc-vat.mjs'), '--root', d, '--slug', SLUG_TV, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--write'], { encoding: 'utf8' });
     if (w.status !== 0) throw new Error(`thuoc-vat --write thoat ${w.status}: ${w.stderr.split('\n')[0]}`);
   }
   return { log: readFileSync(rl, 'utf8').split('\n').filter(Boolean), invoked };
@@ -318,11 +318,11 @@ async function dotBien([ten, tim, thay, ca, hang]) {
   const so = goc.split(tim).length - 1;
   if (so !== 1) return `mui tiem khop ${so} cho, mong 1`;
   const d = mkdtempSync(path.join(TMP, `db-${ten}-`));
-  for (const x of ['scripts', 'lib', 'skills']) cpSync(path.join(KIT, x), path.join(d, x), { recursive: true });
+  for (const x of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(KIT, x), path.join(d, x), { recursive: true });
   const moi = goc.replace(tim, thay);
   if (moi === goc) return 'ban sao khong khac ban that';
   writeFileSync(path.join(d, MOD_REL), moi);
-  const sai = await CA[ca](path.join(d, 'scripts', 'gate-card.js'));
+  const sai = await CA[ca](path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'));
   if (!sai.length) return `${ca} van xanh tren ban dot bien`;
   return sai.some(x => x.startsWith(hang)) ? true : `${ca} do nhung khong o hang «${hang}»: ${sai.join(' ; ')}`;
 }

@@ -1,7 +1,7 @@
 // ghi-tri-thuc.test.mjs — hồ sơ ghi-tri-thuc (TT2, đợt tri-thuc-2410). Ca GT-1…GT-10.
 //
 // Mọi kho thử dựng trong thư mục tạm của lượt (git init + commit thật; remote trần bằng git init --bare). Khuôn rút từ
-// tri-thuc-template.md thật lúc chạy; kết quả bên ghi được đọc bằng lint TT1 thật (scripts/tri-thuc.mjs). Đường dẫn suy
+// tri-thuc-template.md thật lúc chạy; kết quả bên ghi được đọc bằng lint TT1 thật (plugins/acceptance-gate/scripts/tri-thuc.mjs). Đường dẫn suy
 // từ vị trí tệp. Mỗi ca đỏ: chiều xanh trên cùng đầu vào trước; mutant là bản sao bộ máy với nhát tiêm khớp đúng một lần.
 // «Ảnh cây» = băm mọi tệp (trừ .git) + git status --porcelain + HEAD, chụp trước và sau.
 import { spawnSync, execFileSync } from 'node:child_process';
@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const KHUON = readFileSync(path.join(KIT, 'skills/acceptance/references/tri-thuc-template.md'), 'utf8');
+const KHUON = readFileSync(path.join(KIT, 'plugins/acceptance-gate/skills/acceptance/references/tri-thuc-template.md'), 'utf8');
 const TAM = realpathSync(mkdtempSync(path.join(tmpdir(), 'gt-tri-thuc-')));
 let soDo = 0;
 const ok = (ca, m) => console.log(`PASS: ${ca} — ${m}`);
@@ -65,8 +65,8 @@ function khoRieng({ remoteKhai = null, cfgThem = '', dungRieng = true, laGit = t
 const nguonNgoai = (ten = 'chu.md', noiDung = 'trích phiên\n') => ghiTep(path.join(thuMuc('nguon'), ten), noiDung);
 const than = (t = '# Tóm\n\nNội dung tóm.\n') => ghiTep(path.join(thuMuc('than'), 'than.md'), t);
 
-const BIN_GHI = path.join(KIT, 'scripts/tri-thuc-ghi.mjs');
-const BIN_DOC = path.join(KIT, 'scripts/tri-thuc.mjs');
+const BIN_GHI = path.join(KIT, 'plugins/acceptance-gate/scripts/tri-thuc-ghi.mjs');
+const BIN_DOC = path.join(KIT, 'plugins/acceptance-gate/scripts/tri-thuc.mjs');
 const chay = (bin, root, args, env = {}) => { const r = spawnSync('node', [bin, '--root', root, ...args], { cwd: root, encoding: 'utf8', env: { ...process.env, ...env } }); return { thoat: r.status, out: r.stdout.trim(), err: r.stderr.trim() }; };
 const ghi = (root, args, { bin = BIN_GHI, env = {} } = {}) => chay(bin, root, args, env);
 const lint = (root, bin = BIN_DOC) => chay(bin, root, ['--kiem']);
@@ -77,7 +77,7 @@ const doiSo = ({ loai = 'phien', goc = 'phiên-1', ten = 'vi-du', tep, trang = '
 // Bản sao bộ máy (scripts, lib, skills) để tiêm: sua = { tệp: [[tìm, thay], …] }, mỗi nhát khớp đúng một lần.
 function banSaoMay(sua = {}) {
   const d = thuMuc('may');
-  for (const x of ['scripts', 'lib', 'skills']) cpSync(path.join(KIT, x), path.join(d, x), { recursive: true });
+  for (const x of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(KIT, x), path.join(d, x), { recursive: true });
   for (const [tep, cap] of Object.entries(sua)) for (const [tim, thay] of cap) {
     const p = path.join(d, tep); const t = readFileSync(p, 'utf8'); const n = t.split(tim).length - 1;
     if (n !== 1) throw new Error(`nhát tiêm khớp ${n} lần (phải 1): ${tep} «${tim.slice(0, 60)}»`);
@@ -85,7 +85,7 @@ function banSaoMay(sua = {}) {
   }
   return d;
 }
-const GHI_REL = 'scripts/tri-thuc-ghi.mjs';
+const GHI_REL = 'plugins/acceptance-gate/scripts/tri-thuc-ghi.mjs';
 
 // gh giả: ghi đối số ra GH_LOG, trả độ riêng tư theo GH_MODE (PUBLIC · PRIVATE · khác = thoát 1).
 const GH_DIR = thuMuc('gh');
@@ -93,7 +93,7 @@ ghiTep(path.join(GH_DIR, 'gh'), '#!/bin/sh\necho "$@" >> "$GH_LOG"\ncase "$GH_MO
 chmodSync(path.join(GH_DIR, 'gh'), 0o755);
 const ghGia = mode => { const log = path.join(thuMuc('ghlog'), 'log'); writeFileSync(log, ''); return { env: { PATH: `${GH_DIR}:${process.env.PATH}`, GH_MODE: mode, GH_LOG: log }, log }; };
 
-const GHI_MD = path.join(KIT, 'tri-thuc/commands/ghi.md');
+const GHI_MD = path.join(KIT, 'plugins/knowledge/commands/ingest.md');
 const khoiLenh = t => { const m = t.match(/<!-- <<<TT-GHI-LENH -->\n```\n([\s\S]*?)\n```\n<!-- TT-GHI-LENH>>> -->/); return m ? m[1].trim() : null; };
 const LENH_GT1 = `node "$AG/scripts/tri-thuc-ghi.mjs" --root . --loai <loai> --goc '<goc>' --ten <ten> --tep <tep> --trang <trang> --than <than> --ma <ma>`;
 
@@ -106,7 +106,7 @@ await ca('GT-1', () => {
   const th = than();
   const dong = lenh.replace('<loai>', 'phien').replace('<goc>', 'phiên-1').replace('<ten>', 'vi-du').replace('--tep <tep>', `--tep ${chu} --tep ${anhNhiPhan}`)
     .replace('<trang>', 'chu-de/vi-du.md').replace('<than>', th).replace('<ma>', 'A1,A2') + ' --luc 2026-10-24';
-  const r = spawnSync('sh', ['-c', dong], { cwd: d, encoding: 'utf8', env: { ...process.env, AG: KIT } });
+  const r = spawnSync('sh', ['-c', dong], { cwd: d, encoding: 'utf8', env: { ...process.env, AG: `${KIT}/plugins/acceptance-gate` } });
   if (r.status !== 0) return [`lệnh ghi thoát ${r.status}: ${r.stderr}`];
   const G = path.join(d, 'docs/tri-thuc'); const R = path.join(G, 'raw/2026-10-24-vi-du');
   for (const [goc, ten] of [[chu, 'chu.md'], [anhNhiPhan, 'anh.png']]) if (!readFileSync(goc).equals(readFileSync(path.join(R, ten)))) sai.push(`${ten} không giống từng byte bản gốc`);
@@ -404,7 +404,7 @@ await ca('GT-9', () => {
   return sai;
 });
 
-// ── GT-10: lệnh /tri-thuc:ghi ──
+// ── GT-10: lệnh /knowledge:ingest ──
 function kiemGhiMd(t) {
   const sai = [];
   if (t.includes('disable-model-invocation')) sai.push('ghi.md khoá model-invocation');
@@ -416,8 +416,8 @@ function kiemGhiMd(t) {
 }
 await ca('GT-10', () => {
   const sai = kiemGhiMd(readFileSync(GHI_MD, 'utf8'));
-  const readme = readFileSync(path.join(KIT, 'tri-thuc/README.md'), 'utf8');
-  for (const l of ['/tri-thuc:kiem', '/tri-thuc:ghi']) if (!new RegExp(`^\\| \`${l}\` \\|`, 'm').test(readme)) sai.push(`README thiếu dòng ${l}`);
+  const readme = readFileSync(path.join(KIT, 'plugins/knowledge/README.md'), 'utf8');
+  for (const l of ['/knowledge:health', '/knowledge:ingest']) if (!new RegExp(`^\\| \`${l}\` \\|`, 'm').test(readme)) sai.push(`README thiếu dòng ${l}`);
   const lenh = khoiLenh(readFileSync(GHI_MD, 'utf8'));
   const banSao = readFileSync(GHI_MD, 'utf8').replace(lenh, lenh.replace('--root .', '--root ..'));
   const m = kiemGhiMd(banSao);

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tests for scripts/pre-merge-check.sh + scripts/eval-coverage-lint.js using throwaway fixture repos.
+# Tests for plugins/acceptance-gate/scripts/pre-merge-check.sh + plugins/acceptance-gate/scripts/eval-coverage-lint.js using throwaway fixture repos.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 # <<<BO-CHAY — hồ sơ luot-kiem-nhe: tự xưng + tự so Node TRƯỚC ca đầu, và bảng thời gian từng ca. Bản chép bộ chạy
@@ -12,7 +12,7 @@ else
   bc_tg_mo() { :; }; bc_tg_ca() { :; }; bc_tg_dong() { :; }
 fi
 # BO-CHAY>>>
-CHECK="$HERE/../../scripts/pre-merge-check.sh"
+CHECK="$HERE/../../plugins/acceptance-gate/scripts/pre-merge-check.sh"
 PASS_COUNT=0; FAIL_COUNT=0
 
 check() { # <name> <expected_exit> <actual_exit>
@@ -213,7 +213,7 @@ printf -- '\n---\nschema_version: 1\nfeature_slug: feat-p10\nverdict: PASS\nbypa
 bash "$CHECK" "$P/p10" >/dev/null; check P10 1 $?
 
 echo "--- evidence re-check (recheck-evidence.cjs, wired into pre-merge) ---"
-RC="$HERE/../../scripts/recheck-evidence.cjs"
+RC="$HERE/../../plugins/acceptance-gate/scripts/recheck-evidence.cjs"
 mk_badevidence() { # <root> <slug> <evidence body> — a signed PASS whose committed evidence is the arg
   local d="$1/_acceptance/$2"; mkdir -p "$d"
   printf -- '---\nschema_version: 1\nfeature: %s\nslug: %s\nrisk_tier: T2\nsurfaces: [api]\nstatus: implemented\napproved_by: Manh Phan\n---\n' "$2" "$2" > "$d/contract.md"
@@ -334,7 +334,7 @@ import { pathToFileURL } from 'node:url';
 const [, mod, tpl, surfaces, status, body] = process.argv;
 const { fileFromTemplate } = await import(pathToFileURL(mod).href);
 process.stdout.write(fileFromTemplate(tpl, 'CONTRACT-FRONTMATTER-TEMPLATE', { feature: 'feat-lnt', slug: 'feat-lnt', owner: 'o@x', risk_tier: 'T2', surfaces, status }, body));
-" -- "$HERE/../fixtures/from-template.mjs" "$HERE/../../skills/acceptance/references/contract-template.md" "$1" "$2" "$3"
+" -- "$HERE/../fixtures/from-template.mjs" "$HERE/../../plugins/acceptance-gate/skills/acceptance/references/contract-template.md" "$1" "$2" "$3"
 }
 mk_lnt_repo() { # <root> <surfaces> <evals-body|""> [ledger-line]
   local d="$1/_acceptance/feat-lnt"; mkdir -p "$d"
@@ -349,7 +349,7 @@ Mobile backend target: staging — QA backend.
   if [ -n "${4:-}" ]; then printf '%s\n' "$4" > "$d/decisions.jsonl"; fi
   local v="$1/verify.sh"; printf '#!/bin/sh\nexit 0\n' > "$v"
   printf -- '---\nschema_version: 1\nfeature_slug: feat-lnt\nverdict: PASS\nhuman_signoff: Manh 2026-09-02\n---\n\n## Evidence\n- eval: E1\n  run_id: feat-lnt-E1-001\n  exit_code: 0\n  verifier: %s\n  verified_at: 2026-09-02\n' "$v" > "$d/evidence-report.md"; :; }
-LNT_DESCOPE_PM="$(node -e "process.stdout.write(require('$HERE/../../lib/lop-nhin-thay.cjs').UI_OBSERVED_DESCOPE)")"
+LNT_DESCOPE_PM="$(node -e "process.stdout.write(require('$HERE/../../plugins/acceptance-gate/lib/lop-nhin-thay.cjs').UI_OBSERVED_DESCOPE)")"
 LNT_EV_T='  - id: E1
     criterion: AC-1
     executor: test
@@ -376,7 +376,7 @@ echo "PM-LNT-e [web] alias -> NOTE"; case "$o" in *"NOTE [feat-lnt]"*"mặt ngư
 mk_lnt_repo "$P/lnt-f" ui ""; o="$(bash "$CHECK" "$P/lnt-f" 2>&1)"
 echo "PM-LNT-f không evals.yaml -> không NOTE lớp nhìn-thấy (+ quét)"; case "$o" in *"mặt người nhìn"*) pmko "PM-LNT-f (NOTE oan)" ;; *) if has_scan "$o"; then pmok PM-LNT-f; else pmko "PM-LNT-f (quét)"; fi ;; esac
 # (g) bản sao kit thiếu lib → NOTE «không kiểm được», exit 0
-G="$T/lnt-g-kit"; mkdir -p "$G/scripts" "$G/lib"; cp "$HERE/../../scripts/pre-merge-check.sh" "$G/scripts/"; cp "$HERE"/../../lib/* "$G/lib/" 2>/dev/null; rm -f "$G/lib/lop-nhin-thay.cjs"
+G="$T/lnt-g-kit"; mkdir -p "$G/scripts" "$G/lib"; cp "$HERE/../../plugins/acceptance-gate/scripts/pre-merge-check.sh" "$G/scripts/"; cp "$HERE"/../../plugins/acceptance-gate/lib/* "$G/lib/" 2>/dev/null; rm -f "$G/lib/lop-nhin-thay.cjs"
 mk_lnt_repo "$P/lnt-g" ui "$LNT_EV_T"; o="$(bash "$G/scripts/pre-merge-check.sh" "$P/lnt-g" 2>&1)"; r=$?
 echo "PM-LNT-g lib thiếu -> NOTE không kiểm được, exit 0"; check PM-LNT-g 0 $r
 case "$o" in *"NOTE [feat-lnt]"*"không kiểm được"*) pmok PM-LNT-g-msg ;; *) pmko PM-LNT-g-msg ;; esac
@@ -445,7 +445,7 @@ mk_xl "$P/pm12" feat-xl12 '- AC-1: Given app, When submit, Then saved via API.
 outPM12="$(bash "$CHECK" "$P/pm12" 2>&1)"; check PM12 1 $?
 case "$outPM12" in *"AC-2 is tagged (cross-layer)"*) echo "  PASS: PM12-noleak"; PASS_COUNT=$((PASS_COUNT+1)) ;; *) echo "  FAIL: PM12-noleak (layer của block trước rò sang block sau = FALSE-GREEN)"; FAIL_COUNT=$((FAIL_COUNT+1)) ;; esac
 
-# PM13/PM14 — răng nay chấm trên lib/ac-line.cjs (nguồn dùng chung), không phải
+# PM13/PM14 — răng nay chấm trên plugins/acceptance-gate/lib/ac-line.cjs (nguồn dùng chung), không phải
 # khuôn awk riêng. Hai ca đo đúng hai chỗ awk và parser dùng chung khác nhau.
 echo "PM13 nhãn **(cross-layer)** chen giữa id và ':' -> vẫn bắt được (không rụng)"
 mk_xl "$P/pm13" feat-xl13 '- AC-1 **(cross-layer)**: Given app, When submit order, Then order saved via API.' '  - id: E1
@@ -473,7 +473,7 @@ case "$outPM14" in *"AC-5 is tagged"*) echo "  FAIL: PM14-xref (tham chiếu ch�
 # _acceptance/premerge-ac-line/ (AC-4, AC-5, AC-7) đòi đúng ba ô này.
 PMROOT="$(cd "$HERE/../.." && pwd)"
 
-# PM15 (AC-4) — thiếu lib/ac-line.cjs thì răng VẪN phải cắn. Đây là điều kiện bắt
+# PM15 (AC-4) — thiếu plugins/acceptance-gate/lib/ac-line.cjs thì răng VẪN phải cắn. Đây là điều kiện bắt
 # buộc để giữ khuôn awk lại: bỏ awk cho "một nguồn duy nhất" sẽ TẮT răng chặn
 # trên máy thiếu node — chiều hỏng tệ nhất cho một cổng CHẶN.
 # Bản sao script đặt cạnh một thư mục KHÔNG có lib/ (khuôn GPFAKE tái dùng).
@@ -483,7 +483,7 @@ mk_xl "$P/pm15" feat-xl15 '- AC-1 **(cross-layer)**: Given app, When submit orde
     criterion: AC-1
     executor: ui-check
     expected: "toast hien"'
-echo "PM15 thiếu lib/ac-line.cjs -> răng cross-layer VẪN cắn (không tắt im lặng)"
+echo "PM15 thiếu plugins/acceptance-gate/lib/ac-line.cjs -> răng cross-layer VẪN cắn (không tắt im lặng)"
 outPM15="$(bash "$PMNOLIB/scripts/pre-merge-check.sh" "$P/pm15" 2>&1)"; check PM15 1 $?
 case "$outPM15" in *"AC-1 is tagged (cross-layer)"*) echo "  PASS: PM15-teeth"; PASS_COUNT=$((PASS_COUNT+1)) ;; *) echo "  FAIL: PM15-teeth (đường lùi làm răng TẮT — cổng chặn mất hiệu lực trên máy thiếu node)"; FAIL_COUNT=$((FAIL_COUNT+1)) ;; esac
 # Đối chứng dương: CÙNG fixture trên bản có lib/ cũng phải đỏ. Không có vế này
@@ -571,7 +571,7 @@ fi
 
 echo ""
 echo "--- eval-coverage-lint.js ---"
-LINT="$HERE/../../scripts/eval-coverage-lint.js"
+LINT="$HERE/../../plugins/acceptance-gate/scripts/eval-coverage-lint.js"
 
 # Fixture A: threshold AC + single happy-path eval (no should-NOT-fire)
 A="$T/lintA/_acceptance/feat-t1"; mkdir -p "$A"
@@ -1091,7 +1091,7 @@ echo "L19 '### nhóm phụ' trong ## Criteria -> AC ngưỡng phía sau vẫn đ
 outL19="$(node "$LINT" "$T/lintP" 2>&1)"; check L19 1 $?
 case "$outL19" in *AC-2*) echo "  PASS: L19-ac2"; PASS_COUNT=$((PASS_COUNT+1)) ;; *) echo "  FAIL: L19-ac2 (sub-heading cắt cụt vùng quét Criteria)"; FAIL_COUNT=$((FAIL_COUNT+1)) ;; esac
 
-# ── Nhà viết criterion mà khuôn HẸP cũ nuốt im lặng (lib/ac-line.cjs) ──────────
+# ── Nhà viết criterion mà khuôn HẸP cũ nuốt im lặng (plugins/acceptance-gate/lib/ac-line.cjs) ──────────
 # Mọi fixture cross-layer phía trên đặt nhãn ở CUỐI câu, nên suite này chưa bao
 # giờ chạm dạng "nhãn chen giữa id và dấu hai chấm" — đó là lý do lỗi sống sót.
 # Đo thật (oneflow, 07/08/2026): 7 dòng ở 5 hợp đồng ĐÃ KÝ vô hình với lint.
@@ -1262,7 +1262,7 @@ mk_lnt() { local d="$1/_acceptance/feat-lnt"; mkdir -p "$d"
 ' > "$d/contract.md"
   printf -- 'evals:\n%s\n  - id: E9\n    criterion: AC-2\n    executor: test\n    expected: "fires hot"\n' "$3" > "$d/evals.yaml"
   if [ -n "${4:-}" ]; then printf '%s\n' "$4" > "$d/decisions.jsonl"; fi; :; }
-LNT_DESCOPE="$(node -e "process.stdout.write(require('$HERE/../../lib/lop-nhin-thay.cjs').UI_OBSERVED_DESCOPE)")"
+LNT_DESCOPE="$(node -e "process.stdout.write(require('$HERE/../../plugins/acceptance-gate/lib/lop-nhin-thay.cjs').UI_OBSERVED_DESCOPE)")"
 EV_TEST='  - id: E1
     criterion: AC-1
     executor: test
@@ -1292,11 +1292,11 @@ mk_lnt "$T/l42b" web-ui "$EV_TEST"; echo "L42b [web-ui] alias -> W8 NGHĨA VỤ"
 bc_duong() { node "$HERE/../bo-cuc.mjs" duong "$2" --thu-muc "$1"; }
 M42="$T/l42m-kit"; mkdir -p "$M42"
 for _d in $(node "$HERE/../bo-cuc.mjs" bo-phan lib scripts --thu-muc "$HERE/../.."); do mkdir -p "$(dirname "$M42/$_d")"; cp -R "$HERE/../../$_d" "$M42/$_d"; done
-M42_LNT="$M42/$(bc_duong "$M42" lib/lop-nhin-thay.cjs)"
+M42_LNT="$M42/$(bc_duong "$M42" plugins/acceptance-gate/lib/lop-nhin-thay.cjs)"
 sed -i.bak "s/web: 'ui', //" "$M42_LNT" && rm -f "$M42_LNT.bak"
 if grep -q "web: 'ui'" "$M42_LNT"; then ko "L42m (không tiêm được mutant alias)"; else
-  o="$(node "$M42/$(bc_duong "$M42" scripts/eval-coverage-lint.js)" "$T/l42" 2>&1)"
-  tl_of() { node "$1/$(bc_duong "$1" scripts/gate-card.js)" --root "$2" --slug feat-lnt --extract 2>/dev/null | node -e 'let s="";process.stdin.on("data",c=>s+=c).on("end",()=>{try{process.stdout.write(JSON.stringify(JSON.parse(s).ui_observed.token_la))}catch(e){process.stdout.write("ERR")}})'; }
+  o="$(node "$M42/$(bc_duong "$M42" plugins/acceptance-gate/scripts/eval-coverage-lint.js)" "$T/l42" 2>&1)"
+  tl_of() { node "$1/$(bc_duong "$1" plugins/acceptance-gate/scripts/gate-card.js)" --root "$2" --slug feat-lnt --extract 2>/dev/null | node -e 'let s="";process.stdin.on("data",c=>s+=c).on("end",()=>{try{process.stdout.write(JSON.stringify(JSON.parse(s).ui_observed.token_la))}catch(e){process.stdout.write("ERR")}})'; }
   tlM="$(tl_of "$M42" "$T/l42")"
   tlG="$(tl_of "$HERE/../.." "$T/l42")"
   case "$o" in *"[feat-lnt] W8 surfaces include a human-visible UI"*) ko "L42m (mutant bỏ alias mà nhánh nghĩa vụ vẫn nổ)" ;; *)
@@ -1326,7 +1326,7 @@ mkdir -p "$T/l52/_acceptance"; printf 'x' > "$T/l52/_acceptance/feat-lnt"
 o="$(w8 "$T/l52")"; case "$o" in *"] W1 "*) ko "L52 (fixture sai đường mà vẫn có dấu hiệu quét)" ;; *) ok "L52 (lớp dấu-hiệu-quét phân biệt được fixture hỏng)" ;; esac
 
 echo "--- gate-card.js ---"
-GCARD="$HERE/../../scripts/gate-card.js"
+GCARD="$HERE/../../plugins/acceptance-gate/scripts/gate-card.js"
 ROOT_REAL_GC="$(cd "$HERE/../.." && pwd)"
 hasout() { case "$3" in *"$2"*) echo "  PASS: $1"; PASS_COUNT=$((PASS_COUNT+1));; *) echo "  FAIL: $1 (missing: $2)"; FAIL_COUNT=$((FAIL_COUNT+1));; esac; }
 # `nothas` PHẢI khai cạnh `hasout`, TRƯỚC mọi lượt gọi. Trước bản này nó khai ở
@@ -1838,7 +1838,7 @@ same GPP2 "descoped|d-9" "$(node -e '
   const L = require(process.argv[1]);
   const r = L.classify({ probeText: "", ledgerText: process.argv[2] });
   process.stdout.write(r.outcome + "|" + (r.id || ""));
-' "$ROOT_REAL_GC/lib/gap-probe.cjs" '{"id":"d-9","type":"descope","decision":"  Bỏ gap-probe — x"}')"
+' "$ROOT_REAL_GC/plugins/acceptance-gate/lib/gap-probe.cjs" '{"id":"d-9","type":"descope","decision":"  Bỏ gap-probe — x"}')"
 
 echo "TM1 term MỚI sau base -> khối Từ vựng nêu tên term"
 hasout TM1 "Refund" "$TMA"
@@ -1856,7 +1856,7 @@ hasout TM6 "glossary_delta" "$TMX"
 
 echo ""
 echo "--- evidence-page.js ---"
-EP="$HERE/../../scripts/evidence-page.js"
+EP="$HERE/../../plugins/acceptance-gate/scripts/evidence-page.js"
 EPR="$T/evp"; de="$EPR/_acceptance/epf"; mkdir -p "$de/evidence"
 # Ảnh phải là tệp > 0 byte (hồ sơ anh-co-that-trong-ho-so: tệp rỗng không được tính là ảnh) — 8 byte chữ ký PNG.
 printf '\211PNG\r\n\032\n' > "$de/evidence/E3-step1.png"; printf '\211PNG\r\n\032\n' > "$de/evidence/E3-step2.png"
@@ -1989,7 +1989,7 @@ hasout EPS3 "head-E1-001" "$(cat "$HEA" 2>/dev/null)"
 nothas EPS3b "head-GHICHU-001" "$(cat "$HEA" 2>/dev/null)"
 
 echo "GCS1/GCS2 the Cong 2 (gate-card.js) — cung hai nhanh, cung hai ca co lap"
-GC="$HERE/../../scripts/gate-card.js"
+GC="$HERE/../../plugins/acceptance-gate/scripts/gate-card.js"
 # Co «bang chung may day du» duoc tinh tu run_id/exit_code/verifier CUA EVAL.
 # Eval duoi KHONG co run_id, nen co phai la CANH BAO; neu khoi lenh suite de len
 # thi co hoa XANH bang ma cua lenh chay chung — false-green dung luc bam ky.
@@ -2219,8 +2219,8 @@ same VC10b-note-count 1 "$(printf '%s\n' "$out10b" | grep -cF "$STALE_NOTE")"
 
 echo "VC11 mutant gỡ guard: control chép trọn scripts/+lib/ phải XANH trước, mutant xác-nhận-đột-biến rồi phải ĐỎ"
 MUTD="$T/vc11-tool"; rm -rf "$MUTD"; mkdir -p "$MUTD"
-cp -R "$HERE/../../scripts" "$MUTD/scripts"
-cp -R "$HERE/../../lib" "$MUTD/lib"
+cp -R "$HERE/../../plugins/acceptance-gate/scripts" "$MUTD/scripts"
+cp -R "$HERE/../../plugins/acceptance-gate/lib" "$MUTD/lib"
 R="$T/vc07"   # dùng lại fixture VC07 (clean) — control phải cùng kết cục với bản thật
 outc="$(env -u PRE_MERGE_BASE bash "$MUTD/scripts/pre-merge-check.sh" "$R" --base basepoint 2>&1)"; check VC11-control 0 $?
 nothas VC11-control-nofallback "not vendored" "$outc"
@@ -2331,11 +2331,11 @@ nothas HS07-control-not3 "T3 paths (t3_paths) changed" "$out"
 
 echo "HS08 mutant gỡ biến thể BỎ: nguồn bản sao = cây đang kiểm, control XANH, đột biến xác nhận, rồi ĐỎ"
 MUTD="$T/gl08-tool"; rm -rf "$MUTD"; mkdir -p "$MUTD"
-cp -R "$HERE/../../scripts" "$MUTD/scripts"
-cp -R "$HERE/../../lib" "$MUTD/lib"
+cp -R "$HERE/../../plugins/acceptance-gate/scripts" "$MUTD/scripts"
+cp -R "$HERE/../../plugins/acceptance-gate/lib" "$MUTD/lib"
 # Nguồn bản sao suy từ vị trí run-tests ($HERE), KHÔNG hardcode ROOT: so byte với
 # script đang kiểm trước khi đột biến (gap-probe P2, hình dạng hardcode-ROOT).
-if cmp -s "$MUTD/scripts/pre-merge-check.sh" "$CHECK"; then echo "  PASS: HS08-src"; PASS_COUNT=$((PASS_COUNT+1)); else echo "  FAIL: HS08-src (bản sao khác scripts/pre-merge-check.sh của cây đang kiểm)"; FAIL_COUNT=$((FAIL_COUNT+1)); fi
+if cmp -s "$MUTD/scripts/pre-merge-check.sh" "$CHECK"; then echo "  PASS: HS08-src"; PASS_COUNT=$((PASS_COUNT+1)); else echo "  FAIL: HS08-src (bản sao khác plugins/acceptance-gate/scripts/pre-merge-check.sh của cây đang kiểm)"; FAIL_COUNT=$((FAIL_COUNT+1)); fi
 R="$T/gl01"   # dùng lại fixture HS01 — control phải cùng kết cục với bản thật
 outc="$(env -u PRE_MERGE_BASE bash "$MUTD/scripts/pre-merge-check.sh" "$R" 2>&1)"; check HS08-control 0 $?
 nothas HS08-control-nostale "evidence is stale" "$outc"
@@ -2435,8 +2435,8 @@ nothas RS05-fire-norecheck "$RS_FAIL_MSG" "$rs5"
 
 echo "RS06 mutant gỡ guard: control chép trọn scripts/+lib/ phải XANH trước, mutant xác-nhận rồi phải ĐỎ"
 MUTR="$T/rs06-tool"; rm -rf "$MUTR"; mkdir -p "$MUTR"
-cp -R "$HERE/../../scripts" "$MUTR/scripts"
-cp -R "$HERE/../../lib" "$MUTR/lib"
+cp -R "$HERE/../../plugins/acceptance-gate/scripts" "$MUTR/scripts"
+cp -R "$HERE/../../plugins/acceptance-gate/lib" "$MUTR/lib"
 R="$T/rs01"   # dùng lại fixture RS01 (sạch) — control phải cùng kết cục với bản thật
 rsc="$(env -u PRE_MERGE_BASE bash "$MUTR/scripts/pre-merge-check.sh" "$R" --base basepoint 2>&1)"; check RS06-control 0 $?
 nothas RS06-control-norecheck "$RS_FAIL_MSG" "$rsc"
@@ -2577,7 +2577,7 @@ mk_v() { # <root> <tier> <veto_opened_at> <có khoá veto_state? 1|0> <sạch? 1
   local R="$1" tier="$2" vat="$3" hasv="$4" clean="$5" sig="$6"
   local d="$R/_acceptance/feat-v"; mkdir -p "$d" "$R/lib"
   printf 'schema_version: 1\nsignoff:\n  required_for: [T2, T3]\n' > "$R/_acceptance/config.yaml"
-  cp "$HERE/../../lib/md-section.cjs" "$R/lib/" 2>/dev/null || true
+  cp "$HERE/../../plugins/acceptance-gate/lib/md-section.cjs" "$R/lib/" 2>/dev/null || true
   git -C "$R" init -q
   { printf -- '---\nschema_version: 1\nfeature: feat-v\nslug: feat-v\nrisk_tier: %s\nsurfaces: [api]\nstatus: verified\napproved_by:\n' "$tier"
     [ "$hasv" = 1 ] && printf 'veto_state: mo\nveto_opened_at:%s\n' "${vat:+ $vat}"
@@ -2702,7 +2702,7 @@ PRE_MERGE_BASE="$BASE" bash "$CHECK" "$R" >/dev/null 2>&1; check B06 1 $?
 
 echo ""
 echo "--- config.yaml 2-space lint + config-patch.mjs (single splice path) ---"
-CP="$HERE/../../scripts/config-patch.mjs"
+CP="$HERE/../../plugins/acceptance-gate/scripts/config-patch.mjs"
 
 echo "CF01 config with a TAB -> fail (kit parsers are indent-based)"
 R="$T/cf01"; mkdir -p "$R/_acceptance"
@@ -2723,7 +2723,7 @@ node -e '
 const core = require(process.argv[1]);
 const v = core.resolveConfigKey(require("fs").readFileSync(process.argv[2], "utf8"), "feature_loop.suite_keys");
 process.exit(v && v.indexOf("executors.test.api") >= 0 ? 0 : 1);
-' "$HERE/../../lib/evidence-core.cjs" "$R/_acceptance/config.yaml"; check CP01-resolve 0 $?
+' "$HERE/../../plugins/acceptance-gate/lib/evidence-core.cjs" "$R/_acceptance/config.yaml"; check CP01-resolve 0 $?
 
 echo "CP02 key already exists -> abort exit 2, file unchanged"
 before="$(cat "$R/_acceptance/config.yaml")"
@@ -2748,7 +2748,7 @@ const ok = core.resolveConfigKey(t, "executors.script.smoke") === "./smoke.sh"
   && core.resolveConfigKey(t, "executors.script.cli") === "./s.sh"
   && String(core.resolveConfigKey(t, "signoff.required_for")).indexOf("T2") >= 0;
 process.exit(ok ? 0 : 1);
-' "$HERE/../../lib/evidence-core.cjs" "$R/_acceptance/config.yaml"; check CP04-resolve 0 $?
+' "$HERE/../../plugins/acceptance-gate/lib/evidence-core.cjs" "$R/_acceptance/config.yaml"; check CP04-resolve 0 $?
 
 echo "CP05 missing --key -> usage error exit 4"
 node "$CP" --config "$R/_acceptance/config.yaml" >/dev/null 2>&1; check CP05 4 $?
@@ -2764,7 +2764,7 @@ printf '%s' "$out" | grep -q 'observed' ; check OBS01-note 0 $?
 
 echo ""
 echo "--- vlm-assert.reference.mjs (V2 seam — no network in tests) ---"
-VLM="$HERE/../../skills/acceptance/references/vlm-assert.reference.mjs"
+VLM="$HERE/../../plugins/acceptance-gate/skills/acceptance/references/vlm-assert.reference.mjs"
 
 echo "V01 missing args -> exit 2 + usage"
 node "$VLM" 2>/dev/null; check V01 2 $?
@@ -2806,7 +2806,7 @@ env -u VLM_MODEL GEMINI_API_KEY=dummy node --import "file://$MOCK_URL" "$VLM" "$
 
 echo ""
 echo "--- resolve-plugin.mjs (bỏ glob-vào-cache: chọn theo semver, không theo ls) ---"
-RESOLVE="$HERE/../../feature-loop/scripts/resolve-plugin.mjs"
+RESOLVE="$HERE/../../plugins/feature-loop/scripts/resolve-plugin.mjs"
 RPC="$T/rpcache"   # <cache-root>/<marketplace>/<plugin>/<version>/
 mk_ver() { # <version> [--no-require]
   local d="$RPC/mkt/acceptance-gate/$1"; mkdir -p "$d/skills/acceptance/references"
@@ -2845,7 +2845,7 @@ echo "RP05 --root trỏ chỗ thiếu file bắt buộc -> exit 1 (không tin l�
 node "$RESOLVE" --plugin acceptance-gate --root "$RPC/mkt" --require skills/acceptance/references/judge-personas.md >/dev/null 2>&1
 check RP05 1 $?
 
-echo "U01 wf-usage.mjs unit suite (feature-loop/scripts — dedupe/label/totals/--latest)"
+echo "U01 wf-usage.mjs unit suite (plugins/feature-loop/scripts — dedupe/label/totals/--latest)"
 UOUT="$(node "$HERE/wf-usage.test.mjs" 2>&1)"; UST=$?
 
 # Mọi *.test.mjs trong thư mục này PHẢI chạy — file test không được wire là
@@ -3202,7 +3202,7 @@ for s in "bỏ gap-probe — x" "Bỏ gap-probe — x" "BỎ gap-probe — x" " 
   printf 'gap_probe: required\n' >> "$R/_acceptance/config.yaml"
   printf '%s\n' "{\"id\":\"d-9\",\"type\":\"descope\",\"decision\":\"$s\"}" > "$R/_acceptance/feat-p/decisions.jsonl"
   gp_commit "$R"
-  lib="$(node "$ROOT_REAL/lib/gap-probe.cjs" classify "$R/_acceptance/feat-p" | cut -f1)"
+  lib="$(node "$ROOT_REAL/plugins/acceptance-gate/lib/gap-probe.cjs" classify "$R/_acceptance/feat-p" | cut -f1)"
   pm=N; bash "$CHECK" "$R" --base "$GP_BASE" 2>&1 | grep -q "BỎ có chủ đích" && pm=Y
   want=Y; [ "$lib" = "descoped" ] || want=N
   if [ "$lib" != "descoped" ] || [ "$pm" != "Y" ]; then
@@ -3216,9 +3216,9 @@ check GPM16 0 "$GPM16_FAIL"
 # (gap-probe P0-2). Ở `required`, KHÔNG cưỡng chế được = KHÔNG cho merge.
 # Giả lập "thiếu lib" bằng một bản sao script KHÔNG có lib/ bên cạnh.
 GPFAKE="$T/nolib"; mkdir -p "$GPFAKE/scripts"
-cp "$ROOT_REAL/scripts/pre-merge-check.sh" "$GPFAKE/scripts/"
+cp "$ROOT_REAL/plugins/acceptance-gate/scripts/pre-merge-check.sh" "$GPFAKE/scripts/"
 
-echo "GPM18 thieu lib/gap-probe.cjs -> required CHAN, advisory chi NOTE"
+echo "GPM18 thieu plugins/acceptance-gate/lib/gap-probe.cjs -> required CHAN, advisory chi NOTE"
 mk_gp_repo gpm18r; R="$GPR/gpm18r"; gp_feature "$R" feat-n T3 implemented
 printf 'gap_probe: required\n' >> "$R/_acceptance/config.yaml"; gp_commit "$R"
 GP18="$(bash "$GPFAKE/scripts/pre-merge-check.sh" "$R" --base "$GP_BASE" 2>&1)"; GP18ST=$?
@@ -3291,10 +3291,10 @@ gp_pair "decision-khac" '{"id":"d-7","type":"descope","decision":"bỏ mockup"}'
 gp_pair "ledger-vang"   ''                                                             missing
 check GPM21 0 "$GPM21_FAIL"
 
-# ── GPM20: bảng đầu vào chạy thẳng vào lib/gap-probe.cjs ─────────────────────
+# ── GPM20: bảng đầu vào chạy thẳng vào plugins/acceptance-gate/lib/gap-probe.cjs ─────────────────────
 # Đo CHÍNH mã sản phẩm, không chép luật sang test. GPM16 của v2 xanh giả vì
 # chép regex; đây là cùng bài học, áp ở tầng lib.
-GPLIB="$ROOT_REAL/lib/gap-probe.cjs"
+GPLIB="$ROOT_REAL/plugins/acceptance-gate/lib/gap-probe.cjs"
 gp_classify() { # <probeText> <ledgerText> -> "outcome|id"
   node -e '
     const L = require(process.argv[1]);
@@ -3602,7 +3602,7 @@ hasout RL4f "pre-merge-check: clean" "$RL4"
 # y hệt bản gốc -> case expect exit 2 FAIL (got 0) — không có đường xanh giả.
 #
 # Bản sao PHẢI giữ nguyên layout `scripts/` cạnh `lib/`: script resolve
-# GP_LIB bằng `$(dirname $0)/../lib/gap-probe.cjs`, nên copy vào $T phẳng làm
+# GP_LIB bằng `$(dirname $0)/../plugins/acceptance-gate/lib/gap-probe.cjs`, nên copy vào $T phẳng làm
 # luật gap-probe rơi vào nhánh not-enforced — bản sao "nguyên vẹn" đã lệch
 # sẵn và mọi kết luận từ nó là kết luận về một script KHÁC. Đối chứng dương
 # RL2ctrl2 chính là thứ bắt được điều đó.
@@ -3819,7 +3819,7 @@ rl_enf_pair() { # <nhãn> <DÒNG (hoặc nhiều dòng) nguyên văn> <kỳ vọ
     if (!m) { process.stdout.write("NOREGEX"); process.exit(0); }
     const hit = process.argv[2].match(new RegExp(m[1], m[2]));
     process.stdout.write(hit && hit[1] === "off" ? "off" : "on");
-  ' "$ROOT_REAL/hooks/acceptance-evidence-gate.js" "$2")"
+  ' "$ROOT_REAL/plugins/acceptance-gate/hooks/acceptance-evidence-gate.js" "$2")"
   if [ "$A" != "$3" ] || [ "$Bv" != "$3" ]; then
     echo "     LECH [$1 = <$2>]: pre-merge=$A hook=$Bv can=$3"
     RL11C_FAIL=$((RL11C_FAIL+1))
@@ -3871,8 +3871,8 @@ RL13="$(env PATH="$RL13BIN" bash "$CHECK" "$R" --base "$RL13_B" 2>&1)"; RL13ST=$
 # (--goi-goc), goc goi lay tu plugin.json cua loi giai o cay dang dung — dung o ca bo cuc phang lan kho moi (luat buoc 6
 # viet lai chuoi duong trong ca nhung khong viet lai cau san pham). CLI hong -> RL13_GP rong -> cau ghim khong khop -> do.
 RL13_KIT="$(cd "$HERE/../.." && pwd)"
-RL13_PJ="$(node "$HERE/../bo-cuc.mjs" duong .claude-plugin/plugin.json --thu-muc "$RL13_KIT")"
-RL13_GP="$(node "$HERE/../bo-cuc.mjs" duong lib/gap-probe.cjs --goi-goc "$RL13_KIT/$(dirname "$(dirname "$RL13_PJ")")" --vai loi)"
+RL13_PJ="$(node "$HERE/../bo-cuc.mjs" duong plugins/acceptance-gate/.claude-plugin/plugin.json --thu-muc "$RL13_KIT")"
+RL13_GP="$(node "$HERE/../bo-cuc.mjs" duong plugins/acceptance-gate/lib/gap-probe.cjs --goi-goc "$RL13_KIT/$(dirname "$(dirname "$RL13_PJ")")" --vai loi)"
 hasout RL13fix "GAP-PROBE: NOT ENFORCED reason=node ${RL13_GP:-<bo-dich-hong>} classify thất bại trên feat-b" "$RL13"
 # DUNG MOT dong so cho gap-probe, va la declared-off (chay MOT PHAN = khai tat)
 same   RL13a 1 "$(printf '%s\n' "$RL13" | grep -cE '^(ran|declared-off) gap-probe$')"

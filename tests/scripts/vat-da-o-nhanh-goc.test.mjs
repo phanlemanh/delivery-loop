@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
-const SCAN = path.join(ROOT, 'scripts', 'start-scan.mjs');
+const SCAN = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'start-scan.mjs');
 
 let assert = 0, fail = 0;
 const ok = (ten, dieu, chiTiet = '') => {
@@ -39,7 +39,7 @@ const VIEC_KE = 'người: chọn một lối — đóng theo quan sát (ghi quy
 
 // ── khuôn bên VIẾT ──────────────────────────────────────────────────────────
 const dongVerifiedCommit = sha => {
-  const tpl = readFileSync(path.join(ROOT, 'skills/acceptance/references/evidence-report-template.md'), 'utf8');
+  const tpl = readFileSync(path.join(ROOT, 'plugins/acceptance-gate/skills/acceptance/references/evidence-report-template.md'), 'utf8');
   const line = tpl.split('\n').find(l => l.startsWith('verified_commit:'));
   if (!line || !/\{\{[^}]*\}\}/.test(line)) throw new Error('khuôn bên viết không còn dòng verified_commit có ô giữ chỗ');
   return line.replace(/\{\{[^}]*\}\}/, sha);
@@ -128,8 +128,8 @@ ok('VDG8 bảy hồ sơ đều nằm trong nhóm đang dở, không hồ sơ nà
 // rồi thay đúng lời gọi phép hỏi tổ tiên bằng `false`. Đột biến gọi CHÍNH bộ quét
 // mà đường xanh gọi, chỉ khác một biểu thức.
 const banSao = mkdtempSync(path.join(tmpdir(), 'vdong-mut-'));
-cpSync(path.join(ROOT, 'scripts'), path.join(banSao, 'scripts'), { recursive: true });
-cpSync(path.join(ROOT, 'lib'), path.join(banSao, 'lib'), { recursive: true });
+cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(banSao, 'scripts'), { recursive: true });
+cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(banSao, 'lib'), { recursive: true });
 const scanMut = path.join(banSao, 'scripts', 'start-scan.mjs');
 const src = readFileSync(scanMut, 'utf8');
 const NEO = 'vatDaONhanhGoc(dir)';

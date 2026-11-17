@@ -5,11 +5,11 @@
 // Hai vế, mỗi vế so BỘ MÁY BẢN MỚI (cây chứa tệp này) với BẢN TRƯỚC VÒNG (`git archive 8fe79f1f (gốc so sau khi gộp #382, 18/10)`, TRỌN cây — xem
 // bungTron) trên CÙNG một bản sao, khoá `feature_loop.do_san_tren_nen` để như kho đang có (vắng ở mọi kho thật hôm nay):
 //
-// (1) Kho thật — mỗi kho trong {acceptance-gate-kit, crm-onehub, oneflow}. acceptance-gate-kit = CHÍNH kho chứa cây
+// (1) Kho thật — mỗi kho trong {delivery-loop, crm-onehub, oneflow}. delivery-loop = CHÍNH kho chứa cây
 //     này (HEAD đã commit của cây này, không phải bản cài). Hai kho kia dò dưới KHO_GOC (mặc định ~/dev): thư mục có
 //     `.git` là THƯ MỤC (bản checkout chính, không phải worktree phụ) + `_acceptance/config.yaml`, và tên kho ở
 //     origin (bỏ `.git`, chữ thường) bằng tên trong danh sách — crm-onehub trên máy này nằm ở ~/dev/crm. Vắng →
-//     «<kho>: không có trên máy — bỏ»; acceptance-gate-kit vắng → FAIL.
+//     «<kho>: không có trên máy — bỏ»; delivery-loop vắng → FAIL.
 //     CÁCH LẤY BẢN SAO (đã chọn): `git worktree add --detach <tạm> HEAD` của chính kho ấy (hooks tắt), gỡ bằng
 //     `git worktree remove --force` ở mọi lối thoát. KHÔNG dùng `git archive`: luật «bằng chứng cũ» của lưới
 //     trước-gộp cần lịch sử git (verified_commit → HEAD) — bản sao không .git sẽ đi nhánh khác của lưới và không
@@ -44,10 +44,10 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
 const FX = await import(path.join(HERE, 'giu-tuoi-fixture.mjs'));
 const KHO_GOC = path.resolve(process.env.KHO_GOC || path.join(homedir(), 'dev'));
-const DS_KHO = ['acceptance-gate-kit', 'crm-onehub', 'oneflow'];
+const DS_KHO = ['delivery-loop', 'crm-onehub', 'oneflow'];
 const TRAN_LUOI_MS = 40 * 60 * 1000;
 const TMP = realpathSync(mkdtempSync(path.join(tmpdir(), 'gt8-')));
-const BO_MAY_DIRS = ['feature-loop', 'lib', 'scripts', 'skills', 'commands', 'hooks'];
+const BO_MAY_DIRS = ['plugins/feature-loop', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/skills', 'plugins/acceptance-gate/commands', 'plugins/acceptance-gate/hooks'];
 const t0 = Date.now();
 const phut = (ms) => (ms / 60000).toFixed(1);
 
@@ -65,7 +65,7 @@ process.on('exit', () => { try { donDep(); } catch { /* lối thoát cuối */ }
 
 // ── chuẩn hoá + so ──────────────────────────────────────────────────────────────
 // Hai bộ máy cùng là CÂY TRỌN: bản mới = chính cây này; bản trước vòng = `git archive 8fe79f1f (gốc so sau khi gộp #382, 18/10)` TRỌN cây. Không dùng
-// banTruocVong() của fixture (chỉ sáu thư mục): product-map.mjs nạp scripts/tin-hieu.mjs → dieu-phoi/scripts/, nên bản
+// banTruocVong() của fixture (chỉ sáu thư mục): product-map.mjs nạp plugins/acceptance-gate/scripts/tin-hieu.mjs → plugins/dispatch/scripts/, nên bản
 // thiếu thư mục đỏ vì HẠ TẦNG chứ không vì vật (đo 17/10 trên crm: bản đồ «mã 1 · ERR_MODULE_NOT_FOUND» — P150).
 const bungTron = (ref, dich) => {
   execFileSync('mkdir', ['-p', dich]);
@@ -115,7 +115,7 @@ function tenOrigin(dir) {
   try { return path.basename(execFileSync('git', ['-C', dir, 'remote', 'get-url', 'origin'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()).replace(/\.git$/, '').toLowerCase(); } catch { return null; }
 }
 function doKho(ten) {
-  if (ten === 'acceptance-gate-kit') return KIT;
+  if (ten === 'delivery-loop') return KIT;
   if (!existsSync(KHO_GOC)) return null;
   const ung = readdirSync(KHO_GOC, { withFileTypes: true })
     .filter(e => e.isDirectory())
@@ -162,7 +162,7 @@ function traTepMap(w) {
 async function soKhoThat(ten) {
   const src = doKho(ten);
   if (!src) {
-    if (ten === 'acceptance-gate-kit') { loi.push(`${ten}: không dò được — kho bắt buộc có mặt`); return; }
+    if (ten === 'delivery-loop') { loi.push(`${ten}: không dò được — kho bắt buộc có mặt`); return; }
     dongKq.push(`${ten}: không có trên máy — bỏ`);
     return;
   }
@@ -175,7 +175,7 @@ async function soKhoThat(ten) {
   let luoiThuLai = 0;
   // Lưới trước-gộp: hai bộ máy song song (lưới chỉ đọc cây).
   const pm = await Promise.all(Object.entries(BO_MAY).map(async ([ban, kit]) => {
-    const r = await chay('bash', [path.join(kit, 'scripts', 'pre-merge-check.sh'), w], { cwd: w, timeout: TRAN_LUOI_MS });
+    const r = await chay('bash', [path.join(kit, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), w], { cwd: w, timeout: TRAN_LUOI_MS });
     return [ban, r];
   }));
   const pmOf = Object.fromEntries(pm);
@@ -185,7 +185,7 @@ async function soKhoThat(ten) {
     let d = dongKhacDau(vm('moi'), vm('cu'));
     // Khác ở lượt song song → chạy lại MỘT lần, tuần tự, hai bộ máy liền nhau (cùng nếp với thẻ dưới); còn khác mới tính.
     if (d) {
-      for (const [ban, kit] of Object.entries(BO_MAY)) pmOf[ban] = await chay('bash', [path.join(kit, 'scripts', 'pre-merge-check.sh'), w], { cwd: w, timeout: TRAN_LUOI_MS });
+      for (const [ban, kit] of Object.entries(BO_MAY)) pmOf[ban] = await chay('bash', [path.join(kit, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), w], { cwd: w, timeout: TRAN_LUOI_MS });
       d = dongKhacDau(vm('moi'), vm('cu'));
       if (!d) luoiThuLai += 1;
     }
@@ -200,7 +200,7 @@ async function soKhoThat(ten) {
   // tính. Giới hạn: hai bộ máy cùng chạm trần ở lượt song song cho hai thẻ BẰNG nhau ở lối dự phòng — cặp ấy không
   // so được nhánh «đã khép» của thẻ; ca không đếm được điều ấy từ đầu ra --extract.
   const theMot = async (kit, s) => {
-    const r = await chay(process.execPath, [path.join(kit, 'scripts', 'gate-card.js'), '--root', w, '--slug', s, '--gate', '2', '--extract'], { cwd: w, timeout: 120000 });
+    const r = await chay(process.execPath, [path.join(kit, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '--root', w, '--slug', s, '--gate', '2', '--extract'], { cwd: w, timeout: 120000 });
     return chuanHoa(`mã ${r.code} ${r.sig || ''}\n${r.out}\n=== stderr ===\n${r.err}`, kit);
   };
   const the = {};
@@ -215,7 +215,7 @@ async function soKhoThat(ten) {
   // Bản đồ sản phẩm (+ trang lộ trình nếu kho khai).
   const map = {};
   for (const [ban, kit] of Object.entries(BO_MAY)) {
-    const r = spawnSync(process.execPath, [path.join(kit, 'scripts', 'product-map.mjs'), '--root', w], { encoding: 'utf8', cwd: w, maxBuffer: 256 * 1024 * 1024 });
+    const r = spawnSync(process.execPath, [path.join(kit, 'plugins/acceptance-gate/scripts', 'product-map.mjs'), '--root', w], { encoding: 'utf8', cwd: w, maxBuffer: 256 * 1024 * 1024 });
     const tep = TEP_MAP.map(f => { const p = path.join(w, f); return `--- ${f}\n${existsSync(p) ? readFileSync(p, 'utf8') : '<vắng>'}`; }).join('\n');
     traTepMap(w);
     map[ban] = chuanHoa(`mã ${r.status}\n${r.stdout}\n=== stderr ===\n${r.stderr}\n${tep}`, kit);
@@ -254,7 +254,7 @@ function dungKhoThu() {
   const k = FX.mkKhoGiuTuoi({ hoSo: ['H2', { slug: 'H5', evals: [{ id: 'E1', ca: 'ca-do' }, { id: 'E2', ca: 'ca-e2' }] }], khoa: true });
   const tu = k.git('rev-parse', 'HEAD');
   k.gop(12, { 'vat/H5-E1.txt': FX.noiDungDo({ ca: 'ca-do' }) });
-  const g = spawnSync(process.execPath, [path.join(KIT, 'feature-loop', 'scripts', 'giu-tuoi.mjs'), '--root', k.root, '--ag-root', KIT, '--tu', tu, '--write'],
+  const g = spawnSync(process.execPath, [path.join(KIT, 'plugins/feature-loop', 'scripts', 'giu-tuoi.mjs'), '--root', k.root, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--tu', tu, '--write'],
     { encoding: 'utf8', env: { ...process.env, GG_DAU: k.dau }, timeout: 300000, killSignal: 'SIGKILL', maxBuffer: 256 * 1024 * 1024 });
   if (g.status !== 0) throw new Error(`lệnh giữ tươi dựng nền thoát ${g.status}: ${String(g.stderr).slice(-400)}`);
   const nen = k.docLog('H5').filter(l => l.kind === 'nen-do');
@@ -276,7 +276,7 @@ function luotLan(k, nhanh, kit) {
   const phan = [];
   for (const slug of ['H2', 'H5']) {
     const n = k.docLog(slug).length;
-    const r = k.lane([slug], ['--write', '--reason', 'gt8'], { laneFile: path.join(kit, 'feature-loop', 'scripts', 'repin-lane.mjs'), agRoot: kit });
+    const r = k.lane([slug], ['--write', '--reason', 'gt8'], { laneFile: path.join(kit, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs'), agRoot: kit });
     const p = path.join(k.root, '_acceptance', slug, 'run-log.jsonl');
     const moi = readFileSync(p, 'utf8').split('\n').filter(Boolean).slice(n).map(chuanDongSo);
     phan.push(`== ${slug} mã ${r.status}\n${moi.join('\n')}\n-- Re-pin\n${chuanRepin(k.docReport(slug))}`);
@@ -305,7 +305,7 @@ try {
   // Bản sao bản mới (tương đương cp -RL cây đã commit): `git archive HEAD` trọn cây; cây chưa commit thì báo.
   if (spawnSync('git', ['-C', KIT, 'status', '--porcelain', '--', ...BO_MAY_DIRS], { encoding: 'utf8' }).stdout.trim()) loi.push('đột biến: bộ máy của cây có thay đổi chưa commit — bản sao HEAD không phải bản mới đang đo');
   bungTron('HEAD', dotBien);
-  const libP = path.join(dotBien, 'lib', 'do-san-tren-nen.cjs');
+  const libP = path.join(dotBien, 'plugins/acceptance-gate/lib', 'do-san-tren-nen.cjs');
   const goc = readFileSync(libP, 'utf8');
   const tiem = goc.replace('if (v == null) return false;', 'if (v == null) return true;');
   if (tiem === goc) loi.push('đột biến: không tiêm được — khoaTuText không còn dòng «if (v == null) return false;»');

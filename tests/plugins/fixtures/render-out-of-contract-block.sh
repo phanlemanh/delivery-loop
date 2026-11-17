@@ -61,7 +61,7 @@ cat > "$WS/_acceptance/demo/review-findings.md" <<'EOF'
 
 ⚠ Cụm ngoài vùng phủ: 2/3 lỗi rơi vào file không bộ đo nào phủ (src/install.ts, src/resolver.ts) — dừng và quyết: mở rộng hợp đồng hay rút phạm vi.
 EOF
-node "$ROOT/scripts/gate-card.js" --root "$WS" --slug demo > "$WS/card.html"
+node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$WS" --slug demo > "$WS/card.html"
 node -e '
 const fs=require("fs");
 const h=fs.readFileSync(process.argv[1],"utf8");

@@ -13,13 +13,13 @@ import { fileFromTemplate } from '../fixtures/from-template.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
-const GATE_CARD = path.join(ROOT, 'scripts', 'gate-card.js');
-const CONTRACT_TPL = path.join(ROOT, 'skills', 'acceptance', 'references', 'contract-template.md');
-const OPP_TPL = path.join(ROOT, 'skills', 'acceptance', 'references', 'opportunity-template.md');
-const SKILL = path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const GATE_CARD = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
+const CONTRACT_TPL = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'contract-template.md');
+const OPP_TPL = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'opportunity-template.md');
+const SKILL = path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 const CONTEXT = path.join(ROOT, 'CONTEXT.md');
 const require = createRequire(import.meta.url);
-const { section } = require(path.join(ROOT, 'lib', 'md-section.cjs'));
+const { section } = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'md-section.cjs'));
 const OPP_HEADING = 'Ngưỡng chết / ngưỡng UAT';
 
 let failures = 0;

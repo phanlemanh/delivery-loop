@@ -22,11 +22,11 @@ if (!existsSync(path.join(CRM, '.git'))) mu(`crm vắng: ${CRM} (đặt CRM_ROOT
 try { execFileSync('git', ['-C', CRM, 'cat-file', '-e', `${CRM_SHA}^{commit}`], { stdio: 'ignore' }); } catch { mu(`crm thiếu sha ${CRM_SHA.slice(0, 8)} — chạy git -C ${CRM} fetch`); }
 const bung = (kho, sha, ds, dich) => { mkdirSync(dich, { recursive: true }); execFileSync('tar', ['-x', '-C', dich], { input: execFileSync('git', ['-C', kho, 'archive', '--format=tar', sha, ...ds], { maxBuffer: 1 << 30 }) }); return dich; };
 const r = bung(CRM, CRM_SHA, ['_acceptance', 'docs/plan'], path.join(TMP, 'crm'));
-const goc = bung(KIT, GOC_VONG, ['scripts', 'lib', 'skills'], path.join(TMP, 'goc'));
+const goc = bung(KIT, GOC_VONG, ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills'], path.join(TMP, 'goc'));
 let pass = 0; let fail = 0;
 const ok = (id, m) => { pass += 1; console.log(`  PASS: ${id} — ${m}`); };
 const bad = (id, m) => { fail += 1; console.log(`  FAIL: ${id} — ${m}`); };
-const nap = async (kit, v) => ({ LT: await import(pathToFileURL(path.join(kit, 'scripts', 'lo-trinh.mjs')).href + `?v=${v}`), PM: await import(pathToFileURL(path.join(kit, 'scripts', 'product-map.mjs')).href + `?v=${v}`) });
+const nap = async (kit, v) => ({ LT: await import(pathToFileURL(path.join(kit, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs')).href + `?v=${v}`), PM: await import(pathToFileURL(path.join(kit, 'plugins/acceptance-gate/scripts', 'product-map.mjs')).href + `?v=${v}`) });
 const phan = M => M.LT.phanTichKho({ root: r, classify: M.PM.classify, sections: M.PM.SECTIONS });
 
 // Số đo 14/10 (viết sẵn, không rút từ đầu ra): số cờ theo lộ trình, gốc → cây, và tập cờ mới.

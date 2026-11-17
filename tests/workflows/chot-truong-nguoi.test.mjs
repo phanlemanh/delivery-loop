@@ -21,10 +21,10 @@ import { napChot, kiemIm, KHOA_BON } from './chot-truong-nguoi-corpus.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');
-const WF = path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js');
-const TEMPLATE = path.join(KIT, 'skills', 'acceptance', 'references', 'evidence-report-template.md');
+const WF = path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
+const TEMPLATE = path.join(KIT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'evidence-report-template.md');
 const CORPUS_CLI = path.join(HERE, 'chot-truong-nguoi-corpus.mjs');
-const S4ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
+const S4ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
 const WF_SRC = readFileSync(WF, 'utf8');
 
 const CHON = (process.env.CTN_CASES || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -265,7 +265,7 @@ if (chay('CTN-AC1-giu')) {
   ca('CTN-AC1-giu', loi, 'dong khoa rong / chi chu thich / dong # giu nguyen byte');
 }
 // Lớp «chốt nhận hình dạng HẸP hơn bên đọc» (S4-r1, finding t3/t4): bên đọc
-// (lib/evidence-core.cjs frontmatterField / extractRunIds) bỏ dòng trống đầu, nhận `---[ \t]*`,
+// (plugins/acceptance-gate/lib/evidence-core.cjs frontmatterField / extractRunIds) bỏ dòng trống đầu, nhận `---[ \t]*`,
 // so khoá không phân biệt hoa thường, bỏ nháy quanh run_id. Mỗi biến thể áp CÙNG phép biến
 // đổi lên bản nền và bản tiêm: chốt(tiêm') phải bằng từng byte nền'.
 const hangRao = s => { let n = 0; return '\n' + s.split('\n').map(l => (l === '---' && n++ < 2 ? '--- ' : l)).join('\n'); };
@@ -332,7 +332,7 @@ if (chay('CTN-AC4-ben-goi')) {
     g('add', '-A'); g('commit', '-qm', 'r1'); g('checkout', '-qb', 'vong');
     writeFileSync(path.join(d, 'x.js'), 'x\n'); g('add', '-A'); g('commit', '-qm', 'vat');
     const out = path.join(d, 'args.json');
-    execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d, '--ag-root', KIT, '--out', out, '--diff-base', 'main'], { stdio: ['ignore', 'pipe', 'pipe'] });
+    execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', out, '--diff-base', 'main'], { stdio: ['ignore', 'pipe', 'pipe'] });
     const a = JSON.parse(readFileSync(out, 'utf8'));
     if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(String(a.invokedAt))) loi.push(`invokedAt «${a.invokedAt}»`);
   } catch (e) { loi.push(String(e.stderr || e.message).split('\n').filter(Boolean).slice(-2).join(' ')); }
@@ -432,13 +432,13 @@ if (chay('CTN-AC6-kit') || chay('CTN-AC6-dot-bien')) {
 
 // ─── Vi phân với BỘ ĐỌC THẬT (khuôn owner chọn 23/09 sau hai lượt vá cùng lớp) ───────────
 // Lớp lỗi «chốt nhận hình dạng HẸP hơn bên đọc» chỉ đóng được khi phép đo hỏi chính bên đọc:
-// mỗi ô là một hình dạng dòng mà lib/evidence-core.cjs NHẬN (đối chứng dương: bộ đọc thấy giá
+// mỗi ô là một hình dạng dòng mà plugins/acceptance-gate/lib/evidence-core.cjs NHẬN (đối chứng dương: bộ đọc thấy giá
 // trị bịa trên bản trước), và sau chốt bộ đọc phải thấy rỗng / đúng giờ engine. Bảng viết trước
 // từ ngữ pháp bên đọc: frontmatterField + chuKyThat (hàng rào, hoa thường, dấu tách, nháy) ·
 // L3 đếm human_override ở mọi nơi (biểu thức RÚT từ nguồn lib, không chép) · extractRunIds +
 // walkEvalExits (run_id mọi dòng của bản ghi kể cả dòng mở, nháy, chú thích, hoa thường, bản
 // ghi `-\s+`). Số assert phải bằng tích các trục, tính độc lập trước khi chạy.
-const LIB = path.join(KIT, 'lib', 'evidence-core.cjs');
+const LIB = path.join(KIT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs');
 const core = createRequire(import.meta.url)(LIB);
 const L3_KHOP = readFileSync(LIB, 'utf8').match(/const overrideCount = \(payload\.match\((\/[^\n]+?\/[gimsuy]*)\) \|\| \[\]\)\.length/);
 const L3_RE = L3_KHOP ? new Function(`return ${L3_KHOP[1]}`)() : null;
@@ -557,7 +557,7 @@ function chayBang(chotFn, truc) {
   return loi;
 }
 const CHOT_THAT = napChot(WF_SRC);
-if (!L3_RE) bad('CTN-TIEN-DE rut bieu thuc L3 tu lib/evidence-core.cjs', 'khong thay dong overrideCount');
+if (!L3_RE) bad('CTN-TIEN-DE rut bieu thuc L3 tu plugins/acceptance-gate/lib/evidence-core.cjs', 'khong thay dong overrideCount');
 else {
   if (chay('CTN-AC1-vi-phan')) ca('CTN-AC1-vi-phan', chayBang(CHOT_THAT, 'AC1'), `vi phan voi ben doc that: ${SO_O.AC1} o chu ky/override`);
   if (chay('CTN-AC2-vi-phan')) ca('CTN-AC2-vi-phan', chayBang(CHOT_THAT, 'AC2'), `vi phan voi ben doc that: ${SO_O.AC2} o gio carry`);

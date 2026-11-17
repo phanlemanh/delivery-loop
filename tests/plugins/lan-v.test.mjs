@@ -7,7 +7,7 @@
 //
 // Hai thước, cố ý tách:
 //   · LV4 — BẢNG SỰ-THẬT viết tay (kỳ vọng độc lập với vị từ đang kiểm).
-//   · LV5 — ĐẲNG THỨC với CHÍNH scripts/pre-merge-check.sh trên kho git fixture
+//   · LV5 — ĐẲNG THỨC với CHÍNH plugins/acceptance-gate/scripts/pre-merge-check.sh trên kho git fixture
 //     code-sinh: bash và JS là hai bản dựng độc lập, nên phép so này không
 //     hằng-đúng theo cấu trúc — đột biến bên nào cũng đỏ.
 //
@@ -23,9 +23,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..', '..');
 const { fileFromTemplate } = await import(path.join(ROOT, 'tests', 'fixtures', 'from-template.mjs'));
-const CONTRACT_TPL = path.join(ROOT, 'skills', 'acceptance', 'references', 'contract-template.md');
-const SCAN = path.join(ROOT, 'scripts', 'start-scan.mjs');
-const PREMERGE = path.join(ROOT, 'scripts', 'pre-merge-check.sh');
+const CONTRACT_TPL = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'contract-template.md');
+const SCAN = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'start-scan.mjs');
+const PREMERGE = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh');
 
 let failures = 0;
 let matched = 0;
@@ -210,7 +210,7 @@ if (want('LV4')) {
 
 // Mục ngoài hợp đồng RÚT từ khuôn bên viết (cùng cách P55) — ho-so-khep-thoi-hoi AC-4.
 const OOC_TPL = (() => {
-  const wf = readFileSync(path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
+  const wf = readFileSync(path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
   const m = wf.match(/<<<OOC-ITEM-TEMPLATE\\n([\s\S]*?)OOC-ITEM-TEMPLATE>>>/);
   if (!m) throw new Error('khong rut duoc OOC-ITEM-TEMPLATE');
   return m[1].replace(/\\n/g, '\n').replace(/\\`/g, '`');
@@ -233,13 +233,13 @@ function mkGitRepo(slug, o) {
     'schema_version: 1\nrisk_tiers:\n  t1_skip_globs:\n    - "docs/**"\n    - "*.md"\n');
   writeFileSync(path.join(R, 'src', 'app.js'), 'code v1\n');
   writeFileSync(path.join(R, 'verify.sh'), '#!/bin/sh\nexit 0\n');
-  // Kho tiêu thụ chép đúng bộ file này khi /acceptance-init (commands/acceptance-init.md).
-  // Thiếu lib/md-section.cjs thì lưới KHÔNG BAO GIỜ thấy hồ sơ sạch (fail-closed) —
+  // Kho tiêu thụ chép đúng bộ file này khi /acceptance-init (plugins/acceptance-gate/commands/acceptance-init.md).
+  // Thiếu plugins/acceptance-gate/lib/md-section.cjs thì lưới KHÔNG BAO GIỜ thấy hồ sơ sạch (fail-closed) —
   // LV5 từng đỏ ở chính đối chứng dương vì fixture chưa chép, đúng như đời thật.
   mkdirSync(path.join(R, 'lib'), { recursive: true }); mkdirSync(path.join(R, 'scripts'), { recursive: true });
   for (const f of ['evidence-core.cjs', 'gap-probe.cjs', 'workspace-record.cjs', 'ac-line.cjs', 'md-section.cjs', 'out-of-contract.cjs'])
-    copyFileSync(path.join(ROOT, 'lib', f), path.join(R, 'lib', f));
-  copyFileSync(path.join(ROOT, 'scripts', 'recheck-evidence.cjs'), path.join(R, 'scripts', 'recheck-evidence.cjs'));
+    copyFileSync(path.join(ROOT, 'plugins/acceptance-gate/lib', f), path.join(R, 'lib', f));
+  copyFileSync(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), path.join(R, 'scripts', 'recheck-evidence.cjs'));
   git('add', '-A'); git('commit', '-qm', 'c1');
   git('branch', 'basepoint');
   writeFileSync(path.join(R, 'src', 'app.js'), 'code v2\n');

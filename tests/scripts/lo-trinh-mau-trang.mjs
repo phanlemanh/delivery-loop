@@ -35,8 +35,8 @@ export function kiemAnh(dir) {
 
 async function veMau() {
   const KT = await import(pathToFileURL(path.join(HERE, 'lo-trinh-kho-thu.mjs')).href);
-  const LT = await import(pathToFileURL(path.join(MAY, 'scripts', 'lo-trinh.mjs')).href);
-  const PM = await import(pathToFileURL(path.join(MAY, 'scripts', 'product-map.mjs')).href);
+  const LT = await import(pathToFileURL(path.join(MAY, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs')).href);
+  const PM = await import(pathToFileURL(path.join(MAY, 'plugins/acceptance-gate/scripts', 'product-map.mjs')).href);
   const g = mkdtempSync(path.join(tmpdir(), 'lo-trinh-mau-trang-'));
   try { return LT.veTrang({ root: KT.dungKho('hai-lo-trinh', g), classify: PM.classify, sections: PM.SECTIONS }); }
   // Dọn thử lại: tiến trình git con có thể còn ghi vào kho thử lúc dọn (ENOTEMPTY dưới tải, lượt chấm 1–2 của

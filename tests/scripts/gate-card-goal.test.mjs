@@ -11,7 +11,7 @@ import { createRequire } from 'node:module';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const GC = path.join(ROOT, 'scripts', 'gate-card.js');
+const GC = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
 const SRC = readFileSync(GC, 'utf8');
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
@@ -28,7 +28,7 @@ const TPL = tplOf(SRC);
 // của gate-card.js) — gộp dòng bằng ' ', thay MỌI <slug> bằng split/join (S4-r1: kỳ vọng chép công
 // thức bên viết là hình dạng 2 của «thước không gắn vào vật»).
 const SKILL_TPL = (() => {
-  const t = readFileSync(path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
+  const t = readFileSync(path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
   const m = t.match(/<!-- <<<GOAL-TEMPLATE -->\n```\n([\s\S]*?)```\n<!-- GOAL-TEMPLATE>>> -->/);
   if (!m) die('SKILL feature-loop thieu khoi GOAL-TEMPLATE');
   return m[1];
@@ -74,8 +74,8 @@ check('GL02 HTML Cong 1: .mach.goal KE NGAY SAU .mach cua one_shot, <b> == goal_
   if (/<p class="li">[^<]*\/goal /.test(html)) die('dong goal nam trong <p class="li"> — pham P185');
   // ĐỘT BIẾN trong ca: nối đuôi vào <b> goal ở bản sao gate-card.js → phải ĐỎ (đẳng thức, không phép chứa).
   const md = mkdtempSync(path.join(tmpdir(), 'goal-mut-'));
-  cpSync(path.join(ROOT, 'scripts'), path.join(md, 'scripts'), { recursive: true });
-  cpSync(path.join(ROOT, 'lib'), path.join(md, 'lib'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(md, 'scripts'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(md, 'lib'), { recursive: true });
   const mg = path.join(md, 'scripts', 'gate-card.js');
   const src = readFileSync(mg, 'utf8');
   const mut = src.replace('<b>${esc(goalLine(slug))}</b></div>', '<b>${esc(goalLine(slug))} XXLECH</b></div>');
@@ -96,8 +96,8 @@ check('GL03 the DO (roi bac: gap_probe required, vang file) VAN co goal_line + .
 });
 check('GL03b the DO (g1Blocked: khai KHONG DO DUOC ma hop dong co mat nguoi dung) VAN co goal_line', () => {
   // Cùng công thức cờ đỏ với LM16 của lmcms — tiền tố rút từ khuôn ô cơ hội, không gõ literal.
-  const NG1 = createRequire(import.meta.url)(path.join(ROOT, 'lib', 'nguong-o-co-hoi.cjs'));
-  const kd = NG1.prefixes(readFileSync(path.join(ROOT, 'skills/acceptance/references/opportunity-template.md'), 'utf8')).khongDo;
+  const NG1 = createRequire(import.meta.url)(path.join(ROOT, 'plugins/acceptance-gate/lib', 'nguong-o-co-hoi.cjs'));
+  const kd = NG1.prefixes(readFileSync(path.join(ROOT, 'plugins/acceptance-gate/skills/acceptance/references/opportunity-template.md'), 'utf8')).khongDo;
   const f = G1(PROBE('findings'));
   f['contract.md'] = f['contract.md'].replace('surfaces: [cli]', 'surfaces: [ui]');
   f['opportunity.md'] = `---\nschema_version: 1\nslug: g\nstage: decided\ndecision: build\n---\n\n## ${NG1.UAT_THRESHOLD_HEADING}\n\n- ${kd} vòng này không có người dùng cuối.\n`;
@@ -117,7 +117,7 @@ check('GL04 the Cong 2: KHONG co goal_line, KHONG co .mach.goal (doi chung chieu
   if (html.includes('class="mach goal"')) die('Cong 2 co .mach.goal');
 });
 check('GL05 khuon gate-card == khuon SKILL feature-loop (sau strip) — ban chep thu ba khong troi', () => {
-  const skill = readFileSync(path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
+  const skill = readFileSync(path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
   const m = skill.match(/<!-- <<<GOAL-TEMPLATE -->\n```\n([\s\S]*?)```\n<!-- GOAL-TEMPLATE>>> -->/);
   if (!m) die('SKILL thieu khoi GOAL-TEMPLATE');
   if (m[1].trim() !== TPL.trim()) die('gate-card.js lech SKILL');

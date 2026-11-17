@@ -4,7 +4,7 @@
 // Vì sao có tệp này: lượt chấm 1 của hồ sơ `khoi-tim-loi-tra-phi-theo-vat` bắt được
 // một hồi quy mà MỌI eval của vòng vẫn xanh — sáu khoá executor mới để giá trị TRẦN
 // trong khi giá trị chứa `": "`, tổ hợp bị cấm trong plain scalar. Bộ đọc của kit
-// (`lib/evidence-core.cjs` → `resolveConfigKey`) là parser tối giản cắt theo `key:` đầu
+// (`plugins/acceptance-gate/lib/evidence-core.cjs` → `resolveConfigKey`) là parser tối giản cắt theo `key:` đầu
 // dòng nên vẫn trả đúng chuỗi lệnh; còn mọi trình đọc YAML chuẩn — trình soạn thảo, CI
 // của kho tiêu thụ, script ngoài — đều ngã ở dòng đó. Đúng hình dạng «thước gắn vào bộ
 // đọc riêng của tác giả thay vì vào vật được giao».
@@ -49,8 +49,8 @@ const docYaml = (p) => spawnSync('python3', ['-c',
 {
   const p = path.join(ROOT, '_acceptance', 'config.yaml');
   const txt = readFileSync(p, 'utf8');
-  const core = (await import(path.join(ROOT, 'lib', 'evidence-core.cjs'))).default
-    || (await import(path.join(ROOT, 'lib', 'evidence-core.cjs')));
+  const core = (await import(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'))).default
+    || (await import(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs')));
   const chuan = JSON.parse(spawnSync('python3', ['-c', `
 import sys, json, yaml
 d = yaml.safe_load(open(sys.argv[1]))

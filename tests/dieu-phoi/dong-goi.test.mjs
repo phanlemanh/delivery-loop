@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(DAY, '..', '..');
-const GOI = path.join(KIT, 'dieu-phoi');
+const GOI = path.join(KIT, 'plugins/dispatch');
 
 const canDon = [];
 after(() => {
@@ -94,11 +94,11 @@ const BANG_HOOK = [
 export function kiemCaiDat(gocKit, gocGoi) {
   const loi = [];
   const mk = docJ(path.join(gocKit, '.claude-plugin', 'marketplace.json'));
-  const muc = (mk.plugins ?? []).find((p) => p.name === 'dieu-phoi');
+  const muc = (mk.plugins ?? []).find((p) => p.name === 'dispatch');
   if (!muc) loi.push('marketplace.json không có mục dieu-phoi');
-  else if (muc.source !== './dieu-phoi') loi.push(`mục dieu-phoi trỏ ${muc.source}, cần ./dieu-phoi`);
+  else if (muc.source !== './plugins/dispatch') loi.push(`mục dieu-phoi trỏ ${muc.source}, cần ./plugins/dispatch`);
   const vGoi = docJ(path.join(gocGoi, '.claude-plugin', 'plugin.json')).version;
-  const vFl = docJ(path.join(gocKit, 'feature-loop', '.claude-plugin', 'plugin.json')).version;
+  const vFl = docJ(path.join(gocKit, 'plugins/feature-loop', '.claude-plugin', 'plugin.json')).version;
   if (vGoi !== vFl) loi.push(`phiên bản lệch: dieu-phoi ${vGoi} vs feature-loop ${vFl}`);
   const hooks = rutHook(gocGoi);
   const co = new Set(hooks.map((h) => `${h.su}|${h.matcher}|${h.tep}`));
@@ -189,7 +189,7 @@ const TEP_S4 = (() => {
 
 const BAY_DAU_VAO = [
   ['PreToolUse', 'Workflow S4', (cwd) => ({ hook_event_name: 'PreToolUse', session_id: 's', cwd, tool_name: 'Workflow', tool_input: { scriptPath: TEP_S4 } })],
-  ['PreToolUse', 'Bash repin-lane', (cwd) => ({ hook_event_name: 'PreToolUse', session_id: 's', cwd, tool_name: 'Bash', tool_input: { command: 'node feature-loop/scripts/repin-lane.mjs --root . --write' } })],
+  ['PreToolUse', 'Bash repin-lane', (cwd) => ({ hook_event_name: 'PreToolUse', session_id: 's', cwd, tool_name: 'Bash', tool_input: { command: 'node plugins/feature-loop/scripts/repin-lane.mjs --root . --write' } })],
   ['PreToolUse', 'Bash ls', DAU_VAO_MAU.PreToolUse],
   ['PostToolUse', 'Bash ls', DAU_VAO_MAU.PostToolUse],
   ['Notification', 'idle_prompt', DAU_VAO_MAU.Notification],
@@ -308,8 +308,8 @@ const MA_TRAN_S4 = [
   // [nhãn, đầu vào công cụ, mã mong đợi]
   ['node --test …repin-lane-lop-cu.test.mjs', { tool_name: 'Bash', tool_input: { command: 'node --test tests/scripts/repin-lane-lop-cu.test.mjs' } }, 0],
   ['node --test …s4-args-tran-thuoc.test.mjs', { tool_name: 'Bash', tool_input: { command: 'node --test tests/scripts/s4-args-tran-thuoc.test.mjs' } }, 0],
-  ['grep -n s4-args …SKILL.md', { tool_name: 'Bash', tool_input: { command: 'grep -n s4-args feature-loop/skills/feature-loop/SKILL.md' } }, 0],
-  ['node feature-loop/scripts/repin-lane.mjs --root . --write', { tool_name: 'Bash', tool_input: { command: 'node feature-loop/scripts/repin-lane.mjs --root . --write' } }, 2],
+  ['grep -n s4-args …SKILL.md', { tool_name: 'Bash', tool_input: { command: 'grep -n s4-args plugins/feature-loop/skills/feature-loop/SKILL.md' } }, 0],
+  ['node plugins/feature-loop/scripts/repin-lane.mjs --root . --write', { tool_name: 'Bash', tool_input: { command: 'node plugins/feature-loop/scripts/repin-lane.mjs --root . --write' } }, 2],
   ['node /x/scripts/s4-args.mjs --slug a', { tool_name: 'Bash', tool_input: { command: 'node /x/scripts/s4-args.mjs --slug a' } }, 2],
   ['node /x/duong-nen.mjs --root .', { tool_name: 'Bash', tool_input: { command: 'node /x/duong-nen.mjs --root .' } }, 2],
   ['Workflow …/acceptance-verify.js', { tool_name: 'Workflow', tool_input: { scriptPath: TEP_S4 } }, 2],
@@ -389,7 +389,7 @@ export function quetRieng(goc, thuMucs) {
 }
 
 test('DP1-07 khong-rieng-kho', () => {
-  const { khop, soTep } = quetRieng(KIT, ['dieu-phoi', 'tests/dieu-phoi/fixtures']);
+  const { khop, soTep } = quetRieng(KIT, ['plugins/dispatch', 'tests/dieu-phoi/fixtures']);
   console.log(`  số tệp đã quét: ${soTep}`);
   assert.ok(soTep > 0, 'quét 0 tệp — phép quét hỏng');
   assert.deepEqual(khop.map((k) => `${k.tep}:${k.dong} «${k.chuoi}»`), []);
@@ -408,7 +408,7 @@ test('DP1-07-do', () => {
 });
 
 // ---------- DP1-08: gói không tự bật qua acceptance-init (AC-8, E8) ----------
-const KHAI_GOI = path.join(KIT, 'scripts', 'plugin-declare.mjs');
+const KHAI_GOI = path.join(KIT, 'plugins/acceptance-gate/scripts', 'plugin-declare.mjs');
 const khoiKhai = (tep, marker) => fs.readFileSync(tep, 'utf8').match(new RegExp(`<!-- <<<${marker} -->([\\s\\S]*?)<!-- ${marker}>>> -->`))?.[1] ?? null;
 
 // Chạy bước khai gói trên một kho thử; so tập bật với (marketplace − mục mang dấu) ∪ superpowers.
@@ -421,7 +421,7 @@ export function kiemKhongTuBat(marketplace) {
   const mk = docJ(marketplace);
   const can = [...mk.plugins.filter((p) => !(p.tags ?? []).includes('bat-theo-lua-chon')).map((p) => `${p.name}@${mk.name}`), 'superpowers@claude-plugins-official'].sort();
   if (bat.join('|') !== can.join('|')) loi.push(`enabledPlugins lệch: bật [${bat.join(', ')}] cần [${can.join(', ')}]`);
-  if (bat.some((n) => n.startsWith('dieu-phoi@'))) loi.push('kho thử bị bật dieu-phoi@acceptance-gate-kit');
+  if (bat.some((n) => n.startsWith('dispatch@'))) loi.push('kho thử bị bật dispatch@delivery-loop');
   return { loi, bat, can };
 }
 
@@ -430,10 +430,10 @@ test('DP1-08 khong-tu-bat', () => {
   console.log(`  bật: ${kq.bat.join(', ')}`);
   console.log(`  cần: ${kq.can.join(', ')}`);
   assert.deepEqual(kq.loi, []);
-  for (const [tep, mk] of [[path.join(KIT, 'commands', 'acceptance-init.md'), 'INIT-PLUGIN-DECLARE'], [path.join(KIT, 'GUIDE.md'), 'GUIDE-PLUGIN-DECLARE']]) {
+  for (const [tep, mk] of [[path.join(KIT, 'plugins/acceptance-gate/commands', 'acceptance-init.md'), 'INIT-PLUGIN-DECLARE'], [path.join(KIT, 'GUIDE.md'), 'GUIDE-PLUGIN-DECLARE']]) {
     const khoi = khoiKhai(tep, mk);
     assert.ok(khoi, `không tìm thấy khối ${mk}`);
-    assert.equal(khoi.includes('dieu-phoi'), false, `${mk} không được nhắc dieu-phoi`);
+    assert.equal(khoi.includes('dispatch'), false, `${mk} không được nhắc dieu-phoi`);
   }
 });
 
@@ -442,11 +442,11 @@ test('DP1-08-do bo-dau', () => {
   const mk = docJ(path.join(KIT, '.claude-plugin', 'marketplace.json'));
   ghiJ(p, mk);
   assert.deepEqual(kiemKhongTuBat(p).loi, [], 'đối chứng dương: bản sao nguyên vẹn');
-  for (const muc of mk.plugins) if (muc.name === 'dieu-phoi') delete muc.tags;
+  for (const muc of mk.plugins) if (muc.name === 'dispatch') delete muc.tags;
   ghiJ(p, mk);
   const kq = kiemKhongTuBat(p);
-  assert.ok(kq.bat.includes('dieu-phoi@acceptance-gate-kit'), `kho thử phải bị bật dieu-phoi: ${kq.bat.join(', ')}`);
-  assert.ok(kq.loi.some((l) => l.includes('dieu-phoi')), `lỗi phải nêu dieu-phoi: ${kq.loi.join(' | ')}`);
+  assert.ok(kq.bat.includes('dispatch@delivery-loop'), `kho thử phải bị bật dieu-phoi: ${kq.bat.join(', ')}`);
+  assert.ok(kq.loi.some((l) => l.includes('dispatch')), `lỗi phải nêu dieu-phoi: ${kq.loi.join(' | ')}`);
 });
 
 // ---------- DP1-05: hai bản cùng gắn trong lúc chuyển (AC-5, E5) ----------
@@ -704,13 +704,13 @@ test('DP1-06 boc-dung-ban', () => {
 
 test('DP1-06-do import-ngoai', () => {
   const kitGia = tam('dp1-kitgia-');
-  fs.mkdirSync(path.join(kitGia, 'feature-loop', 'scripts'), { recursive: true });
-  fs.writeFileSync(path.join(kitGia, 'feature-loop', 'scripts', 'resolve-plugin.mjs'), 'export {};\n');
+  fs.mkdirSync(path.join(kitGia, 'plugins/feature-loop', 'scripts'), { recursive: true });
+  fs.writeFileSync(path.join(kitGia, 'plugins/feature-loop', 'scripts', 'resolve-plugin.mjs'), 'export {};\n');
   const trongKit = path.join(kitGia, 'dieu-phoi');
   chep(GOI, trongKit);
   const p = path.join(trongKit, 'scripts', 'dieu-phoi.mjs');
   const goc = fs.readFileSync(p, 'utf8');
-  fs.writeFileSync(p, goc.replace(/^(import .* from 'node:child_process';\n)/m, "$1import '../../feature-loop/scripts/resolve-plugin.mjs';\n"));
+  fs.writeFileSync(p, goc.replace(/^(import .* from 'node:child_process';\n)/m, "$1import '../../plugins/feature-loop/scripts/resolve-plugin.mjs';\n"));
   assert.notEqual(fs.readFileSync(p, 'utf8'), goc, 'bước tiêm không áp được');
   const kho = khoCoDot(GOI).kho;
   const trong = chayCli(trongKit, kho, 'xem');
@@ -917,7 +917,7 @@ const CHAY_BUOC_CI = path.join(DAY, 'chay-buoc-ci.mjs');
 function banSaoCi() {
   const d = tam('dp1-ci-');
   chep(path.join(KIT, '.github', 'workflows', 'gate.yml'), path.join(d, '.github', 'workflows', 'gate.yml'));
-  chep(GOI, path.join(d, 'dieu-phoi'));
+  chep(GOI, path.join(d, 'plugins/dispatch'));
   chep(path.join(DAY, 'loi'), path.join(d, 'tests', 'dieu-phoi', 'loi'));
   chep(CHAY_BUOC_CI, path.join(d, 'tests', 'dieu-phoi', 'chay-buoc-ci.mjs'));
   return d;

@@ -64,8 +64,8 @@ const mutantGc = () => {
   if (!block) die('gate-card.js thieu khoi marker DEC-PLAIN-KEY');
   if (block.split(NEW_LOOKUP).length !== 2) die(`khoi DEC-PLAIN-KEY phai co dung MOT "${NEW_LOOKUP}"`);
   const md = mkdtempSync(path.join(tmpdir(), 'deckey-mut-'));
-  cpSync(path.join(ROOT, 'scripts'), path.join(md, 'scripts'), { recursive: true });
-  cpSync(path.join(ROOT, 'lib'), path.join(md, 'lib'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(md, 'scripts'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(md, 'lib'), { recursive: true });
   const mg = path.join(md, 'scripts', 'gate-card.js');
   const mut = SRC.replace(block, block.replace(NEW_LOOKUP, OLD_LOOKUP));
   if (mut === SRC) die('dot bien khong doi duoc gate-card.js');
@@ -127,7 +127,7 @@ check('DK06 pha vat that: khoi phuc lookup cu (x.id === e.id) -> CUNG fixture do
 });
 
 // ---- bên VIẾT: khuôn id của SKILL, chạy thật trong cùng một giây ----
-const SKILL = readFileSync(path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
+const SKILL = readFileSync(path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
 // Khối là TRỌN lệnh nhiều dòng (heredoc) — rút nguyên khối giữa hai hàng ```.
 const recipeOf = t => {
   const m = t.match(/<!-- <<<DEC-ID-RECIPE -->\n```\n([\s\S]+?)\n```\n<!-- DEC-ID-RECIPE>>> -->/);
@@ -151,7 +151,7 @@ const appendReal = (block, shell) => {
   });
 };
 check('DK13 lenh SKILL voi cau THAT (nhay don, %, $, backtick, \\"): ghi nguyen van, bash + zsh; bo nhay heredoc -> DO', () => {
-  const blk = recipeOf(readFileSync(path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8'));
+  const blk = recipeOf(readFileSync(path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8'));
   const shells = spawnSync('zsh', ['-c', 'true']).status === 0 ? ['bash', 'zsh'] : ['bash'];
   for (const sh of shells) eq(appendReal(blk, sh), [REAL_TEXT], `cau ghi vao so (${sh})`);
   // đột biến trong CÙNG lệnh: heredoc không nháy → shell mở rộng $HOME và chạy backtick
@@ -197,8 +197,8 @@ check('DK09 overlay di dang (null trong mang, object thay mang) -> the van ra, i
   const block = (SRC.match(MARK) || [])[0] || die('thieu khoi DEC-PLAIN-KEY');
   if (block.split(GUARDED).length !== 2) die(`khoi DEC-PLAIN-KEY phai co dung MOT "${GUARDED}"`);
   const md = mkdtempSync(path.join(tmpdir(), 'deckey-guard-'));
-  cpSync(path.join(ROOT, 'scripts'), path.join(md, 'scripts'), { recursive: true });
-  cpSync(path.join(ROOT, 'lib'), path.join(md, 'lib'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(md, 'scripts'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(md, 'lib'), { recursive: true });
   const mg = path.join(md, 'scripts', 'gate-card.js');
   writeFileSync(mg, SRC.replace(block, block.replace(GUARDED, '(pl.decisions_plain || []).find(x => x.id === decKey(e))')));
   for (const pl of bad) {
@@ -221,10 +221,10 @@ const idFormIssue = (name, t) => {
 };
 check('DK10 approve.md + signoff.md tro toi DEC-ID-RECIPE, 0 dang ma cu; chen lai d-<next> -> DO dung thong diep', () => {
   for (const f of ['approve.md', 'signoff.md']) {
-    const iss = idFormIssue(f, readFileSync(path.join(ROOT, 'commands', f), 'utf8'));
+    const iss = idFormIssue(f, readFileSync(path.join(ROOT, 'plugins/acceptance-gate/commands', f), 'utf8'));
     if (iss) die(iss);
   }
-  const t = readFileSync(path.join(ROOT, 'commands', 'approve.md'), 'utf8');
+  const t = readFileSync(path.join(ROOT, 'plugins/acceptance-gate/commands', 'approve.md'), 'utf8');
   const mut = t.replace('d-<UTC>-<n>', 'd-<next>');
   if (mut === t) die('dot bien khong chen duoc dang cu vao approve.md');
   eq(idFormIssue('approve.md', mut), 'approve.md: con dang ma cu d-<next>', 'dot bien approve.md');
@@ -247,7 +247,7 @@ const tplIssue = tpl => {
   return miss.length ? `khuon overlay khong dich duoc ${miss.length}/${j.decisions.length} dong` : null;
 };
 check('DK11 khuon phan tu overlay (acceptance-card.md) dien bang key extract -> moi dong dung cau; doi ten truong id->key -> DO', () => {
-  const tpl = itemTplOf(readFileSync(path.join(ROOT, 'commands', 'acceptance-card.md'), 'utf8'));
+  const tpl = itemTplOf(readFileSync(path.join(ROOT, 'plugins/acceptance-gate/commands', 'acceptance-card.md'), 'utf8'));
   const ok = tplIssue(tpl);
   if (ok) die('ban that: ' + ok);
   const mut = tpl.replace('"id"', '"key"');
@@ -268,8 +268,8 @@ check('DK12 ma trung vat qua dau niem Cong 1: da duyet #1 #2, Treo #3; dem Treo 
   const LOOP = 'for (const e of decsAll) {\n    const k';
   if (block.split(LOOP).length !== 2) die('khoi DEC-PLAIN-KEY phai co dung MOT vong gan khoa');
   const md = mkdtempSync(path.join(tmpdir(), 'deckey-order-'));
-  cpSync(path.join(ROOT, 'scripts'), path.join(md, 'scripts'), { recursive: true });
-  cpSync(path.join(ROOT, 'lib'), path.join(md, 'lib'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(md, 'scripts'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(md, 'lib'), { recursive: true });
   const mg = path.join(md, 'scripts', 'gate-card.js');
   writeFileSync(mg, SRC.replace(block, block.replace(LOOP, 'for (const e of [...decsProvisional, ...decsApproved]) {\n    const k')));
   eq(extract(mg, r, 's').decisions_approved.map(d => d.key), [`${DUP}#2`, `${DUP}#3`], 'dot bien dem Treo truoc');
@@ -303,7 +303,7 @@ const ghiSo = (cmd, shell, lop) => {
 };
 const loopFix = root => {
   writeFileSync(path.join(root, '_acceptance', 'x', 'contract.md'), '---\nslug: x\nrisk_tier: T2\nstatus: implemented\n---\n');
-  const r = spawnSync('node', [path.join(ROOT, 'scripts', 'loop-health.mjs'), '--root', root, '--json'], { encoding: 'utf8' });
+  const r = spawnSync('node', [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'loop-health.mjs'), '--root', root, '--json'], { encoding: 'utf8' });
   let j; try { j = JSON.parse(r.stdout); } catch (_) { return die('loop-health khong in JSON: ' + (r.stderr || r.stdout).slice(0, 200)); }
   const row = (j.rows || []).find(x => x.slug === 'x');
   return row ? row.fix_s4 : die('loop-health khong co hang cho ho so x');
@@ -332,7 +332,7 @@ const scan = raw => {
   const d = mkdtempSync(path.join(tmpdir(), 'dectarget-scan-'));
   mkdirSync(path.join(d, '_acceptance', 'a'), { recursive: true }); mkdirSync(path.join(d, '_acceptance', 'b'), { recursive: true });
   writeFileSync(path.join(d, '_acceptance', 'a', 'decisions.jsonl'), raw + '\n');
-  const r = spawnSync('node', [path.join(ROOT, 'feature-loop', 'scripts', 'claim-scan.mjs'), '--root', d, '--slug', 'b'], { encoding: 'utf8' });
+  const r = spawnSync('node', [path.join(ROOT, 'plugins/feature-loop', 'scripts', 'claim-scan.mjs'), '--root', d, '--slug', 'b'], { encoding: 'utf8' });
   if (r.status !== 0) die('claim-scan loi: ' + r.stderr);
   return r.stdout;
 };

@@ -13,7 +13,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const GOI = path.join(KIT, 'dieu-phoi', 'scripts');
+const GOI = path.join(KIT, 'plugins/dispatch', 'scripts');
 const FX = path.join(KIT, 'tests', 'dieu-phoi', 'fixtures', 'dot-chong-vung');
 const GOC_SO = fs.readFileSync(path.join(KIT, '_acceptance', 'vung-giao-viec-tu-cat-luot', 'goc-so'), 'utf8').trim();
 const NOW = Date.parse('2026-10-28T03:00:00Z');
@@ -80,7 +80,7 @@ function dotTam(hangViec, { cfg = {}, gh = () => '[]', diff = () => '' } = {}) {
 // ---------- VG-1: hàng mẫu của khuôn lộ trình qua bộ đọc gói thành ranh_gioi = vung (AC-1, E2) ----------
 function goiTuKhuon(goc, { boVung = false } = {}) {
   const kho = tam('vg-kho-');
-  const tpl = docJ(path.join(KIT, 'skills', 'acceptance', 'references', 'lo-trinh-template.json'));
+  const tpl = docJ(path.join(KIT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'lo-trinh-template.json'));
   if (boVung) for (const h of tpl.hang) delete h.vung;
   ghiJ(path.join(kho, 'lo-trinh.json'), tpl);
   const g = path.join(kho, 'goi');
@@ -90,7 +90,7 @@ function goiTuKhuon(goc, { boVung = false } = {}) {
   return { kho, g, tpl };
 }
 test('VG-1 khuon-qua-goi: mỗi hàng mẫu của khuôn thành ranh_gioi đúng bằng vung; đối chứng khuôn bỏ vung → không ranh_gioi', async () => {
-  const { docGoi } = await nap(KIT, 'dieu-phoi/scripts/goi-dot.mjs');
+  const { docGoi } = await nap(KIT, 'plugins/dispatch/scripts/goi-dot.mjs');
   const { kho, g, tpl } = goiTuKhuon();
   const hv = docGoi(g, { gocKho: kho }).hangViec;
   assert.ok(tpl.hang.length >= 3 && tpl.hang.every((h) => Array.isArray(h.vung) && h.vung.length), 'khuôn phải có vung ở mọi hàng mẫu');
@@ -156,7 +156,7 @@ function dotThem() {
   return t;
 }
 test('VG-5 them-theo-ma: M nhận vung lộ trình và sau Y; --ranh-gioi thắng; mã ngoài lộ trình như cũ', async () => {
-  const { themHang } = await nap(KIT, 'dieu-phoi/scripts/hang.mjs');
+  const { themHang } = await nap(KIT, 'plugins/dispatch/scripts/hang.mjs');
   const { d } = dotThem();
   const kq = themHang(d, 'M', 'P1');
   const m = docJ(path.join(d, 'hang-viec.json')).hang.find((h) => h.day === 'P1' && h.ranh_gioi?.includes('app/m/**'));
@@ -175,7 +175,7 @@ test('VG-5 them-theo-ma: M nhận vung lộ trình và sau Y; --ranh-gioi thắn
 const CAP_MONG = ['H2-H3', 'H2-H4', 'H2-H5', 'H2-H8', 'H2-H9', 'H2-H10', 'H2-H11', 'H2-H12', 'H2-H13', 'H3-H5', 'H3-H8', 'H3-H9', 'H3-H10', 'H4-H10', 'H5-H7', 'H5-H8', 'H5-H9', 'H5-H10', 'H8-H9', 'H8-H10', 'H9-H10', 'H10-H11', 'H10-H12', 'H10-H13', 'H11-H12'];
 const TRAN_CAP = 45;
 async function capChong(fx) {
-  const { mauGiao } = await nap(KIT, 'dieu-phoi/scripts/trung-tep.mjs');
+  const { mauGiao } = await nap(KIT, 'plugins/dispatch/scripts/trung-tep.mjs');
   const hang = docJ(path.join(fx, 'lo-trinh.json')).hang;
   const cap = [];
   for (let i = 0; i < hang.length; i++) for (let j = i + 1; j < hang.length; j++) if (hang[i].vung.some((a) => hang[j].vung.some((b) => mauGiao(a, b)))) cap.push(`${hang[i].ma}-${hang[j].ma}`);
@@ -190,9 +190,9 @@ async function phatLai(fx, { boVung = false } = {}) {
   const lt = docJ(path.join(fx, 'lo-trinh.json'));
   if (boVung) for (const h of lt.hang) delete h.vung;
   ghiJ(path.join(kho, 'lo-trinh.json'), lt);
-  const { docGoi } = await nap(KIT, 'dieu-phoi/scripts/goi-dot.mjs');
+  const { docGoi } = await nap(KIT, 'plugins/dispatch/scripts/goi-dot.mjs');
   const { hangViec } = docGoi(path.join(fx, 'goi'), { gocKho: kho });
-  const { motNhip } = await nap(KIT, 'dieu-phoi/scripts/phat-lich.mjs');
+  const { motNhip } = await nap(KIT, 'plugins/dispatch/scripts/phat-lich.mjs');
   const t = dotTam(hangViec);
   await motNhip(t.d, t.io);
   const dau = ['V1', 'V2', 'V3'].map((id) => tiep(t.d, id).hang);
@@ -203,7 +203,7 @@ async function phatLai(fx, { boVung = false } = {}) {
   return { ...t, dau, hangViec };
 }
 test('VG-6 phat-lai: lộ trình qua răng không lỗi vùng; gói đọc ra vùng; hàng dáng VK8 (H5) chờ hàng dáng VK6 (H10); không vùng thì không', async () => {
-  const C = await nap(KIT, 'scripts/cat-luot.mjs');
+  const C = await nap(KIT, 'plugins/acceptance-gate/scripts/cat-luot.mjs');
   const lt = docJ(path.join(FX, 'lo-trinh.json'));
   const r = C.kiemCo({ dot: 'phat-lai' }, lt, C.napKhoang());
   assert.deepEqual([...r.loi, ...r.canhBao].filter((x) => /vung/.test(x)), [], 'răng phủ trên bản phát lại');
@@ -294,7 +294,7 @@ function dotCoKho({ z2 = ['app/b/d.tsx'], y = null } = {}) {
 }
 const khoiMarker = (t, m) => { const r = t.match(new RegExp(`<!-- <<<${m} -->\\n([\\s\\S]*?)<!-- ${m}>>> -->`)); return r ? r[1] : null; };
 function lenhKhaiVung() {
-  const skill = fs.readFileSync(path.join(KIT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
+  const skill = fs.readFileSync(path.join(KIT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
   const tdot = khoiMarker(skill, 'TRONG-DOT');
   const khoi = tdot && khoiMarker(tdot.replace(/^ {2}/gm, ''), 'TRONG-DOT-VUNG');
   const lenh = khoi && (/`(node [^`]*hang vung[^`]*)`/.exec(khoi) || [])[1];
@@ -304,7 +304,7 @@ function lenhKhaiVung() {
 const chayLenh = (cmd, cwd) => spawnSync('bash', ['-c', cmd], { cwd, encoding: 'utf8' });
 test('VG-7 khai-vung: lệnh rút từ SKILL gộp vùng, một dòng Nhật ký; hàng chưa mở và hàng kế đã chọn ở P2 trùng vùng mới nhận sau', async () => {
   const lenh = lenhKhaiVung();
-  const { motNhip } = await nap(KIT, 'dieu-phoi/scripts/phat-lich.mjs');
+  const { motNhip } = await nap(KIT, 'plugins/dispatch/scripts/phat-lich.mjs');
   const t = dotCoKho();
   await motNhip(t.d, t.io);
   assert.equal(tiep(t.d, 'P2').hang, 'z2', 'trước khai: z2 là hàng kế của P2');
@@ -335,7 +335,7 @@ test('VG-7 khai-vung: lệnh rút từ SKILL gộp vùng, một dòng Nhật ký
   assert.deepEqual([tiep(doi.d, 'P2').hang, hangCua(doi.d, 'z2').sau], ['z2', undefined]);
 });
 test('VG-8 bao-dang-do: hàng đang làm/đã ký ở P2 chồng vùng mới → đúng một sự kiện trung-tep cong-pham-vi, không sau, không đụng khoá', async () => {
-  const { khaiVung } = await nap(KIT, 'dieu-phoi/scripts/hang.mjs');
+  const { khaiVung } = await nap(KIT, 'plugins/dispatch/scripts/hang.mjs');
   const anh = (d) => ['khoa', 'xin'].map((x) => fs.readdirSync(path.join(d, x)).join(','));
   for (const status of ['dang', 'ky']) {
     const t = dotCoKho({ y: { rg: ['app/b/c.tsx'], status } });

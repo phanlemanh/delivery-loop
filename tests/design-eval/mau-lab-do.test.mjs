@@ -15,11 +15,11 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
 const GOC_SHA = 'c8fa5a65';
 const BUNDLE = 'lib/design-bundle.mjs';
-const WRAPPER = 'scripts/build-design-scan.mjs';
+const WRAPPER = 'plugins/acceptance-gate/scripts/build-design-scan.mjs';
 
 function banSao() {
   const dich = fs.mkdtempSync(path.join(os.tmpdir(), 'mau-lab-do-'));
-  for (const d of ['scripts', 'lib', 'vendor']) fs.cpSync(path.join(ROOT, d), path.join(dich, d), { recursive: true });
+  for (const d of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/vendor']) fs.cpSync(path.join(ROOT, d), path.join(dich, d), { recursive: true });
   fs.cpSync(HERE, path.join(dich, 'tests', 'design-eval'), { recursive: true, filter: (p) => !p.includes(`${path.sep}node_modules`) });
   fs.symlinkSync(path.join(HERE, 'node_modules'), path.join(dich, 'tests', 'design-eval', 'node_modules'));
   return dich;
@@ -70,7 +70,7 @@ function phanQuyetGoc(goc, chu, nen) {
   const dir = fs.mkdtempSync(path.join(goc, 'trang-'));
   const f = path.join(dir, 'trang.html');
   fs.writeFileSync(f, `<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>t</title></head><body><main><p style="color:${chu};background-color:${nen}">Chữ thử tương phản.</p></main></body></html>`);
-  const r = chay(goc, 'scripts/design-gate.mjs', f, '--jsdom', HERE);
+  const r = chay(goc, 'plugins/acceptance-gate/scripts/design-gate.mjs', f, '--jsdom', HERE);
   return JSON.parse(r.stdout).verdict;
 }
 
@@ -105,7 +105,7 @@ const CA = {
     try {
       const lanh = chay(goc, WRAPPER, '--check');
       if (lanh.ma !== 0) return `bản lành --check thoát ${lanh.ma}`;
-      doiMotCho(goc, 'scripts/design-scan.js', '__impeccableDesignScan = ', '__impeccableDesignScan  = ');
+      doiMotCho(goc, 'plugins/acceptance-gate/scripts/design-scan.js', '__impeccableDesignScan = ', '__impeccableDesignScan  = ');
       const pha = chay(goc, WRAPPER, '--check');
       if (pha.ma === 0) return 'đổi tệp đã dựng mà --check vẫn xanh';
       return pha.ra.includes('DRIFT') ? null : `thiếu chữ DRIFT: ${pha.ra.slice(-200)}`;

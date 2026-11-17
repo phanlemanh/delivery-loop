@@ -17,8 +17,8 @@ const a = process.argv.slice(2);
 const lay = k => { const i = a.indexOf(k); return i >= 0 ? a[i + 1] : null; };
 const crm = lay('--crm'); const nguon = lay('--nguon');
 if (!crm || !nguon) { console.error('cần --crm <bản sao> --nguon "<nhánh sha>"'); process.exit(2); }
-const { frontmatterField } = createRequire(import.meta.url)(path.join(KIT, 'lib', 'evidence-core.cjs'));
-const PM = await import(pathToFileURL(path.join(KIT, 'scripts', 'product-map.mjs')).href);
+const { frontmatterField } = createRequire(import.meta.url)(path.join(KIT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
+const PM = await import(pathToFileURL(path.join(KIT, 'plugins/acceptance-gate/scripts', 'product-map.mjs')).href);
 const f = JSON.parse(readFileSync(FX, 'utf8'));
 const acc = path.join(path.resolve(crm), '_acceptance');
 const bang = {};

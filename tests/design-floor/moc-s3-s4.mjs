@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const KIT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const TMP = mkdtempSync(join(tmpdir(), 'df-moc5-'));
-const UI = join(KIT, 'design-floor', 'dist', 'ui.mjs');
+const UI = join(KIT, 'plugins/acceptance-gate/design-floor', 'dist', 'ui.mjs');
 const SLUG = 'vd';
 const HOP_DONG_FL5 = join(KIT, '_acceptance', 'design-floor-moc-s3-s4', 'contract.md');
 const bam = (p) => createHash('sha256').update(readFileSync(p)).digest('hex');
@@ -102,11 +102,11 @@ function vo() {
 // kết từng tệp; tệp bị đột biến được chép rồi sửa. Chuỗi cũ phải có (không thì đột biến hỏng).
 function kitDotBien(tep, ...cap) {
   const K = mkdtempSync(join(TMP, 'kit-'));
-  for (const d of ['lib', 'design-floor', 'skills', 'feature-loop', 'commands', 'hooks', 'tests', 'docs', '_acceptance']) if (existsSync(join(KIT, d))) symlinkSync(join(KIT, d), join(K, d));
+  for (const d of ['plugins/acceptance-gate/lib', 'plugins/acceptance-gate/design-floor', 'plugins/acceptance-gate/skills', 'plugins/feature-loop', 'plugins/acceptance-gate/commands', 'plugins/acceptance-gate/hooks', 'tests', 'docs', '_acceptance']) if (existsSync(join(KIT, d))) symlinkSync(join(KIT, d), join(K, d));
   for (const f of ['CONTEXT.md', 'package.json']) if (existsSync(join(KIT, f))) symlinkSync(join(KIT, f), join(K, f));
   mkdirSync(join(K, 'scripts'));
-  for (const f of readdirSync(join(KIT, 'scripts'))) if (f !== tep) symlinkSync(join(KIT, 'scripts', f), join(K, 'scripts', f));
-  let noi = readFileSync(join(KIT, 'scripts', tep), 'utf8');
+  for (const f of readdirSync(join(KIT, 'plugins/acceptance-gate/scripts'))) if (f !== tep) symlinkSync(join(KIT, 'plugins/acceptance-gate/scripts', f), join(K, 'scripts', f));
+  let noi = readFileSync(join(KIT, 'plugins/acceptance-gate/scripts', tep), 'utf8');
   for (const [cu, moi] of cap) {
     if (!noi.includes(cu)) throw new Error(`đột biến hỏng: không thấy «${cu.slice(0, 60)}» trong ${tep}`);
     noi = noi.split(cu).join(moi);
@@ -157,8 +157,8 @@ function rangGate({ skill, lenhS4, hopDong, loTrinh }) {
 }
 const nguonThat = () => ({
   skill: readFileSync(SKILL, 'utf8'),
-  lenhS4: readFileSync(join(KIT, 'scripts', 'design-floor-s4.mjs'), 'utf8'),
-  hopDong: readFileSync(join(KIT, 'design-floor', 'HOP-DONG-NHAP.md'), 'utf8'),
+  lenhS4: readFileSync(join(KIT, 'plugins/acceptance-gate/scripts', 'design-floor-s4.mjs'), 'utf8'),
+  hopDong: readFileSync(join(KIT, 'plugins/acceptance-gate/design-floor', 'HOP-DONG-NHAP.md'), 'utf8'),
   loTrinh: JSON.parse(readFileSync(join(KIT, 'docs', 'plans', 'lo-trinh-kit.json'), 'utf8')),
 });
 const chenSkill = (n) => ({ ...n, skill: n.skill.replace('<!-- DESIGN-FLOOR-S4>>> -->', 'node ui.mjs ui gate {dich}\n<!-- DESIGN-FLOOR-S4>>> -->') });
@@ -168,7 +168,7 @@ const themDf07 = (n) => ({ ...n, hopDong: n.hopDong.replace('"gioi_han": []', '"
 
 // ── vòng mẫu S0→S5 ──────────────────────────────────────────────────────────────────────────────────
 function vongMau(kit) {
-  const s4Lenh = `node ${join(kit, 'scripts', 'design-floor-s4.mjs')} --root .`;
+  const s4Lenh = `node ${join(kit, 'plugins/acceptance-gate/scripts', 'design-floor-s4.mjs')} --root .`;
   const cfg = ['schema_version: 1', 'enforcement: strict', 'recheck: strict', 'gap_probe: off', 'feature_loop:', '  suite_keys:',
     '    - executors.test.s0', 'executors:', '  test:', '    s0: "true"', '  design:', `    floor: ${JSON.stringify(s4Lenh)}`,
     'risk_tiers:', '  t1_skip_globs:', '    - "docs/**"', ''].join('\n');
@@ -201,16 +201,16 @@ function vongMau(kit) {
   gitR(R, 'add', '-A');
   gitR(R, 'commit', '-qm', 'S4 + ký');
   // Làn ghim của kit chạy eval E1 = lệnh S4 thật (hay bản đột biến) và ghi pin; rồi chỉ commit hồ sơ.
-  const lan = spawnSync(process.execPath, [join(KIT, 'feature-loop', 'scripts', 'repin-lane.mjs'), '--root', R, '--ag-root', KIT, '--slug', SLUG, '--reason', 'vòng mẫu', '--write'], { encoding: 'utf8' });
+  const lan = spawnSync(process.execPath, [join(KIT, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs'), '--root', R, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--slug', SLUG, '--reason', 'vòng mẫu', '--write'], { encoding: 'utf8' });
   if (lan.status !== 0) return { R, loi: `làn ghim thoát ${lan.status}: ${(lan.stderr || '').trim().split('\n').slice(-2).join(' ')}` };
   gitR(R, 'add', '--', '_acceptance');
   gitR(R, 'commit', '-qm', 'ghim');
-  const pm = spawnSync('bash', [join(KIT, 'scripts', 'pre-merge-check.sh'), R, '--base', 'main'], { encoding: 'utf8' });
+  const pm = spawnSync('bash', [join(KIT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), R, '--base', 'main'], { encoding: 'utf8' });
   return { R, pm: `${pm.stdout || ''}${pm.stderr || ''}`, ec: pm.status };
 }
 
 // ── khối SKILL cuối S3 ─────────────────────────────────────────────────────────────────────────────
-const SKILL = join(KIT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const SKILL = join(KIT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 function boKhoi(p, ten) {
   const md = readFileSync(p, 'utf8');
   const a = md.indexOf(`<!-- <<<${ten} -->`);
@@ -227,15 +227,15 @@ function kiemSkillS3(kit, skillPath) {
   const iImpl = md.indexOf('set contract `status: implemented`', md.indexOf('## S3 — EXECUTE'));
   if (iImpl < 0 || iKhoi > iImpl || iKhoi < md.indexOf('## S3 — EXECUTE')) return 'SKILL-S3: khối không đứng trước dòng sang implemented của S3';
   const m = /```\n([\s\S]*?)\n```/.exec(khoi);
-  if (!m || !m[1].includes('scripts/design-floor-s3.mjs')) return 'SKILL-S3: khối không gọi scripts/design-floor-s3.mjs';
+  if (!m || !m[1].includes('plugins/acceptance-gate/scripts/design-floor-s3.mjs')) return 'SKILL-S3: khối không gọi plugins/acceptance-gate/scripts/design-floor-s3.mjs';
   const lenh = m[1].trim()
-    .replace('"$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs"', JSON.stringify(join(kit, 'feature-loop', 'scripts', 'resolve-plugin.mjs')))
+    .replace('"$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs"', JSON.stringify(join(kit, 'plugins/feature-loop', 'scripts', 'resolve-plugin.mjs')))
     .replace('--plugin acceptance-gate', `--plugin acceptance-gate --root ${JSON.stringify(kit)}`)
     .replace("'<slug>'", SLUG);
   const A = kho({ bac: 'M2', vong: { 'web/p.html': TRANG_SAN } });
   const B = kho({ bac: 'M2', vong: { 'web/p.html': TRANG_SAN } });
   const quaKhoi = spawnSync('bash', ['-c', lenh], { cwd: A, encoding: 'utf8' });
-  const truc = spawnSync(process.execPath, [join(kit, 'scripts', 'design-floor-s3.mjs'), '--root', '.', '--slug', SLUG], { cwd: B, encoding: 'utf8' });
+  const truc = spawnSync(process.execPath, [join(kit, 'plugins/acceptance-gate/scripts', 'design-floor-s3.mjs'), '--root', '.', '--slug', SLUG], { cwd: B, encoding: 'utf8' });
   const chuan = (s) => (s || '').replace(/commit [0-9a-f]{7,}/g, 'commit <sha>');
   if (quaKhoi.status !== truc.status) return `SKILL-S3: qua khối thoát ${quaKhoi.status}, gọi trực tiếp thoát ${truc.status}: ${(quaKhoi.stderr || '').trim().split('\n')[0]}`;
   if (!quaKhoi.stdout.trim() || chuan(quaKhoi.stdout) !== chuan(truc.stdout)) return `SKILL-S3: đầu ra qua khối «${quaKhoi.stdout.trim()}» ≠ gọi trực tiếp «${truc.stdout.trim()}»`;

@@ -20,7 +20,7 @@ import path from 'node:path';
 import { runWorkflow, check, summary, KHOI_GHI_BASELINE, lenhGhiBaseline, kichBanTuLenhGhi, kemGhiDung } from './harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const WF = path.join(HERE, '..', '..', 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(HERE, '..', '..', 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const VC = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2';
 const soLan = (hay, kim) => hay.split(kim).length - 1;
 const ngu = ms => new Promise(r => setTimeout(r, ms));
