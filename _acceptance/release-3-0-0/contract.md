@@ -5,9 +5,11 @@ slug: release-3-0-0
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật của riêng mốc không chạm đường T3 (đo 17/11: --hang-pr với nền là commit gộp ra T2); PR số 1 thì bộ phân hạng trả «không rõ» — xem Notes
 surfaces: [cli]
-status: draft
+status: implemented
 approved_by:
 approved_at:
+veto_state: mo
+veto_opened_at: 2026-11-17T14:49:02Z
 ---
 
 # Acceptance Contract: release-3-0-0

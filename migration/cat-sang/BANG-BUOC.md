@@ -63,4 +63,6 @@ commit gộp. Nhánh ứng viên = nhánh chính kho cũ + 6 commit dọn nhà (
 
 Chạy bằng `migration/kich-ban/chay-bo-kiem.sh` trên một bản kéo riêng tên `delivery-loop`. Kết quả ghi ở dưới khi lượt xong.
 
-(đang chạy lúc soạn bảng)
+Dừng tay sau khoảng 47 phút, lúc còn ở bước một (`scripts`): 2 705 dòng PASS, 0 dòng FAIL. Dừng vì cây ấy đã bị thay
+bằng nhánh ứng viên thật và lượt chấm của hồ sơ `release-3-0-0` chạy trọn các bộ kiểm trên chính nhánh đó — để hai
+lượt chạy song song thì ca đo thời gian (GT-07) dễ đỏ oan. Số này là đọc dở, không phải kết quả bộ kiểm.
