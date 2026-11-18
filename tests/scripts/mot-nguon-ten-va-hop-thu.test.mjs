@@ -2,9 +2,9 @@
 // «PASS: GN-…» của tệp này).
 //
 // Hai răng một nguồn:
-//   GN-1  bảng tên `lib/ho-goi.cjs` ≡ `.claude-plugin/marketplace.json` — cùng tên theo cùng thứ tự, cùng tập mang dấu
+//   GN-1  bảng tên `plugins/acceptance-gate/lib/ho-goi.cjs` ≡ `.claude-plugin/marketplace.json` — cùng tên theo cùng thứ tự, cùng tập mang dấu
 //         bật-theo-lựa-chọn, cùng tên chợ. Bảng là nguồn tên ở bản cài không mang tệp khai chợ (bố cục plugins/<tên>/).
-//   GN-2  hộp thư `scripts/hop-thu/<tệp>` ≡ `dieu-phoi/scripts/<tệp>` từng byte, cho bốn tệp dùng chung. Bản của điều
+//   GN-2  hộp thư `plugins/acceptance-gate/scripts/hop-thu/<tệp>` ≡ `plugins/dispatch/scripts/<tệp>` từng byte, cho bốn tệp dùng chung. Bản của điều
 //         phối là bản gốc; sửa nó thì chép sang lõi.
 // Ca đỏ («-do-…») chạy CHÍNH hàm so trên BẢN SAO (thư mục tạm chứa đúng các tệp hai răng đọc, chép từ cây đang kiểm),
 // SAU khi bản sao lành xanh, tiêm đúng một nhát (nhát không áp → ca tự FAIL) và ghim thông điệp. Mọi đường suy từ vị trí
@@ -28,10 +28,10 @@ const want = id => !only.length || only.some(o => id === o || id.startsWith(o + 
 export const HOP_THU = ['hinh-dang.mjs', 'cau-hinh.mjs', 'dot.mjs', 'cua-tin-hieu.mjs'];
 const DAU_LUA_CHON = 'bat-theo-lua-chon';
 
-// GN-1 — trả mảng lỗi (rỗng = khớp). `goc` = gốc một cây có `.claude-plugin/marketplace.json` và `lib/ho-goi.cjs`.
+// GN-1 — trả mảng lỗi (rỗng = khớp). `goc` = gốc một cây có `.claude-plugin/marketplace.json` và `plugins/acceptance-gate/lib/ho-goi.cjs`.
 export function soBangTen(goc) {
-  const tepBang = path.join(goc, 'lib', 'ho-goi.cjs');
-  if (!existsSync(tepBang)) return ['thiếu lib/ho-goi.cjs'];
+  const tepBang = path.join(goc, 'plugins/acceptance-gate/lib', 'ho-goi.cjs');
+  if (!existsSync(tepBang)) return ['thiếu plugins/acceptance-gate/lib/ho-goi.cjs'];
   let mk;
   try { mk = JSON.parse(readFileSync(path.join(goc, '.claude-plugin', 'marketplace.json'), 'utf8')); }
   catch (e) { return [`không đọc được .claude-plugin/marketplace.json: ${e.message}`]; }
@@ -55,11 +55,11 @@ export function soBangTen(goc) {
 export function soHopThu(goc) {
   const loi = [];
   for (const f of HOP_THU) {
-    const a = path.join(goc, 'scripts', 'hop-thu', f);
-    const b = path.join(goc, 'dieu-phoi', 'scripts', f);
-    if (!existsSync(a)) { loi.push(`thiếu scripts/hop-thu/${f}`); continue; }
-    if (!existsSync(b)) { loi.push(`thiếu dieu-phoi/scripts/${f}`); continue; }
-    if (!readFileSync(a).equals(readFileSync(b))) loi.push(`hop-thu/${f} khác dieu-phoi/scripts/${f} — chép lại: cp dieu-phoi/scripts/${f} scripts/hop-thu/${f}`);
+    const a = path.join(goc, 'plugins/acceptance-gate/scripts', 'hop-thu', f);
+    const b = path.join(goc, 'plugins/dispatch', 'scripts', f);
+    if (!existsSync(a)) { loi.push(`thiếu plugins/acceptance-gate/scripts/hop-thu/${f}`); continue; }
+    if (!existsSync(b)) { loi.push(`thiếu plugins/dispatch/scripts/${f}`); continue; }
+    if (!readFileSync(a).equals(readFileSync(b))) loi.push(`hop-thu/${f} khác plugins/dispatch/scripts/${f} — chép lại: cp plugins/dispatch/scripts/${f} plugins/acceptance-gate/scripts/hop-thu/${f}`);
   }
   return loi;
 }
@@ -67,8 +67,8 @@ export function soHopThu(goc) {
 let soBanSao = 0;
 function banSao() {
   const d = path.join(TMP, `kit-${++soBanSao}`);
-  for (const rel of ['.claude-plugin/marketplace.json', 'lib/ho-goi.cjs',
-    ...HOP_THU.map(f => `scripts/hop-thu/${f}`), ...HOP_THU.map(f => `dieu-phoi/scripts/${f}`)]) {
+  for (const rel of ['.claude-plugin/marketplace.json', 'plugins/acceptance-gate/lib/ho-goi.cjs',
+    ...HOP_THU.map(f => `plugins/acceptance-gate/scripts/hop-thu/${f}`), ...HOP_THU.map(f => `plugins/dispatch/scripts/${f}`)]) {
     const nguon = path.join(KIT, rel);
     if (!existsSync(nguon)) continue;
     mkdirSync(path.dirname(path.join(d, rel)), { recursive: true });
@@ -104,8 +104,8 @@ if (want('GN-1')) { const l = soBangTen(KIT); l.length ? bad('GN-1', l.join(' ·
 do_('GN-1-do-them', soBangTen, suaJson(j => ({ ...j, plugins: [...j.plugins, { name: 'goi-moi', source: './goi-moi' }] })), 'bảng tên thiếu goi-moi');
 do_('GN-1-do-dau', soBangTen, suaJson(j => ({ ...j, plugins: j.plugins.map(p => p.name === 'feature-loop' ? { ...p, tags: [DAU_LUA_CHON] } : p) })), 'lệch bật-theo-lựa-chọn: feature-loop');
 do_('GN-1-do-cho', soBangTen, suaJson(j => ({ ...j, name: 'cho-khac' })), 'lệch tên chợ');
-if (want('GN-2')) { const l = soHopThu(KIT); l.length ? bad('GN-2', l.join(' · ')) : ok('GN-2', `hộp thư ≡ dieu-phoi/scripts (${HOP_THU.length} tệp)`); }
-do_('GN-2-do', soHopThu, sua('scripts/hop-thu/dot.mjs', t => t + ' '), 'hop-thu/dot.mjs khác dieu-phoi/scripts/dot.mjs');
+if (want('GN-2')) { const l = soHopThu(KIT); l.length ? bad('GN-2', l.join(' · ')) : ok('GN-2', `hộp thư ≡ plugins/dispatch/scripts (${HOP_THU.length} tệp)`); }
+do_('GN-2-do', soHopThu, sua('plugins/acceptance-gate/scripts/hop-thu/dot.mjs', t => t + ' '), 'hop-thu/dot.mjs khác plugins/dispatch/scripts/dot.mjs');
 
 console.log(`\nGN Results: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

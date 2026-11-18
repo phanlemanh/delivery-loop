@@ -8,7 +8,7 @@
 //   (d) mã khác 0 trong khối của eval KHÔNG khai              -> vi phạm
 // Cộng: nới điều kiện hình dạng HAS_EXIT_ZERO, fail-closed khi evals.yaml khai
 // sai, fail-closed khi không có fileDir, và một ca đi TRỌN qua
-// scripts/recheck-evidence.cjs thật (nghĩa vụ riêng — đường đầu-cuối phải có
+// plugins/acceptance-gate/scripts/recheck-evidence.cjs thật (nghĩa vụ riêng — đường đầu-cuối phải có
 // người đo được, không chỉ unit test gọi thẳng evaluateEvidence).
 //
 // Đảo phép nới SAI (vòng này): hợp đồng chỉ có ĐÚNG MỘT ngoại lệ — dòng
@@ -26,8 +26,8 @@ import path from 'node:path';
 const require = createRequire(import.meta.url);
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const CORE = require(path.join(ROOT, 'lib', 'evidence-core.cjs'));
-const RECHECK = path.join(ROOT, 'scripts', 'recheck-evidence.cjs');
+const CORE = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
+const RECHECK = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs');
 
 let pass = 0, fail = 0;
 const ok = (id, m) => { console.log(`  PASS: ${id} ${m}`); pass++; };
@@ -325,7 +325,7 @@ const anchorBoundaryPayload = (exitLine) =>
     `hai khớp ngoài khối ĐỀU là 0 -> không có mã khác 0 để nêu, không vi phạm. Được: ${r.consistencyFailure}`);
 }
 
-// ═══ Nghĩa vụ riêng: một ca đi TRỌN qua scripts/recheck-evidence.cjs thật ══
+// ═══ Nghĩa vụ riêng: một ca đi TRỌN qua plugins/acceptance-gate/scripts/recheck-evidence.cjs thật ══
 // Hồ sơ PASS thật, mã thoát khác 0 đã khai trong evals.yaml và ghi đúng
 // trong khối eval — phải XANH đầu-cuối qua CLI thật, không chỉ qua
 // evaluateEvidence() gọi thẳng.

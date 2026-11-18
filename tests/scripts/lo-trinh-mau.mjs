@@ -42,8 +42,8 @@ try {
     const tier = (data.hang.find(h => h.slug === slug) || {}).hang;
     for (const [t, txt] of Object.entries(HO_SO[o](slug, tier))) writeFileSync(path.join(d, t), txt);
   }
-  const PM = await import(pathToFileURL(path.join(MAY, 'scripts', 'product-map.mjs')).href);
-  const LT = await import(pathToFileURL(path.join(MAY, 'scripts', 'lo-trinh.mjs')).href);
+  const PM = await import(pathToFileURL(path.join(MAY, 'plugins/acceptance-gate/scripts', 'product-map.mjs')).href);
+  const LT = await import(pathToFileURL(path.join(MAY, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs')).href);
   const html = LT.veTrang({ root: r, classify: PM.classify, sections: PM.SECTIONS });
   if (check) {
     const cu = existsSync(OUT) ? readFileSync(OUT, 'utf8') : null;

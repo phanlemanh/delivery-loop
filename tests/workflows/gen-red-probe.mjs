@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // gen-red-probe.mjs — SINH fixture RED-probe cho eval M11 (matrix-measure-law)
 // từ WRITER THẬT: hình dạng 4 trong const MEASUREMENT_SHAPES của
-// feature-loop/workflows/acceptance-verify.js (round-trip rút-từ-writer-thật,
+// plugins/feature-loop/workflows/acceptance-verify.js (round-trip rút-từ-writer-thật,
 // fix finding hình-dạng-2 S4-r2: bản trước là văn viết tay không code path
 // nào sinh ra). Deterministic — chạy lại phải ra đúng từng byte.
 //
@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const WF = path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const OUT = path.join(ROOT, '_acceptance', 'matrix-measure-law', 'evidence', 'red-probe-artifact.md');
 
 export function generate() {

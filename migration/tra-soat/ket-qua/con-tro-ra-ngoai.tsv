@@ -1,0 +1,138 @@
+# máy sinh bởi migration/tra-soat/kiem-ke.mjs từ kit-cu/main @ 0c4e503b (2026-11-13) — đừng sửa tay, chạy lại kịch bản
+tu	toi	lop	dong	mo_ho
+.claude-plugin/plugin.json	CHANGELOG.md	nhat-ky	4	cung-ten-tep-o-kho-tieu-thu
+commands/acceptance-card.md	CLAUDE.md	tai-lieu-song	127	cung-ten-tep-o-kho-tieu-thu
+commands/acceptance-card.md	CONTEXT.md	tai-lieu-song	113	cung-ten-tep-o-kho-tieu-thu
+commands/acceptance-init.md	LO-TRINH.html	may-ve	267	cung-ten-tep-o-kho-tieu-thu
+commands/acceptance-init.md	PRODUCT-MAP.md	may-ve	270	cung-ten-tep-o-kho-tieu-thu
+commands/acceptance-report.md	README.md	tai-lieu-song	30	cung-ten-tep-o-kho-tieu-thu
+commands/approve.md	LO-TRINH.html	may-ve	153	cung-ten-tep-o-kho-tieu-thu
+commands/approve.md	PRODUCT-MAP.md	may-ve	157	cung-ten-tep-o-kho-tieu-thu
+commands/observed.md	LO-TRINH.html	may-ve	52	cung-ten-tep-o-kho-tieu-thu
+commands/observed.md	PRODUCT-MAP.md	may-ve	52	cung-ten-tep-o-kho-tieu-thu
+commands/signoff.md	LO-TRINH.html	may-ve	286	cung-ten-tep-o-kho-tieu-thu
+commands/signoff.md	PRODUCT-MAP.md	may-ve	298	cung-ten-tep-o-kho-tieu-thu
+commands/signoff.md	tests/scripts/fixtures/routing-baseline.txt	bo-kiem	300	
+commands/signoff.md	tests/scripts/gate-card-lmcms.test.mjs	bo-kiem	246	
+commands/signoff.md	tests/scripts/routing-baseline.mjs	bo-kiem	245	
+commands/start.md	LO-TRINH.html	may-ve	150	cung-ten-tep-o-kho-tieu-thu
+design-floor/HOP-DONG-NHAP.md	tests/design-floor/dong-bo.mjs	bo-kiem	166	
+design-floor/HOP-DONG-NHAP.md	tests/design-floor/run-tests.sh	bo-kiem	160	
+design-floor/HOP-DONG-NHAP.md	tests/design-floor/tu-thu.mjs	bo-kiem	143	
+design-floor/LOCAL-PATCHES.md	tests/design-floor/dong-bo.mjs	bo-kiem	21	
+design-floor/upstream.lock.json	tests/design-floor/rao-dong.mjs	bo-kiem	3	
+design-floor/vendor/design-os/src/core/ds-guidelines-model.ts	CONTEXT.md	tai-lieu-song	76	cung-ten-tep-o-kho-tieu-thu
+diagram-design/.claude-plugin/plugin.json	docs/reference/diagram-skin.md	tai-lieu-song	4	
+diagram-design/skills/diagram-design/assets/example-flowchart-dark.html	CLAUDE.md	tai-lieu-song	125	cung-ten-tep-o-kho-tieu-thu
+diagram-design/skills/diagram-design/assets/example-flowchart-full.html	CLAUDE.md	tai-lieu-song	106	cung-ten-tep-o-kho-tieu-thu
+diagram-design/skills/diagram-design/assets/example-flowchart.html	CLAUDE.md	tai-lieu-song	125	cung-ten-tep-o-kho-tieu-thu
+diagram-design/skills/diagram-design/assets/example-nested-dark.html	CLAUDE.md	tai-lieu-song	117	cung-ten-tep-o-kho-tieu-thu
+diagram-design/skills/diagram-design/assets/example-nested-full.html	CLAUDE.md	tai-lieu-song	115	cung-ten-tep-o-kho-tieu-thu
+diagram-design/skills/diagram-design/assets/example-nested.html	CLAUDE.md	tai-lieu-song	121	cung-ten-tep-o-kho-tieu-thu
+diagram-design/skills/diagram-design/LOCAL-PATCHES.md	docs/reference/diagram-skin.md	tai-lieu-song	84	
+diagram-design/skills/diagram-design/LOCAL-PATCHES.md	tests/scripts/label-occlusion.test.mjs	bo-kiem	109	
+diagram-design/skills/diagram-design/references/onboarding.md	docs/reference/diagram-skin.md	tai-lieu-song	123	
+diagram-design/skills/diagram-design/references/onboarding.md	README.md	tai-lieu-song	237	cung-ten-tep-o-kho-tieu-thu
+diagram-design/skills/diagram-design/references/style-guide.md	docs/reference/diagram-skin.md	tai-lieu-song	18	
+diagram-design/skills/diagram-design/references/type-nested.md	CLAUDE.md	tai-lieu-song	3	cung-ten-tep-o-kho-tieu-thu
+diagram-design/skills/diagram-design/SKILL.md	docs/reference/diagram-skin.md	tai-lieu-song	44	
+dieu-phoi/README.md	docs/plans/2026-10-11-hat-giong-lop-mod-ve-sau-dp6.md	so-lam-viec	218	
+dieu-phoi/README.md	docs/research/known-limits-ledger.tsv	so-lam-viec	209	
+dieu-phoi/README.md	docs/superpowers/specs/2026-10-05-orchestrator-workers-hai-tang-design.md	so-lam-viec	3	
+dieu-phoi/README.md	LO-TRINH.html	may-ve	306	cung-ten-tep-o-kho-tieu-thu
+dieu-phoi/README.md	tests/dieu-phoi/kiem-khung.mjs	bo-kiem	115	
+dieu-phoi/README.md	tests/dieu-phoi/rut-lenh-that.mjs	bo-kiem	223	
+dieu-phoi/scripts/kiem-chuyen.mjs	LO-TRINH.html	may-ve	236	cung-ten-tep-o-kho-tieu-thu
+dieu-phoi/scripts/mod-luat.mjs	tests/dieu-phoi/kiem-mod.mjs	bo-kiem	4	
+dieu-phoi/scripts/nguon-hang.mjs	LO-TRINH.html	may-ve	170	cung-ten-tep-o-kho-tieu-thu
+dieu-phoi/scripts/tin-giao.mjs	docs/plans/2026-10-17-hat-giong-luat-giao-tiep-giua-cac-phien.md	so-lam-viec	12	
+evals/goi-thang-ten/scaffold.sh	tests/scripts/run-tests.sh	bo-kiem	3	
+evals/kich-hoat-tu-ngu-canh/scaffold.sh	tests/scripts/run-tests.sh	bo-kiem	3	
+evals/README.md	docs/findings/2026-08-30-ra-soat-tinh-nang-moi-anthropic.md	so-lam-viec	13	
+feature-loop/.claude-plugin/plugin.json	CHANGELOG.md	nhat-ky	4	cung-ten-tep-o-kho-tieu-thu
+feature-loop/README.md	GUIDE.md	tai-lieu-song	3	cung-ten-tep-o-kho-tieu-thu
+feature-loop/scripts/lib/dung-lai-model.mjs	CONTEXT.md	tai-lieu-song	6	cung-ten-tep-o-kho-tieu-thu
+feature-loop/scripts/lib/dung-lai-model.mjs	tests/scripts/repin-lane-dung-lai-model.test.mjs	bo-kiem	3	
+feature-loop/scripts/lib/hoi-ngoai-inputs.mjs	docs/findings/assets/2026-10-01-quet-judgment-hoi-ngoai-inputs.cjs	so-lam-viec	8	
+feature-loop/scripts/lib/lan-khoa.mjs	CLAUDE.md	tai-lieu-song	4	cung-ten-tep-o-kho-tieu-thu
+feature-loop/scripts/pr-san-sang.mjs	docs/plans/2026-10-11-hat-giong-northstar-tu-dot-crm-sau-14-10.md	so-lam-viec	3	
+feature-loop/scripts/repin-lane.mjs	tests/scripts/repin-lane-lop-cu.test.mjs	bo-kiem	116	
+feature-loop/scripts/s4-args.mjs	CLAUDE.md	tai-lieu-song	387	cung-ten-tep-o-kho-tieu-thu
+feature-loop/scripts/s4-args.mjs	docs/findings/2026-08-29-dieu-tra-luat-hoi-tu.md	so-lam-viec	5	
+feature-loop/skills/feature-loop/SKILL.md	CLAUDE.md	tai-lieu-song	600	cung-ten-tep-o-kho-tieu-thu
+feature-loop/skills/feature-loop/SKILL.md	CONTEXT.md	tai-lieu-song	319	cung-ten-tep-o-kho-tieu-thu
+feature-loop/skills/feature-loop/SKILL.md	docs/findings/2026-07-26-feature-loop-khong-tu-loop.md	so-lam-viec	10	
+feature-loop/skills/feature-loop/SKILL.md	docs/findings/2026-08-25-retro-classifier-va-nghi-thuc-khong-hoc.md	so-lam-viec	497	
+feature-loop/skills/feature-loop/SKILL.md	docs/plans/2026-08-24-hat-giong-khop-vong-dac-ta-ux.md	so-lam-viec	327	
+feature-loop/skills/feature-loop/SKILL.md	LO-TRINH.html	may-ve	225	cung-ten-tep-o-kho-tieu-thu
+feature-loop/workflows/acceptance-verify.js	CLAUDE.md	tai-lieu-song	1172	cung-ten-tep-o-kho-tieu-thu
+feature-loop/workflows/acceptance-verify.js	tests/workflows/chot-truong-nguoi.test.mjs	bo-kiem	115	
+lib/chan-lo-trinh.cjs	docs/superpowers/specs/2026-10-16-kho-cam-ket-co-lo-trinh-design.md	so-lam-viec	4	
+lib/context-glossary.js	CONTEXT.md	tai-lieu-song	143	cung-ten-tep-o-kho-tieu-thu
+lib/design-detect.mjs	tests/design-eval/khong-do-duoc.test.mjs	bo-kiem	92	
+lib/evidence-core.cjs	tests/scripts/mirror-sync-grandfather.mjs	bo-kiem	360	
+lib/nhan-canh-gay.cjs	CONTEXT.md	tai-lieu-song	6	cung-ten-tep-o-kho-tieu-thu
+lib/out-of-contract.cjs	tests/workflows/doc-ghi-troi.test.mjs	bo-kiem	75	
+lib/workspace-record.cjs	PRODUCT-MAP.md	may-ve	309	cung-ten-tep-o-kho-tieu-thu
+road-map/README.md	docs/findings/2026-10-14-kien-truc-roadmap-plugin.md	so-lam-viec	65	
+road-map/README.md	LO-TRINH.html	may-ve	16	cung-ten-tep-o-kho-tieu-thu
+scripts/ban-do-khuon.cjs	README.md	tai-lieu-song	20	cung-ten-tep-o-kho-tieu-thu
+scripts/cat-luot.mjs	docs/superpowers/specs/2026-10-08-lo-trinh-cat-luot-design.md	so-lam-viec	3	
+scripts/cat-luot.mjs	docs/superpowers/specs/2026-10-11-lo-trinh-chi-viec-phat-trien-design.md	so-lam-viec	14	
+scripts/cat-luot.mjs	docs/superpowers/specs/2026-10-11-vong-la-mot-ket-qua-design.md	so-lam-viec	10	
+scripts/cat-luot.mjs	docs/superpowers/specs/2026-10-24-o-mo-viec-mang-nguon-design.md	so-lam-viec	19	
+scripts/cat-luot.mjs	docs/superpowers/specs/2026-10-28-vung-giao-viec-tu-cat-luot-design.md	so-lam-viec	23	
+scripts/co-hop-dong.cjs	docs/superpowers/specs/2026-10-12-vong-mo-thang-bang-feature-loop-design.md	so-lam-viec	4	
+scripts/design-floor-bac.mjs	docs/superpowers/specs/2026-10-27-design-floor-moc-s0-s1-design.md	so-lam-viec	3	
+scripts/design-floor-s1.mjs	docs/superpowers/specs/2026-10-27-design-floor-moc-s0-s1-design.md	so-lam-viec	3	
+scripts/design-floor-s3.mjs	docs/superpowers/specs/2026-10-28-design-floor-moc-s3-s4-design.md	so-lam-viec	4	
+scripts/design-floor-s4.mjs	docs/superpowers/specs/2026-10-28-design-floor-moc-s3-s4-design.md	so-lam-viec	3	
+scripts/do-vong.mjs	docs/superpowers/specs/2026-10-15-lo-trinh-gio-may-design.md	so-lam-viec	3	
+scripts/eval-coverage-lint.js	CONTEXT.md	tai-lieu-song	325	cung-ten-tep-o-kho-tieu-thu
+scripts/evidence-page.js	LO-TRINH.html	may-ve	133	cung-ten-tep-o-kho-tieu-thu
+scripts/gate-card.js	CLAUDE.md	tai-lieu-song	1399	cung-ten-tep-o-kho-tieu-thu
+scripts/gate-card.js	CONTEXT.md	tai-lieu-song	938	cung-ten-tep-o-kho-tieu-thu
+scripts/gate-card.js	tests/plugins/run-tests.sh	bo-kiem	371	
+scripts/gate-card.js	tests/scripts/gate-card-dec-key.test.mjs	bo-kiem	530	
+scripts/gio-may.mjs	docs/superpowers/specs/2026-10-15-lo-trinh-gio-may-design.md	so-lam-viec	2	
+scripts/khong-can-nguoi.mjs	tests/plugins/lan-v.test.mjs	bo-kiem	22	
+scripts/lo-trinh-khoi-tao.mjs	docs/superpowers/specs/2026-10-15-kho-moi-cai-goi-road-map-design.md	so-lam-viec	5	
+scripts/lo-trinh-khoi-tao.mjs	LO-TRINH.html	may-ve	147	cung-ten-tep-o-kho-tieu-thu
+scripts/lo-trinh-khoi-tao.mjs	PRODUCT-MAP.md	may-ve	161	cung-ten-tep-o-kho-tieu-thu
+scripts/lo-trinh.mjs	docs/superpowers/specs/2026-10-02-viec-ke-theo-plan-design.md	so-lam-viec	3	
+scripts/lo-trinh.mjs	LO-TRINH.html	may-ve	36	cung-ten-tep-o-kho-tieu-thu
+scripts/luat-san-pham.cjs	tests/scripts/luat-san-pham.ca.mjs	bo-kiem	8	
+scripts/pre-merge-check.sh	tests/scripts/hang-pr.test.mjs	bo-kiem	15	
+scripts/product-map.mjs	CONTEXT.md	tai-lieu-song	119	cung-ten-tep-o-kho-tieu-thu
+scripts/product-map.mjs	LO-TRINH.html	may-ve	497	cung-ten-tep-o-kho-tieu-thu
+scripts/product-map.mjs	PRODUCT-MAP.md	may-ve	534	cung-ten-tep-o-kho-tieu-thu
+scripts/start-scan.mjs	docs/superpowers/specs/2026-08-03-start-command-design.md	so-lam-viec	3	
+scripts/start-scan.mjs	PRODUCT-MAP.md	may-ve	663	cung-ten-tep-o-kho-tieu-thu
+scripts/tin-hieu-khoa.cjs	docs/superpowers/specs/2026-10-11-cua-tin-hieu-gom-nhom-design.md	so-lam-viec	3	
+scripts/tin-hieu.mjs	docs/superpowers/specs/2026-10-11-cua-tin-hieu-gom-nhom-design.md	so-lam-viec	4	
+scripts/tin-hieu.mjs	LO-TRINH.html	may-ve	103	cung-ten-tep-o-kho-tieu-thu
+scripts/tri-thuc-ghi.mjs	docs/superpowers/specs/2026-10-24-ghi-tri-thuc-design.md	so-lam-viec	3	
+scripts/tri-thuc-nguon.cjs	docs/superpowers/specs/2026-10-24-o-mo-viec-mang-nguon-design.md	so-lam-viec	2	
+scripts/tri-thuc-tra.cjs	docs/superpowers/specs/2026-10-24-thiet-ke-nap-tri-thuc-design.md	so-lam-viec	4	
+scripts/tri-thuc-tra.cjs	docs/superpowers/specs/2026-10-25-vong-don-le-tra-tri-thuc-design.md	so-lam-viec	12	
+scripts/tri-thuc.mjs	docs/superpowers/specs/2026-10-24-kho-tri-thuc-va-lint-design.md	so-lam-viec	3	
+skills/acceptance/references/human-facing-language.md	CLAUDE.md	tai-lieu-song	140	cung-ten-tep-o-kho-tieu-thu
+skills/acceptance/references/human-facing-language.md	CONTEXT.md	tai-lieu-song	429	cung-ten-tep-o-kho-tieu-thu
+skills/acceptance/references/human-facing-language.md	docs/specs/workflow-v2-spec.md	so-lam-viec	3	
+skills/acceptance/references/human-facing-language.md	tests/scripts/moi-cong-khong-qua-nut.test.mjs	bo-kiem	187	
+skills/acceptance/references/lo-trinh-du-lieu.md	LO-TRINH.html	may-ve	242	cung-ten-tep-o-kho-tieu-thu
+skills/acceptance/references/measure-birth.md	docs/research/known-limits-ledger.tsv	so-lam-viec	101	
+skills/acceptance/references/measure-birth.md	tests/scripts/chup-ho-so-da-thong.test.mjs	bo-kiem	95	
+skills/acceptance/references/measure-birth.md	tests/scripts/run-tests.sh	bo-kiem	72	
+skills/acceptance/references/product-invariants-template.md	CLAUDE.md	tai-lieu-song	16	cung-ten-tep-o-kho-tieu-thu
+skills/acceptance/references/stranger-drive-template.md	docs/reference/lai-thu-nguoi-la.md	tai-lieu-song	7	
+skills/acceptance/references/stranger-drive-template.md	docs/superpowers/plans/2026-08-13-de-bai-lai-thu-nguoi-la.md	so-lam-viec	8	
+skills/acceptance/references/tri-thuc-template.md	docs/findings/2026-10-24-tang-tri-thuc-llm-wiki.md	so-lam-viec	5	
+skills/acceptance/references/ux-spec-template.md	docs/plans/2026-08-24-hat-giong-khop-vong-dac-ta-ux.md	so-lam-viec	8	
+skills/acceptance/SKILL.md	CONTEXT.md	tai-lieu-song	92	cung-ten-tep-o-kho-tieu-thu
+skills/morphological-scan/references/product-context-template.md	CLAUDE.md	tai-lieu-song	3	cung-ten-tep-o-kho-tieu-thu
+skills/morphological-scan/SKILL.md	CLAUDE.md	tai-lieu-song	14	cung-ten-tep-o-kho-tieu-thu
+skills/uat-session/SKILL.md	docs/reference/lai-thu-nguoi-la.md	tai-lieu-song	37	
+skills/uat-session/SKILL.md	LO-TRINH.html	may-ve	129	cung-ten-tep-o-kho-tieu-thu
+skills/uat-session/SKILL.md	PRODUCT-MAP.md	may-ve	129	cung-ten-tep-o-kho-tieu-thu
+tri-thuc/README.md	docs/findings/2026-10-24-tang-tri-thuc-llm-wiki.md	so-lam-viec	13	

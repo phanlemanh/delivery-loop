@@ -6,7 +6,12 @@ import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const GOC_KIT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+// Hai gốc, không lẫn: GOC_KHO là gốc kho (nơi bộ đo và node_modules của nó sống); GOC_KIT là gốc PLUGIN lõi —
+// mọi đường của khối `vendor` (bản vendored, vỏ, bản gói, sổ vá) và `tep_va` của sổ khai tương đối với gốc này.
+export const GOC_KHO = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+export const GOC_KIT = join(GOC_KHO, 'plugins', 'acceptance-gate');
+// Gói npm ghim của bộ đo — bản sao bố cục kit gắn nó vào <gốc>/tests/design-floor/node_modules.
+export const NODE_MODULES_DO = join(GOC_KHO, 'tests', 'design-floor', 'node_modules');
 export const DUONG_HOP_DONG = join(GOC_KIT, 'design-floor/HOP-DONG-NHAP.md');
 export const DUONG_KHOA = join(GOC_KIT, 'design-floor/upstream.lock.json');
 

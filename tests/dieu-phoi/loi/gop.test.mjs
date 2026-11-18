@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { ciXanh, gop, xetGop } from '../../../dieu-phoi/scripts/gop.mjs';
+import { ciXanh, gop, xetGop } from '../../../plugins/dispatch/scripts/gop.mjs';
 import { CFG_PHAT_LICH } from './mau-thu.mjs';
 
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp-gop-')));

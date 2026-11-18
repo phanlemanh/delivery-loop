@@ -1,7 +1,7 @@
 // s4-args-not-run.test.mjs — thuoc-co-cua AC-1 (E1): bộ sinh args NGHE lời khai
 // `status: not-run` của hồ sơ. Ô tự khai không-chạy bị loại khỏi `args.evals` và được
 // GỌI TÊN trong `args.evalsNotRun` — cùng hàm `machineEvalIdsSkipped` của
-// lib/evidence-core.cjs mà làn ghim lại và bên đọc pin dùng, không chép luật.
+// plugins/acceptance-gate/lib/evidence-core.cjs mà làn ghim lại và bên đọc pin dùng, không chép luật.
 //
 // Bốn ca trên CÙNG một fixture code-sinh:
 //   NRS1 đối chứng dương · NRS2 chiều đỏ (gỡ dòng khai → kết luận lật) ·
@@ -16,7 +16,7 @@ import path from 'node:path';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');
-const S4ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
+const S4ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
 let pass = 0, fail = 0;
 const ok = m => { console.log(`  PASS: ${m}`); pass += 1; };
 const bad = (m, d) => { console.log(`  FAIL: ${m}${d ? ` (${d})` : ''}`); fail += 1; };
@@ -51,7 +51,7 @@ function buildRepo(evalsYamlBody) {
   return d;
 }
 
-const run = (d, agRoot = KIT) => {
+const run = (d, agRoot = `${KIT}/plugins/acceptance-gate`) => {
   const out = path.join(d, 'args.json');
   execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d, '--ag-root', agRoot, '--out', out, '--diff-base', 'main'],
     { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
@@ -103,13 +103,13 @@ let nrs1 = null;
 
 // ── NRS4 (một nguồn): thay thân machineEvalIdsSkipped bằng `return [];` trong bản
 //    sao cây acceptance-gate → kết luận của NRS1 LẬT. Chép TRỌN thư mục (lib/ và
-//    skills/acceptance/references/), không danh sách tệp tay.
+//    plugins/acceptance-gate/skills/acceptance/references/), không danh sách tệp tay.
 {
   const d = buildRepo(EVALS_KHAI);
   try {
     const ag = path.join(TMP, 'ag-mutant');
-    cpSync(path.join(KIT, 'lib'), path.join(ag, 'lib'), { recursive: true });
-    cpSync(path.join(KIT, 'skills', 'acceptance', 'references'), path.join(ag, 'skills', 'acceptance', 'references'), { recursive: true });
+    cpSync(path.join(KIT, 'plugins/acceptance-gate/lib'), path.join(ag, 'lib'), { recursive: true });
+    cpSync(path.join(KIT, 'plugins/acceptance-gate/skills', 'acceptance', 'references'), path.join(ag, 'skills', 'acceptance', 'references'), { recursive: true });
     const f = path.join(ag, 'lib', 'evidence-core.cjs');
     const src = readFileSync(f, 'utf8');
     const KIM = 'function machineEvalIdsSkipped(';

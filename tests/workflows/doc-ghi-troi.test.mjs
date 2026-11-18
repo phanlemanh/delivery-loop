@@ -1,7 +1,7 @@
 // doc-ghi-troi.test.mjs — hai lỗi «bên viết / bên đọc trôi nhau» crm đo đêm 07–08/10 (kit 2.24.0).
 //
 //   DG* — mục ngoài hợp đồng MANG SANG: tác tử tổng hợp viết `- **<title>** (r1)` (nhãn NGOÀI hai dấu sao),
-//         bộ đọc thẻ (lib/out-of-contract.cjs) chỉ nhận `- **<title>**` trọn dòng → thẻ Cổng 2 giấu mục
+//         bộ đọc thẻ (plugins/acceptance-gate/lib/out-of-contract.cjs) chỉ nhận `- **<title>**` trọn dòng → thẻ Cổng 2 giấu mục
 //         (ca-chap-chon-cach-ly r2 / crm be8abc7e4: 14/15 mục vô hình). Bước chèn mục mang sang của workflow
 //         dùng cùng biểu thức để chống trùng → in lại một bản thứ hai.
 //   DR* — `run_id` rỗng: tác tử máy trả `runId` là chuỗi `""`, bên viết coi là có giá trị (chuỗi hai ký tự),
@@ -21,13 +21,13 @@ import { runWorkflow, check, summary } from './harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const WF = path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const SRC = readFileSync(WF, 'utf8');
-const LIB = path.join(ROOT, 'lib', 'out-of-contract.cjs');
+const LIB = path.join(ROOT, 'plugins/acceptance-gate/lib', 'out-of-contract.cjs');
 const LIB_SRC = readFileSync(LIB, 'utf8');
 const req = createRequire(import.meta.url);
 const ooc = req(LIB);
-const core = req(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+const core = req(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
 const VC = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2';
 const soLan = (hay, kim) => hay.split(kim).length - 1;
 
@@ -203,9 +203,9 @@ console.log('DR bên đọc: khối eval khai run_id rỗng → ghi chú có tê
     writeFileSync(path.join(d, '_acceptance', 'config.yaml'), CFG);
     const f = path.join(d, '_acceptance', 'demo', 'evidence-report.md');
     writeFileSync(f, bao('""', '""'));
-    const r = spawnSync('node', [path.join(ROOT, 'scripts', 'recheck-evidence.cjs'), f], { encoding: 'utf8', cwd: d });
+    const r = spawnSync('node', [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), f], { encoding: 'utf8', cwd: d });
     writeFileSync(f, bao('minted-demo-E3-r2', 'minted-demo-E7-r2'));
-    const rDoi = spawnSync('node', [path.join(ROOT, 'scripts', 'recheck-evidence.cjs'), f], { encoding: 'utf8', cwd: d });
+    const rDoi = spawnSync('node', [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), f], { encoding: 'utf8', cwd: d });
     check('DR4 recheck: bản rỗng in «NOTE … run_id rỗng … E3, E7» và thoát 0; bản đủ thoát 0, không NOTE',
       r.status === 0 && /NOTE[^\n]*run_id rỗng[^\n]*E3, E7/.test(r.stderr) && rDoi.status === 0 && !/run_id rỗng/.test(rDoi.stderr), `${r.status}/${rDoi.status} ${(r.stderr + rDoi.stderr).slice(0, 300)}`);
   } finally { rmSync(d, { recursive: true, force: true }); }

@@ -13,8 +13,10 @@ import path, { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const KIT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+// Gốc plugin lõi — bố cục mà `kit` của mọi ca mô hình hoá (scripts/ · lib/ · design-floor/ · skills/ …); KIT là gốc kho.
+const AG = join(KIT, 'plugins', 'acceptance-gate');
 const TMP = mkdtempSync(join(tmpdir(), 'df-moc5-'));
-const UI = join(KIT, 'design-floor', 'dist', 'ui.mjs');
+const UI = join(AG, 'design-floor', 'dist', 'ui.mjs');
 const SLUG = 'vd';
 const HOP_DONG_FL5 = join(KIT, '_acceptance', 'design-floor-moc-s3-s4', 'contract.md');
 const bam = (p) => createHash('sha256').update(readFileSync(p)).digest('hex');
@@ -102,11 +104,10 @@ function vo() {
 // kết từng tệp; tệp bị đột biến được chép rồi sửa. Chuỗi cũ phải có (không thì đột biến hỏng).
 function kitDotBien(tep, ...cap) {
   const K = mkdtempSync(join(TMP, 'kit-'));
-  for (const d of ['lib', 'design-floor', 'skills', 'feature-loop', 'commands', 'hooks', 'tests', 'docs', '_acceptance']) if (existsSync(join(KIT, d))) symlinkSync(join(KIT, d), join(K, d));
-  for (const f of ['CONTEXT.md', 'package.json']) if (existsSync(join(KIT, f))) symlinkSync(join(KIT, f), join(K, f));
+  for (const d of readdirSync(AG)) if (d !== 'scripts') symlinkSync(join(AG, d), join(K, d));
   mkdirSync(join(K, 'scripts'));
-  for (const f of readdirSync(join(KIT, 'scripts'))) if (f !== tep) symlinkSync(join(KIT, 'scripts', f), join(K, 'scripts', f));
-  let noi = readFileSync(join(KIT, 'scripts', tep), 'utf8');
+  for (const f of readdirSync(join(AG, 'scripts'))) if (f !== tep) symlinkSync(join(AG, 'scripts', f), join(K, 'scripts', f));
+  let noi = readFileSync(join(AG, 'scripts', tep), 'utf8');
   for (const [cu, moi] of cap) {
     if (!noi.includes(cu)) throw new Error(`đột biến hỏng: không thấy «${cu.slice(0, 60)}» trong ${tep}`);
     noi = noi.split(cu).join(moi);
@@ -157,8 +158,8 @@ function rangGate({ skill, lenhS4, hopDong, loTrinh }) {
 }
 const nguonThat = () => ({
   skill: readFileSync(SKILL, 'utf8'),
-  lenhS4: readFileSync(join(KIT, 'scripts', 'design-floor-s4.mjs'), 'utf8'),
-  hopDong: readFileSync(join(KIT, 'design-floor', 'HOP-DONG-NHAP.md'), 'utf8'),
+  lenhS4: readFileSync(join(AG, 'scripts', 'design-floor-s4.mjs'), 'utf8'),
+  hopDong: readFileSync(join(AG, 'design-floor', 'HOP-DONG-NHAP.md'), 'utf8'),
   loTrinh: JSON.parse(readFileSync(join(KIT, 'docs', 'plans', 'lo-trinh-kit.json'), 'utf8')),
 });
 const chenSkill = (n) => ({ ...n, skill: n.skill.replace('<!-- DESIGN-FLOOR-S4>>> -->', 'node ui.mjs ui gate {dich}\n<!-- DESIGN-FLOOR-S4>>> -->') });
@@ -201,16 +202,16 @@ function vongMau(kit) {
   gitR(R, 'add', '-A');
   gitR(R, 'commit', '-qm', 'S4 + ký');
   // Làn ghim của kit chạy eval E1 = lệnh S4 thật (hay bản đột biến) và ghi pin; rồi chỉ commit hồ sơ.
-  const lan = spawnSync(process.execPath, [join(KIT, 'feature-loop', 'scripts', 'repin-lane.mjs'), '--root', R, '--ag-root', KIT, '--slug', SLUG, '--reason', 'vòng mẫu', '--write'], { encoding: 'utf8' });
+  const lan = spawnSync(process.execPath, [join(KIT, 'plugins', 'feature-loop', 'scripts', 'repin-lane.mjs'), '--root', R, '--ag-root', AG, '--slug', SLUG, '--reason', 'vòng mẫu', '--write'], { encoding: 'utf8' });
   if (lan.status !== 0) return { R, loi: `làn ghim thoát ${lan.status}: ${(lan.stderr || '').trim().split('\n').slice(-2).join(' ')}` };
   gitR(R, 'add', '--', '_acceptance');
   gitR(R, 'commit', '-qm', 'ghim');
-  const pm = spawnSync('bash', [join(KIT, 'scripts', 'pre-merge-check.sh'), R, '--base', 'main'], { encoding: 'utf8' });
+  const pm = spawnSync('bash', [join(AG, 'scripts', 'pre-merge-check.sh'), R, '--base', 'main'], { encoding: 'utf8' });
   return { R, pm: `${pm.stdout || ''}${pm.stderr || ''}`, ec: pm.status };
 }
 
 // ── khối SKILL cuối S3 ─────────────────────────────────────────────────────────────────────────────
-const SKILL = join(KIT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const SKILL = join(KIT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 function boKhoi(p, ten) {
   const md = readFileSync(p, 'utf8');
   const a = md.indexOf(`<!-- <<<${ten} -->`);
@@ -229,7 +230,7 @@ function kiemSkillS3(kit, skillPath) {
   const m = /```\n([\s\S]*?)\n```/.exec(khoi);
   if (!m || !m[1].includes('scripts/design-floor-s3.mjs')) return 'SKILL-S3: khối không gọi scripts/design-floor-s3.mjs';
   const lenh = m[1].trim()
-    .replace('"$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs"', JSON.stringify(join(kit, 'feature-loop', 'scripts', 'resolve-plugin.mjs')))
+    .replace('"$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs"', JSON.stringify(join(KIT, 'plugins', 'feature-loop', 'scripts', 'resolve-plugin.mjs')))
     .replace('--plugin acceptance-gate', `--plugin acceptance-gate --root ${JSON.stringify(kit)}`)
     .replace("'<slug>'", SLUG);
   const A = kho({ bac: 'M2', vong: { 'web/p.html': TRANG_SAN } });
@@ -405,7 +406,7 @@ const CA = {
       const r = s4(kit, khoO(o.bac, o.cot));
       if (r.ec !== o.ma) loi.push(`S4-BAC ${o.bac} ${o.cot}: thoát ${r.ec}, mong ${o.ma}`);
       else if (o.nhan ? !r.out.includes(o.nhan) : r.out !== '') loi.push(`S4-BAC ${o.bac} ${o.cot}: in «${r.out.trim()}», mong ${o.nhan ? `«${o.nhan}»` : 'không dòng'}`);
-      else if (kit === KIT) console.log(`PASS: S4-BAC ${o.bac} ${o.cot}`);
+      else if (kit === AG) console.log(`PASS: S4-BAC ${o.bac} ${o.cot}`);
     }
     return loi.length ? loi.join(' · ') : null;
   },
@@ -488,7 +489,7 @@ const NHAN = {
   'BAC-FLOOR': { xanh: ['BAC-FLOOR'], dot: [['BAC-FLOOR-DOT', () => kitDotBien('design-floor-bac.mjs', ['if (!r.floor) process.stderr.write(', 'if (false) process.stderr.write(']), 'BAC-FLOOR', 'BAC-FLOOR: kho chưa nối in stderr']] },
 };
 
-function chayCa(id, kit = KIT, them = {}) {
+function chayCa(id, kit = AG, them = {}) {
   try {
     if (them.vongDot) return vongMauDot(them.vongDot);
     return CA[id](kit, them);
@@ -512,7 +513,7 @@ for (const nhan of chi) {
     let loi;
     try {
       const d = dung();
-      loi = typeof d === 'string' ? chayCa(ca, d) : chayCa(ca, KIT, d);
+      loi = typeof d === 'string' ? chayCa(ca, d) : chayCa(ca, AG, d);
     } catch (e) {
       loi = `đột biến không dựng được — ${e.message}`;
     }

@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.join(HERE, '..', '..');
-export const LANE = path.join(ROOT, 'feature-loop', 'scripts', 'repin-lane.mjs');
+export const LANE = path.join(ROOT, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs');
 
 // opts: { config: dòng YAML thêm dưới feature_loop (thụt 2), suite: thân suite.sh, suiteCmd: lệnh
 //         suite thay `sh suite.sh`, extraSuites: [{key, cmd}], evals: [{id, cmd, body?, sh?, yaml?, paths?}],
@@ -47,7 +47,7 @@ export function mkKho(opts = {}) {
     `---\nschema_version: 1\nfeature_slug: feat\nverdict: PASS\nverified_commit: ${H1}\nhuman_signoff: Manh 2026-10-01\n---\n\n## Evidence\n${evals.map(e => `- eval: ${e.id}\n  run_id: r1-E1\n  exit_code: 0\n  verifier: config:executors.script.${e.cmd}\n  verified_at: 2026-10-01\n`).join('')}\n## Iterations\n\nRound 1 — PASS.\n`);
   git('add', '-A'); git('commit', '-qm', 'evidence');
   const laneFile = opts.lane || LANE;
-  const agRoot = opts.agRoot || ROOT;
+  const agRoot = opts.agRoot || path.join(ROOT, 'plugins/acceptance-gate');
   const envOf = (extraEnv) => ({ ...process.env, GG_DAU: dau, ...(extraEnv || {}) });
   // o.laneFile / o.agRoot: chạy một bản làn khác (bản archive trước vòng) trên CÙNG kho.
   const lane = (args, o = {}) => spawnSync(process.execPath, [o.laneFile || laneFile, '--root', root, '--ag-root', o.agRoot || agRoot, '--slug', 'feat', ...args],

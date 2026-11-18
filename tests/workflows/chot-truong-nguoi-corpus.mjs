@@ -6,7 +6,7 @@
 //                       CHOT-TRUONG-NGUOI (sandbox workflow không có import — test rút, không chép).
 //   kiemIm(truoc, sau)  phép chiều im: dòng khác nhau chỉ được là dòng trường của bốn khoá,
 //                       cùng số dòng — theo NGỮ PHÁP DÒNG của
-//                       bên đọc (lib/evidence-core.cjs: `^\s*(-\s+)?khoá\s*[:=]`, mọi cột,
+//                       bên đọc (plugins/acceptance-gate/lib/evidence-core.cjs: `^\s*(-\s+)?khoá\s*[:=]`, mọi cột,
 //                       không phân biệt hoa thường). Khuôn đổi 23/09 (owner chọn «đổi khuôn»).
 //
 // CLI (chiều im trên kho khác, chỉ ĐỌC bằng git show — không ghi byte nào vào kho đó):
@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 export const KHOA_BON = ['human_signoff', 'human_override', 'bypass_ack', 'verified_at'];
-const WF = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 
 export function napChot(src) {
   const a = src.indexOf('// <<<CHOT-TRUONG-NGUOI');

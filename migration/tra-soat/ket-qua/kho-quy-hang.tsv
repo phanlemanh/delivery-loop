@@ -1,0 +1,52 @@
+# máy sinh bởi migration/tra-soat/kho-tieu-thu.mjs — quy-hang @ eedec225 (2026-11-11), kit @ 0c4e503b — đừng sửa tay
+tep	dong	loai	gay	chu	tep_kit
+_acceptance/config.yaml	39	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	feature-loop/scripts/resolve-plugin.mjs	feature-loop/scripts/resolve-plugin.mjs
+_acceptance/config.yaml	39	tim-kit	xem-tay	# trỏ bản cài (tìm bằng feature-loop/scripts/resolve-plugin.mjs --plugin acceptance-gate). Không ghi đường cache.	
+_acceptance/config.yaml	40	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	/scripts/product-map.mjs	scripts/product-map.mjs
+_acceptance/config.yaml	60	tim-kit	xem-tay	san_m1: "CLAUDE_PLUGIN_ROOT=\"${CLAUDE_PLUGIN_ROOT:-$(node packages/ui-lint/tim-kit.mjs)}\" node packages/ui-lint/thu-san.mjs"   # bài thử s	
+_acceptance/config.yaml	61	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	R/scripts/design-floor-s4.mjs	scripts/design-floor-s4.mjs
+_acceptance/config.yaml	61	tim-kit	xem-tay	design_floor: "R=\"${CLAUDE_PLUGIN_ROOT:-$(node packages/ui-lint/tim-kit.mjs)}\" && node \"$R/scripts/design-floor-s4.mjs\" --root ."   # vo	
+_acceptance/config.yaml	62	tim-kit	xem-tay	nang_kit: "node --test \"_acceptance/nang-kit-2-36-0/thu/*.test.mjs\""   # nang-kit-2-36-0: mỗi nấc kit một cặp hai chiều; kit từ CLAUDE_PLU	
+_acceptance/config.yaml	64	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	R/scripts/product-map.mjs	scripts/product-map.mjs
+_acceptance/config.yaml	64	tim-kit	xem-tay	product_map_kit: "R=\"${CLAUDE_PLUGIN_ROOT:-$(node packages/ui-lint/tim-kit.mjs)}\" && node \"$R/scripts/product-map.mjs\" --root . --check"	
+_acceptance/config.yaml	85	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	R/scripts/design-floor-s4.mjs	scripts/design-floor-s4.mjs
+_acceptance/config.yaml	85	tim-kit	xem-tay	floor: "R=\"${CLAUDE_PLUGIN_ROOT:-$(node packages/ui-lint/tim-kit.mjs)}\" && node \"$R/scripts/design-floor-s4.mjs\" --root ."   # S4: chặn 	
+_acceptance/config.yaml	86	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	R/scripts/design-floor-khuon.mjs	scripts/design-floor-khuon.mjs
+_acceptance/config.yaml	86	tim-kit	xem-tay	khuon: "R=\"${CLAUDE_PLUGIN_ROOT:-$(node packages/ui-lint/tim-kit.mjs)}\" && node \"$R/scripts/design-floor-khuon.mjs\" --kiem --root ."   #	
+_acceptance/config.yaml	148	lenh-skill	doi-ten-plugin	dieu-phoi:mo-dot	
+_acceptance/README.md	2	lenh-skill	giu-ten	acceptance-gate:acceptance	
+_acceptance/README.md	2	lenh-skill	giu-ten	feature-loop:feature-loop	
+.agents/skills/quy-hang-ui/SKILL.md	234	tim-kit	xem-tay	| cổng | Tìm bản kit nghiệm thu đang cài | `packages/ui-lint/tim-kit.mjs` |	
+.claude/settings.json	54	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+.claude/settings.json	57	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+.claude/settings.json	62	id-plugin	doi-ten-cho	acceptance-gate@acceptance-gate-kit	
+.claude/settings.json	63	id-plugin	doi-ten-cho	feature-loop@acceptance-gate-kit	
+.claude/settings.json	64	id-plugin	doi-ten-cho	diagram-design@acceptance-gate-kit	
+.claude/settings.json	66	id-plugin	doi-ten-cho-va-plugin	road-map@acceptance-gate-kit	
+.claude/settings.json	67	id-plugin	doi-ten-cho-va-plugin	tri-thuc@acceptance-gate-kit	
+.claude/settings.json	68	id-plugin	doi-ten-cho-va-plugin	dieu-phoi@acceptance-gate-kit	
+.gitattributes	2	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	CLAUDE_PLUGIN_ROOT/scripts/product-map.mjs	scripts/product-map.mjs
+.github/scripts/chan-ghim-ban-that.mjs	12	tim-kit	xem-tay	// Kit tìm qua CLAUDE_PLUGIN_ROOT (luồng đặt) hoặc packages/ui-lint/tim-kit.mjs của kho.	
+.github/scripts/chan-ghim-ban-that.mjs	39	tim-kit	xem-tay	const KIT = process.env.CLAUDE_PLUGIN_ROOT || execFileSync(process.execPath, [join(GOC, "packages/ui-lint/tim-kit.mjs")], { encoding: "utf8"	
+.github/scripts/chan-ghim-ban-that.mjs	41	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	lib/eval-yaml.cjs	lib/eval-yaml.cjs
+.github/scripts/chan-ghim-ban-that.mjs	42	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	lib/evidence-core.cjs	lib/evidence-core.cjs
+.github/workflows/ci.yml	111	ten-cho-hoac-ten-kho	url-kho-hoac-cho	acceptance-gate-kit	
+.github/workflows/ci.yml	113	tim-kit	xem-tay	echo "CLAUDE_PLUGIN_ROOT=$RUNNER_TEMP/kit" >> "$GITHUB_ENV"	
+.github/workflows/ci.yml	125	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	CLAUDE_PLUGIN_ROOT/scripts/pre-merge-check.sh	scripts/pre-merge-check.sh
+.github/workflows/ci.yml	137	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	CLAUDE_PLUGIN_ROOT/scripts/product-map.mjs	scripts/product-map.mjs
+.github/workflows/ghim-lai-ban-that.yml	62	ten-cho-hoac-ten-kho	url-kho-hoac-cho	acceptance-gate-kit	
+.github/workflows/ghim-lai-ban-that.yml	64	tim-kit	xem-tay	echo "CLAUDE_PLUGIN_ROOT=$RUNNER_TEMP/kit" >> "$GITHUB_ENV"	
+.github/workflows/ghim-lai-ban-that.yml	86	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	CLAUDE_PLUGIN_ROOT/feature-loop/scripts/repin-lane.mjs	feature-loop/scripts/repin-lane.mjs
+AGENTS.md	70	lenh-skill	giu-ten	feature-loop:feature-loop	
+LO-TRINH.html	43	lenh-skill	giu-ten	feature-loop:feature-loop	
+LO-TRINH.html	63	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	~/dev/acceptance-gate-kit-v2.37.0/feature-loop/scripts/repin-lane.mjs	feature-loop/scripts/repin-lane.mjs
+LO-TRINH.html	63	ten-cho-hoac-ten-kho	chu-nhac-ten	acceptance-gate-kit	
+LO-TRINH.html	252	duong-dan-vao-kit	goi-plugin-con-qua-goc-loi	~/dev/acceptance-gate-kit-v2.37.0/feature-loop/scripts/repin-lane.mjs	feature-loop/scripts/repin-lane.mjs
+LO-TRINH.html	252	lenh-skill	giu-ten	feature-loop:feature-loop	
+LO-TRINH.html	252	ten-cho-hoac-ten-kho	url-kho-hoac-cho	acceptance-gate-kit	
+packages/ui-lint/tests/tim-kit.test.mjs	6	tim-kit	xem-tay	import { chonBanCai } from "../tim-kit.mjs";	
+packages/ui-lint/tests/tim-kit.test.mjs	8	tim-kit	xem-tay	describe("tim-kit chonBanCai", () => {	
+packages/ui-lint/thu-san.mjs	21	duong-dan-vao-kit	dung-neu-goc-la-ban-cai-gay-neu-goc-la-kho	scripts/design-floor-s4.mjs	scripts/design-floor-s4.mjs
+packages/ui-lint/tim-kit.mjs	3	tim-kit	xem-tay	// (~/.claude/plugins/installed_plugins.json) — không đoán thư mục cache. Dùng khi CLAUDE_PLUGIN_ROOT vắng (tác tử chấm	
+packages/ui-lint/tim-kit.mjs	36	tim-kit	xem-tay	const so = process.env.QUY_HANG_PLUGIN_REGISTRY ?? `${homedir()}/.claude/plugins/installed_plugins.json`;	
+packages/ui-lint/tim-kit.mjs	39	id-plugin	doi-ten-cho	acceptance-gate@acceptance-gate-kit	

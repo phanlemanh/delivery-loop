@@ -57,8 +57,8 @@ const say = (id, ok, why, chi) => {
 const cp = req('node:child_process');
 function banTiem(ten, sua) {
   const ban = mk(`tiem-${ten}-`);
-  fs.cpSync(path.join(ROOT, 'lib'), path.join(ban, 'lib'), { recursive: true });
-  fs.cpSync(path.join(ROOT, 'scripts'), path.join(ban, 'scripts'), { recursive: true });
+  fs.cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(ban, 'plugins/acceptance-gate/lib'), { recursive: true });
+  fs.cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(ban, 'plugins/acceptance-gate/scripts'), { recursive: true });
   for (const [rel, moc, thay] of sua) {
     const f = path.join(ban, rel);
     const src = fs.readFileSync(f, 'utf8');
@@ -79,7 +79,7 @@ function bocTu(agRoot, hopDongText) {
   const r = cp.spawnSync(process.execPath, ['-e',
     'const L=require(process.argv[1]);const fs=require("fs");const t=fs.readFileSync(process.argv[2],"utf8");' +
     'const ac=L.parseACBlock(t);process.stdout.write(JSON.stringify({ids:ac.map(a=>a.id),gwt:ac.map(a=>a.gwt),blind:L.acBlindSpot(t,ac.map(a=>a.id))}))',
-    path.join(agRoot, 'lib', 'ac-line.cjs'), f], { encoding: 'utf8' });
+    path.join(agRoot, 'plugins/acceptance-gate/lib', 'ac-line.cjs'), f], { encoding: 'utf8' });
   try { return JSON.parse(r.stdout); } catch (_) { return { ids: null, loi: String(r.stderr || '').trim().split('\n')[0].slice(0, 120) }; }
 }
 
@@ -95,7 +95,7 @@ const hopDong = (than, muc = 'Criteria') => ['---', 'schema_version: 1', 'slug: 
 // ══ CN07 — ma trận 12 hình dạng khai báo ══════════════════════════════════
 def('CN07', () => {
   const chi = [];
-  const lib = req(path.join(ROOT, 'lib', 'ac-line.cjs'));
+  const lib = req(path.join(ROOT, 'plugins/acceptance-gate/lib', 'ac-line.cjs'));
   if (typeof lib.parseACBlock !== 'function') return say('CN07', false, 'lib.parseACBlock chua ton tai', chi);
   // SỐ Ô KHAI, ghim NGOÀI bảng. Không có dòng này thì xoá một hàng khỏi `O` là mất
   // một assert LẶNG LẼ và ca vẫn in «đủ» — đo được ở lượt chấm 6: xoá hai hàng
@@ -207,7 +207,7 @@ def('CN07', () => {
   // CHIỀU ĐỎ — hoàn nguyên nhánh TIÊU ĐỀ của bộ bóc trên một bản sao. Cây lành
   // phải bóc được ba ca thật ở trên (đối chứng dương, vừa chạy xong); bản tiêm
   // phải ra RỖNG trên cùng fixture. Bằng nhau nghĩa là ca này không đo nhánh ấy.
-  const t = banTiem('cn07-bo-nhanh-tieu-de', [['lib/ac-line.cjs',
+  const t = banTiem('cn07-bo-nhanh-tieu-de', [['plugins/acceptance-gate/lib/ac-line.cjs',
     '    const h = l.match(AC_HEAD);', '    const h = null;']]);
   if (t.loi) return say('CN07', false, t.loi, chi);
   const hdTd = hopDong(THAT_CRM + '\nGiven commit đã đẩy, When chạy lệnh, Then số trả về là 0');
@@ -220,7 +220,7 @@ def('CN07', () => {
   // CHIỀU ĐỎ (2) — RĂNG của ô ranh giới vừa thêm: hoàn nguyên luật đóng khối về
   // `/^#{1,6}\s/` (đóng ở cả h1) trên một bản sao. Bản tiêm phải CẮT thân và LÀM
   // MẤT tag; còn sạch nghĩa là ô kia không đo gì.
-  const t2 = banTiem('cn07-dong-khoi-ca-h1', [['lib/ac-line.cjs',
+  const t2 = banTiem('cn07-dong-khoi-ca-h1', [['plugins/acceptance-gate/lib/ac-line.cjs',
     '    if (dongKhoi(l)) { chot(); continue; }',
     '    if (/^#{1,6}\\s/.test(l)) { chot(); continue; }']]);
   if (t2.loi) return say('CN07', false, t2.loi, chi);
@@ -237,7 +237,7 @@ def('CN07', () => {
 // ══ CN08 — bốn cách đặt tên mục tiêu chí ══════════════════════════════════
 def('CN08', () => {
   const chi = [];
-  const lib = req(path.join(ROOT, 'lib', 'ac-line.cjs'));
+  const lib = req(path.join(ROOT, 'plugins/acceptance-gate/lib', 'ac-line.cjs'));
   if (typeof lib.parseACBlock !== 'function') return say('CN08', false, 'lib.parseACBlock chua ton tai', chi);
   const than = '### AC-1 — nhãn một\nGiven a, When b, Then c\n\n### AC-2 — nhãn hai\nGiven d, When e, Then f';
   const dau = (ls) => ls.map(a => `${a.id}|${a.gwt}`).join('\n');
@@ -260,7 +260,7 @@ def('CN08', () => {
   // CHIỀU ĐỎ — bản sao thu danh sách tên mục về đúng `Criteria`. Cây lành đọc
   // được `## Acceptance Criteria`; bản tiêm phải KHÔNG. Bằng nhau thì ca này
   // không đo danh sách tên mục, nó chỉ đang đo rằng `Criteria` vẫn chạy.
-  const t = banTiem('cn08-thu-ten-muc', [['lib/ac-line.cjs',
+  const t = banTiem('cn08-thu-ten-muc', [['plugins/acceptance-gate/lib/ac-line.cjs',
     "const CRITERIA_HEADINGS = ['Criteria', 'Acceptance Criteria'];",
     "const CRITERIA_HEADINGS = ['Criteria'];"]]);
   if (t.loi) return say('CN08', false, t.loi, chi);
@@ -277,7 +277,7 @@ def('CN08', () => {
 // ══ CN09 — bộ dò điểm mù KHÔNG im trước dạng tiêu đề ══════════════════════
 def('CN09', () => {
   const chi = [];
-  const lib = req(path.join(ROOT, 'lib', 'ac-line.cjs'));
+  const lib = req(path.join(ROOT, 'plugins/acceptance-gate/lib', 'ac-line.cjs'));
   if (typeof lib.parseACBlock !== 'function') return say('CN09', false, 'lib.parseACBlock chua ton tai', chi);
   const than = [1, 2, 3, 4, 5, 6].map(i => `### AC-${i} — nhãn ${i}\nGiven a, When b, Then c`).join('\n\n');
   const t = hopDong(than);
@@ -313,13 +313,13 @@ def('CN09', () => {
   // CHIỀU ĐỎ (1) — hoàn nguyên AC_SUSPECT về khuôn chỉ-gạch-đầu-dòng. Với hợp
   // đồng khai bằng tiêu đề, khuôn cũ cho m = 0 nên nhánh `n===0 && m>0` không bao
   // giờ đúng: bộ dò IM ở đúng chỗ nó sinh ra để kêu (đo được: 34 trong 38 hồ sơ).
-  const t1 = banTiem('cn09-suspect-cu', [['lib/ac-line.cjs',
+  const t1 = banTiem('cn09-suspect-cu', [['plugins/acceptance-gate/lib/ac-line.cjs',
     'const AC_SUSPECT = /^\\s*(?:#{2,6}\\s+)?(?:[-*]\\s+)?\\*{0,2}\\s*AC-\\d+\\b/;',
     'const AC_SUSPECT = /^\\s*(?:[-*]\\s+)?\\*{0,2}\\s*AC-\\d+\\b/;']]);
   if (t1.loi) return say('CN09', false, t1.loi, chi);
   const r1 = cp.spawnSync(process.execPath, ['-e',
     'const L=require(process.argv[1]);const fs=require("fs");process.stdout.write(JSON.stringify(L.acBlindSpot(fs.readFileSync(process.argv[2],"utf8"),[])))',
-    path.join(t1.root, 'lib', 'ac-line.cjs'), (() => { const f = path.join(mk('cn09-hd-'), 'contract.md'); fs.writeFileSync(f, t); return f; })()], { encoding: 'utf8' });
+    path.join(t1.root, 'plugins/acceptance-gate/lib', 'ac-line.cjs'), (() => { const f = path.join(mk('cn09-hd-'), 'contract.md'); fs.writeFileSync(f, t); return f; })()], { encoding: 'utf8' });
   const bTiem = String(r1.stdout || '').trim();
   chi.push(`chiều đỏ 1: khuôn AC_SUSPECT cũ → bộ dò trả ${bTiem || 'LỖI: ' + String(r1.stderr || '').slice(0, 80)}`);
   if (bTiem !== 'null') return say('CN09', false, `khuon cu ma bo do VAN keu (${bTiem}) — ca nay khong do nhanh tieu de`, chi);
@@ -328,7 +328,7 @@ def('CN09', () => {
   // quét-cả-tệp của bộ ĐẾM: tiêu chí MA từ «Known limits» phải quay lại VÀ cờ
   // phải hoá im, đúng cặp triệu chứng đo được ở lượt 5. Nếu bản tiêm vẫn sạch thì
   // hai đường đã đấu vào nhau ở đâu đó và ca này không còn canh gì.
-  const t2 = banTiem('cn09-boc-quet-ca-tep', [['lib/ac-line.cjs',
+  const t2 = banTiem('cn09-boc-quet-ca-tep', [['plugins/acceptance-gate/lib/ac-line.cjs',
     '  for (const { l } of criteriaLinesScoped(contractText)) {',
     '  for (const { l } of criteriaLines(contractText)) {']]);
   if (t2.loi) return say('CN09', false, t2.loi, chi);
@@ -355,10 +355,10 @@ def('CN09', () => {
 // được «ba bên cùng nguồn» với «một bên gọi riêng bị bỏ quên»: mọi bên đều đổi.
 //
 // BA, không phải bốn. Bộ đọc thứ tư từng được kể tên là nhánh node của răng
-// cross-layer trong scripts/pre-merge-check.sh; tệp đó CHƯA chuyển sang bộ bóc
+// cross-layer trong plugins/acceptance-gate/scripts/pre-merge-check.sh; tệp đó CHƯA chuyển sang bộ bóc
 // chung và nằm ngoài phạm vi vòng này (xem Out of scope của hợp đồng). Kể nó vào
 // đây mà không chạy nó là đúng thứ lời-khai-không-có-vật mà vòng này đi đóng —
-// và bản trước của ca này còn thay nó bằng chính lib/ac-line.cjs, tức bằng đúng
+// và bản trước của ca này còn thay nó bằng chính plugins/acceptance-gate/lib/ac-line.cjs, tức bằng đúng
 // tệp đang bị tiêm, nên số đó đổi theo mũi tiêm một cách tất yếu.
 def('CN13', () => {
   const chi = [];
@@ -392,16 +392,16 @@ def('CN13', () => {
 
   // Ba bên gọi, mỗi bên trả một CON SỐ tiêu chí đọc được từ CÙNG một kho.
   const doBa = (agRoot, R) => {
-    const the = cp.spawnSync(process.execPath, [path.join(agRoot, 'scripts', 'gate-card.js'), '--slug', 'x', '--root', R, '--extract'], { encoding: 'utf8' });
+    const the = cp.spawnSync(process.execPath, [path.join(agRoot, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '--slug', 'x', '--root', R, '--extract'], { encoding: 'utf8' });
     let soThe = -1;
     try { const j = JSON.parse(the.stdout); soThe = (j.will_do || []).length + (j.wont_do || []).length + (j.judgment || []).length; } catch (_) { /* giữ -1 */ }
-    const lint = cp.spawnSync(process.execPath, [path.join(agRoot, 'scripts', 'eval-coverage-lint.js'), '--files', path.join(R, '_acceptance', 'x', 'contract.md'), path.join(R, '_acceptance', 'x', 'evals.yaml')], { encoding: 'utf8' });
+    const lint = cp.spawnSync(process.execPath, [path.join(agRoot, 'plugins/acceptance-gate/scripts', 'eval-coverage-lint.js'), '--files', path.join(R, '_acceptance', 'x', 'contract.md'), path.join(R, '_acceptance', 'x', 'evals.yaml')], { encoding: 'utf8' });
     // lint không in số tiêu chí; dùng W7 (bộ dò điểm mù) làm đại lượng. Khớp DÒNG
     // CẢNH BÁO `  [nhãn] W7 …`, KHÔNG khớp dòng chú giải cuối output — dòng đó
     // LUÔN in và giải thích cả W1..W8, nên `/W7 /` trần cho kết quả hằng-đúng.
     const lintThieu = /^\s*\[[^\]]*\]\s*W7 /m.test(lint.stdout || '');
     // evidence-page GHI RA TỆP rồi in đường dẫn — đọc TỆP, không đọc stdout.
-    const trang = cp.spawnSync(process.execPath, [path.join(agRoot, 'scripts', 'evidence-page.js'), '--slug', 'x', '--root', R], { encoding: 'utf8' });
+    const trang = cp.spawnSync(process.execPath, [path.join(agRoot, 'plugins/acceptance-gate/scripts', 'evidence-page.js'), '--slug', 'x', '--root', R], { encoding: 'utf8' });
     let soTrang = -1;
     try {
       const html = fs.readFileSync(String(trang.stdout || '').trim(), 'utf8');
@@ -435,15 +435,15 @@ def('CN13', () => {
   // BA MŨI TIÊM ĐỘC LẬP — mỗi mũi hoàn nguyên ĐÚNG MỘT bên gọi về khuôn hẹp cũ
   // (`section(contract,'Criteria')` + parseAC, chỉ thấy gạch đầu dòng).
   const MUI = [
-    ['thẻ', 'scripts/gate-card.js',
+    ['thẻ', 'plugins/acceptance-gate/scripts/gate-card.js',
       "for (const ac of parseACBlock(contract)) { if (seen[ac.id])",
       "for (const ac of section(contract, 'Criteria').map(parseAC).filter(Boolean)) { if (seen[ac.id])"],
-    // Bên gọi «trang bằng chứng» đọc tiêu chí qua scripts/ho-so-tom-tat.cjs từ hàng X2 (hồ sơ
+    // Bên gọi «trang bằng chứng» đọc tiêu chí qua plugins/acceptance-gate/scripts/ho-so-tom-tat.cjs từ hàng X2 (hồ sơ
     // trang-ho-so-mot-viec) — mũi tiêm theo đúng chỗ đọc ấy.
-    ['trang bằng chứng', 'scripts/ho-so-tom-tat.cjs',
+    ['trang bằng chứng', 'plugins/acceptance-gate/scripts/ho-so-tom-tat.cjs',
       "const { parseACBlock } = require(path.join(LIB, 'ac-line.cjs'));",
       "const { parseAC } = require(path.join(LIB, 'ac-line.cjs'));\nconst parseACBlock = (t) => section(t, 'Criteria').map(parseAC).filter(Boolean);"],
-    ['lint', 'scripts/eval-coverage-lint.js',
+    ['lint', 'plugins/acceptance-gate/scripts/eval-coverage-lint.js',
       "  if (acLine && typeof acLine.parseACBlock === 'function') {",
       "  if (false && acLine && typeof acLine.parseACBlock === 'function') {"],
   ];
@@ -490,8 +490,8 @@ function theCard({ coverage = 'bullet', gate = '1' } = {}) {
   fs.writeFileSync(path.join(d, 'evidence-report.md'), ['---', 'schema_version: 1', 'feature_slug: x',
     'verdict: PENDING-JUDGMENT', 'human_signoff:', 'findings_open: 0', '---', '',
     '## Evidence', '', '- E1 exit 0', '', '## Known limits', '', '## Ngoài hợp đồng', ''].join('\n'));
-  const r = cp.spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'gate-card.js'), '--slug', 'x', '--root', R], { encoding: 'utf8' });
-  const x = cp.spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'gate-card.js'), '--slug', 'x', '--root', R, '--extract'], { encoding: 'utf8' });
+  const r = cp.spawnSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '--slug', 'x', '--root', R], { encoding: 'utf8' });
+  const x = cp.spawnSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '--slug', 'x', '--root', R, '--extract'], { encoding: 'utf8' });
   let ex = {}; try { ex = JSON.parse(x.stdout); } catch (_) { /* giữ rỗng */ }
   return { html: r.stdout || '', ma: r.status, ex, root: R };
 }
@@ -520,7 +520,7 @@ def('CN15', () => {
   //  (b) tiêu đề con ĐÓNG đoạn và KHÔNG lên thẻ — bản trước nuốt `### Trục A` vào
   //      giữa câu, tức thẻ trình bày một câu không có trong hợp đồng;
   //  (c) hàng của BẢNG thì KHÔNG nối — nối hai hàng là bịa ra một hàng.
-  const md = req(path.join(ROOT, 'lib', 'md-section.cjs'));
+  const md = req(path.join(ROOT, 'plugins/acceptance-gate/lib', 'md-section.cjs'));
   const qh = [
     ['nối dòng bọc', ['Câu một phần đầu,', 'phần sau cùng đoạn.'], ['Câu một phần đầu, phần sau cùng đoạn.']],
     ['tiêu đề đóng đoạn', ['Câu mở đầu.', '### Trục A', 'Nội dung A.'], ['Câu mở đầu.', 'Nội dung A.']],
@@ -541,13 +541,13 @@ def('CN15', () => {
   // CHIỀU ĐỎ (2) — RĂNG của bốn ô quan hệ: bản sao bỏ lưới tiêu đề khỏi nhánh văn
   // xuôi (hoàn nguyên về bản lượt 6). Tiêu đề phải lọt lại vào nội dung; không lọt
   // nghĩa là bốn ô kia không đo gì.
-  const t2 = banTiem('cn15-van-xuoi-khong-loc-tieu-de', [['lib/md-section.cjs',
+  const t2 = banTiem('cn15-van-xuoi-khong-loc-tieu-de', [['plugins/acceptance-gate/lib/md-section.cjs',
     "    if (!l.trim() || laTieuDe(l) || LA_PHAN_CACH.test(l)) { dangMo = false; continue; }",
     "    if (!l.trim()) { dangMo = false; continue; }\n    if (LA_PHAN_CACH.test(l)) continue;"]]);
   if (t2.loi) return say('CN15', false, t2.loi, chi);
   const r2 = cp.spawnSync(process.execPath, ['-e',
     'const m=require(process.argv[1]);process.stdout.write(JSON.stringify(m.contentLines(["Câu mở đầu.","### Trục A","Nội dung A."])))',
-    path.join(t2.root, 'lib', 'md-section.cjs')], { encoding: 'utf8' });
+    path.join(t2.root, 'plugins/acceptance-gate/lib', 'md-section.cjs')], { encoding: 'utf8' });
   let raTiem = null; try { raTiem = JSON.parse(r2.stdout); } catch (_) { /* giữ null */ }
   chi.push(`chiều đỏ 2: bản tiêm bỏ lưới tiêu đề → ${JSON.stringify(raTiem)}`);
   if (!raTiem) return say('CN15', false, `ban tiem chay khong duoc: ${String(r2.stderr || '').trim().split('\n')[0].slice(0, 90)}`, chi);
@@ -557,12 +557,12 @@ def('CN15', () => {
   // viết bằng BẢNG khi đó lại ra rỗng và thẻ nổi cờ «chưa có section Coverage»
   // trên một mục CÓ THẬT — đúng lớp đo được ở 29 trên 244 hợp đồng. Bản tiêm mà
   // vẫn đọc được bảng thì ca này không đo nhánh ấy.
-  const t = banTiem('cn15-doc-chi-gach', [['lib/md-section.cjs',
+  const t = banTiem('cn15-doc-chi-gach', [['plugins/acceptance-gate/lib/md-section.cjs',
     '  if (raws.some(l => /\\{\\{/.test(l))) return [];',
     '  if (raws.some(l => /\\{\\{/.test(l))) return [];\n  return [];']]);
   if (t.loi) return say('CN15', false, t.loi, chi);
   const R = theCard({ coverage: 'bang', gate: '1' }).root;
-  const r = cp.spawnSync(process.execPath, [path.join(t.root, 'scripts', 'gate-card.js'),
+  const r = cp.spawnSync(process.execPath, [path.join(t.root, 'plugins/acceptance-gate/scripts', 'gate-card.js'),
     '--slug', 'x', '--root', R, '--extract'], { encoding: 'utf8' });
   let exTiem = {}; try { exTiem = JSON.parse(r.stdout); } catch (_) { /* giữ rỗng */ }
   chi.push(`chiều đỏ: bản tiêm trên CÙNG mục BẢNG → coverage_missing=${exTiem.coverage_missing} (mã thoát ${r.status})`);

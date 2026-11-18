@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { KHOA_TRA_LOI, kiemTraLoi } from '../../../dieu-phoi/scripts/hinh-dang.mjs';
-import { motNhip } from '../../../dieu-phoi/scripts/phat-lich.mjs';
+import { KHOA_TRA_LOI, kiemTraLoi } from '../../../plugins/dispatch/scripts/hinh-dang.mjs';
+import { motNhip } from '../../../plugins/dispatch/scripts/phat-lich.mjs';
 import { CFG_BIEN, hangViecHai } from './mau-thu.mjs';
 
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp-')));

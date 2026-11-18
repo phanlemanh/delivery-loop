@@ -13,13 +13,13 @@ import { fileFromTemplate } from '../fixtures/from-template.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
-const LIB = path.join(ROOT, 'lib', 'lop-nhin-thay.cjs');
-const NG = path.join(ROOT, 'lib', 'nguong-o-co-hoi.cjs');
-const GATE_CARD = path.join(ROOT, 'scripts', 'gate-card.js');
-const LINT = path.join(ROOT, 'scripts', 'eval-coverage-lint.js');
-const CONTRACT_TPL = path.join(ROOT, 'skills', 'acceptance', 'references', 'contract-template.md');
+const LIB = path.join(ROOT, 'plugins/acceptance-gate/lib', 'lop-nhin-thay.cjs');
+const NG = path.join(ROOT, 'plugins/acceptance-gate/lib', 'nguong-o-co-hoi.cjs');
+const GATE_CARD = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
+const LINT = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'eval-coverage-lint.js');
+const CONTRACT_TPL = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'contract-template.md');
 const require = createRequire(import.meta.url);
-// Mốc BẤT BIẾN cho chiều đỏ có sẵn: cha của merge PR 158 (bản trước lib/lop-nhin-thay.cjs).
+// Mốc BẤT BIẾN cho chiều đỏ có sẵn: cha của merge PR 158 (bản trước plugins/acceptance-gate/lib/lop-nhin-thay.cjs).
 const BASE_LNT = '334d5d52';
 
 let failures = 0;
@@ -80,7 +80,7 @@ if (want('LNT1')) {
   if (old.status !== 0) fail(id, `không đọc được mốc ${BASE_LNT} — chiều đỏ có sẵn không chạy`);
   else {
     const t = tmp(); mkdirSync(path.join(t, 'lib'), { recursive: true });
-    cpSync(path.join(ROOT, 'lib', 'md-section.cjs'), path.join(t, 'lib', 'md-section.cjs'));
+    cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib', 'md-section.cjs'), path.join(t, 'lib', 'md-section.cjs'));
     writeFileSync(path.join(t, 'lib', 'nguong-o-co-hoi.cjs'), old.stdout);
     if (!/lop-nhin-thay/.test(old.stdout)) {
       const NOld = require(path.join(t, 'lib', 'nguong-o-co-hoi.cjs'));
@@ -89,8 +89,8 @@ if (want('LNT1')) {
   }
   // MUTANT MỘT-NGUỒN (gap-probe F3): bản sao lib+scripts bỏ web khỏi alias → BA bộ đọc cùng đổi
   const m = tmp();
-  cpSync(path.join(ROOT, 'lib'), path.join(m, 'lib'), { recursive: true });
-  cpSync(path.join(ROOT, 'scripts'), path.join(m, 'scripts'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(m, 'lib'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(m, 'scripts'), { recursive: true });
   const libSrc = readFileSync(path.join(m, 'lib', 'lop-nhin-thay.cjs'), 'utf8');
   const libMut = libSrc.replace(/web:\s*'ui',\s*/, '');
   if (libMut === libSrc) fail(id, 'không tiêm được mutant alias (khuôn `web: \'ui\',` đổi?)');
@@ -149,7 +149,7 @@ const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 // Báo cáo dựng từ VÙNG CHÉP của khuôn bên viết (sau mốc ---8<---), điền theo KHOÁ như
 // evidenceText() của ca ra-co-ten; khối ui-check rút từ marker UI-CHECK-BLOCK-TEMPLATE —
 // fixture không tự chép khuôn bên đọc (gap-probe S4-r1 #11, hình dạng 2).
-const EVID_TPL = path.join(ROOT, 'skills', 'acceptance', 'references', 'evidence-report-template.md');
+const EVID_TPL = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'evidence-report-template.md');
 const blockOf = (txt, marker) => { const m = txt.match(new RegExp(`<!-- <<<${marker} -->\\n([\\s\\S]*?)<!-- ${marker}>>> -->`)); if (!m) throw new Error('khuôn thiếu khối ' + marker); return m[1]; };
 // Hai điều kiện ĐỘC LẬP của «đạt» (exit 0 VÀ có screenshot) → ma trận âm 3 ca viết trước
 // (hình dạng 5, gap-probe S4-r2 #2): exit≠0+có shot · exit0+không shot · cả hai.
@@ -222,11 +222,11 @@ if (want('LNT4')) {
 if (want('LNT6')) {
   const id = 'LNT6'; const L = require(LIB); const before = failures;
   const F = {
-    acc: path.join(ROOT, 'skills', 'acceptance', 'SKILL.md'),
-    fl: path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md'),
-    ex: path.join(ROOT, 'skills', 'acceptance', 'references', 'eval-executors.md'),
+    acc: path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'SKILL.md'),
+    fl: path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md'),
+    ex: path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'eval-executors.md'),
     ctx: path.join(ROOT, 'CONTEXT.md'),
-    init: path.join(ROOT, 'commands', 'acceptance-init.md'),
+    init: path.join(ROOT, 'plugins/acceptance-gate/commands', 'acceptance-init.md'),
   };
   // Cắt phạm vi: từ startRe tới heading kế (endRe) — không tới EOF; phạm vi > 60% file = cắt hỏng
   const cut = (text, startRe, endRe) => { const s = text.search(startRe); if (s < 0) return ''; const rest = text.slice(s); const e = rest.slice(1).search(endRe); const out = e < 0 ? rest : rest.slice(0, e + 1); if (out.length > text.length * 0.6) throw new Error('phạm vi cắt quá rộng'); return out; };
@@ -278,9 +278,9 @@ if (want('LNT6')) {
 // bằng ĐƯỜNG SCRIPT truyền vào (SC) để LNT9 chạy cùng hàm đo trên bản sao bị tiêm. Bản `main` trước vòng = git archive
 // của ANH_BASE (gốc vòng) bung trong lượt.
 const ANH_BASE = 'adab9a82';
-const ANH_LIB = path.join(ROOT, 'scripts', 'anh-ho-so.cjs');
+const ANH_LIB = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'anh-ho-so.cjs');
 const ANH_DESIGN = path.join(ROOT, 'docs', 'superpowers', 'specs', '2026-10-22-anh-co-that-trong-ho-so-design.md');
-const SC_THAT = { gc: GATE_CARD, ep: path.join(ROOT, 'scripts', 'evidence-page.js'), lib: ANH_LIB };
+const SC_THAT = { gc: GATE_CARD, ep: path.join(ROOT, 'plugins/acceptance-gate/scripts', 'evidence-page.js'), lib: ANH_LIB };
 const escH = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 const noAnsi = s => String(s || '').replace(/\x1b\[[0-9;]*m/g, '');
 const chayGc = (SC, root, ...a) => spawnSync('node', [SC.gc, '--root', root, '--slug', 'x', ...a], { encoding: 'utf8' });
@@ -450,8 +450,8 @@ function L_UI() { return require(LIB); }
 // ─── LNT9 — chiều đỏ TRONG bộ kiểm: ba nhát tiêm trên bản sao trọn scripts/ + lib/ + skills/ ─────────────
 if (want('LNT9')) {
   const id = 'LNT9'; const before = failures;
-  const saoMoi = () => { const d = tmp(); for (const s of ['scripts', 'lib', 'skills']) cpSync(path.join(ROOT, s), path.join(d, s), { recursive: true });
-    return { d, SC: { gc: path.join(d, 'scripts', 'gate-card.js'), ep: path.join(d, 'scripts', 'evidence-page.js'), lib: path.join(d, 'scripts', 'anh-ho-so.cjs') } }; };
+  const saoMoi = () => { const d = tmp(); for (const s of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(ROOT, s), path.join(d, s), { recursive: true });
+    return { d, SC: { gc: path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'), ep: path.join(d, 'plugins/acceptance-gate/scripts', 'evidence-page.js'), lib: path.join(d, 'plugins/acceptance-gate/scripts', 'anh-ho-so.cjs') } }; };
   const lanh = saoMoi(); const latLanh = doLNT7(lanh.SC, false);
   console.log(`LNT9 lanh ${latLanh.length} lat`); if (latLanh.length) fail(id, 'bản sao chưa tiêm phải xanh: ' + latLanh.join(' | '));
   const NHAT = [

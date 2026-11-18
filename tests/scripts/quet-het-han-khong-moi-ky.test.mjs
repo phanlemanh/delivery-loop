@@ -15,7 +15,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
 const require = createRequire(import.meta.url);
 const { fileFromTemplate } = await import(path.join(ROOT, 'tests', 'fixtures', 'from-template.mjs'));
-const REF = p => path.join(ROOT, 'skills', 'acceptance', 'references', p);
+const REF = p => path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', p);
 const CONTRACT_TPL = REF('contract-template.md');
 const EVID_TPL = REF('evidence-report-template.md');
 
@@ -85,7 +85,7 @@ function dungThe(goc, root, slug, han) {
   const env = { ...process.env };
   delete env.ACCEPTANCE_SCAN_TIMEOUT_MS;
   if (han != null) env.ACCEPTANCE_SCAN_TIMEOUT_MS = String(han);
-  const card = path.join(goc, 'scripts', 'gate-card.js');
+  const card = path.join(goc, 'plugins/acceptance-gate/scripts', 'gate-card.js');
   const h = spawnSync(process.execPath, [card, '--root', root, '--slug', slug], { encoding: 'utf8', env, timeout: 180000 });
   const x = spawnSync(process.execPath, [card, '--root', root, '--slug', slug, '--extract'], { encoding: 'utf8', env, timeout: 180000 });
   let ex = null; try { ex = JSON.parse(x.stdout); } catch (_) { /* dưới */ }
@@ -96,7 +96,7 @@ function dungThe(goc, root, slug, han) {
 // [tệp, null, nội dung thay trọn tệp].
 function banSaoTu(goc, tiem = []) {
   const g = tmp('qh-cay-');
-  for (const d of ['scripts', 'lib', 'skills']) cpSync(path.join(goc, d), path.join(g, d), { recursive: true });
+  for (const d of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(goc, d), path.join(g, d), { recursive: true });
   for (const [tep, tu, thanh] of tiem) {
     const p = path.join(g, tep);
     if (tu == null) { writeFileSync(p, thanh); continue; }
@@ -125,7 +125,7 @@ function kiemHetHan(goc) {
   const loi1 = [], loi2 = [];
   withKho('m', MC, {}, root => {
     // Fixture phải là hồ sơ máy-thông xanh-sạch THEO BỘ QUÉT THẬT (cây đang kiểm) — không thì ca đo hình dạng khác.
-    const s = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'start-scan.mjs'), '--root', root], { encoding: 'utf8' });
+    const s = spawnSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'start-scan.mjs'), '--root', root], { encoding: 'utf8' });
     let khoa = null; try { const j = JSON.parse(s.stdout); khoa = (j.groups.done || []).find(x => x.slug === 'm')?.stateKey; } catch (_) {}
     if (khoa !== 'da-giao-may-thong-veto-mo') loi1.push(`fixture: bộ quét xếp hồ sơ vào ${khoa}, cần da-giao-may-thong-veto-mo`);
     // Đối chứng dương: quét kịp — đi tiếp, CÓ câu khẳng định (vế dương của phép âm ở AC-2), không «hết hạn».
@@ -139,7 +139,7 @@ function kiemHetHan(goc) {
     for (const [ten, thanBoQuet, han] of CACH_LOI) {
       let cay = goc, sao = null;
       try {
-        if (thanBoQuet) cay = sao = banSaoTu(goc, [['scripts/start-scan.mjs', null, thanBoQuet]]);
+        if (thanBoQuet) cay = sao = banSaoTu(goc, [['plugins/acceptance-gate/scripts/start-scan.mjs', null, thanBoQuet]]);
         const e = dungThe(cay, root, 'm', han);
         if (e.hExit !== 0 || !e.ex) { loi1.push(`${ten}: thẻ exit ${e.hExit}/${e.xExit} ${e.hErr.slice(0, 160)}`); continue; }
         const nhan = han != null ? 'hết hạn mà thẻ mời ký' : `bộ quét lỗi mà thẻ mời ký ${ten}`;
@@ -156,7 +156,7 @@ function kiemHetHan(goc) {
         if (Number(n) !== Math.max(2 * han, 120000)) loi2.push(`lệnh chạy lại: hạn ${n}, cần ${Math.max(2 * han, 120000)}`);
         if (path.resolve(r2) !== path.resolve(root)) loi2.push(`lệnh chạy lại: --root ${r2}, cần ${root}`);
         if (slug2 !== 'm') loi2.push(`lệnh chạy lại: --slug ${slug2}, cần m`);
-        if (path.resolve(card) !== path.join(path.resolve(cay), 'scripts', 'gate-card.js')) loi2.push(`lệnh chạy lại trỏ ${card}`);
+        if (path.resolve(card) !== path.join(path.resolve(cay), 'plugins/acceptance-gate/scripts', 'gate-card.js')) loi2.push(`lệnh chạy lại trỏ ${card}`);
         const env = { ...process.env }; delete env.ACCEPTANCE_SCAN_TIMEOUT_MS;
         const c = spawnSync('bash', ['-c', lenh], { encoding: 'utf8', env, timeout: 180000 });
         if (c.status !== 0 || /hết hạn/.test(c.stdout || '')) loi2.push(`lệnh chạy lại vẫn hết hạn (exit ${c.status})`);
@@ -178,19 +178,19 @@ if (['QH-1', 'QH-2', 'QH-1-do', 'QH-1-do2', 'QH-2-do', 'QH-2-do2'].some(want)) {
   if (want('QH-2')) lanh.loi2.length ? fail('QH-2', lanh.loi2.join(' · ')) : pass('QH-2', 'cờ hết hạn nêu lý do + «chưa ai kiểm lại»; lệnh chạy lại đúng hạn/root/slug và chạy xanh; không «exit null», không khẳng định sáu điều kiện');
   const lanhXanh = !lanh.loi1.length && !lanh.loi2.length;
   const chuaXanh = id => fail(id, 'bản lành chưa xanh — chiều đỏ không đọc được');
-  if (want('QH-1-do')) lanhXanh ? doCay('QH-1-do', [['scripts/gate-card.js', ' || (MAY_THONG && MU_LOI)', '']], d =>
+  if (want('QH-1-do')) lanhXanh ? doCay('QH-1-do', [['plugins/acceptance-gate/scripts/gate-card.js', ' || (MAY_THONG && MU_LOI)', '']], d =>
     (d.loi1.some(x => x.startsWith('hết hạn mà thẻ mời ký')) ? pass('QH-1-do', 'gỡ vế máy-thông-khi-bộ-quét-lỗi → «hết hạn mà thẻ mời ký»')
       : fail('QH-1-do', `bản sao tiêm không đỏ đúng lỗi: ${d.loi1.join(' · ') || '(xanh)'}`))) : chuaXanh('QH-1-do');
-  if (want('QH-1-do2')) lanhXanh ? doCay('QH-1-do2', [['scripts/gate-card.js', 'const MU_LOI = scanState == null && !!scanErr;', "const MU_LOI = scanState == null && /hết hạn/.test(scanErr || '');"]], d => {
+  if (want('QH-1-do2')) lanhXanh ? doCay('QH-1-do2', [['plugins/acceptance-gate/scripts/gate-card.js', 'const MU_LOI = scanState == null && !!scanErr;', "const MU_LOI = scanState == null && /hết hạn/.test(scanErr || '');"]], d => {
     const loiLoi = d.loi1.filter(x => x.startsWith('bộ quét lỗi mà thẻ mời ký'));
     (loiLoi.length === 2 && loiLoi[0].includes('(ii)') && loiLoi[1].includes('(iii)') && !d.loi1.some(x => x.startsWith('hết hạn mà')))
       ? pass('QH-1-do2', 'chỉ nhận ca hết hạn → «bộ quét lỗi mà thẻ mời ký» ở (ii) và (iii), (i) im')
       : fail('QH-1-do2', `cần đúng (ii)(iii) đỏ, (i) im; được: ${d.loi1.join(' · ') || '(xanh)'}`);
   }) : chuaXanh('QH-1-do2');
-  if (want('QH-2-do')) lanhXanh ? doCay('QH-2-do', [['scripts/gate-card.js', 'q.err = HQ.lyDoQuet(r, han);', 'q.err = (r.stderr || \'\').trim().slice(0, 200) || `exit ${r.status}`;']], d =>
+  if (want('QH-2-do')) lanhXanh ? doCay('QH-2-do', [['plugins/acceptance-gate/scripts/gate-card.js', 'q.err = HQ.lyDoQuet(r, han);', 'q.err = (r.stderr || \'\').trim().slice(0, 200) || `exit ${r.status}`;']], d =>
     (d.loi2.includes('thẻ in exit null') ? pass('QH-2-do', 'trả lý do về `exit ${status}` → «thẻ in exit null»')
       : fail('QH-2-do', `bản sao tiêm không đỏ đúng lỗi: ${d.loi2.join(' · ') || '(xanh)'}`))) : chuaXanh('QH-2-do');
-  if (want('QH-2-do2')) lanhXanh ? doCay('QH-2-do2', [['scripts/han-quet.cjs', 'Math.max(2 * han, HAN_CHAY_LAI_TOI_THIEU_MS)', 'han']], d =>
+  if (want('QH-2-do2')) lanhXanh ? doCay('QH-2-do2', [['plugins/acceptance-gate/scripts/han-quet.cjs', 'Math.max(2 * han, HAN_CHAY_LAI_TOI_THIEU_MS)', 'han']], d =>
     (d.loi2.some(x => x.startsWith('lệnh chạy lại vẫn hết hạn')) ? pass('QH-2-do2', 'in hạn đã dùng thay cho N → «lệnh chạy lại vẫn hết hạn»')
       : fail('QH-2-do2', `bản sao tiêm không đỏ đúng lỗi: ${d.loi2.join(' · ') || '(xanh)'}`))) : chuaXanh('QH-2-do2');
 }
@@ -214,7 +214,7 @@ function kiemLyDo(lyDoQuet) {
   return loi;
 }
 if (want('QH-3') || want('QH-3-do')) {
-  const HQ = require(path.join(ROOT, 'scripts', 'han-quet.cjs'));
+  const HQ = require(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'han-quet.cjs'));
   const loi = kiemLyDo(HQ.lyDoQuet);
   if (want('QH-3')) { console.log(`  số hàng: ${MA_TRAN_LY_DO.length}`); loi.length ? fail('QH-3', loi.join(' · ')) : pass('QH-3', 'sáu hình dạng ra đúng câu viết sẵn, không câu nào chứa «null»'); }
   if (want('QH-3-do')) {
@@ -222,8 +222,8 @@ if (want('QH-3') || want('QH-3-do')) {
     else {
       let g = null;
       try {
-        g = banSao('scripts/han-quet.cjs', "if (r.signal) return `bộ quét bị ngắt (${r.signal})`;", '');
-        const d = kiemLyDo(require(path.join(g, 'scripts', 'han-quet.cjs')).lyDoQuet);
+        g = banSao('plugins/acceptance-gate/scripts/han-quet.cjs', "if (r.signal) return `bộ quét bị ngắt (${r.signal})`;", '');
+        const d = kiemLyDo(require(path.join(g, 'plugins/acceptance-gate/scripts', 'han-quet.cjs')).lyDoQuet);
         d.length === 1 && d[0].startsWith('bị ngắt:') ? pass('QH-3-do', 'bỏ nhánh tín hiệu → đúng hàng «bị ngắt» đỏ')
           : fail('QH-3-do', `cần đúng một lỗi hàng «bị ngắt», được: ${d.join(' · ') || '(xanh)'}`);
       } catch (e) { fail('QH-3-do', e.message); } finally { if (g) rmSync(g, { recursive: true, force: true }); }
@@ -254,7 +254,7 @@ function kiemHan(hanQuet) {
   return loi;
 }
 if (want('QH-4') || want('QH-4-do')) {
-  const HQ = require(path.join(ROOT, 'scripts', 'han-quet.cjs'));
+  const HQ = require(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'han-quet.cjs'));
   const loi = kiemHan(HQ.hanQuet);
   if (want('QH-4')) { console.log(`  số hàng: ${MA_TRAN_HAN.length}`); loi.length ? fail('QH-4', loi.join(' · ')) : pass('QH-4', 'hạn = max(20 s, 150 ms × hồ sơ); biến môi trường hợp lệ thắng, giá trị hỏng bị bỏ qua'); }
   if (want('QH-4-do')) {
@@ -262,8 +262,8 @@ if (want('QH-4') || want('QH-4-do')) {
     else {
       let g = null;
       try {
-        g = banSao('scripts/han-quet.cjs', 'Math.max(HAN_SAN_MS, HAN_MOI_HO_SO_MS * soHoSo(root))', 'HAN_SAN_MS');
-        const d = kiemHan(require(path.join(g, 'scripts', 'han-quet.cjs')).hanQuet);
+        g = banSao('plugins/acceptance-gate/scripts/han-quet.cjs', 'Math.max(HAN_SAN_MS, HAN_MOI_HO_SO_MS * soHoSo(root))', 'HAN_SAN_MS');
+        const d = kiemHan(require(path.join(g, 'plugins/acceptance-gate/scripts', 'han-quet.cjs')).hanQuet);
         d.includes('380 hồ sơ: hạn 20000, cần 57000') ? pass('QH-4-do', 'bỏ vế cỡ kho → «380 hồ sơ: hạn 20000, cần 57000»')
           : fail('QH-4-do', `bản sao tiêm không đỏ đúng lỗi: ${d.join(' · ') || '(xanh)'}`);
       } catch (e) { fail('QH-4-do', e.message); } finally { if (g) rmSync(g, { recursive: true, force: true }); }

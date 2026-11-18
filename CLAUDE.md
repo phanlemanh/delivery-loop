@@ -267,8 +267,8 @@
   Kit từng nuôi hai bản dựng song sinh: mọi thay đổi lõi phải sửa hai lần rồi
   dựng lại một bản sao phẳng và commit nó cùng lượt. Bản song sinh và bản sao
   đó **đã lưu kho**, nên luật «sửa hai lần» hết hiệu lực — sửa ở
-  `skills/`, `feature-loop/`, `commands/`, `scripts/`, `lib/`, `hooks/`,
-  `vendor/` là xong, không còn bước dựng lại nào. Đường lấy về: **ADR 0008** và **ADR 0009** trong `docs/adr/`.
+  `plugins/<tên>/` (plugin lõi ở `plugins/acceptance-gate/`: `skills/`, `commands/`, `scripts/`, `lib/`, `hooks/`,
+  `vendor/`) là xong, không còn bước dựng lại nào. Đường lấy về: **ADR 0008** và **ADR 0009** trong `docs/adr/`.
 
 - **[CONTEXT.md](CONTEXT.md) là glossary phát triển của kit** (authoring-time).
   Khi viết/sửa SKILL.md, docs, message của script: dùng đúng term chuẩn và

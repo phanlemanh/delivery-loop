@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regression for the design-quality executor (scripts/design-gate.mjs + lib/design-detect.mjs).
+# Regression for the design-quality executor (plugins/acceptance-gate/scripts/design-gate.mjs + lib/design-detect.mjs).
 # Mirrors the repo convention: check() PASS/FAIL on exit codes.
 #
 #   B-static (zero-dep) runs always.
@@ -24,11 +24,11 @@ node score.mjs --assert static; check T01 0 $?
 # Static can see P1 tells (side-tab) but NOT P0 contrast — so the static guard
 # gates on P0,P1. The P0-only gate is DOM's job (T04/T05).
 echo "T02 static gate REJECTs a P1 tell it can see (side-tab, --fail-on P0,P1)"
-node "$HERE/../../scripts/design-gate.mjs" "$HERE/fixtures/f04-side-tab.html" --mode static --fail-on P0,P1 >/dev/null 2>&1
+node "$HERE/../../plugins/acceptance-gate/scripts/design-gate.mjs" "$HERE/fixtures/f04-side-tab.html" --mode static --fail-on P0,P1 >/dev/null 2>&1
 check T02 2 $?
 
 echo "T03 static gate PASSes the clean fixture (--fail-on P0,P1)"
-node "$HERE/../../scripts/design-gate.mjs" "$HERE/fixtures/f09-clean-good.html" --mode static --fail-on P0,P1 >/dev/null 2>&1
+node "$HERE/../../plugins/acceptance-gate/scripts/design-gate.mjs" "$HERE/fixtures/f09-clean-good.html" --mode static --fail-on P0,P1 >/dev/null 2>&1
 check T03 0 $?
 
 if node -e "import('jsdom').then(()=>process.exit(0)).catch(()=>process.exit(1))" 2>/dev/null; then
@@ -36,7 +36,7 @@ if node -e "import('jsdom').then(()=>process.exit(0)).catch(()=>process.exit(1))
   node score.mjs --assert dom; check T04 0 $?
 
   echo "T05 production gate (DOM) REJECTs the P0 contrast fixture f03"
-  node "$HERE/../../scripts/design-gate.mjs" "$HERE/fixtures/f03-low-contrast.html" --mode dom --jsdom "$HERE" >/dev/null 2>&1
+  node "$HERE/../../plugins/acceptance-gate/scripts/design-gate.mjs" "$HERE/fixtures/f03-low-contrast.html" --mode dom --jsdom "$HERE" >/dev/null 2>&1
   check T05 2 $?
 
   echo "T07 KHONG-DO-DUOC for the three unmeasurable causes, real contrast still REJECT (KD1–KD7, KD9, KD10)"
@@ -59,7 +59,7 @@ else
 fi
 
 echo "T06 design-scan.js is in sync with its build (no drift)"
-node "$HERE/../../scripts/build-design-scan.mjs" --check >/dev/null 2>&1
+node "$HERE/../../plugins/acceptance-gate/scripts/build-design-scan.mjs" --check >/dev/null 2>&1
 check T06 0 $?
 
 echo ""

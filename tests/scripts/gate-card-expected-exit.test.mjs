@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const GC = path.join(ROOT, 'scripts', 'gate-card.js');
+const GC = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
 const die = m => { throw new Error(m); };
@@ -130,8 +130,8 @@ check('GX4 eval thieu run_id that van bi co — sua nay khong noi ca doi chung c
 
 check('GX5 mot nguon — thay expectedExits cua lib bang ban tra rong thi GX2 lat', () => {
   const t = mkdtempSync(path.join(tmpdir(), 'gx-mut-'));
-  cpSync(path.join(ROOT, 'scripts'), path.join(t, 'scripts'), { recursive: true });
-  cpSync(path.join(ROOT, 'lib'), path.join(t, 'lib'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(t, 'scripts'), { recursive: true });
+  cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(t, 'lib'), { recursive: true });
   const f = path.join(t, 'lib', 'eval-yaml.cjs');
   const src = readFileSync(f, 'utf8');
   const KIM = 'function expectedExits(text) {';

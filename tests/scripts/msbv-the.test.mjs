@@ -20,7 +20,7 @@ const text = html => html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]
 const khoi = (html, nhan) => { const i = html.indexOf(`<div class="lab">${nhan}`); if (i < 0) return null; const j = html.indexOf('<div class="lab">', i + 10); return html.slice(i, j < 0 ? undefined : j); };
 const g2 = (ledger, plain) => { const f = G2(REVIEW2); f['decisions.jsonl'] = ledger; f['gap-probe.md'] = PROBE('clean'); if (plain) f['card-plain.json'] = J(plain); return f; };
 const render = (root, slug, gc = GC, plain = true) => spawnSync('node', [gc, '--root', root, '--slug', slug, ...(plain && existsSync(path.join(root, '_acceptance', slug, 'card-plain.json')) ? ['--plain', path.join(root, '_acceptance', slug, 'card-plain.json')] : [])], { encoding: 'utf8' });
-const banSao = mutate => { const d = mkdtempSync(path.join(tmpdir(), 'msbv-gc-')); cpSync(path.join(ROOT, 'scripts'), path.join(d, 'scripts'), { recursive: true }); cpSync(path.join(ROOT, 'lib'), path.join(d, 'lib'), { recursive: true }); const p = path.join(d, 'scripts', 'gate-card.js'); const s = readFileSync(p, 'utf8'); const m = mutate(s); if (m === s) die('kim dot bien khong khop'); writeFileSync(p, m); return p; };
+const banSao = mutate => { const d = mkdtempSync(path.join(tmpdir(), 'msbv-gc-')); cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(d, 'scripts'), { recursive: true }); cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(d, 'lib'), { recursive: true }); const p = path.join(d, 'scripts', 'gate-card.js'); const s = readFileSync(p, 'utf8'); const m = mutate(s); if (m === s) die('kim dot bien khong khop'); writeFileSync(p, m); return p; };
 const BA_VE = s => `D${s} — W${s} — sai thì tốn: C${s}`;
 
 ca('MS-AC2-ba-khoi', () => {

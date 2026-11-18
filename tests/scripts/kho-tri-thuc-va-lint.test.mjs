@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 const require = createRequire(import.meta.url);
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const KHUON = readFileSync(path.join(KIT, 'skills/acceptance/references/tri-thuc-template.md'), 'utf8');
+const KHUON = readFileSync(path.join(KIT, 'plugins/acceptance-gate/skills/acceptance/references/tri-thuc-template.md'), 'utf8');
 const PV_THAT = path.join(KIT, 'docs/plans/pham-vi-tri-thuc-2410.md');
 const TAM = realpathSync(mkdtempSync(path.join(tmpdir(), 'kt-tri-thuc-')));
 let soDo = 0;
@@ -70,13 +70,13 @@ function khoCoKhoRieng({ dungRieng = true } = {}) {
   return { d, C, B, ten };
 }
 const chay = (bin, cwdRoot, args, cwd = cwdRoot) => { const r = spawnSync('node', [bin, '--root', cwdRoot, ...args], { cwd, encoding: 'utf8' }); return { thoat: r.status, out: r.stdout.trim(), err: r.stderr.trim() }; };
-const BIN = path.join(KIT, 'scripts/tri-thuc.mjs');
+const BIN = path.join(KIT, 'plugins/acceptance-gate/scripts/tri-thuc.mjs');
 const lint = (root, extra = [], bin = BIN) => chay(bin, root, ['--kiem', ...extra]);
 const dongLoi = out => out.split('\n').filter(l => l.startsWith('lỗi:'));
 // Bản sao bộ máy (scripts, lib, skills) để tiêm.
 function banSaoMay(sua = {}) {
   const d = thuMuc('may');
-  for (const x of ['scripts', 'lib', 'skills']) cpSync(path.join(KIT, x), path.join(d, x), { recursive: true });
+  for (const x of ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']) cpSync(path.join(KIT, x), path.join(d, x), { recursive: true });
   for (const [tep, [tim, thay]] of Object.entries(sua)) {
     const p = path.join(d, tep); const t = readFileSync(p, 'utf8'); const n = t.split(tim).length - 1;
     if (n !== 1) throw new Error(`nhát tiêm khớp ${n} lần (phải 1): ${tep} «${tim.slice(0, 60)}»`);
@@ -87,7 +87,7 @@ function banSaoMay(sua = {}) {
 
 // ── KT-1: bộ đọc khối tri_thuc, ma trận chín hàng ──
 await ca('KT-1', () => {
-  const { docTriThuc } = require(path.join(KIT, 'scripts/tri-thuc-khoa.cjs')); const sai = [];
+  const { docTriThuc } = require(path.join(KIT, 'plugins/acceptance-gate/scripts/tri-thuc-khoa.cjs')); const sai = [];
   const H = [
     ['vắng khối', '', v => v === null],
     ['chỉ noi', CFG_NOI, v => v.noi === 'docs/tri-thuc' && !v.congKhai && !v.kho && !v.loi.length],
@@ -125,8 +125,8 @@ await ca('KT-2', () => {
   const c1 = chay(BIN, d, ['--con-tro', ref]); const c2 = chay(BIN, wt, ['--con-tro', ref]);
   if (c1.thoat !== 0 || c1.out !== path.join(C, 'wiki/nen/nen.md') || c2.out !== c1.out) sai.push(`con-tro ${c1.out} / ${c2.out}`);
   // Luật giải đường sống ở tri-thuc-khoa.cjs từ hồ sơ thiet-ke-nap-tri-thuc; tri-thuc.mjs nhập lại từ đó.
-  const M = banSaoMay({ 'scripts/tri-thuc-khoa.cjs': ['return path.dirname(realpathSync(r.stdout.trim()));', 'return realpathSync(root);'] });
-  const m = lint(wt, [], path.join(M, 'scripts/tri-thuc.mjs'));
+  const M = banSaoMay({ 'plugins/acceptance-gate/scripts/tri-thuc-khoa.cjs': ['return path.dirname(realpathSync(r.stdout.trim()));', 'return realpathSync(root);'] });
+  const m = lint(wt, [], path.join(M, 'plugins/acceptance-gate/scripts/tri-thuc.mjs'));
   if (m.out === b.out && m.thoat === b.thoat) sai.push('mutant giải theo worktree không bị bắt');
   else console.log('  KT-2-mutant: gốc tri thức lệch giữa checkout chính và worktree (mutant ra ' + m.thoat + ')');
   return sai;
@@ -141,12 +141,12 @@ await ca('KT-3', () => {
     try { khoiCua(bo, ten); sai.push(`khuôn đã gỡ ${ten} mà vẫn rút được`); } catch (e) { if (e.message !== `khuôn thiếu khối ${ten}`) sai.push(`gỡ ${ten}: thông điệp «${e.message}»`); }
   }
   console.log(`  KT-3: rút đủ ${BON_KHOI.length} khối; gỡ từng khối → «khuôn thiếu khối <tên>»`);
-  if (!existsSync(path.join(KIT, 'skills/acceptance/references/tri-thuc-template.md'))) sai.push('khuôn không có');
+  if (!existsSync(path.join(KIT, 'plugins/acceptance-gate/skills/acceptance/references/tri-thuc-template.md'))) sai.push('khuôn không có');
   const d = khoTrongKho(); if (readFileSync(path.join(d, 'docs/tri-thuc/TRI-THUC.md'), 'utf8').trim() !== khoi('TRI-THUC-LUAT').trim()) sai.push('TRI-THUC.md không dựng từ khối LUAT');
   const r = lint(d);
   if (!(r.thoat === 0 && r.out.split('\n').pop() === 'tri thức: 3 trang, 1 raw, 0 lỗi')) sai.push(`lành: ${r.thoat} «${r.out}» «${r.err}»`);
-  const M = banSaoMay({ 'skills/acceptance/references/tri-thuc-template.md': ['nguon: [raw/2026-10-24-vi-du/ghi-chu.md]\ncap_nhat', 'nguon_x: [raw/2026-10-24-vi-du/ghi-chu.md]\ncap_nhat'] });
-  const m = lint(d, [], path.join(M, 'scripts/tri-thuc.mjs')); const L = dongLoi(m.out);
+  const M = banSaoMay({ 'plugins/acceptance-gate/skills/acceptance/references/tri-thuc-template.md': ['nguon: [raw/2026-10-24-vi-du/ghi-chu.md]\ncap_nhat', 'nguon_x: [raw/2026-10-24-vi-du/ghi-chu.md]\ncap_nhat'] });
+  const m = lint(d, [], path.join(M, 'plugins/acceptance-gate/scripts/tri-thuc.mjs')); const L = dongLoi(m.out);
   if (!(m.thoat === 1 && L.length === 3 && L.every(l => l.startsWith('lỗi: [trang-thieu-nguon] wiki/')))) sai.push(`khuôn tiêm: ${m.thoat} ${JSON.stringify(L)}`);
   else console.log('  KT-3-do: khuôn tiêm → 3 dòng trang-thieu-nguon');
   return sai;
@@ -199,7 +199,7 @@ await ca('KT-4', () => {
 await ca('KT-5', () => {
   const sai = []; console.log(`  KT-5: ${MUTANT.length} mutant × ${HANG.length} hàng`);
   MUTANT.forEach(([tim, thay], i) => {
-    const M = banSaoMay({ 'scripts/tri-thuc.mjs': [tim, thay] }); const kq = ketQua(path.join(M, 'scripts/tri-thuc.mjs'));
+    const M = banSaoMay({ 'plugins/acceptance-gate/scripts/tri-thuc.mjs': [tim, thay] }); const kq = ketQua(path.join(M, 'plugins/acceptance-gate/scripts/tri-thuc.mjs'));
     const lech = kq.map((x, j) => (x === MONG[j] ? '.' : 'X')).join('');
     console.log(`    mutant ${i + 1}: ${lech}`);
     if (kq[i] === MONG[i]) sai.push(`mutant ${i + 1} (${tim}) không bị bắt`);
@@ -240,24 +240,24 @@ await ca('KT-7', () => {
 await ca('KT-8', () => {
   const sai = []; const d = khoGit(thuMuc('k8')); ghi(path.join(d, '_acceptance/config.yaml'), 'schema_version: 1\n'); commit(d);
   const r = lint(d); if (!(r.thoat === 2 && r.err === 'tri-thuc: kho chưa khai tri_thuc trong _acceptance/config.yaml')) sai.push(`không khối: ${r.thoat} «${r.err}»`);
-  const doi = (M) => ['product-map.mjs --check', 'lo-trinh.mjs --hang TT1'].map(c => { const [s, ...a] = c.split(' '); const x = spawnSync('node', [path.join(M, 'scripts', s), '--root', KIT, ...a], { encoding: 'utf8', env: { ...process.env, ACCEPTANCE_TODAY: '2026-10-24' } }); return `${x.status}\n${x.stdout}\n${x.stderr}`.split(M).join('<M>'); });
-  const du = banSaoMay(); const thieu = banSaoMay(); for (const f of ['scripts/tri-thuc.mjs', 'scripts/tri-thuc-khoa.cjs']) rmSync(path.join(thieu, f));
+  const doi = (M) => ['product-map.mjs --check', 'lo-trinh.mjs --hang TT1'].map(c => { const [s, ...a] = c.split(' '); const x = spawnSync('node', [path.join(M, 'plugins/acceptance-gate/scripts', s), '--root', KIT, ...a], { encoding: 'utf8', env: { ...process.env, ACCEPTANCE_TODAY: '2026-10-24' } }); return `${x.status}\n${x.stdout}\n${x.stderr}`.split(M).join('<M>'); });
+  const du = banSaoMay(); const thieu = banSaoMay(); for (const f of ['plugins/acceptance-gate/scripts/tri-thuc.mjs', 'plugins/acceptance-gate/scripts/tri-thuc-khoa.cjs']) rmSync(path.join(thieu, f));
   const a = doi(du); const b = doi(thieu);
   if (!a.every(x => x.startsWith('0\n'))) sai.push(`đối chứng dương: bộ máy đủ tệp không xanh — ${a.map(x => x.slice(0, 120)).join(' | ')}`);
   if (a.join() !== b.join()) sai.push('bản sao thiếu tệp tri thức cho đầu ra khác');
-  const dauNhap = readFileSync(path.join(KIT, 'scripts/product-map.mjs'), 'utf8').split('\n').find(l => l.startsWith('import '));
-  const mut = banSaoMay({ 'scripts/product-map.mjs': [dauNhap, `${dauNhap}\nawait import('./tri-thuc.mjs');`] }); for (const f of ['scripts/tri-thuc.mjs', 'scripts/tri-thuc-khoa.cjs']) rmSync(path.join(mut, f));
+  const dauNhap = readFileSync(path.join(KIT, 'plugins/acceptance-gate/scripts/product-map.mjs'), 'utf8').split('\n').find(l => l.startsWith('import '));
+  const mut = banSaoMay({ 'plugins/acceptance-gate/scripts/product-map.mjs': [dauNhap, `${dauNhap}\nawait import('./tri-thuc.mjs');`] }); for (const f of ['plugins/acceptance-gate/scripts/tri-thuc.mjs', 'plugins/acceptance-gate/scripts/tri-thuc-khoa.cjs']) rmSync(path.join(mut, f));
   const c = doi(mut); if (c.join() === a.join()) sai.push('mutant chèn nạp mô-đun tri thức không bị bắt'); else console.log('  KT-8-mutant: bên đọc cũ nạp mô-đun tri thức → đỏ');
   return sai;
 });
 
-// ── KT-9: lệnh /tri-thuc:kiem ──
+// ── KT-9: lệnh /knowledge:health ──
 await ca('KT-9', () => {
-  const sai = []; const t = readFileSync(path.join(KIT, 'tri-thuc/commands/kiem.md'), 'utf8');
+  const sai = []; const t = readFileSync(path.join(KIT, 'plugins/knowledge/commands/health.md'), 'utf8');
   if (t.includes('disable-model-invocation')) sai.push('kiem.md khoá model-invocation');
   const m = t.match(/<!-- <<<TT-KIEM-LENH -->\n```\n([\s\S]*?)\n```\n<!-- TT-KIEM-LENH>>> -->/); if (!m) return ['thiếu khối TT-KIEM-LENH'];
   const lenh = m[1].trim(); if (lenh !== 'node "$AG/scripts/tri-thuc.mjs" --root . --kiem') sai.push(`dòng lệnh «${lenh}»`);
-  const d = khoTrongKho(); const r = spawnSync('sh', ['-c', lenh], { cwd: d, encoding: 'utf8', env: { ...process.env, AG: KIT } });
+  const d = khoTrongKho(); const r = spawnSync('sh', ['-c', lenh], { cwd: d, encoding: 'utf8', env: { ...process.env, AG: `${KIT}/plugins/acceptance-gate` } });
   if (r.status !== 0 || !r.stdout.includes('tri thức: 3 trang, 1 raw, 0 lỗi')) sai.push(`chạy lệnh trong kho lành: ${r.status} «${r.stdout}${r.stderr}»`);
   return sai;
 });

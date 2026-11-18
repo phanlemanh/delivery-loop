@@ -13,7 +13,7 @@ import { runWorkflow, check, summary } from './harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const WF = path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const SRC = readFileSync(WF, 'utf8');
 const CHAN = (() => { const i = process.argv.indexOf('--chan'); return i >= 0 ? process.argv[i + 1] : ''; })();
 

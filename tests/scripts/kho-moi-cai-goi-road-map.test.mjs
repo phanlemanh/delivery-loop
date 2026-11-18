@@ -24,7 +24,7 @@ const DICH = 'docs/plan/lo-trinh.json';
 const CHUA_CAI = `kho chưa cài ${createRequire(import.meta.url)(tep('lib/ho-goi.cjs', { thuMuc: KIT })).tenTheoVai('lo-trinh')} ở phạm vi kho — không tạo lộ trình`;
 const DA_SAN = 'lộ trình đã sẵn — không đổi gì';
 const LECH = 'bản chép khác bản gói — chép lại theo đợt phát hành';
-const CHUA_CO_VIEC = 'Hàng kế: Lộ trình chưa có việc nào — thêm việc bằng skill cắt lượt (/acceptance-gate:cat-luot), rồi mở bằng /feature-loop:feature-loop <mã>';
+const CHUA_CO_VIEC = 'Hàng kế: Lộ trình chưa có việc nào — thêm việc bằng skill cắt lượt (/acceptance-gate:scope-slice), rồi mở bằng /feature-loop:feature-loop <mã>';
 let pass = 0; let fail = 0;
 const ok = (id, m = '') => { pass += 1; console.log(`  PASS: ${id}${m ? ` — ${m}` : ''}`); };
 const bad = (id, m) => { fail += 1; console.log(`  FAIL: ${id} — ${m}`); };
@@ -173,7 +173,7 @@ if (want('KM-1')) {
     try {
       const lanh = banSao([], doiTen); const g = kho({ settings: bat(lanh) }); chay(lanh, g);
       if (!existsSync(path.join(g, DICH))) bad('KM-1-do3', 'đối chứng: bản lành trên marketplace đổi tên không ghi tệp');
-      else chayDo('KM-1-do3', km1, banSao([['scripts/lo-trinh-khoi-tao.mjs', 'return p && j.name ? `${p.name}@${j.name}` : null;', "return 'road-map@acceptance-gate-kit';"], ['scripts/lo-trinh-khoi-tao.mjs', 'return `${GOI_ROAD_MAP}@${HG.CHO}`;', "return 'road-map@acceptance-gate-kit';"]], doiTen), 'khoá bật không rút từ marketplace.json');
+      else chayDo('KM-1-do3', km1, banSao([['scripts/lo-trinh-khoi-tao.mjs', 'return p && j.name ? `${p.name}@${j.name}` : null;', "return 'roadmap@delivery-loop';"], ['scripts/lo-trinh-khoi-tao.mjs', 'return `${GOI_ROAD_MAP}@${HG.CHO}`;', "return 'roadmap@delivery-loop';"]], doiTen), 'khoá bật không rút từ marketplace.json');
     } catch (e) { bad('KM-1-do3', loi(e)); }
   }
 }
@@ -192,7 +192,7 @@ async function km2(kit, goc, tenMong) {
   if (d.schema !== 1) sai.push('schema ≠ 1');
   if (d.ten !== tenMong) sai.push(`ten «${d.ten}», cần «${tenMong}»`);
   if (!LT.dangChuan(txt)) sai.push('tệp không ở dạng chuẩn — bộ tự áp của RM2 không ghi được');
-  if (!String(d.ghi_chu).includes('/acceptance-gate:cat-luot')) sai.push('ghi_chu không nêu /acceptance-gate:cat-luot');
+  if (!String(d.ghi_chu).includes('/acceptance-gate:scope-slice')) sai.push('ghi_chu không nêu /acceptance-gate:scope-slice');
   return sai;
 }
 const km2Kho = async kit => { const g = kho({ ten: 'kho-thu-rm4', settings: bat(kit) }); chay(kit, g); return km2(kit, g, 'Lộ trình kho-thu-rm4'); };

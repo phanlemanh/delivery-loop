@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(DAY, '..', '..');
-const GOI = path.join(KIT, 'dieu-phoi');
+const GOI = path.join(KIT, 'plugins/dispatch');
 
 const MAY_TAM = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp4-may-')));
 process.env.DIEU_PHOI_MAY_DIR = MAY_TAM;
@@ -613,7 +613,7 @@ test('DP4-06 dong-ho', async () => {
   k = dotBanGiao({ p2: 'xong' });
   await motNhip(k.dot, T + 5 * PHUT);
   const dung = suKienCua(k.dot).filter((e) => e.loai === 'ban-giao-dung');
-  hang.push(['e', dk(k.dot).pha === 'cho-tiep-tuc' && dung.length === 1 && dung[0].can_phan === true && dung[0].dich === 'owner' && dung[0].tin.includes('/dieu-phoi:tiep-tuc')]);
+  hang.push(['e', dk(k.dot).pha === 'cho-tiep-tuc' && dung.length === 1 && dung[0].can_phan === true && dung[0].dich === 'owner' && dung[0].tin.includes('/dispatch:resume')]);
   k = dotBanGiao({ cauHinh: { han_muc: undefined } });
   await motNhip(k.dot, T + 19 * PHUT);
   const doiChung = !fs.existsSync(tepBg(k.dot)) && dk(k.dot).pha === 'dang-ban-giao';
@@ -952,7 +952,7 @@ test('DP4-10 luoi-cuoi', () => {
 });
 
 // ---------- DP4-11: lượt chấm chết giữa chừng ra cùng round (AC-11, E11) ----------
-const S4_ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
+const S4_ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
 function hoSoChamThu() {
   const kho = tam('dp4-s4-');
   git(kho, 'init', '-q', '-b', 'main');
@@ -967,7 +967,7 @@ function hoSoChamThu() {
   git(kho, 'commit', '-q', '-m', 'ho so');
   return kho;
 }
-const sinhArgs = (kho, ra) => spawnSync(process.execPath, [S4_ARGS, '--slug', 'thu', '--root', kho, '--no-carry', '--diff-base', 'HEAD', '--ag-root', KIT, '--out', ra], { cwd: kho, env: ENV, encoding: 'utf8' });
+const sinhArgs = (kho, ra) => spawnSync(process.execPath, [S4_ARGS, '--slug', 'thu', '--root', kho, '--no-carry', '--diff-base', 'HEAD', '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', ra], { cwd: kho, env: ENV, encoding: 'utf8' });
 
 test('DP4-11 cung-round', async () => {
   const kho = hoSoChamThu();
@@ -1030,7 +1030,7 @@ test('DP4-13-do quet-chu', async () => {
 // ---------- DP4-14: lệnh người và tài liệu (AC-14, E14) ----------
 const thanSau = (t, moc) => t.slice(Math.max(0, t.indexOf(moc)));
 export function kiemBanGiaoMd(gocGoi = GOI) {
-  const p = path.join(gocGoi, 'commands', 'ban-giao.md');
+  const p = path.join(gocGoi, 'commands', 'handoff.md');
   if (!fs.existsSync(p)) return ['ban-giao.md: không có'];
   const t = fs.readFileSync(p, 'utf8');
   const body = thanSau(t, '\nCác bước');
@@ -1038,12 +1038,12 @@ export function kiemBanGiaoMd(gocGoi = GOI) {
   const vi = { cli: body.indexOf('dieu-phoi.mjs" ban-giao'), nhan: body.indexOf('Nhắn từng phiên thợ'), bao: body.indexOf('Báo chủ kho') };
   if (Object.values(vi).some((x) => x < 0) || !(vi.cli < vi.nhan && vi.nhan < vi.bao)) loi.push(`ban-giao.md: trình tự phải là CLI ban-giao → nhắn thợ → báo chủ kho (vị trí ${vi.cli} · ${vi.nhan} · ${vi.bao})`);
   const cauBao = body.slice(vi.bao);
-  if (!cauBao.includes('/dieu-phoi:tiep-tuc') || !cauBao.includes('loi/dieu-phoi.mjs tiep-tuc')) loi.push('ban-giao.md: câu báo thiếu /dieu-phoi:tiep-tuc hoặc đường lùi loi/dieu-phoi.mjs tiep-tuc');
+  if (!cauBao.includes('/dispatch:resume') || !cauBao.includes('loi/dieu-phoi.mjs tiep-tuc')) loi.push('ban-giao.md: câu báo thiếu /dispatch:resume hoặc đường lùi loi/dieu-phoi.mjs tiep-tuc');
   if (/^disable-model-invocation:/m.test(t)) loi.push('ban-giao.md: không được khoá model-invocation');
   return loi;
 }
 export function kiemTiepTucMdDp4(gocGoi = GOI) {
-  const t = fs.readFileSync(path.join(gocGoi, 'commands', 'tiep-tuc.md'), 'utf8');
+  const t = fs.readFileSync(path.join(gocGoi, 'commands', 'resume.md'), 'utf8');
   const body = thanSau(t, '\nCác bước');
   const loi = [];
   const iHm = body.indexOf('han-muc --nguon get-usage');
@@ -1064,7 +1064,7 @@ test('DP4-14 tai-lieu', () => {
   const ctx = fs.readFileSync(path.join(KIT, 'CONTEXT.md'), 'utf8');
   const muc = /\*\*Bàn giao tài khoản\*\*:\n[\s\S]*?(?=\n\*\*|$)/.exec(ctx)?.[0] ?? '';
   assert.ok(muc && /_Avoid_/.test(muc), 'CONTEXT.md phải có mục «Bàn giao tài khoản» kèm _Avoid_');
-  for (const tep of ['GUIDE.md', 'QUICKSTART.md']) assert.ok(fs.readFileSync(path.join(KIT, tep), 'utf8').includes('/dieu-phoi:ban-giao'), `${tep} phải nêu /dieu-phoi:ban-giao`);
+  for (const tep of ['GUIDE.md', 'QUICKSTART.md']) assert.ok(fs.readFileSync(path.join(KIT, tep), 'utf8').includes('/dispatch:handoff'), `${tep} phải nêu /dispatch:handoff`);
 });
 const saoLenh = (sua) => {
   const sao = path.join(tam('dp4-goi-'), 'dieu-phoi');
@@ -1075,7 +1075,7 @@ const saoLenh = (sua) => {
 test('DP4-14-do dao-buoc', () => {
   assert.deepEqual(kiemBanGiaoMd(saoLenh(() => {})), [], 'đối chứng dương');
   const sao = saoLenh((s) => {
-    const p = path.join(s, 'commands', 'ban-giao.md');
+    const p = path.join(s, 'commands', 'handoff.md');
     const goc = fs.readFileSync(p, 'utf8');
     const iCli = goc.indexOf('1. **CLI bàn giao.**');
     const iBao = goc.indexOf('4. **Báo chủ kho**');
@@ -1089,7 +1089,7 @@ test('DP4-14-do dao-buoc', () => {
 test('DP4-14-do bo-nhe', () => {
   assert.deepEqual(kiemTiepTucMdDp4(saoLenh(() => {})), [], 'đối chứng dương');
   const sao = saoLenh((s) => {
-    const p = path.join(s, 'commands', 'tiep-tuc.md');
+    const p = path.join(s, 'commands', 'resume.md');
     const goc = fs.readFileSync(p, 'utf8');
     const iNhe = goc.indexOf('**Dạng `--nhe`**');
     const tiem = goc.slice(0, iNhe) + goc.slice(iNhe).replace(/bước 0 \([^)]*\), /, '');

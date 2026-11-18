@@ -11,6 +11,197 @@
 > `_acceptance/release-<x-y-0>/contract.md` và `evidence-report.md`. Mục đầu
 > tiên dưới đây là phần CHƯA phát hành.
 
+## 3.0.0 — 17/11/2026
+
+Mốc «Chuyển nhà»: kit chuyển sang kho kế nhiệm `phanlemanh/delivery-loop`. Sáu plugin nay ở `plugins/<tên>/`, chợ đổi tên
+`delivery-loop`, ba plugin và mười hai lệnh đổi tên, hai skill của plugin lõi đổi tên. Kho cũ `acceptance-gate-kit` đóng
+băng ở `v2.39.0` và vẫn cài được theo thẻ. Cây của mốc = nhánh chính kho cũ `0fe48c14` + sáu commit dọn nhà do kịch bản
+`migration/kich-ban/don-nha.mjs` sinh (mã cây `53031519`) + nhánh `chuyen-nha` (thư mục `migration/`, hồ sơ B1 và B2) +
+phần riêng của mốc dưới đây; lịch sử kho cũ, các thẻ cũ và mọi commit chữ ký giữ nguyên mã. Chủ kho 11/11 chốt kho mới
+mang trọn lịch sử; 17/11 «Mở B3», rồi duyệt thẻ Cổng Phạm vi của mốc theo khuyến nghị. Có **sáu hồ sơ được ký** — tập
+đối chiếu bằng `_acceptance/release-2-39-0/cua-so.sh 0c4e503b …` (AC-3 của hồ sơ mốc): `goi-cheo-loi-dieu-phoi` (#503),
+`phan-du-bo-cuc-moi` (#505), `phan-du-bo-cuc-moi-vong-ba` (#506), `phan-du-bo-cuc-moi-vong-bon` (#507) ở kho cũ;
+`kich-ban-chuyen-nha` (B1), `bo-kiem-xanh-o-kho-moi` (B2) ở kho mới. Hai PR khác gộp vào nhánh chính kho cũ trong cửa sổ
+không mang hồ sơ: #502 (ca MC-11 đọc tên kho từ thư mục), #504 (một tệp phát hiện). Cả sáu hồ sơ là vòng meta, chủ kho gọi
+tên từng vòng (luật chiều rộng (b), ngoại lệ đã duyệt cho đợt chuyển nhà). Sáu gói cùng lên `3.0.0`, kể cả
+`diagram-design` (trước giữ số riêng 2.7.1). Thẻ `v3.0.0` gắn vào commit gộp PR mốc ở kho mới.
+
+**Vì sao 3.0.0** (major): kho đang dùng phải đổi mới chạy tiếp — tên chợ, ba tên plugin, mười hai tên lệnh và hai tên
+skill đổi, **không có bí danh tên cũ**; lượt kiểm tự động của kho tiêu thụ kéo kit theo thẻ phải đổi kho nguồn và gốc
+plugin lõi. Kế hoạch chuyển nhà gọi tên mốc 3.0 cho dãy việc này.
+
+### Mốc «Chuyển nhà» (hồ sơ `release-3-0-0`)
+
+Gốc: kế hoạch chuyển nhà, mục 12, hàng B3 (`migration/KE-HOACH.md`); đo 17/11 ở phiên B3 (`migration/vi-phan/README.md`).
+
+- **Vật:** Phát hành kit 3.0.0 — mốc «Chuyển nhà»: kho delivery-loop thành nguồn, sáu plugin ở plugins/<tên>/ với tên mới, kho cũ đóng băng ở 2.39.0; kho chờ nhận onehub-quy-hang
+- **Phán quyết không đổi trên hồ sơ thật:** bộ chặn gộp của kit `v2.39.0`, của nhánh chính kho cũ và của cây mốc chạy trên
+  cây hồ sơ ở nhánh mặc định của hai kho tiêu thụ (`--recheck-all`, có `--base`), cộng `product-map --check`: **0 phán
+  quyết lệch** ở cả hai kho (Quỹ hàng 172 hồ sơ có dòng OK, crm 366). Thước `migration/vi-phan/vi-phan.mjs` có bộ phá thử
+  hai chiều `tu-kiem.mjs` (tắt một luật ở bản sao lõi mới → đỏ đúng dòng; đổi chú thích → im).
+- **Ba glob chết của `_acceptance/config.yaml` kho kit:** `risk_tiers.t3_paths` từng trỏ thư mục móc và thư viện ở gốc kho,
+  `t1_skip_globs` trỏ ca đo skill — sau dọn nhà không khớp tệp nào, nên PR chạm `lib/evidence-core.cjs` của lõi tụt T3
+  xuống T2. Nay trỏ `plugins/acceptance-gate/…`. Đo bằng `_acceptance/release-3-0-0/hang-loi.sh` (T3 ở mốc, T2 ở cây trước
+  khi sửa) và `migration/vi-phan/duong-chet.mjs` (0 đường chết).
+- **GUIDE §5.3:** lượt kiểm tự động của kho tiêu thụ đặt `CLAUDE_PLUGIN_ROOT` vào `<bản kit>/plugins/acceptance-gate`, không
+  vào gốc bản kit. Ngoài §5.3, GUIDE đổi một lệnh `<kit>/feature-loop/…` (`giu-tuoi.mjs`) và một đường `feature-loop/…`
+  trong lời văn (`repin-lane.mjs`) sang `plugins/feature-loop/…`; QUICKSTART đổi một liên kết. Đo bằng `guide-ci.sh` của
+  hồ sơ.
+- **Dọn dấu vết đợt:** gỡ `.claude/rules/chuyen-nha.md`; `migration/` ở lại làm sử liệu và công cụ, ca RT13 thôi quét nó.
+  `CLAUDE.md` đổi tiền tố đường ở đoạn «MỘT cây nguồn», không đổi luật.
+- **Ba đường bố cục cũ lượt ghim lại B1, B2 bắt được (17/11):** `kiem-ban-cai.mjs` lấy gốc kho mặc định từ `git rev-parse
+  --show-toplevel` thay vì thư mục cha của script (ở bố cục mới đó là thư mục plugin, `git archive` chỉ lấy cây con và
+  nguồn cài thiếu `marketplace.json`); ca lượt mốc của nó đọc số ở `plugins/acceptance-gate/.claude-plugin/plugin.json`,
+  về đường cũ khi gốc vòng còn bố cục cũ; ca P132 ghim dòng cài thủ công mới của README. `migration/kich-ban/tep-song.test.mjs`
+  suy bố cục từ vật có mặt nên chạy được trên cả `chuyen-nha` lẫn cây 3.0.
+- **Giới hạn đã khai:** ngưỡng thực tế của mốc — một vòng thật ở kho nhận gộp được trên 3.0, năm dòng số không xấu đi, chủ
+  kho ghi trạng thái đã chạm bởi thực tế sau 14 ngày — là điều kiện đóng đợt, **chưa đo được** lúc cắt mốc; cách đo:
+  `migration/cat-sang/nguong-thuc-te.mjs`.
+
+### Kịch bản chuyển nhà (hồ sơ `kich-ban-chuyen-nha`, T3, vòng B1)
+
+Gốc: acceptance-gate-kit/_acceptance/release-2-39-0 — hồ sơ mốc 2.39 tự ghi nó chặn đợt chuyển nhà và «vòng B1 của đợt
+chỉ mở khi mốc 2.39 đã được một kho tiêu thụ cài».
+
+- **Vật:** Một kịch bản lấy nhánh chính kho cũ và dựng nhánh cục bộ don-nha/3.0 bằng năm commit dọn nhà tất định — sản phẩm vào plugins/<tên>/, tên chợ, plugin, lệnh, skill theo bảng tên, con trỏ sang kho cũ bằng đường dẫn đầy đủ, khuôn Repo Standards — kèm ba thước của B1 và số đo lớp ca kiểm đỏ do đổi bố cục cho B2
+- Chạy hai lần ra cùng một cây; mọi tệp sản phẩm có đúng một chỗ ở cây mới; phiên mở trên chợ mới nạp đủ 6 plugin, 33 lệnh
+  và skill, 3 tác tử của kho cũ sau khi đổi qua bảng tên. Bước thứ sáu (bộ kiểm theo bố cục mới) do B2 thêm.
+- **Giới hạn đã khai:** 4 giới hạn khai trước và 13 mục chọn ở Cổng Bằng chứng 14/11, ở Notes hợp đồng — đáng nhớ nhất:
+  Ngoài-3 «Nếu một lượt chạy kiểm chết giữa chừng, báo cáo số ca đỏ thêm có thể ghi 0 và trông như sạch trong khi thực ra
+  chưa đo được.»
+
+### Bộ kiểm xanh ở kho mới (hồ sơ `bo-kiem-xanh-o-kho-moi`, T2, vòng B2)
+
+Gốc: delivery-loop/_acceptance/kich-ban-chuyen-nha — hồ sơ B1 tự ghi việc này ở `## Out of scope` («Làm bộ kiểm xanh trên
+cây mới, đổi đường dẫn trong bộ kiểm và trong `_acceptance/config.yaml` của cây mới — vòng B2»).
+
+- **Vật:** Kịch bản chuyển nhà thêm bước đổi đường dẫn và tên trong bộ kiểm theo bố cục mới; bộ kiểm sáu bước xanh trên cây kịch bản dựng từ kit-cu/main mà không bớt ca nào của kho cũ (thước giữ đủ khoá ca hai chiều); báo cáo lớp đỏ có chiều đỏ khi lượt chạy chết ngầm; --nhanh chỉ nhận don-nha/<tên>; tệp trạng thái sống của đợt không làm hồ sơ hoá cũ
+- Trên nguồn thật: sáu bước của việc `tests` thoát 0 ở cả hai cây, phán quyết «giữ đủ <n>/<n> khoá, bỏ 0» với n bằng số
+  khoá đạt của cây cũ (AC-4 của hồ sơ); số đo của lượt ký nằm ở `migration/kich-ban/ket-qua/giu-khoa.md`.
+- **Giới hạn đã khai:** 6 giới hạn khai trước và 8 mục chọn ở Cổng Bằng chứng 17/11, ở Notes hợp đồng — đáng nhớ nhất:
+  Ngoài-1 «Nếu một bộ kiểm của kho cũ chết giữa chừng sau khi đã chạy được vài ca, báo cáo vẫn có thể ghi «không có ca đỏ
+  thêm» dù một phần ca của bộ ấy chưa được so.»
+
+### Lõi và feature-loop thôi bám bố cục cũ (hồ sơ `goi-cheo-loi-dieu-phoi`, T3, kho cũ)
+
+Gốc: ~/dev/delivery-loop/_acceptance/kich-ban-chuyen-nha/ (vòng B1 của kho kế nhiệm, ký Cổng Bằng chứng `2ca6d76c`: sổ
+kiểm kê trên cây dựng lại báo các đường treo).
+
+- **Vật:** Lõi và feature-loop thôi bám bố cục và tên plugin cũ — chạy đúng ở cả bố cục hôm nay lẫn plugins/<tên>/ với tên mới
+- **Giới hạn đã khai:** 12 mục chọn ở Cổng Bằng chứng 15/11, ở Notes hợp đồng — đáng nhớ nhất: Ngoài-11 «Tên và địa chỉ chợ
+  plugin còn được khai ở hai nơi trong kit; nếu sau này sửa một nơi mà quên nơi kia thì không có gì báo».
+
+### Bộ kiểm thôi bám bố cục phẳng, vòng hai đến bốn (hồ sơ `phan-du-bo-cuc-moi` T3, `phan-du-bo-cuc-moi-vong-ba` T2, `phan-du-bo-cuc-moi-vong-bon` T2, kho cũ)
+
+Gốc: kit/_acceptance/goi-cheo-loi-dieu-phoi/ — vòng liền trước, cùng lớp «chỉ gãy khi đổi nhà»; mỗi vòng sau nhận phần
+«Out of scope» của vòng trước.
+
+- **Vật:** Bộ kiểm và phần sản phẩm còn bám bố cục phẳng chạy xanh ở cả bố cục hôm nay lẫn plugins/<tên>/ với tên plugin
+  mới · Phần bộ kiểm còn bám bố cục phẳng (K4-LT, K4-TB, K4-MP, K4-RG) chạy được ở cả bố cục hôm nay lẫn plugins/<tên>/,
+  và nhánh chính hết đỏ ở bang-ten-lo-trinh · 57 khoá bộ kiểm còn thiếu ở cây đã dọn nhà (K4-MP 43 · K4-TB 6 · K4-DN 4 ·
+  CT-10-do/KM-1 4) đạt ở cả bố cục hôm nay lẫn plugins/<tên>/
+- Mọi đường trong bộ kiểm đi qua một bộ dịch đường đọc bố cục từ chính cây đang xét (`tests/bo-cuc.mjs`).
+- **Giới hạn đã khai:** 11, 4 và 4 mục chọn ở ba Cổng Bằng chứng 16–17/11, ở Notes từng hợp đồng; Ngoài-11 của vòng hai
+  thành hạt giống `docs/plans/2026-11-15-hat-giong-ung-vien-verifier-hook-ci.md`. Đáng nhớ nhất: Ngoài-7 của vòng hai «phép
+  so ở bố cục cũ cho xanh 0/0 khi phía bản gốc không in ca nào».
+
+**Ai bị ảnh hưởng:**
+
+- **Mọi kho cài kit:** thêm chợ `phanlemanh/delivery-loop` thay cho `phanlemanh/acceptance-gate-kit`. Khoá bật plugin đổi
+  `<plugin>@acceptance-gate-kit` → `<plugin>@delivery-loop`. **Không có bí danh tên cũ:** ai ở chợ cũ gõ tên cũ, ai sang chợ
+  mới gõ tên mới. **Đừng bật cả hai chợ trong một kho** — ba plugin giữ tên sẽ trùng.
+- **Ba plugin đổi tên:** `dieu-phoi` → `dispatch`, `road-map` → `roadmap`, `tri-thuc` → `knowledge`; `acceptance-gate`,
+  `feature-loop`, `diagram-design` giữ tên.
+- **Mười hai lệnh đổi tên:** `/dieu-phoi:mo-dot` → `/dispatch:open` · `dong-dot` → `close` · `tiep-tuc` → `resume` ·
+  `ban-giao` → `handoff` · `xem` → `status`; `/road-map:xem` → `/roadmap:status` · `ghim` → `pin` · `bo-ghim` → `unpin` ·
+  `tra-lai` → `undo` · `gui` → `suggest`; `/tri-thuc:ghi` → `/knowledge:ingest` · `kiem` → `health`.
+- **Hai skill của plugin lõi đổi tên:** `cat-luot` → `scope-slice`, `gom-tin-hieu` → `signal-intake`. Tên tác tử chấm, chữ
+  người đọc (thẻ, thông báo, tên các cổng), tên script nội bộ, khoá cấu hình và trạng thái hồ sơ không đổi.
+- **Kho kéo kit theo thẻ trong lượt kiểm tự động** (GUIDE §5.3): gốc kho kit không còn là gốc plugin lõi — đặt
+  `CLAUDE_PLUGIN_ROOT` vào `<bản kit>/plugins/acceptance-gate`; lệnh gọi `feature-loop/scripts/…` qua gốc lõi đổi sang
+  `<bản kit>/plugins/feature-loop/scripts/…`.
+- **Kho kit tự host:** PR chạm `plugins/acceptance-gate/hooks/` hay `plugins/acceptance-gate/lib/` là T3 như trước dọn nhà.
+- **crm:** ở lại kit cũ (`v2.39.0` và trước) cho tới vòng chuyển của riêng nó; mốc này không đổi gì ở crm.
+
+**Đường đọc-cũ:** không khoá cấu hình mới, không đổi khuôn hồ sơ; hồ sơ đã có ở kho tiêu thụ giữ nguyên — phán quyết của
+bộ chặn gộp trên chúng không đổi (đo trên hai kho). 45 dòng sổ ở 32 hồ sơ đã khép của kho kit còn trỏ đường phẳng — để
+nguyên, 0 hồ sơ đang mở dính.
+
+**Kho tiêu thụ làm gì khi nhận:**
+
+- **Lượt kiểm tự động:** đổi kho kéo kit sang `https://github.com/phanlemanh/delivery-loop`, ghim kit ở thẻ `v3.0.0` (khuôn GUIDE §5.3: `KIT_SHA` mang sha của thẻ, hoặc bước «Lấy kit» lấy
+  `refs/tags/v3.0.0`), gốc plugin lõi sang `$RUNNER_TEMP/kit/plugins/acceptance-gate` — ba thứ ấy là toàn bộ khối mẫu
+  §5.3. Khối mẫu không gọi feature-loop; kho nào tự gọi thêm `$CLAUDE_PLUGIN_ROOT/feature-loop/…` ở bố cục cũ thì đổi sang
+  `$RUNNER_TEMP/kit/plugins/feature-loop/…` (bố cục mới, như lệnh `<kit>/plugins/feature-loop/scripts/giu-tuoi.mjs` của
+  GUIDE). Hồ sơ nào có ca thử kéo kit theo thẻ thì ghim lại sau khi đổi.
+- **`.claude/settings.json` của kho:** chợ `delivery-loop` và sáu khoá bật plugin tên mới; gỡ chợ cũ.
+- **Máy dev:** thêm chợ mới, cài sáu gói theo ĐÚNG THẺ `v3.0.0`, rồi `node <gốc gói acceptance-gate>/scripts/kiem-ban-cai.mjs
+  --may --ref v3.0.0 --root <bản clone kit đã git fetch --tags>` — `TỔNG KẾT: ĐẠT …`. Mở phiên MỚI.
+- **Lệnh gõ tay** trong tài liệu hay cấu hình của kho mang tên lệnh cũ (`/dieu-phoi:mo-dot` …) đổi theo bảng trên.
+- **Đường lùi:** đảo commit cài và bật lại chợ cũ — kho cũ vẫn cài được ở `v2.39.0`, kho tiêu thụ không mất hồ sơ nào.
+
+**Người cắt mốc kit:** sau khi gắn thẻ chạy `node plugins/acceptance-gate/scripts/kiem-ban-cai.mjs --ref v3.0.0` (KC1).
+Đối chiếu tập hồ sơ của mốc sau bằng `_acceptance/release-2-39-0/cua-so.sh <mốc-trước> <slug…>`.
+
+**onehub-quy-hang**: kho nhận của mốc. Mốc chỉ tính là «được kho nhận» khi có một commit ở nhánh chính kho ấy kéo kit từ
+kho `delivery-loop` ở thẻ `v3.0.0`.
+
+**Năm dòng số của luật (c)**: sáu vòng trong cửa sổ (giờ VN). Định nghĩa giữ như mốc 2.39.0: làm-xong = commit đầu đưa hợp
+đồng sang `implemented` · ký = commit đầu đưa `status:` sang trạng thái đã ký · gộp = commit gộp sớm nhất trên lối cha-đầu
+của nhánh chính có commit ký là tổ tiên. Dòng 2 đếm từ sổ quyết định, `opportunity.md` và commit cổng, đối chiếu sổ của đợt
+`migration/TRANG-THAI.md`. Dòng 4–5 lấy từ bảng vai trò của `usage-report.md`: vật = baseline + machine + judge · tìm-lỗi
+= review + refute · tổng hợp = triage + capture + synthesize. Ba hồ sơ T3 (trần 4), ba hồ sơ T2 (trần 3). B1 và B2 ký rồi
+gộp vào nhánh `chuyen-nha`; chúng vào nhánh chính kho mới cùng PR mốc, nên lúc soạn mục này chúng **chưa gộp nhánh chính**.
+
+| Hồ sơ | 1 · làm-xong→ký · ký→gộp · lượt chấm | 2 · gọi người trong / ngoài (trần) | 3 · lượt bị hạ tầng đốt | 4 · out-token S4 · vật / tìm-lỗi / tổng hợp % | 5 · phút máy / lượt |
+|---|---|---|---|---|---|
+| `goi-cheo-loi-dieu-phoi` (#503, T3) | 8 g 29 · 0 g 11 · 3 (lượt 1 REJECT: bảy mục trong hợp đồng ở hai ca răng — chiều đỏ không đo điều nó nói; lượt 2 REJECT: chỉ ca P179, sổ giới hạn thiếu dòng; lượt 3 PASS) | 4 / 0 (4): Đáng, Phạm vi, Kế hoạch (Cổng 1.5 — chỉ sổ của đợt ghi), Bằng chứng | 0 | 281 613 · 33,9 / 52,2 / 13,9 | 65 · 68 · 59 = 191; ghim lại sau chữ ký 0 |
+| `phan-du-bo-cuc-moi` (#505, T3) | 6 g 13 · 7 g 17 · 2 lượt đánh số, 3 lượt chạy (lượt 1 BLOCKED: ba lệnh thước quá trần chờ; chạy lại cùng lượt REJECT: chỉ do hồ sơ của chính lượt 1 — P179 và một khoá đếm báo cáo; lượt 2 PASS) | 4 / 0 (4): Đáng, Phạm vi, Kế hoạch, Bằng chứng | 1 + một làn ghim lại đỏ không do vật | 604 838 · 74,8 / 19,8 / 5,4 | 78 · 104 · 86 = 267; ghim lại sau chữ ký 205 (đỏ) + 204 (xanh) |
+| `phan-du-bo-cuc-moi-vong-ba` (#506, T2) | 10 g 07 · 0 g 09 · 3 (lượt 1 REJECT: tám mục trong hợp đồng — lời hứa của eval không gắn vào vật; lượt 2 REJECT: bộ quét bắt khuôn chữ, không bắt lệnh; lượt 3 PASS) | 2 / 0 (3): Phạm vi, Bằng chứng | 0 | 501 376 · 55,4 / 36,7 / 8,0 | 62 · 61 · 60 = 182; ghim lại sau chữ ký 0 |
+| `phan-du-bo-cuc-moi-vong-bon` (#507, T2) | 2 g 13 · 0 g 45 · 1 (lượt 1 PASS) | 2 / 0 (3): Phạm vi, Bằng chứng | 0 | 120 714 · 52,5 / 38,3 / 9,2 | 64; ghim lại sau chữ ký 0 |
+| `kich-ban-chuyen-nha` (B1, T3) | 20 g 19 · chưa gộp nhánh chính (vào `chuyen-nha` sau 0 g 07) · 3 (lượt 1 BLOCKED: tác tử chấm chạy Node 26; lượt 2 REJECT: ba lệnh suite đỏ — MC-11 đỏ sẵn ở nền, P161, P179 — cùng một mục trong hợp đồng ở AC-7; lượt 3 chờ người: hội đồng đề xuất PASS, người chốt Đạt) | 4 / 2 (4): Đáng, Phạm vi, Kế hoạch, Bằng chứng; ngoài thiết kế: câu Node 24, chọn lối sau dừng-vá | 1 (sai bản Node ở tác tử chấm) | 313 262 · 33,0 / 49,6 / 17,5 | 7 · 58 · 58 = 123; ghim lại sau chữ ký 0 |
+| `bo-kiem-xanh-o-kho-moi` (B2, T2) | 3 g 23 · chưa gộp nhánh chính (vào `chuyen-nha` sau 0 g 34) · 2 (lượt 1 PASS ở máy, Cổng Bằng chứng trả: một mục trong hợp đồng mức vừa ở AC-5; lượt 2 PASS) | 3 / 5 (3): Phạm vi, Bằng chứng hai lần; ngoài thiết kế: bốn lời cho lượt đo dài và «Chạy lại bước đỏ» — luật của đợt đòi lời chủ kho cho từng lượt đo dài | 0 | 175 710 · 38,6 / 48,6 / 12,8 | 60 · 58 = 118; ghim lại sau chữ ký 0 |
+
+- Lời giao mở vòng không đếm, như mốc 2.39.0 (ba hồ sơ có `opportunity.md` ghi lời gọi tên vòng; tính thì thêm 3). Lời bảo
+  gộp sau chữ ký cũng không đếm vào cột 2, nhưng North Star tính lượt gọi người sau chữ ký vào chính vòng: sổ của đợt ghi
+  tám câu như thế trong cửa sổ — tính thì thêm 8. «0 ngoài thiết kế» nghĩa là «0 ghi được»: không đọc được phiên chat.
+- Số lần gộp nhánh chính vào nhánh làm việc: 0 ở bốn hồ sơ kho cũ; B1 1 và B2 5 lần gộp `chuyen-nha` vào nhánh vòng.
+- **Gộp sáu vòng:** 1 997 513 out-token S4, vật 53,0 / tìm-lỗi 36,9 / tổng hợp 10,0 %; 946 phút S4 qua 15 lượt chạy
+  (14 lượt đánh số). Trung vị làm-xong → ký **7 g 21**; ký → gộp **0 g 28** (bốn vòng đã gộp nhánh chính). Gọi người: 19
+  trong thiết kế + 7 ngoài thiết kế ghi được = 26 cho 6 kết quả đã ký, 4 kết quả đã gộp nhánh chính. Hạ tầng đốt **2 / 15**
+  lượt chạy. **Ký chưa gộp: 2** (B1, B2) — theo luật (c) không vào mẫu số; chi phí của chúng (488 972 out-token, 241 phút
+  qua 5 lượt chạy, 7 trong + 7 ngoài thiết kế) vẫn cộng vào tử số của cửa sổ.
+
+**Đọc số:**
+- **Ký → gộp ngắn lại** (trung vị 12 g 38 ở cửa sổ 2.39 → 0 g 28), nhưng trung vị che ca `phan-du-bo-cuc-moi`: 7 g 17 và
+  409 phút máy ghim lại sau chữ ký, làn đầu đỏ 205 phút vì luật danh sách của thước vòng ấy — không do vật. Bộ đo ký→gộp của
+  kit (`plugins/dispatch/scripts/do-gop.mjs`) trả rỗng cho đúng ca này vì nhánh có ba commit sau commit ký; 7 g 17 là đếm tay.
+- **Làm-xong → ký dài ra** (2 g 46 → 7 g 21): ba vòng T3 và hai vòng ba lượt chấm. Hai lượt REJECT không do vật (P179 ở
+  `goi-cheo-loi-dieu-phoi` lượt 2 và `phan-du-bo-cuc-moi` lượt chạy lại) — tính cả hai thì hạ tầng đốt là 4 / 15. Hạt giống
+  P179 `docs/plans/2026-10-18-hat-giong-so-known-limits-thieu-hang-p179.md` vẫn chưa làm.
+- **Dòng 2 vượt trần ở B1 (6 so 4) và B2 (8 so 3).** B2: năm lời ngoài thiết kế đều do luật của đợt đòi lời chủ kho cho từng
+  lượt đo dài, không phải cổng của vòng. B1: câu Node 24 là lỗi hạ tầng của máy chấm.
+- **Dòng 4: vật 53,0 %** (30,2 % ở 2.39), do riêng `phan-du-bo-cuc-moi` (74,8 %, mười eval dài tới 200 phút); bỏ hồ sơ ấy
+  thì năm hồ sơ còn lại là vật 43,6 / tìm-lỗi 44,4 / tổng hợp 12,0 %.
+
+**Điều kiện tin cậy:**
+- **(i) KHÔNG giữ:** đường chấm đổi chỗ — `feature-loop/workflows/` và `feature-loop/agents/` dời vào `plugins/feature-loop/`.
+  Dòng 4–5 chỉ đọc, không so với mốc trước.
+- **(ii)** Lượt chấm sai do phép-đo-tự-dối giữa hai mốc: **0** ghi được.
+
+**Dự báo năm dòng cho thay đổi của mốc này** (chuyển nhà): dòng 1 = (cùng cổng, cùng thước; ký→gộp ở kho mới cần kho mới
+bật lượt kiểm tự động và khoá nhánh chính) · dòng 2 = (không thêm cổng) · dòng 3 ↑ rủi ro trong cửa sổ quan sát (đường cài
+mới, kho tiêu thụ đổi gốc plugin) — đây là chỉ báo thẳng nhất của chỗ gãy do chuyển nhà · dòng 4 = · dòng 5 ↓ bản cài chỉ
+còn sản phẩm (6 gói, 638 tệp so với 6 072 tệp ở 2.39).
+
+**Dòng hiệu chuẩn:** `ĐẠT đã ký → prod đỏ: 0 / 0` — N = 0 nên dòng vô hiệu, cấm đọc thành «0 sự cố».
+
+**Ngưỡng thực tế của mốc (điều kiện ĐÓNG ĐỢT, đến sau ngày cắt — CHƯA ĐẠT):** (1) một vòng thật ở Quỹ hàng mở sau commit
+cài 3.0 gộp được trên kit 3.0 — chưa có commit cài; (2) năm dòng số không xấu đi so với nền — cửa sổ 2.39 ở Quỹ hàng RỖNG
+(0 vòng gộp từ commit cài 2.39), nền đề xuất là cửa sổ 2.37→2.39 (15 vòng, ký→gộp trung vị 9 phút; ngưỡng ký→gộp = số lớn
+hơn giữa 1,5 lần nền và 30 phút); (3) chủ kho ghi trạng thái đã chạm bởi thực tế sau cửa sổ quan sát 14 ngày tính từ commit
+cài. Đo bằng `migration/cat-sang/nguong-thuc-te.mjs` (`ve-1` · `cua-so`).
+
 ## 2.39.0 — 12/11/2026
 
 Mốc «Nhẹ đi»: ba việc chỉ bớt đi, cộng sáu hồ sơ được ký sau 2.38.1. Mốc này chặn đợt chuyển nhà sang kho kế nhiệm

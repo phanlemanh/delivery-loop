@@ -18,13 +18,13 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
-const SCRIPT = path.join(ROOT, 'scripts', 'kiem-ban-cai.mjs');
+const SCRIPT = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'kiem-ban-cai.mjs');
 const MUC_VIET_SAN = ['so-phien-ban', 'khop-tag', 'thu-muc-goi', 'tac-tu-cham', 'hook-goi', 'the-cong', 'luoi-truoc-gop', 'dieu-phoi'];
 
 const git = (root, args) => spawnSync('git', ['-C', root, '-c', 'core.hooksPath=/dev/null', '-c', 'commit.gpgsign=false', ...args], { encoding: 'utf8', maxBuffer: 1 << 28 });
 const gitOk = (root, args) => { const r = git(root, args); if (r.status !== 0) throw new Error(`git ${args.join(' ')}: ${(r.stderr || '').trim()}`); return r.stdout; };
 
-// Cổng lượt cắt mốc: số trong .claude-plugin/plugin.json ở HEAD so với gốc vòng. Bằng → bỏ qua; khác, hay
+// Cổng lượt cắt mốc: số trong plugins/acceptance-gate/.claude-plugin/plugin.json ở HEAD so với gốc vòng. Bằng → bỏ qua; khác, hay
 // không dò/đọc được → chạy trọn (đóng khi nghi ngờ).
 export function nhanDienLuotMoc(root) {
   let nhanh = null;
@@ -34,7 +34,15 @@ export function nhanDienLuotMoc(root) {
   if (!nhanh) return { ket: 'chay-tron', ly_do: 'không dò được nhánh chính' };
   const mb = git(root, ['merge-base', 'HEAD', nhanh]);
   if (mb.status !== 0) return { ket: 'chay-tron', ly_do: `không dò được gốc vòng với ${nhanh}` };
-  const doc = (ref) => { const r = git(root, ['show', `${ref}:.claude-plugin/plugin.json`]); try { return r.status === 0 ? JSON.parse(r.stdout).version : null; } catch { return null; } };
+  // Đường bố cục mới trước; gốc vòng có thể còn là cây bố cục cũ (lõi ở gốc kho) — đọc-cũ, không phải nhánh chết.
+  const doc = (ref) => {
+    for (const p of ['plugins/acceptance-gate/.claude-plugin/plugin.json', '.claude-plugin/plugin.json']) {
+      const r = git(root, ['show', `${ref}:${p}`]);
+      if (r.status !== 0) continue;
+      try { return JSON.parse(r.stdout).version; } catch { return null; }
+    }
+    return null;
+  };
   const so = doc('HEAD'), soGoc = doc(mb.stdout.trim());
   if (!so || !soGoc) return { ket: 'chay-tron', ly_do: 'không đọc được số phiên bản' };
   return so === soGoc ? { ket: 'bo-qua', so, soGoc } : { ket: 'chay-tron', so, soGoc, ly_do: `số ${soGoc} → ${so}` };
@@ -169,7 +177,7 @@ async function chayTron() {
 
     // ---- KB-3: thiếu agents/ · sai tên · cầm bút ----
     if (canDoiChung('KB-3 thieu-agents')) {
-      const k = chayKiem(['--ref', 'HEAD', '--nguon-cai', saoChep(d => fs.rmSync(path.join(d, 'feature-loop', 'agents'), { recursive: true }))]);
+      const k = chayKiem(['--ref', 'HEAD', '--nguon-cai', saoChep(d => fs.rmSync(path.join(d, 'plugins/feature-loop', 'agents'), { recursive: true }))]);
       const dTm = k.dongMuc('ĐỎ', 'thu-muc-goi') || '', dTt = k.dongMuc('ĐỎ', 'tac-tu-cham') || '';
       kiem('KB-3 thieu-agents', [
         [k.ma === 1, `mong thoát 1 (${tomTat(k)})`],
@@ -180,7 +188,7 @@ async function chayTron() {
     }
     if (canDoiChung('KB-3 sai-ten')) {
       const k = chayKiem(['--ref', 'HEAD', '--nguon-cai', saoChep(d => {
-        const f = path.join(d, 'feature-loop', 'agents', 'cham-lenh.md');
+        const f = path.join(d, 'plugins/feature-loop', 'agents', 'cham-lenh.md');
         fs.writeFileSync(f, fs.readFileSync(f, 'utf8').replace(/^name:\s*cham-lenh\s*$/m, 'name: sai-ten'));
       })]);
       const dTt = k.dongMuc('ĐỎ', 'tac-tu-cham') || '';
@@ -188,7 +196,7 @@ async function chayTron() {
     }
     if (canDoiChung('KB-3 cam-but')) {
       const k = chayKiem(['--ref', 'HEAD', '--nguon-cai', saoChep(d => {
-        const f = path.join(d, 'feature-loop', 'agents', 'cham-doc.md');
+        const f = path.join(d, 'plugins/feature-loop', 'agents', 'cham-doc.md');
         fs.writeFileSync(f, fs.readFileSync(f, 'utf8').replace(/^(tools:.*)$/m, '$1, Edit'));
       })]);
       const dTt = k.dongMuc('ĐỎ', 'tac-tu-cham') || '';
@@ -197,7 +205,7 @@ async function chayTron() {
 
     // ---- KB-4: lệch một tệp · thừa một tệp ----
     if (canDoiChung('KB-4')) {
-      const k = chayKiem(['--ref', 'HEAD', '--nguon-cai', saoChep(d => fs.appendFileSync(path.join(d, 'scripts', 'gate-card.js'), '\n// lech so voi tag\n'))]);
+      const k = chayKiem(['--ref', 'HEAD', '--nguon-cai', saoChep(d => fs.appendFileSync(path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '\n// lech so voi tag\n'))]);
       const dK = k.dongMuc('ĐỎ', 'khop-tag') || '';
       kiem('KB-4', [
         [k.ma === 1, `mong thoát 1 (${tomTat(k)})`],
@@ -208,19 +216,22 @@ async function chayTron() {
     // ---- KB-13 (hồ sơ kiem-ban-cai-loi-sua-chay-duoc, design L3): kho giả lập GIỮ NGHIÊM — lệch chỉ ở một tệp
     // docs/ vẫn ĐỎ khop-tag. Chế độ --may khoan dung cùng hình lệch thành VÀNG (ca KL-1 của tệp ca kia).
     if (canDoiChung('KB-13')) {
-      const tepDocs = gitOk(ROOT, ['ls-tree', '-r', '--name-only', 'HEAD', '--', 'docs']).split('\n').filter(Boolean)[0];
-      if (!tepDocs) fail('KB-13', 'HEAD không có tệp nào dưới docs/ để tiêm');
+      // Bố cục mới: docs/ của kho nằm NGOÀI gói lõi — tệp tài liệu phải lấy trong gói (docs/ của gói nếu có, không thì
+      // evals/README.md), và tên trong dòng khop-tag là đường tương đối với gốc gói (release-3-0-0 Ngoài-7).
+      const GOI = 'plugins/acceptance-gate';
+      const tepDocs = gitOk(ROOT, ['ls-tree', '-r', '--name-only', 'HEAD', '--', `${GOI}/docs`, `${GOI}/evals/README.md`]).split('\n').filter(Boolean)[0];
+      if (!tepDocs) fail('KB-13', `HEAD không có tệp tài liệu nào trong ${GOI} để tiêm`);
       else {
         const k = chayKiem(['--ref', 'HEAD', '--nguon-cai', saoChep(d => fs.appendFileSync(path.join(d, tepDocs), '\nlech tai lieu sau the\n'))]);
         const dK = k.dongMuc('ĐỎ', 'khop-tag') || '';
         kiem('KB-13', [
           [k.ma === 1, `mong thoát 1 (${tomTat(k)})`],
-          [dK.includes('bản cài khác tag') && dK.includes(`acceptance-gate:${tepDocs}`), `dòng ĐỎ khop-tag «${dK}»`],
+          [dK.includes('bản cài khác tag') && dK.includes(`acceptance-gate:${tepDocs.slice(GOI.length + 1)}`), `dòng ĐỎ khop-tag «${dK}»`],
         ]);
       }
     }
     if (canDoiChung('KB-4 thua')) {
-      const k = chayKiem(['--ref', 'HEAD', '--nguon-cai', saoChep(d => fs.writeFileSync(path.join(d, 'tep-thua-ngoai-cay.txt'), 'rác\n'))]);
+      const k = chayKiem(['--ref', 'HEAD', '--nguon-cai', saoChep(d => fs.writeFileSync(path.join(d, 'plugins/acceptance-gate', 'tep-thua-ngoai-cay.txt'), 'rác\n'))]);
       const dV = k.dongMuc('VÀNG', 'khop-tag') || '';
       kiem('KB-4 thua', [
         [k.ma === 0, `mong thoát 0 (${tomTat(k)})`],
@@ -232,12 +243,12 @@ async function chayTron() {
     // ---- KB-5: phá từng mắt của vòng chạm ----
     const CHAM = ['the-cong', 'luoi-truoc-gop', 'dieu-phoi'];
     const mat = [
-      ['the-cong', 'the-cong', d => chenDau(path.join(d, 'scripts', 'gate-card.js'), 'process.exit(1);'), 'thẻ cổng không dựng được'],
-      ['luoi-cam', 'luoi-truoc-gop', d => chenDau(path.join(d, 'scripts', 'pre-merge-check.sh'), 'exit 0'), 'lưới không chặn hồ sơ phạm luật'],
-      ['luoi-chan-tat', 'luoi-truoc-gop', d => chenDau(path.join(d, 'scripts', 'pre-merge-check.sh'), 'exit 1'), 'kho lành bị chặn'],
-      ['dieu-phoi', 'dieu-phoi', d => chenDau(path.join(d, 'dieu-phoi', 'scripts', 'dieu-phoi.mjs'), 'process.exit(1);'), 'chẩn đoán đợt không chạy được'],
+      ['the-cong', 'the-cong', d => chenDau(path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'), 'process.exit(1);'), 'thẻ cổng không dựng được'],
+      ['luoi-cam', 'luoi-truoc-gop', d => chenDau(path.join(d, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), 'exit 0'), 'lưới không chặn hồ sơ phạm luật'],
+      ['luoi-chan-tat', 'luoi-truoc-gop', d => chenDau(path.join(d, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), 'exit 1'), 'kho lành bị chặn'],
+      ['dieu-phoi', 'dieu-phoi', d => chenDau(path.join(d, 'plugins/dispatch', 'scripts', 'dieu-phoi.mjs'), 'process.exit(1);'), 'chẩn đoán đợt không chạy được'],
       ['hook-goi', 'hook-goi', d => {
-        const f = path.join(d, 'hooks', 'hooks.json');
+        const f = path.join(d, 'plugins/acceptance-gate', 'hooks', 'hooks.json');
         const j = JSON.parse(fs.readFileSync(f, 'utf8'));
         j.hooks.PreToolUse.push({ matcher: 'Bash', hooks: [{ type: 'command', command: 'node "${CLAUDE_PLUGIN_ROOT}/hooks/khong-co.js"' }] });
         fs.writeFileSync(f, JSON.stringify(j, null, 2));
@@ -269,7 +280,7 @@ async function chayTron() {
       const env = { ...process.env, CLAUDE_CONFIG_DIR: cfg };
       const D = path.join(tam, 'cho-may');
       fs.cpSync(goc, D, { recursive: true });
-      const wf = path.join('feature-loop', 'workflows', 'acceptance-verify.js');
+      const wf = path.join('plugins/feature-loop', 'workflows', 'acceptance-verify.js');
       fs.appendFileSync(path.join(D, wf), '\n// lech: ban checkout khac tag\n');
       claude(['plugin', 'marketplace', 'add', D], env);
       claude(['plugin', 'install', `feature-loop@${CHO}`, '--scope', 'user'], env);
@@ -290,26 +301,28 @@ async function chayTron() {
       const k2b = chayKiem(['--may', '--ref', 'HEAD'], { env });
       const dDat = k2b.dong.find(l => l.startsWith('[kiem-ban-cai] ĐẠT may:')) || '';
       kiem('KB-7 cai-lai', [[k2b.ma === 0, `mong thoát 0 (${tomTat(k2b)})`], [dDat.includes('khớp'), `dòng ĐẠT may «${dDat}»`]]);
-      const pj = path.join(D, 'dieu-phoi', '.claude-plugin', 'plugin.json');
+      const pj = path.join(D, 'plugins/dispatch', '.claude-plugin', 'plugin.json');
       const j = JSON.parse(fs.readFileSync(pj, 'utf8')); j.version = '9.9.9'; fs.writeFileSync(pj, JSON.stringify(j, null, 2));
       claude(['plugin', 'marketplace', 'update', CHO], env);
-      claude(['plugin', 'install', `dieu-phoi@${CHO}`, '--scope', 'user'], env);
+      claude(['plugin', 'install', `dispatch@${CHO}`, '--scope', 'user'], env);
       const k3 = chayKiem(['--may', '--ref', 'HEAD'], { env });
       const dV = k3.dong.find(l => l.startsWith('[kiem-ban-cai] VÀNG may:')) || '';
-      kiem('KB-7 khac-so', [[k3.ma === k2b.ma, `mã thoát đổi khi thêm bản ghi khác số (${k2b.ma} → ${k3.ma})`], [dV.includes('khác số') && dV.includes('dieu-phoi'), `dòng VÀNG may «${dV}»`]]);
+      kiem('KB-7 khac-so', [[k3.ma === k2b.ma, `mã thoát đổi khi thêm bản ghi khác số (${k2b.ma} → ${k3.ma})`], [dV.includes('khác số') && dV.includes(`dispatch@${CHO}`), `dòng VÀNG may «${dV}»`]]);
 
       const wt = path.join(tam, 'checkout-that');
       gitOk(ROOT, ['worktree', 'add', '--detach', '-q', wt, 'HEAD']);
       try {
-        fs.writeFileSync(path.join(wt, 'tep-chua-theo-doi.txt'), 'chưa theo dõi\n');
-        fs.writeFileSync(path.join(wt, '.DS_Store'), 'bỏ qua theo .gitignore\n');
+        // Bố cục mới: tệp tiêm phải nằm TRONG gói lõi — gốc kho không còn là gốc gói (release-3-0-0 Ngoài-7).
+        const goiWt = path.join(wt, 'plugins/acceptance-gate');
+        fs.writeFileSync(path.join(goiWt, 'tep-chua-theo-doi.txt'), 'chưa theo dõi\n');
+        fs.writeFileSync(path.join(goiWt, '.DS_Store'), 'bỏ qua theo .gitignore\n');
         const cfg2 = path.join(tam, 'cfg-checkout'); fs.mkdirSync(cfg2);
         const env2 = { ...process.env, CLAUDE_CONFIG_DIR: cfg2 };
         claude(['plugin', 'marketplace', 'add', wt], env2);
         claude(['plugin', 'install', `acceptance-gate@${CHO}`, '--scope', 'user'], env2);
         const k4 = chayKiem(['--may', '--ref', 'HEAD'], { env: env2 });
         const d4 = k4.dong.find(l => l.startsWith('[kiem-ban-cai] ĐẠT may:')) || '';
-        fs.appendFileSync(path.join(wt, 'README.md'), '\nsửa một tệp đang theo dõi\n');
+        fs.appendFileSync(path.join(goiWt, 'evals', 'README.md'), '\nsửa một tệp đang theo dõi\n');
         claude(['plugin', 'uninstall', `acceptance-gate@${CHO}`, '--scope', 'user'], env2);
         claude(['plugin', 'install', `acceptance-gate@${CHO}`, '--scope', 'user'], env2);
         const k5 = chayKiem(['--may', '--ref', 'HEAD'], { env: env2 });
@@ -351,7 +364,7 @@ async function chayTron() {
       const cfg = path.join(tam, 'cfg-chua-moi'); fs.mkdirSync(cfg);
       const env = { ...process.env, CLAUDE_CONFIG_DIR: cfg };
       const D = saoChep(d => {
-        const f = path.join(d, 'feature-loop', '.claude-plugin', 'plugin.json');
+        const f = path.join(d, 'plugins/feature-loop', '.claude-plugin', 'plugin.json');
         const j = JSON.parse(fs.readFileSync(f, 'utf8')); j.version = '0.0.1'; fs.writeFileSync(f, JSON.stringify(j, null, 2));
       });
       claude(['plugin', 'marketplace', 'add', D], env);
@@ -362,7 +375,7 @@ async function chayTron() {
         [k.cuoi.startsWith('[kiem-ban-cai] TỔNG KẾT: ĐỎ') && k.cuoi.includes('không bản ghi nào mang số của'), `dòng cuối «${k.cuoi}»`],
       ]);
       // Đối chứng bằng dieu-phoi: nguồn riêng của nó không chứa tệp đã sửa (gói gốc chép cả cây nên sẽ khác tag thật).
-      claude(['plugin', 'install', `dieu-phoi@${CHO}`, '--scope', 'user'], env);
+      claude(['plugin', 'install', `dispatch@${CHO}`, '--scope', 'user'], env);
       const k2 = chayKiem(['--may', '--ref', 'HEAD'], { env });
       kiem('KB-10 doi-chung', [[k2.ma === 0, `có một bản ghi đúng số mà vẫn đỏ (${tomTat(k2)})`]]);
     }
@@ -392,9 +405,9 @@ async function chayTron() {
 
     // ---- KB-12: mục số phiên bản đỏ khi bản cài mang số khác ref ----
     if (canDoiChung('KB-12')) {
-      const soRef = JSON.parse(gitOk(ROOT, ['show', 'HEAD:feature-loop/.claude-plugin/plugin.json'])).version;
+      const soRef = JSON.parse(gitOk(ROOT, ['show', 'HEAD:plugins/feature-loop/.claude-plugin/plugin.json'])).version;
       const k = chayKiem(['--ref', 'HEAD', '--nguon-cai', saoChep(d => {
-        const f = path.join(d, 'feature-loop', '.claude-plugin', 'plugin.json');
+        const f = path.join(d, 'plugins/feature-loop', '.claude-plugin', 'plugin.json');
         const j = JSON.parse(fs.readFileSync(f, 'utf8')); j.version = '0.0.0-lech'; fs.writeFileSync(f, JSON.stringify(j, null, 2));
       })]);
       const dS = k.dongMuc('ĐỎ', 'so-phien-ban') || '';
@@ -404,7 +417,7 @@ async function chayTron() {
     // ---- KB-9: khoá suite + cổng lượt cắt mốc trên bản sao kit ----
     {
       const require_ = createRequire(import.meta.url);
-      const { resolveConfigKey, resolveConfigList } = require_(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+      const { resolveConfigKey, resolveConfigList } = require_(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
       const cfgText = fs.readFileSync(path.join(ROOT, '_acceptance', 'config.yaml'), 'utf8');
       const sk = resolveConfigList(cfgText, 'feature_loop.suite_keys');
       kiem('KB-9 config', [
@@ -423,7 +436,7 @@ async function chayTron() {
         gitOk(d, ['add', '-A']); gitOk(d, ['commit', '-qm', 'f']);
         return d;
       };
-      const doiSo = (d) => { const f = path.join(d, '.claude-plugin', 'plugin.json'); const j = JSON.parse(fs.readFileSync(f, 'utf8')); j.version = '9.9.9'; fs.writeFileSync(f, JSON.stringify(j, null, 2) + '\n'); };
+      const doiSo = (d) => { const f = path.join(d, 'plugins/acceptance-gate', '.claude-plugin', 'plugin.json'); const j = JSON.parse(fs.readFileSync(f, 'utf8')); j.version = '9.9.9'; fs.writeFileSync(f, JSON.stringify(j, null, 2) + '\n'); };
       const caMoc = (d) => {
         const r = spawnSync(process.execPath, [path.join(d, 'tests', 'scripts', 'kiem-ban-cai.ca.mjs'), '--chi-luot-moc'], { cwd: d, encoding: 'utf8', timeout: 600_000 });
         return { ma: r.status, out: r.stdout || '', dong: (r.stdout || '').split('\n').filter(Boolean) };
@@ -438,7 +451,7 @@ async function chayTron() {
       const dcOk = kiem('KB-9 doi-chung', [[dc.ma === 0, `mong thoát 0 (thoát ${dc.ma})`], [dc.out.includes('TỔNG KẾT: ĐẠT 8/8'), `thiếu «TỔNG KẾT: ĐẠT 8/8»: ${dc.dong.slice(-1)[0]}`]]);
       if (!dcOk) fail('KB-9 do', 'không có đối chứng dương (KB-9 doi-chung không PASS)');
       else {
-        const dd = caMoc(banSaoKit('main', d => { doiSo(d); fs.rmSync(path.join(d, 'feature-loop', 'agents'), { recursive: true }); }));
+        const dd = caMoc(banSaoKit('main', d => { doiSo(d); fs.rmSync(path.join(d, 'plugins/feature-loop', 'agents'), { recursive: true }); }));
         // Cây cắt mốc ĐÃ mất agents/ thì bản cài khớp cây ấy — mục thu-muc-goi đúng là ĐẠT; lớp lỗi A1 bị mục
         // tac-tu-cham bắt (workflow đã cài vẫn gọi tên tác tử mà bản cài không có định nghĩa).
         kiem('KB-9 do', [[dd.ma === 1, `mong thoát 1 (thoát ${dd.ma})`], [dd.out.includes('tác tử chấm vắng trong bản cài:') && dd.out.includes('feature-loop:cham-lenh') && dd.out.includes('TỔNG KẾT: ĐỎ'), `đầu ra «${dd.dong.slice(-2).join(' | ')}»`]]);

@@ -10,9 +10,9 @@ import { runWorkflow } from '../workflows/harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(HERE, '..', '..');
-const WF = path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js');
-const S4ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
-const LIB = path.join(KIT, 'lib', 'nhan-canh-gay.cjs');
+const WF = path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
+const S4ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
+const LIB = path.join(KIT, 'plugins/acceptance-gate/lib', 'nhan-canh-gay.cjs');
 const require = createRequire(import.meta.url);
 const NCG = require(LIB);
 const TMP = mkdtempSync(path.join(tmpdir(), 'ckdl-cham-'));
@@ -62,7 +62,7 @@ function s4(runLog) {
   writeFileSync(path.join(ws, 'run-log.jsonl'), runLog.join('\n') + '\n');
   gitC(d, 'add', '-A'); gitC(d, 'commit', '-qm', 'vat');
   const out = path.join(d, 'args.json');
-  const r = spawnSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d, '--ag-root', KIT, '--out', out, '--diff-base', 'main', '--no-carry'], { encoding: 'utf8' });
+  const r = spawnSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', out, '--diff-base', 'main', '--no-carry'], { encoding: 'utf8' });
   return { rc: r.status, err: r.stderr || '', round: r.status === 0 ? JSON.parse(readFileSync(out, 'utf8')).round : null };
 }
 const canh = (res, src) => (src ? src : NCG).canhGay({ runLogText: res.runLog.join('\n'), verdict: res.verdict, nguon: NCG.NGUON });

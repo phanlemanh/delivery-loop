@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const CN = path.join(ROOT, 'scripts', 'cau-noi-ruling.mjs');
+const CN = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'cau-noi-ruling.mjs');
 const FIX = readFileSync(path.join(HERE, 'fixtures', 'msbv-progress-superpowers.md'), 'utf8');
 
 // Ma trận viết TRƯỚC cau-noi-ruling.mjs: một phần tử cho MỖI đoạn Ruling của fixture, đúng thứ tự,
@@ -100,7 +100,7 @@ ca('MS-AC5-rong', () => {
 });
 
 ca('MS-AC5-dot-bien', () => {
-  const ban = mutate => { const d = mkdtempSync(path.join(tmpdir(), 'msbv-cnm-')); cpSync(path.join(ROOT, 'scripts'), path.join(d, 'scripts'), { recursive: true }); cpSync(path.join(ROOT, 'lib'), path.join(d, 'lib'), { recursive: true }); const p = path.join(d, 'scripts', 'cau-noi-ruling.mjs'); const s = readFileSync(p, 'utf8'); const m = mutate(s); if (m === s) die('kim khong khop'); writeFileSync(p, m); return p; };
+  const ban = mutate => { const d = mkdtempSync(path.join(tmpdir(), 'msbv-cnm-')); cpSync(path.join(ROOT, 'plugins/acceptance-gate/scripts'), path.join(d, 'scripts'), { recursive: true }); cpSync(path.join(ROOT, 'plugins/acceptance-gate/lib'), path.join(d, 'lib'), { recursive: true }); const p = path.join(d, 'scripts', 'cau-noi-ruling.mjs'); const s = readFileSync(p, 'utf8'); const m = mutate(s); if (m === s) die('kim khong khop'); writeFileSync(p, m); return p; };
   const p1 = ban(s => s.replace('if (daCo.has(ref)) continue;', ''));
   const a = kho(); chay(a.r, a.w, [], p1); chay(a.r, a.w, [], p1);
   if (so(a.L).length !== 2 * KY_VONG.length) die('dot bien bo dedupe khong co tac dung');

@@ -1,4 +1,4 @@
-// Characterization tests for feature-loop/workflows/acceptance-verify.js —
+// Characterization tests for plugins/feature-loop/workflows/acceptance-verify.js —
 // the PURE layer (classify/dedupe, variance merge, verdict routing, run-log
 // lines, provenance sanitize, model routing) exercised through the real file
 // with deterministic canned agents. These pin behavior BEFORE any routing
@@ -10,7 +10,7 @@ import { runWorkflow, check, summary, TOOL_KILL_RULE_LINES, TOOL_KILL_RULE_SRC, 
 import { measureShapes } from './measure-pins.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const WF = path.join(HERE, '..', '..', 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(HERE, '..', '..', 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 
 const VC = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2';
 
@@ -1514,7 +1514,7 @@ console.log('JR3 carry P3 giữ nguyên danh sách per-vote (AC-3)');
 // Vấp thật release-2-2-0 S4 r5: verifier không truyền timeout → công cụ giết
 // suite ở 118s → exit 1 của CÔNG CỤ bị đọc thành exit của LỆNH → REJECT giả.
 // Hồ sơ tool-kill-duong-doc-lap: luật dời về file nguồn của plugin acceptance-gate
-// (skills/acceptance/references/tool-kill-rule.md) để đường VERIFY độc lập cùng
+// (plugins/acceptance-gate/skills/acceptance/references/tool-kill-rule.md) để đường VERIFY độc lập cùng
 // đọc; workflow không chép câu luật — nhận nguyên văn file qua args.toolKillRule
 // và rút khối marker. Test rút RULE từ CHÍNH file nguồn (round-trip từ writer
 // thật, tách theo DÒNG — không regex, gap-probe F3), assert từng dòng có mặt.
@@ -1806,7 +1806,7 @@ console.log('W33 day khep: so -> ban cham -> BO DOC that cua kho (evidence-core)
   const fs = await import('node:fs');
   const os = await import('node:os');
   const require_ = createRequire(import.meta.url);
-  const core = require_(path.join(HERE, '..', '..', 'lib', 'evidence-core.cjs'));
+  const core = require_(path.join(HERE, '..', '..', 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
 
   const { result, calls } = await runWorkflow(WF, baseArgs(), responder());
   const lines = result.runLog.map(l => JSON.parse(l));
@@ -1817,7 +1817,7 @@ console.log('W33 day khep: so -> ban cham -> BO DOC that cua kho (evidence-core)
   // tu go khuon ben DOC, vi lam the la do lai chinh cai minh vua viet
   // (nep OOC-ITEM-TEMPLATE + P55: seam LLM-viet -> may-doc dat MOT cho co marker).
   const { blockFromTemplate, fillTemplate } = await import('../fixtures/from-template.mjs');
-  const EVID_TPL = path.join(HERE, '..', '..', 'skills', 'acceptance', 'references', 'evidence-report-template.md');
+  const EVID_TPL = path.join(HERE, '..', '..', 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'evidence-report-template.md');
   const suiteKhuon = blockFromTemplate(EVID_TPL, 'SUITE-BLOCK-TEMPLATE');
   check('W33 khuon suite trong ban mau CO dong run_id (round-trip writer<->reader)',
     /^\s+run_id:\s*\{run_id\}/m.test(suiteKhuon), JSON.stringify(suiteKhuon));
@@ -1897,7 +1897,7 @@ console.log('W35 verifier tu khai runId: luoi chong va cham phai VAN chay');
 {
   // Prompt may dan verifier "run_id neu stdout co in" → agent CO THE tra cung mot
   // runId cho hai lenh khac nhau. Truoc ban va, nhanh nay bo qua toan bo luoi
-  // chong va cham: run_id — truong DUY NHAT ma lib/evidence-core.cjs doc — bi trung.
+  // chong va cham: run_id — truong DUY NHAT ma plugins/acceptance-gate/lib/evidence-core.cjs doc — bi trung.
   const A = 'cd apps/web && pnpm build', B = 'cd apps/api && pnpm build';
   const { result } = await runWorkflow(WF, baseArgs({ suiteCommands: [A, B] }), responder({
     'machine:cd apps/': (call) => { const c = call.label.includes('api') ? 1 : 0; return { exitCode: c, outputTail: `x\n__EXIT=${c}`, runId: 'harness-42', cannotRun: false }; },
@@ -1937,12 +1937,12 @@ console.log('W36 bo dem va cham khong duoc dung object tran (khoa prototype)');
 
 console.log('W-RID ma verifier khai phai doc lai DUNG no qua bo doc bang chung (khu hoi ghi -> doc)');
 {
-  // Bo ghi (run-log) va bo doc (extractRunIds cua lib/evidence-core.cjs) phai cung mot luat:
+  // Bo ghi (run-log) va bo doc (extractRunIds cua plugins/acceptance-gate/lib/evidence-core.cjs) phai cung mot luat:
   // verifier tra nguyen hai dau nhay `""` thay chuoi rong -> log chep nguyen, bo doc bo nhay,
   // L2 PROVENANCE chan luc ghi chu ky (ho so lo-trinh-cat-luot 09/10). Do quan he, khong do tu vung:
   // MOI run_id trong log, viet thanh dong `run_id: <id>` cua bao cao, phai doc ra DUNG <id>.
   const { createRequire } = await import('node:module');
-  const { extractRunIds } = createRequire(import.meta.url)(path.join(HERE, '..', '..', 'lib', 'evidence-core.cjs'));
+  const { extractRunIds } = createRequire(import.meta.url)(path.join(HERE, '..', '..', 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   const A = 'bash tests/a.sh', B = 'bash tests/b.sh';
   const tra = {
     'machine:bash tests/a.sh': { exitCode: 0, outputTail: 'x\n__EXIT=0', runId: '""', cannotRun: false },
@@ -2349,7 +2349,7 @@ console.log('W40c T1: triage hong -> roi ve duong cu (refute TAT CA, moi finding
 // VIẾT). Gõ tay ở đây là dựng fixture đúng khuôn BÊN ĐỌC — đúng lớp lỗi gap-probe
 // nêu; rút từ nguồn thì s4-args đổi khuôn là ca này đỏ.
 // thuoc-co-cua AC-10: hằng sống ở MỘT nguồn `lib/phan-loai.mjs`, s4-args nhập từ đó.
-const S4ARGS_SRC = readFileSync(path.join(HERE, '..', '..', 'feature-loop', 'scripts', 'lib', 'phan-loai.mjs'), 'utf8');
+const S4ARGS_SRC = readFileSync(path.join(HERE, '..', '..', 'plugins/feature-loop', 'scripts', 'lib', 'phan-loai.mjs'), 'utf8');
 const HO_SO_GLOBS = (() => {
   const m = S4ARGS_SRC.match(/const HO_SO_VAN_BAN_GLOBS = \[([^\]]*)\]/);
   if (!m) throw new Error('khong rut duoc HO_SO_VAN_BAN_GLOBS tu lib/phan-loai.mjs (mot nguon cua s4-args doi khuon)');

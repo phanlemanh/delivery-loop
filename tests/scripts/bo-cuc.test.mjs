@@ -335,7 +335,7 @@ const CAU_TACH = c => `bo-cuc: .claude-plugin tách ở ${c} — dùng boPhan`;
     [{ kho: KIT, ref: REF_PHANG }, CHO_CU],
   ];
   const lech = ca.map(([c, k]) => { const m = nem(() => { const ra = tenCho(c); if (ra !== k) throw new Error(`ra ${ra}`); }); return m && `${c.thuMuc || c.ref}: ${m}, chờ ${k}`; }).filter(Boolean);
-  lech.length ? bad('BC-CHO', lech.join(' · ')) : ok('BC-CHO', 'acceptance-gate-kit ở cây phẳng và HEAD, delivery-loop ở kho mới');
+  lech.length ? bad('BC-CHO', lech.join(' · ')) : ok('BC-CHO', 'delivery-loop ở cây phẳng và HEAD, delivery-loop ở kho mới');
   const thieu = [
     [{ thuMuc: banSaoGoi }, `bo-cuc: ${banSaoGoi} ${CAU_THIEU}`],
     [{ kho: KIT, ref: refTruocCho }, `bo-cuc: ${refTruocCho} ${CAU_THIEU}`],

@@ -9,7 +9,7 @@ import { mkRepinFixture, SHA_A } from './repin-fixture.mjs';
 import * as fsx from 'node:fs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const RC = path.join(HERE, '..', '..', 'scripts', 'recheck-evidence.cjs');
+const RC = path.join(HERE, '..', '..', 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs');
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
 const run = (report) => {

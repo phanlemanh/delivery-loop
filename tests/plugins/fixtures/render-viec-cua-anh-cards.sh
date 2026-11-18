@@ -26,7 +26,7 @@ mkdir -p "$OUT"
 emit() { # emit <kịch bản> <tên file>
   vca_scenario "$1" "$WS"
   { printf '<!doctype html><meta charset="utf-8"><body style="margin:0;padding:24px">\n'
-    node "$ROOT/scripts/gate-card.js" --root "$WS" --slug fx; } > "$OUT/$2"
+    node "$ROOT/plugins/acceptance-gate/scripts/gate-card.js" --root "$WS" --slug fx; } > "$OUT/$2"
 }
 
 emit gate1-draft          p185-card-gate1.html

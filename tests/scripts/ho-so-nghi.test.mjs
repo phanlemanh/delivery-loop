@@ -14,7 +14,7 @@ import { createHash } from 'node:crypto';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
 const require = createRequire(import.meta.url);
-const { hoSoNghi } = require(path.join(ROOT, 'lib', 'workspace-record.cjs'));
+const { hoSoNghi } = require(path.join(ROOT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs'));
 
 let pass = 0, fail = 0;
 const check = (name, ok, got) => {
@@ -94,7 +94,7 @@ function khoFixture({ luat = 'eval', nghi = null, them = null, status = 'signed-
 }
 
 const scan = (r) => JSON.parse(spawnSync(process.execPath,
-  [path.join(ROOT, 'scripts', 'start-scan.mjs'), '--root', r],
+  [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'start-scan.mjs'), '--root', r],
   { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).stdout);
 const oSlug = (j, slug = 'hsn') => {
   const g = j.groups || {};
@@ -104,18 +104,18 @@ const oSlug = (j, slug = 'hsn') => {
 
 // ─── Ba bộ đọc chạy được, dùng chung từ HSN5 trở đi ─────────────────────────
 const congThoat = (r) => {
-  const p = spawnSync('bash', [path.join(ROOT, 'scripts', 'pre-merge-check.sh'), r, '--no-t1-escape'],
+  const p = spawnSync('bash', [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), r, '--no-t1-escape'],
     { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   return { ma: p.status, out: `${p.stdout || ''}${p.stderr || ''}` };
 };
 const recheck = (d) => {
-  const p = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'recheck-evidence.cjs'), path.join(d, 'evidence-report.md')],
+  const p = spawnSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), path.join(d, 'evidence-report.md')],
     { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   return { ma: p.status, out: `${p.stdout || ''}${p.stderr || ''}` };
 };
 // Bỏ mã màu trước khi so cụm chữ — luật NO4 của kho: một chuỗi ANSI xen giữa
 // làm phép so «có câu này không» trượt lặng lẽ.
-const the = (r) => (spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'gate-card.js'), '--root', r, '--slug', 'hsn'],
+const the = (r) => (spawnSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '--root', r, '--slug', 'hsn'],
   { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).stdout || '').replace(/\x1b\[[0-9;]*m/g, '');
 
 // Chuỗi mời ký của thẻ — dùng chung cho HSN-THE và HSN7; phải CÓ THẬT trong bộ
@@ -153,7 +153,7 @@ console.log('\nHSN5 bộ quét — ba hình dạng, so BẰNG NHAU');
   // đồ: (i) không đẻ khối mới; (ii) hồ sơ nghỉ đậu đúng khối. Bản đồ là bộ đọc
   // thứ hai của cùng sự thật, và nó ĐÃ trôi khỏi bộ quét (lượt chấm 1, t3).
   const banDo = (r) => {
-    spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'product-map.mjs'), '--root', r],
+    spawnSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'product-map.mjs'), '--root', r],
       { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
     return readFileSync(path.join(r, 'PRODUCT-MAP.md'), 'utf8');
   };
@@ -177,7 +177,7 @@ console.log('\nHSN5 bộ quét — ba hình dạng, so BẰNG NHAU');
     return new Set([...b.matchAll(/'([^']+)'\]/g)].map((m) => m[1]));
   };
   const KHOI_NEN = tenKhoi(execFileSync('git', ['-C', ROOT, 'show', `${SHA_NEN}:scripts/product-map.mjs`], { encoding: 'utf8' }));
-  const KHOI_NAY = tenKhoi(readFileSync(path.join(ROOT, 'scripts', 'product-map.mjs'), 'utf8'));
+  const KHOI_NAY = tenKhoi(readFileSync(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'product-map.mjs'), 'utf8'));
   check('HSN5-map rút được danh sách khối ở CẢ HAI bản (nền và nay)',
     KHOI_NEN.size >= 8 && KHOI_NAY.size >= 8, { nen: KHOI_NEN.size, nay: KHOI_NAY.size });
   check('HSN5-map tập tên khối KHÔNG đổi so với sha NỀN (nghỉ không đẻ khối mới)',
@@ -261,10 +261,10 @@ console.log('\nHSN0/HSN1 cổng — ba luật, đối chứng dương rồi dòn
 {
   const LUAT = ['cu-hoa', 'lan', 'eval'];
   // Chuỗi ghim phải CÓ THẬT ở nguồn luật. Hai luật đầu do chính script cổng phát;
-  // luật làn eval do `lib/evidence-core.cjs` phát (cổng gọi checkRepinEvals) —
+  // luật làn eval do `plugins/acceptance-gate/lib/evidence-core.cjs` phát (cổng gọi checkRepinEvals) —
   // tra cả hai nguồn, vì gõ tay một câu đã chết là phép đo không bao giờ khớp.
-  const src = readFileSync(path.join(ROOT, 'scripts', 'pre-merge-check.sh'), 'utf8')
-    + readFileSync(path.join(ROOT, 'lib', 'evidence-core.cjs'), 'utf8');
+  const src = readFileSync(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), 'utf8')
+    + readFileSync(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'), 'utf8');
   check('HSN0 ba chuỗi ghim CÓ THẬT ở nguồn luật',
     LUAT.every((k) => src.includes(CHUOI[k])), LUAT.filter((k) => !src.includes(CHUOI[k])));
 
@@ -305,16 +305,16 @@ console.log('\nHSN2/HSN3/HSN8 cổng — fail-closed ba đường');
 
   const sao = mkdtempSync(path.join(os.tmpdir(), 'hsn-sao-'));
   RAC.push(sao);
-  execFileSync('bash', ['-c', `git -C ${JSON.stringify(ROOT)} archive HEAD scripts lib | tar -x -C ${JSON.stringify(sao)}`]);
-  for (const f of ['lib/workspace-record.cjs', 'scripts/pre-merge-check.sh', 'scripts/recheck-evidence.cjs']) {
+  execFileSync('bash', ['-c', `git -C ${JSON.stringify(ROOT)} archive HEAD plugins/acceptance-gate/scripts plugins/acceptance-gate/lib | tar -x -C ${JSON.stringify(sao)}`]);
+  for (const f of ['plugins/acceptance-gate/lib/workspace-record.cjs', 'plugins/acceptance-gate/scripts/pre-merge-check.sh', 'plugins/acceptance-gate/scripts/recheck-evidence.cjs']) {
     cpSync(path.join(ROOT, f), path.join(sao, f));
   }
-  const libSao = path.join(sao, 'lib', 'workspace-record.cjs');
+  const libSao = path.join(sao, 'plugins/acceptance-gate/lib', 'workspace-record.cjs');
   const coTruoc = existsSync(libSao);
   rmSync(libSao);
   check('HSN8 mũi tiêm CHỨNG MINH đổi được cây (tệp có trước, mất sau)', coTruoc && !existsSync(libSao));
   const { r: r8 } = khoFixture({ luat: 'eval', nghi: dong({}) });
-  const p8 = spawnSync('bash', [path.join(sao, 'scripts', 'pre-merge-check.sh'), r8, '--no-t1-escape'],
+  const p8 = spawnSync('bash', [path.join(sao, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), r8, '--no-t1-escape'],
     { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   const o8 = `${p8.stdout || ''}${p8.stderr || ''}`;
   check('HSN8 lib vắng → NOT ENFORCED có tên VÀ vẫn đỏ như đối chứng',
@@ -441,7 +441,7 @@ console.log('\nHSN-THE thẻ — một sự thật với bộ quét');
   const ha = the(a.r), hb = the(b.r);
   // Chuỗi mời ký phải CÓ THẬT trong bộ dựng thẻ — thẻ đổi chữ thì ca này đỏ,
   // thay vì lặng lẽ đo một câu không ai in nữa.
-  const cardSrc = readFileSync(path.join(ROOT, 'scripts', 'gate-card.js'), 'utf8');
+  const cardSrc = readFileSync(path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js'), 'utf8');
   const MOI_KY = MOI_KY_HANG;
   check('HSN-THE chuỗi mời ký CÓ THẬT trong bộ dựng thẻ', cardSrc.includes(MOI_KY));
   const got = [
@@ -456,12 +456,12 @@ console.log('\nHSN7 mutant — phá hàm thì CẢ BỐN bộ đọc lật');
 {
   const sao = mkdtempSync(path.join(os.tmpdir(), 'hsn-mut-'));
   RAC.push(sao);
-  execFileSync('bash', ['-c', `git -C ${JSON.stringify(ROOT)} archive HEAD scripts lib | tar -x -C ${JSON.stringify(sao)}`]);
-  for (const f of ['lib/workspace-record.cjs', 'scripts/pre-merge-check.sh', 'scripts/recheck-evidence.cjs',
-    'scripts/start-scan.mjs', 'scripts/trang-thai-ho-so.cjs', 'scripts/gate-card.js']) {
+  execFileSync('bash', ['-c', `git -C ${JSON.stringify(ROOT)} archive HEAD plugins/acceptance-gate/scripts plugins/acceptance-gate/lib | tar -x -C ${JSON.stringify(sao)}`]);
+  for (const f of ['plugins/acceptance-gate/lib/workspace-record.cjs', 'plugins/acceptance-gate/scripts/pre-merge-check.sh', 'plugins/acceptance-gate/scripts/recheck-evidence.cjs',
+    'plugins/acceptance-gate/scripts/start-scan.mjs', 'plugins/acceptance-gate/scripts/trang-thai-ho-so.cjs', 'plugins/acceptance-gate/scripts/gate-card.js']) {
     cpSync(path.join(ROOT, f), path.join(sao, f));
   }
-  const libP = path.join(sao, 'lib', 'workspace-record.cjs');
+  const libP = path.join(sao, 'plugins/acceptance-gate/lib', 'workspace-record.cjs');
   const truoc = readFileSync(libP, 'utf8');
   const sau = truoc.replace('function hoSoNghi({ ledgerText = null',
     'function hoSoNghi(_bo) { return null; }\nfunction hoSoNghiCu({ ledgerText = null');
@@ -479,11 +479,11 @@ console.log('\nHSN7 mutant — phá hàm thì CẢ BỐN bộ đọc lật');
     return { status: x.status, stdout: x.stdout || '', out2: `${x.stdout || ''}${x.stderr || ''}` };
   };
   const bonBoDoc = (goc, kho) => {
-    const g = chayO(goc, 'scripts/pre-merge-check.sh', [kho, '--no-t1-escape']);
-    const rc = chayO(goc, 'scripts/recheck-evidence.cjs', [path.join(kho, '_acceptance', 'hsn', 'evidence-report.md')]);
-    const scOut = chayO(goc, 'scripts/start-scan.mjs', ['--root', kho]).stdout;
+    const g = chayO(goc, 'plugins/acceptance-gate/scripts/pre-merge-check.sh', [kho, '--no-t1-escape']);
+    const rc = chayO(goc, 'plugins/acceptance-gate/scripts/recheck-evidence.cjs', [path.join(kho, '_acceptance', 'hsn', 'evidence-report.md')]);
+    const scOut = chayO(goc, 'plugins/acceptance-gate/scripts/start-scan.mjs', ['--root', kho]).stdout;
     const x = scOut ? oSlug(JSON.parse(scOut)) : null;
-    const tc = (chayO(goc, 'scripts/gate-card.js', ['--root', kho, '--slug', 'hsn']).stdout || '').replace(/\x1b\[[0-9;]*m/g, '');
+    const tc = (chayO(goc, 'plugins/acceptance-gate/scripts/gate-card.js', ['--root', kho, '--slug', 'hsn']).stdout || '').replace(/\x1b\[[0-9;]*m/g, '');
     return [
       `cổng=${g.status === 0 && g.out2.includes('hồ sơ nghỉ') ? 'xanh+nghỉ' : g.status !== 0 && g.out2.includes(CHUOI.eval) ? 'đỏ-đúng-luật' : `KHÁC(${g.status})`}`,
       `kiểm-lại=${rc.status === 0 && rc.out2.includes('bỏ kiểm lại') ? 'xanh+nghỉ' : rc.status !== 0 && rc.out2.includes('REPIN x') ? 'đỏ-đúng-luật' : `KHÁC(${rc.status})`}`,

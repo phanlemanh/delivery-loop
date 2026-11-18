@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Gắn bên viết với bên đọc của Tier B (hồ sơ tier-b-doc-khong-do-duoc): mọi cặp (verdict, exit_intent) bộ quét thật phát ra
-// phải có đúng một hàng trong bảng đọc của design-ui-check.md, và ngược lại. Bên viết là scripts/design-scan.js chạy thật
+// phải có đúng một hàng trong bảng đọc của design-ui-check.md, và ngược lại. Bên viết là plugins/acceptance-gate/scripts/design-scan.js chạy thật
 // trong jsdom, không phải danh sách chép tay; bên đọc là khối TIER-B-DOC-KET-QUA của chính tài liệu; tập kết quả hợp lệ rút
 // từ khuôn báo cáo bằng chứng. Mọi đường suy từ vị trí tệp này.
 //
@@ -22,12 +22,12 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
 const nap_ = createRequire(path.join(HERE, 'noop.js'));
 const { JSDOM } = nap_('jsdom');
-const CONG = nap_(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+const CONG = nap_(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
 
 const doc = (t) => fs.readFileSync(path.join(ROOT, t), 'utf8');
-const TAI_LIEU = doc('skills/acceptance/references/design-ui-check.md');
-const BO_QUET = doc('scripts/design-scan.js');
-const KHUON = doc('skills/acceptance/references/evidence-report-template.md');
+const TAI_LIEU = doc('plugins/acceptance-gate/skills/acceptance/references/design-ui-check.md');
+const BO_QUET = doc('plugins/acceptance-gate/scripts/design-scan.js');
+const KHUON = doc('plugins/acceptance-gate/skills/acceptance/references/evidence-report-template.md');
 
 const KDD = 'KHONG-DO-DUOC';
 const MO = '<!-- <<<TIER-B-DOC-KET-QUA -->';

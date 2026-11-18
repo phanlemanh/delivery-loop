@@ -113,7 +113,7 @@ function doMaTran(gate) {
   if (thieu.length) { bad('DG-KDD0 ma tran khong trai du hai nhanh cua ban goc', JSON.stringify(thieu.map(([t]) => [t, v(t)]))); xong(); }
 }
 
-const VONG = path.join(KIT, 'scripts', 'design-gate.mjs');
+const VONG = path.join(KIT, 'plugins/acceptance-gate/scripts', 'design-gate.mjs');
 const that = doMaTran(VONG);
 
 // ── DG-KDD1 (AC-6) ──
@@ -134,8 +134,8 @@ const that = doMaTran(VONG);
 function banSao(thay, bang) {
   const d = tam('dg-kdd-dot-bien-');
   mkdirSync(path.join(d, 'scripts'));
-  symlinkSync(path.join(KIT, 'lib'), path.join(d, 'lib'));
-  symlinkSync(path.join(KIT, 'vendor'), path.join(d, 'vendor'));
+  symlinkSync(path.join(KIT, 'plugins/acceptance-gate/lib'), path.join(d, 'lib'));
+  symlinkSync(path.join(KIT, 'plugins/acceptance-gate/vendor'), path.join(d, 'vendor'));
   const s = readFileSync(VONG, 'utf8');
   if (s.split(thay).length !== 2) throw new Error(`cho tiem khop ${s.split(thay).length - 1} lan (can 1): ${thay}`);
   writeFileSync(path.join(d, 'scripts', 'design-gate.mjs'), s.replace(thay, bang));

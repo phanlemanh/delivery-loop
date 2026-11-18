@@ -6,7 +6,7 @@
 //   FN-03 đóng kín giao đi không import mạng, không token mạng trong mã đã bỏ chú thích
 //   FN-04 đóng kín giao đi không vượt trần (tệp · dòng)
 //   BG-01 bản gói đã commit = bản dựng lại từ nguồn, từng byte — tại chỗ và từ một bản sao ở đường khác
-// Tệp khoá là DANH SÁCH CHÉP: đúng các tệp này nằm trong design-floor/vendor/design-os, mỗi tệp kèm băm.
+// Tệp khoá là DANH SÁCH CHÉP: đúng các tệp này nằm trong plugins/acceptance-gate/design-floor/vendor/design-os, mỗi tệp kèm băm.
 //
 // Dùng: node tests/design-floor/rao-dong.mjs [--write] [--chi VA-01,BG-01] [--hop-dong <md>] [--khoa <json>] [--goc <gốc kit>]
 //   --write  đo bản ghim upstream (qua mạng) và ghi lại tệp khoá — chỉ khi đổi ghim hay đổi vỏ, có chủ đích
@@ -14,7 +14,7 @@
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative } from 'node:path';
-import { docDoiSo, docHopDong, inKetQua, phanXu, soVaTai } from './lib/hop-dong.mjs';
+import { NODE_MODULES_DO, docDoiSo, docHopDong, inKetQua, phanXu, soVaTai } from './lib/hop-dong.mjs';
 import { doKhoa, soKhoa } from './lib/khoa.mjs';
 import { apVa, bam, bamBuf, boChuThich, chuanBiNguon, dungBanGoi, layUpstream, tepCuaVa } from './lib/upstream.mjs';
 
@@ -166,7 +166,7 @@ if (muon('BG-01')) {
     const khac = join(TMP, 'goc-khac');
     for (const p of [dirname(hd.vendor.vo), hd.vendor.goc]) cpSync(join(GOC, p), join(khac, p), { recursive: true });
     mkdirSync(join(khac, 'tests', 'design-floor'), { recursive: true });
-    symlinkSync(join(GOC, 'tests', 'design-floor', 'node_modules'), join(khac, 'tests', 'design-floor', 'node_modules'));
+    symlinkSync(NODE_MODULES_DO, join(khac, 'tests', 'design-floor', 'node_modules'));
     const c = readFileSync(duong);
     const a = dungBanGoi(hd, GOC);
     const b = dungBanGoi(hd, khac);

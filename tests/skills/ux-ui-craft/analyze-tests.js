@@ -1,7 +1,7 @@
 'use strict';
 // analyze() unit tests — pure geometry, no browser needed.
 const assert = require('node:assert');
-const { analyze } = require('../../../skills/ux-ui-craft/scripts/measure_layout.js');
+const { analyze } = require('../../../plugins/acceptance-gate/skills/ux-ui-craft/scripts/measure_layout.js');
 
 const declared = { spaces: [8, 24, 56], gutters: [24, 12] };
 const R = (selector, left, width, isContainer) =>

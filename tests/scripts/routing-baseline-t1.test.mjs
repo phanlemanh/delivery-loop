@@ -20,17 +20,17 @@ import { routingLine, settled, spliceLine, FIXTURE_REL } from './routing-baselin
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
 const RB = path.join(ROOT, 'tests', 'scripts', 'routing-baseline.mjs');
-const LANE = path.join(ROOT, 'feature-loop', 'scripts', 'repin-lane.mjs');
-const PM = path.join(ROOT, 'scripts', 'pre-merge-check.sh');
+const LANE = path.join(ROOT, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs');
+const PM = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh');
 const LMCMS = path.join(ROOT, 'tests', 'scripts', 'gate-card-lmcms.test.mjs');
-const SIGNOFF = path.join(ROOT, 'commands', 'signoff.md');
-const SKILL = path.join(ROOT, 'skills', 'acceptance', 'SKILL.md');
+const SIGNOFF = path.join(ROOT, 'plugins/acceptance-gate/commands', 'signoff.md');
+const SKILL = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'SKILL.md');
 const require_ = createRequire(import.meta.url);
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
 
 check('RB0 config cua KIT THAT khai ban ghi moc trong t1_skip_globs (doc bang chinh reader cua kit)', () => {
-  const core = require_(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+  const core = require_(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   const globs = core.resolveConfigList(readFileSync(path.join(ROOT, '_acceptance', 'config.yaml'), 'utf8'), 'risk_tiers.t1_skip_globs');
   assert.ok(Array.isArray(globs) && globs.includes(FIXTURE_REL), `t1_skip_globs phải có ${FIXTURE_REL}`);
 });
@@ -59,7 +59,7 @@ writeFileSync(path.join(WS, 'evidence-report.md'),
   `---\nschema_version: 1\nfeature_slug: feat\nverdict: PASS\nverified_commit: ${H1}\nhuman_signoff: Manh 2026-09-01\n---\n\n## Evidence\n- eval: E1\n  run_id: r1-E1\n  exit_code: 0\n  verifier: config:executors.script.rang_e1\n  verified_at: 2026-09-01\n\n## Iterations\n\nRound 1 — PASS.\n`);
 git('add', '-A'); git('commit', '-qm', 'evidence');
 // PIN do writer thật ghi — bên đọc pre-merge phải đọc đúng vật writer sinh ra.
-const w = spawnSync(process.execPath, [LANE, '--root', R, '--ag-root', ROOT, '--slug', 'feat', '--reason', 'ghim ban dau', '--write'], { encoding: 'utf8' });
+const w = spawnSync(process.execPath, [LANE, '--root', R, '--ag-root', `${ROOT}/plugins/acceptance-gate`, '--slug', 'feat', '--reason', 'ghim ban dau', '--write'], { encoding: 'utf8' });
 if (w.status !== 0) { console.log(`  FAIL: RB-pin writer thật không ghi được\n    ${w.stderr}`); failed++; } else { passed++; console.log('  PASS: RB-pin do repin-lane --write that ghi'); }
 git('add', '-A'); git('commit', '-qm', 'repin');
 const pm = () => spawnSync('bash', [PM, R], { encoding: 'utf8' });
@@ -233,7 +233,7 @@ check('RB4 A1 ghim lai sau commit la CO DIEU KIEN, A2 het ten buoc cu (ke ca tro
   // nguyên văn — không cần vùng tự-loại-trừ, và không có mảnh nào để trôi.
   const TEN_CU = ['bu' + 'oc 6b', 'b\u01b0\u1edb' + 'c 6b', 'bu' + 'oc 6 ', 'b\u01b0\u1edb' + 'c 6 '];
   const rel = q => path.join(ROOT, q);
-  const QUET = [['commands/signoff.md', so],
+  const QUET = [['plugins/acceptance-gate/commands/signoff.md', so],
                 ['docs/adr/0017', readFileSync(rel('docs/adr/0019-ban-ghi-dinh-tuyen-la-vat-t1-may-sinh.md'), 'utf8')],
                 ['GUIDE.md', readFileSync(rel('GUIDE.md'), 'utf8')],
                 ['tests/scripts/routing-baseline-t1.test.mjs', readFileSync(rel('tests/scripts/routing-baseline-t1.test.mjs'), 'utf8')],
@@ -269,7 +269,7 @@ check('RB5 moi neo grep cua ho so KHOP mot ten ca that khai trong tep ca (chong 
   //
   // Đối chiếu với TÊN CA khai trong nguồn, KHÔNG chạy lại tệp ca: các khoá này trỏ
   // chính tệp đang chạy, nên chạy chúng ở đây là đệ quy (đã vấp thật khi viết ca).
-  const core = require_(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+  const core = require_(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
   const cfg = readFileSync(path.join(ROOT, '_acceptance', 'config.yaml'), 'utf8');
   const ten = [...cfg.matchAll(/^\s{4}(ckh_[a-z0-9_]+):/gm)].map(m => m[1]);
   assert.ok(ten.length >= 6, `phải thấy các khoá ckh_* của hồ sơ, thấy ${ten.length}`);

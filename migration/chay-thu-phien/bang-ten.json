@@ -1,0 +1,24 @@
+{
+  "_nguon": "KE-HOACH.md mục 3 — TẠM CHỐT 11/11, chốt hẳn ở Cổng Phạm vi của B1. Ba tác tử cham-* và hai tên skill còn là câu mở (BOI-CANH «câu còn mở» số 7). Khoá «lenh» là tên đầy đủ cũ → tên đầy đủ mới; lệnh không có trong «lenh» chỉ đổi tiền tố plugin theo «plugin».",
+  "plugin": {
+    "dieu-phoi": "dispatch",
+    "road-map": "roadmap",
+    "tri-thuc": "knowledge"
+  },
+  "lenh": {
+    "dieu-phoi:mo-dot": "dispatch:open",
+    "dieu-phoi:dong-dot": "dispatch:close",
+    "dieu-phoi:tiep-tuc": "dispatch:resume",
+    "dieu-phoi:ban-giao": "dispatch:handoff",
+    "dieu-phoi:xem": "dispatch:status",
+    "road-map:xem": "roadmap:status",
+    "road-map:ghim": "roadmap:pin",
+    "road-map:bo-ghim": "roadmap:unpin",
+    "road-map:tra-lai": "roadmap:undo",
+    "road-map:gui": "roadmap:suggest",
+    "tri-thuc:ghi": "knowledge:ingest",
+    "tri-thuc:kiem": "knowledge:health",
+    "acceptance-gate:cat-luot": "acceptance-gate:scope-slice",
+    "acceptance-gate:gom-tin-hieu": "acceptance-gate:signal-intake"
+  }
+}

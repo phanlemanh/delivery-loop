@@ -1,0 +1,38 @@
+{
+  "ghi_chu": "Luật xếp các vùng KHÔNG phải sản phẩm của kit. Tệp nằm trong thư mục một plugin con (đọc từ tệp khai chợ) luôn thuộc plugin đó. Tệp còn lại: khớp luật đầu tiên dưới đây thì nhận lớp của luật; không khớp luật nào thì thuộc plugin lõi (nguồn là cả kho) và kịch bản lần xem nó có được gọi từ điểm vào nào không. Thêm luật = khai một vùng là không-phải-sản-phẩm; kịch bản kiem-ke.test.mjs giữ hai chiều.",
+  "luat": [
+    { "tien_to": "_acceptance/", "lop": "ho-so-vong", "ly_do": "hồ sơ các vòng của chính kit — lịch sử, không viết lại" },
+    { "tien_to": "docs/plans/", "lop": "so-lam-viec", "ly_do": "hạt giống và kế hoạch" },
+    { "tien_to": "docs/superpowers/", "lop": "so-lam-viec", "ly_do": "bản thiết kế và kế hoạch của các vòng" },
+    { "tien_to": "docs/findings/", "lop": "so-lam-viec", "ly_do": "phát hiện và số đo" },
+    { "tien_to": "docs/handoff/", "lop": "so-lam-viec", "ly_do": "bàn giao giữa các phiên" },
+    { "tien_to": "docs/research/", "lop": "so-lam-viec", "ly_do": "khảo sát" },
+    { "tien_to": "docs/specs/", "lop": "so-lam-viec", "ly_do": "bản thiết kế cũ" },
+    { "tien_to": "docs/diagrams/", "lop": "so-lam-viec", "ly_do": "hình của các vòng" },
+    { "tien_to": "docs/tools/", "lop": "so-lam-viec", "ly_do": "ghi chép công cụ" },
+    { "tien_to": "docs/adr/", "lop": "tai-lieu-song", "ly_do": "quyết định kiến trúc — còn hiệu lực" },
+    { "tien_to": "docs/reference/", "lop": "tai-lieu-song", "ly_do": "tài liệu tra cứu — còn hiệu lực" },
+    { "tien_to": "docs/MAP.md", "lop": "tai-lieu-song", "ly_do": "mục lục tài liệu" },
+    { "tien_to": "tests/", "lop": "bo-kiem", "ly_do": "bộ kiểm của kit" },
+    { "tien_to": ".github/", "lop": "cong-cu-kho", "ly_do": "lượt kiểm tự động" },
+    { "tien_to": ".claude/", "lop": "cong-cu-kho", "ly_do": "cài đặt phiên Claude của chính kho" },
+    { "tien_to": ".out-of-scope/", "lop": "so-lam-viec", "ly_do": "đề xuất đã từ chối" },
+    { "tien_to": "README.md", "lop": "tai-lieu-song", "ly_do": "tài liệu người dùng" },
+    { "tien_to": "QUICKSTART.md", "lop": "tai-lieu-song", "ly_do": "tài liệu người dùng" },
+    { "tien_to": "GUIDE.md", "lop": "tai-lieu-song", "ly_do": "tài liệu người dùng" },
+    { "tien_to": "CONTEXT.md", "lop": "tai-lieu-song", "ly_do": "bảng thuật ngữ của người sửa kit" },
+    { "tien_to": "CLAUDE.md", "lop": "tai-lieu-song", "ly_do": "luật của người sửa kit" },
+    { "tien_to": "CHANGELOG.md", "lop": "nhat-ky", "ly_do": "nhật ký thay đổi" },
+    { "tien_to": "PRODUCT-MAP.md", "lop": "may-ve", "ly_do": "tệp máy vẽ từ hồ sơ" },
+    { "tien_to": "LO-TRINH.html", "lop": "may-ve", "ly_do": "tệp máy vẽ từ hồ sơ" },
+    { "tien_to": "LICENSE", "lop": "phap-ly", "ly_do": "giấy phép" },
+    { "tien_to": "NOTICE", "lop": "phap-ly", "ly_do": "ghi công mã bên thứ ba" },
+    { "tien_to": ".gitignore", "lop": "cong-cu-kho", "ly_do": "cài đặt git" },
+    { "tien_to": ".gitattributes", "lop": "cong-cu-kho", "ly_do": "cài đặt git" },
+    { "tien_to": ".nvmrc", "lop": "cong-cu-kho", "ly_do": "khai bản Node của kho" }
+  ],
+  "duong_dan_cua_kho_tieu_thu": {
+    "ghi_chu": "Chữ trong sản phẩm bắt đầu bằng các tiền tố này nói về kho TIÊU THỤ đang chạy kit, không về cây kit — không lần theo, không tính là con trỏ treo.",
+    "tien_to": ["_acceptance/", ".claude/", ".github/", ".acceptance-runs/"]
+  }
+}

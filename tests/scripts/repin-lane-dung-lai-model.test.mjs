@@ -10,7 +10,7 @@ import { boKiem, ok, ROOT, mkKho, lenhChau, choPid, choChet } from './gia-lan-fi
 // Đơn vị ngày từ ĐỒNG HỒ độc lập — không rút từ thư viện được đo (thước không lấy kỳ vọng từ vật).
 const MOT_NGAY = Date.parse('2026-10-02T00:00:00Z') - Date.parse('2026-10-01T00:00:00Z');
 
-const LIB = process.env.GG_LIB_DUNG_LAI || path.join(ROOT, 'feature-loop', 'scripts', 'lib', 'dung-lai-model.mjs');
+const LIB = process.env.GG_LIB_DUNG_LAI || path.join(ROOT, 'plugins/feature-loop', 'scripts', 'lib', 'dung-lai-model.mjs');
 const L = await import(LIB);
 
 const ALL = ['LIB-van-tay-het-gio', 'LIB-van-tay-thoat', 'LIB-van-tay-rong', 'LIB-goi-ten', 'LIB-bien-shell', 'LIB-chon-nguon', 'LIB-bam-tung-lop', 'LIB-khoi-marker',
@@ -399,7 +399,7 @@ await ca('AC8-song', 'recheck-evidence đọc pin có dùng lại → 0; sửa e
   const k = mkG3();
   xanh(lanCommit(k), 'lượt 1'); xanh(lanCommit(k), 'lượt 2');
   ok(pins(k).pop().evals_carry, 'lượt 2 không dùng lại — ca không đo được điều nó hứa');
-  const rc = () => spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'recheck-evidence.cjs'), path.join(k.ws, 'evidence-report.md')], { encoding: 'utf8' });
+  const rc = () => spawnSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs'), path.join(k.ws, 'evidence-report.md')], { encoding: 'utf8' });
   const r1 = rc();
   ok(r1.status === 0, `bên đọc từ chối pin dùng lại: ${r1.status}\n${r1.stdout}${r1.stderr}`);
   const f = path.join(k.ws, 'run-log.jsonl');
@@ -411,7 +411,7 @@ await ca('AC8-song', 'recheck-evidence đọc pin có dùng lại → 0; sửa e
 });
 
 // ── AC-9: khoá writer thật ⊆ khuôn REPIN-TEMPLATE, đúng thứ tự ─────────────────
-const SKILL = process.env.GG_SKILL || path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const SKILL = process.env.GG_SKILL || path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
 function khoaKhuon(kind) {
   const m = fs.readFileSync(SKILL, 'utf8').match(/<!-- <<<REPIN-TEMPLATE -->\s*```\n([\s\S]*?)```\s*<!-- REPIN-TEMPLATE>>> -->/);
   ok(m, 'không thấy marker REPIN-TEMPLATE');
@@ -441,7 +441,7 @@ await ca('AC9-khuon-dung-lai', 'dòng repin (băm, dùng lại) và repin-do (b�
 });
 
 // ── AC-10: script đếm của đường đo ───────────────────────────────────────────
-const DEM = process.env.GG_DEM || path.join(ROOT, 'feature-loop', 'scripts', 'dem-dung-lai-model.mjs');
+const DEM = process.env.GG_DEM || path.join(ROOT, 'plugins/feature-loop', 'scripts', 'dem-dung-lai-model.mjs');
 await ca('AC10-dem', 'đếm trên run-log do làn thật ghi: tổng, nhãn hai lượt lệch, nguồn không có', async () => {
   const { spawnSync } = await import('node:child_process');
   const k = mkG3();

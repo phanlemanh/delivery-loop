@@ -14,8 +14,8 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
-const LAW = path.join(ROOT, 'skills', 'acceptance', 'references', 'human-facing-language.md');
-const SITES = ['commands/approve.md', 'commands/signoff.md'];
+const LAW = path.join(ROOT, 'plugins/acceptance-gate/skills', 'acceptance', 'references', 'human-facing-language.md');
+const SITES = ['plugins/acceptance-gate/commands/approve.md', 'plugins/acceptance-gate/commands/signoff.md'];
 const SUITE = path.join(ROOT, 'tests', 'plugins', 'run-tests.sh');
 const MARK = 'IDENTITY-ECHO-RULE';
 
@@ -56,7 +56,7 @@ function kiem(texts) {
     for (const m of t.matchAll(/\*\*(KHÔNG )?CẢNH BÁO\*\*/g)) if (!m[1]) errs.push(`còn lệnh CẢNH BÁO approvers: ${rel}`);
     if (!/một câu/.test(t)) errs.push(`thân không nói người sửa danh tính bằng một câu: ${rel}`);
   }
-  const sg = texts[path.join(ROOT, 'commands/signoff.md')];
+  const sg = texts[path.join(ROOT, 'plugins/acceptance-gate/commands/signoff.md')];
   if (!/cổng trước/.test(sg) || !/approved_by/.test(sg)) errs.push('signoff thiếu nấc cổng-trước (approved_by)');
   return errs;
 }
@@ -93,7 +93,7 @@ if (want('DT2')) {
 
 if (want('DT3')) {
   const id = 'DT3'; const before = failures;
-  const sg = texts[path.join(ROOT, 'commands/signoff.md')];
+  const sg = texts[path.join(ROOT, 'plugins/acceptance-gate/commands/signoff.md')];
   const i = sg.indexOf('cổng trước');
   const seg = i < 0 ? '' : sg.slice(Math.max(0, i - 400), i + 600);
   if (!seg) fail(id, 'signoff không có nấc «cổng trước»');
@@ -115,13 +115,13 @@ if (want('DT4')) {
   if (!e1.some(e => /nhánh chờ/.test(e))) fail(id, `mutant tiêm nhánh chờ không bị bắt (lỗi báo: ${e1.join(' · ') || 'không lỗi nào'})`);
   // mutant 2: tiêm lại câu cảnh báo approvers vào một thân lệnh
   const m2 = { ...texts };
-  const k2 = path.join(ROOT, 'commands/signoff.md');
+  const k2 = path.join(ROOT, 'plugins/acceptance-gate/commands/signoff.md');
   m2[k2] = m2[k2] + '\n**CẢNH BÁO** khi tên sắp ghi không có trong `signoff.approvers` — nêu cảnh báo nhẹ.\n';
   const e2 = kiem(m2);
   if (!e2.some(e => /CẢNH BÁO approvers/i.test(e))) fail(id, `mutant tiêm cảnh báo approvers không bị bắt (${e2.join(' · ') || 'không lỗi nào'})`);
   // mutant 3: một bản chép trôi khỏi nguồn
   const m3 = { ...texts };
-  const k3 = path.join(ROOT, 'commands/approve.md');
+  const k3 = path.join(ROOT, 'plugins/acceptance-gate/commands/approve.md');
   m3[k3] = m3[k3].replace('GHI THẲNG', 'ghi thang');
   if (!kiem(m3).some(e => /TRÔI khỏi nguồn/.test(e))) fail(id, 'mutant làm bản chép trôi không bị bắt');
   if (failures === before) pass(id, 'ba mutant (nhánh chờ · cảnh báo approvers · bản chép trôi) đều bị bắt đích danh');

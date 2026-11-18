@@ -1,5 +1,5 @@
 // Lưới hồ sơ thuoc-co-cua AC-8: khối «Nền hạ tầng» trên thẻ Cổng Phạm vi.
-// Seam bên-VIẾT → bên-ĐỌC: MỌI `duong-nen.md` ở đây do CHÍNH feature-loop/scripts/duong-nen.mjs
+// Seam bên-VIẾT → bên-ĐỌC: MỌI `duong-nen.md` ở đây do CHÍNH plugins/feature-loop/scripts/duong-nen.mjs
 // ghi trên kho fixture code-sinh (tests/scripts/duong-nen-fixture.mjs) — không tệp nào viết tay
 // theo khuôn bên đọc. Ca GN5 đổi khuôn dòng đỏ ở BÊN VIẾT (bản sao khuôn, truyền qua --ag-root)
 // và đòi phép kiểm GN2 đỏ: dòng đỏ trên thẻ được ghim bằng chữ độc lập, không chép từ tệp.
@@ -8,7 +8,7 @@ import { writeFileSync, readFileSync, cpSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { KIT, dungKho, dungCache, chayNen, tamDir, donDep } from './duong-nen-fixture.mjs';
 
-const GC = path.join(KIT, 'scripts', 'gate-card.js');
+const GC = path.join(KIT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
 const SRC = readFileSync(GC, 'utf8');
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
@@ -89,7 +89,7 @@ check('GN1 nen xanh do chinh duong-nen ghi — the co khoi Nen ha tang bon chan,
 });
 
 check('GN2 chieu do cung fixture doi mot executor sang lenh khong co — khoi in nguyen van dong do ben viet va co nen do', () => {
-  const loi = kiemGN2(KIT);
+  const loi = kiemGN2(path.join(KIT, 'plugins/acceptance-gate'));
   if (loi) die(loi);
 });
 
@@ -120,9 +120,9 @@ check('GN4 round-trip — bon gia tri chan the doc ra bang dung bon gia tri scri
 
 check('GN5 chieu do cua seam — doi khuon dong do o ben viet thi GN2 do', () => {
   const ag = tamDir('gn5-ag-');
-  for (const d of ['lib', 'scripts', 'commands', 'skills']) cpSync(path.join(KIT, d), path.join(ag, d), { recursive: true });
+  for (const d of ['lib', 'scripts', 'commands', 'skills']) cpSync(path.join(KIT, 'plugins/acceptance-gate', d), path.join(ag, d), { recursive: true });
   mkdirSync(path.join(ag, 'feature-loop'), { recursive: true });
-  cpSync(path.join(KIT, 'feature-loop', 'scripts'), path.join(ag, 'feature-loop', 'scripts'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/feature-loop', 'scripts'), path.join(ag, 'feature-loop', 'scripts'), { recursive: true });
   const f = path.join(ag, 'skills', 'acceptance', 'references', 'duong-nen-template.md');
   const src = readFileSync(f, 'utf8');
   const KIM = '`nen cong-cu: THIEU {tu} (khoa {khoa})`';

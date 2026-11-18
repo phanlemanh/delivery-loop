@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 // Đồng bộ bản vendored của design-floor với bản ghim upstream — đường DUY NHẤT của bộ đo chạm mạng.
-//   --write  lấy bản ghim, chép đúng các tệp của tệp khoá vào design-floor/vendor/design-os, áp các bản vá
+//   --write  lấy bản ghim, chép đúng các tệp của tệp khoá vào plugins/acceptance-gate/design-floor/vendor/design-os, áp các bản vá
 //            `da-ap` của sổ LOCAL-PATCHES theo thứ tự khối máy, điền `truoc`/`sau` của từng tệp vá vào sổ,
-//            rồi dựng lại bản gói design-floor/dist/ui.mjs. Chạy khi đổi ghim, đổi tệp khoá hay đổi bản vá.
+//            rồi dựng lại bản gói plugins/acceptance-gate/design-floor/dist/ui.mjs. Chạy khi đổi ghim, đổi tệp khoá hay đổi bản vá.
 //   --kiem   làm đúng các bước ấy trong một thư mục tạm và so từng byte với cây đã commit (bản vendored,
 //            băm của sổ, bản gói). Thoát 0 «khớp» · 1 «LỆCH» kèm danh sách · 2 không chạy được (mạng…).
 // Dùng: node tests/design-floor/dong-bo.mjs --write|--kiem [--goc <gốc kit>] [--hop-dong <md>] [--khoa <json>]
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { docDoiSo, docHopDong, soVaTai } from './lib/hop-dong.mjs';
+import { NODE_MODULES_DO, docDoiSo, docHopDong, soVaTai } from './lib/hop-dong.mjs';
 import { apVa, bam, dungBanGoi, layUpstream, tepCuaVa } from './lib/upstream.mjs';
 
 const ds = docDoiSo(process.argv.slice(2));
@@ -74,7 +74,7 @@ if (ds.ghi) {
 const TMP = mkdtempSync(join(tmpdir(), 'design-floor-dong-bo-'));
 cpSync(join(GOC, dirname(hd.vendor.vo)), join(TMP, dirname(hd.vendor.vo)), { recursive: true });
 mkdirSync(join(TMP, 'tests', 'design-floor'), { recursive: true });
-symlinkSync(join(GOC, 'tests', 'design-floor', 'node_modules'), join(TMP, 'tests', 'design-floor', 'node_modules'));
+symlinkSync(NODE_MODULES_DO, join(TMP, 'tests', 'design-floor', 'node_modules'));
 const lech = [];
 try {
   const { dong, banGoi } = dung(up, TMP, khoa, so);

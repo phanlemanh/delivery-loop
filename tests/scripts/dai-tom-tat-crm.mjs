@@ -37,12 +37,12 @@ try {
   g(crm, 'branch', '-f', 'onehub', CRM_SHA);
 } catch (e) { bad('DT-9', `không dựng được bản sao crm ${CRM_SHA} từ ${CRM}: ${String(e.message).split('\n')[0]}`); ketThuc(); }
 const CFG = path.join(crm, '_acceptance', 'config.yaml'); const cfgGoc = readFileSync(CFG, 'utf8');
-try { giai(KIT, BASE_SHA, base, ['scripts', 'lib', 'skills']); } catch (e) { bad('DT-9', `không dựng được bản base ${BASE_SHA}: ${String(e.message).split('\n')[0]}`); ketThuc(); }
+try { giai(KIT, BASE_SHA, base, ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills']); } catch (e) { bad('DT-9', `không dựng được bản base ${BASE_SHA}: ${String(e.message).split('\n')[0]}`); ketThuc(); }
 
-const { docDuLieu } = await import(pathToFileURL(path.join(KIT, 'scripts', 'lo-trinh.mjs')).href);
+const { docDuLieu } = await import(pathToFileURL(path.join(KIT, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs')).href);
 // Vẽ bản sao crm bằng `kit`, đọc khối; trả { hang (mọi hàng có tom_tat), khoi }.
 function ve(kit) {
-  const x = spawnSync(process.execPath, [path.join(kit, 'scripts', 'product-map.mjs'), '--root', crm], { encoding: 'utf8', maxBuffer: 1 << 28 });
+  const x = spawnSync(process.execPath, [path.join(kit, 'plugins/acceptance-gate/scripts', 'product-map.mjs'), '--root', crm], { encoding: 'utf8', maxBuffer: 1 << 28 });
   if (x.status !== 0) throw new Error(`product-map (${kit === KIT ? 'cây đang kiểm' : 'base'}) exit ${x.status}: ${x.stderr.slice(0, 200)}`);
   const html = readFileSync(path.join(crm, 'LO-TRINH.html'), 'utf8');
   const raw = JSON.parse(html.match(/<script type="application\/json" id="lo-trinh-du-lieu">([\s\S]*?)<\/script>/)[1]);

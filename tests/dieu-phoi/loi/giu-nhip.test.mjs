@@ -5,12 +5,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { NHIP, PHUT_MS } from '../../../dieu-phoi/scripts/cau-hinh.mjs';
-import { chayGiuNhip } from '../../../dieu-phoi/scripts/giu-nhip.mjs';
-import { motNhip } from '../../../dieu-phoi/scripts/phat-lich.mjs';
+import { NHIP, PHUT_MS } from '../../../plugins/dispatch/scripts/cau-hinh.mjs';
+import { chayGiuNhip } from '../../../plugins/dispatch/scripts/giu-nhip.mjs';
+import { motNhip } from '../../../plugins/dispatch/scripts/phat-lich.mjs';
 import { CFG_BIEN, hangViecHai } from './mau-thu.mjs';
 
-const GIU_NHIP = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'dieu-phoi', 'scripts', 'giu-nhip.mjs');
+const GIU_NHIP = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'plugins/dispatch', 'scripts', 'giu-nhip.mjs');
 const CHU_KY_MS = 50;
 const NGU_MS = 600;
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp-')));

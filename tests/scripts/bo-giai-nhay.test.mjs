@@ -31,8 +31,8 @@ import { mkKho } from './gia-lan-fixture.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
 const require_ = createRequire(import.meta.url);
-const core = require_(path.join(ROOT, 'lib', 'evidence-core.cjs'));
-const evalYaml = require_(path.join(ROOT, 'lib', 'eval-yaml.cjs'));
+const core = require_(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
+const evalYaml = require_(path.join(ROOT, 'plugins/acceptance-gate/lib', 'eval-yaml.cjs'));
 
 const loi = [];
 const xanh = (n, m) => console.log(`PASS: ${n} ${m}`);
@@ -130,8 +130,8 @@ function dungKho({ cmdValue, expectedExit, themEval = '', themCauHinh = '' }) {
 function chayS4Args(ws) {
   const out = path.join(ws.dir, 'args.json');
   const r = spawnSync(process.execPath, [
-    path.join(ROOT, 'feature-loop', 'scripts', 's4-args.mjs'),
-    '--slug', ws.slug, '--root', ws.dir, '--ag-root', ROOT,
+    path.join(ROOT, 'plugins/feature-loop', 'scripts', 's4-args.mjs'),
+    '--slug', ws.slug, '--root', ws.dir, '--ag-root', `${ROOT}/plugins/acceptance-gate`,
     '--round', '1', '--no-carry', '--diff-base', 'HEAD', '--out', out,
   ], { encoding: 'utf8' });
   if (r.status !== 0) return { err: `s4-args exit ${r.status}: ${String(r.stderr || '').split('\n').filter(Boolean).slice(-2).join(' | ')}` };
@@ -244,7 +244,7 @@ function bg4() {
     ket.push(['5 s4-args list khoi [1] vo kep co escape', (e2.steps || [])[1], AP_PATH]);
     ket.push(['5 s4-args list khoi [2] B5 ket-thuc-bang-nhay', (e2.steps || [])[2], B5_STEP]);
     // Đường 6 là LƯỚI HỒI QUY, không phải ca phân biệt: một id BỌC NHÁY hôm
-    // nay đã hỏng ở tầng KHÁC — `parseEvals` (lib/eval-yaml.cjs) giữ nguyên
+    // nay đã hỏng ở tầng KHÁC — `parseEvals` (plugins/acceptance-gate/lib/eval-yaml.cjs) giữ nguyên
     // `"E2"` trong khi vòng list-field của s4-args bóc thành `E2`, nên mọi
     // list-field của eval đó bị bỏ qua LẶNG. Đó là lỗi thật nhưng NGOÀI hợp
     // đồng vòng này (ghi ở Out of scope + sổ quyết định); bản vá ở đây là hợp
@@ -277,8 +277,8 @@ function hamChua(lines, i) {
   return '(ngoai ham top-level)';
 }
 function bg6() {
-  const coreP = path.join(ROOT, 'lib', 'evidence-core.cjs');
-  const argsP = path.join(ROOT, 'feature-loop', 'scripts', 's4-args.mjs');
+  const coreP = path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs');
+  const argsP = path.join(ROOT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
   const quet = (p) => {
     const lines = fs.readFileSync(p, 'utf8').split('\n');
     const hit = [];
@@ -304,7 +304,7 @@ function bg6() {
   // `die('… không có unquoteScalar (cần ≥ 2.11.0) …')` cũng được tính: thước
   // nhận dư một đơn vị từ VĂN và dung thứ việc mất MỘT trong bốn chỗ gọi thật
   // (lượt chấm 1 bắt được; AC-12 — đếm MÃ, không đếm VĂN).
-  const cpP = path.join(ROOT, 'feature-loop', 'scripts', 'carry-plan.mjs');
+  const cpP = path.join(ROOT, 'plugins/feature-loop', 'scripts', 'carry-plan.mjs');
   const boChuThich = (f) => fs.readFileSync(f, 'utf8').split('\n').filter(l => !l.trim().startsWith('//')).join('\n');
   const sCore = boChuThich(coreP), sArgs = boChuThich(argsP), sCp = boChuThich(cpP);
   const SRC = new Map([[CORE, sCore], [ARGS, sArgs], [CP, sCp]]);
@@ -422,11 +422,11 @@ function bg9() {
     JSON.stringify({ ts: 't', sha: 'a'.repeat(40), round: 1, evalId: 'E1', run_id: 'run-1', exit_code: 0, verified_at: 'x', cmd: 'echo ok' }) + '\n');
   const chay = (delta) => {
     const r = spawnSync(process.execPath, [
-      path.join(ROOT, 'feature-loop', 'scripts', 'carry-plan.mjs'),
+      path.join(ROOT, 'plugins/feature-loop', 'scripts', 'carry-plan.mjs'),
       '--run-log', path.join(d, '_acceptance', slug, 'run-log.jsonl'),
       '--evals', path.join(d, '_acceptance', slug, 'evals.yaml'),
       '--contract', path.join(d, '_acceptance', slug, 'contract.md'),
-      '--round', '2', '--ag-root', ROOT,
+      '--round', '2', '--ag-root', `${ROOT}/plugins/acceptance-gate`,
       ...(delta ? ['--delta-files', delta] : ['--no-delta']),
     ], { encoding: 'utf8' });
     if (r.status !== 0) return { err: `carry-plan exit ${r.status}: ${String(r.stderr || '').split('\n').filter(Boolean).pop()}` };
@@ -565,7 +565,7 @@ function bg10e() {
 //
 // Đường 6 (`id`) CỐ Ý không có trong danh sách: nó là LƯỚI HỒI QUY, bản vá ở
 // đó là hợp nhất lớp và không đổi hành vi — xem Out of scope của hợp đồng.
-const CORE = ['lib', 'evidence-core.cjs'], ARGS = ['feature-loop', 'scripts', 's4-args.mjs'], CP = ['feature-loop', 'scripts', 'carry-plan.mjs'];
+const CORE = ['plugins/acceptance-gate/lib', 'evidence-core.cjs'], ARGS = ['plugins/feature-loop', 'scripts', 's4-args.mjs'], CP = ['plugins/feature-loop', 'scripts', 'carry-plan.mjs'];
 
 // ─── MỘT BẢNG ĐƯỜNG, ba chân tiêu thụ ────────────────────────────────────
 // `neo` = chuỗi NGUYÊN VĂN tại chỗ gọi cổng chung · `cu` = mệnh đề ad-hoc đời
@@ -681,7 +681,7 @@ function bg5() {
   if (sach.status !== 0) { do_('BG5', `ban sao NGUYEN VEN da do (exit ${sach.status}) — moi chieu do duoi vo nghia:\n${String(sach.stderr || '').trim()}`); return; }
 
   // (2) TIÊM mệnh đề cũ, chứng minh bản sao THẬT SỰ đổi nội dung bằng so BĂM.
-  const coreP = path.join(d, 'lib', 'evidence-core.cjs');
+  const coreP = path.join(d, 'plugins/acceptance-gate/lib', 'evidence-core.cjs');
   const truoc = bam(coreP);
   let src = fs.readFileSync(coreP, 'utf8');
   const DB = DOT_BIEN();

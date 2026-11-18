@@ -5,7 +5,7 @@
 // tác tử feature-loop:cham-lenh (Bash, Read, Grep, Glob — hồ sơ tac-tu-cham-chi-cham-khong). Mọi lượt ra «No such tool
 // available: Write», đối chứng không chạy dòng nào, ở mọi kho. Ca 23/10 (BW1e) chỉ soi chữ trong đề bài.
 //
-// «Tác tử» ở đây là bộ mô phỏng TẤT ĐỊNH của loại cham-lenh: bộ công cụ đọc từ feature-loop/agents/cham-lenh.md; đề
+// «Tác tử» ở đây là bộ mô phỏng TẤT ĐỊNH của loại cham-lenh: bộ công cụ đọc từ plugins/feature-loop/agents/cham-lenh.md; đề
 // bài nhắc một công cụ ngoài bộ ấy → trả đúng chữ lỗi harness thật trả (đo 29/10 bằng tác tử cham-lenh thật); còn
 // lại → chạy NGUYÊN VĂN các khối lệnh của đề bài trong shell thật trên kho git thật. Kho, kịch bản, đầu ra đều do mã
 // sinh trong lượt chạy; đường suy từ vị trí tệp.
@@ -30,9 +30,9 @@ import { runWorkflow, check, summary, lenhGhiBaseline, kichBanTuLenhGhi, dongGhi
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
-const WF = path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const SRC = fs.readFileSync(WF, 'utf8');
-const AGENTS = path.join(ROOT, 'feature-loop', 'agents');
+const AGENTS = path.join(ROOT, 'plugins/feature-loop', 'agents');
 // Commit cuối của nhánh chính TRƯỚC bản sửa (gói đợt tinh-chinh-2610, 29/10) — bộ chấm ở đó còn dặn «Write».
 const GOC_CU = 'd3cfca5c';
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'agk-dc-'));

@@ -335,7 +335,7 @@ const MA_TRAN_6 = [
   ['dau-cham-phay', { hang: { ma: 'CP', ten_ngan: 't' }, kho: 'k' }, { moc: 'Chấm phẩy 02/11', ten_phien: 'CP · t (k)', nhom: 'Chấm phẩy 02/11' }],
   ['dau-hai-cham', { hang: { ma: 'HC', ten_ngan: 't' }, kho: 'k' }, { moc: 'Hai chấm 03/11', ten_phien: 'HC · t (k)', nhom: 'Hai chấm 03/11' }],
   ['ngay-sai-dang', { hang: { ma: 'NG', ten_ngan: 't' }, kho: 'k' }, { moc: 'Không ngày đúng', ten_phien: 'NG · t (k)', nhom: 'Không ngày đúng' }],
-  ['gach-va-ngoac', { hang: { ma: 'MC1', ten_ngan: 'Mốc là chiến dịch' }, kho: 'acceptance-gate-kit' }, { moc: 'Tinh chỉnh sau hai đợt thử 05/11', ten_phien: 'MC1 · Mốc là chiến dịch (acceptance-gate-kit)', nhom: 'Tinh chỉnh sau hai đợt thử 05/11' }],
+  ['gach-va-ngoac', { hang: { ma: 'MC1', ten_ngan: 'Mốc là chiến dịch' }, kho: 'delivery-loop' }, { moc: 'Tinh chỉnh sau hai đợt thử 05/11', ten_phien: 'MC1 · Mốc là chiến dịch (delivery-loop)', nhom: 'Tinh chỉnh sau hai đợt thử 05/11' }],
   ['ba-lo-trinh-ten-ngan', { hang: { ma: 'A', ten_ngan: 'x' }, kho: 'crm', nhieuLoTrinh: true, loTrinh: { ten_ngan: 'OKR', ten: 'Dài dòng' }, tep: 'docs/plan/lo-trinh-okr.json' }, { moc: 'R2 lên production 31/10', ten_phien: 'A · x (crm)', nhom: 'OKR · R2 lên production 31/10' }],
   ['ba-lo-trinh-ten', { hang: { ma: 'A', ten_ngan: 'x' }, kho: 'crm', nhieuLoTrinh: true, loTrinh: { ten: 'Việc và Dự án' }, tep: 'docs/plan/lo-trinh-viec-du-an.json' }, { moc: 'R2 lên production 31/10', ten_phien: 'A · x (crm)', nhom: 'Việc và Dự án · R2 lên production 31/10' }],
   ['ba-lo-trinh-ten-tep', { hang: { ma: 'A', ten_ngan: 'x' }, kho: 'crm', nhieuLoTrinh: true, loTrinh: {}, tep: 'docs/plan/lo-trinh-kho-tai-lieu.json' }, { moc: 'R2 lên production 31/10', ten_phien: 'A · x (crm)', nhom: 'kho-tai-lieu · R2 lên production 31/10' }],
@@ -363,7 +363,7 @@ const khoiSkill = (ten, txt) => { const m = txt.match(new RegExp(`<!-- <<<${ten}
 // `kit`; đích là đường từ GỐC GÓI trong bộ đệm cài — ở đó `scripts lib skills` nằm ngay gốc gói ở cả hai bố cục.
 const homeCache = new Map();
 const homeCua = kit => { if (homeCache.has(kit)) return homeCache.get(kit); const h = path.join(TMP, `home-${homeCache.size}`);
-  const v = path.join(h, '.claude', 'plugins', 'cache', 'acceptance-gate-kit', 'acceptance-gate', '9.9.9');
+  const v = path.join(h, '.claude', 'plugins', 'cache', 'delivery-loop', 'acceptance-gate', '9.9.9');
   for (const d of ['scripts', 'lib', 'skills']) cpSync(tepO(d, kit), path.join(v, d), { recursive: true }); homeCache.set(kit, h); return h; };
 const chayS0 = (kit, ma, cwd) => spawnSync('bash', ['-c', khoiSkill('S0-MO-O', readFileSync(tepO(SKILL_REL, kit), 'utf8')).replace("'<mã>'", `'${ma}'`)],
   { cwd, encoding: 'utf8', env: { ...process.env, HOME: homeCua(kit), WORKFLOWS_DIR: tepO('feature-loop/workflows', kit) } });

@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const KIT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const TEP_SKILL = 'feature-loop/skills/feature-loop/SKILL.md';
+const TEP_SKILL = 'plugins/feature-loop/skills/feature-loop/SKILL.md';
 const git = (...a) => execFileSync('git', a, { cwd: KIT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
 
 const SO_PR = 306;
@@ -45,14 +45,14 @@ function khoPrThu(prSua) {
   const g = (...a) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', ...a], { cwd: kho, stdio: 'ignore' });
   const ghi = (rel, nd) => { fs.mkdirSync(path.dirname(path.join(kho, rel)), { recursive: true }); fs.writeFileSync(path.join(kho, rel), nd); };
   g('init', '-q', '-b', 'main');
-  ghi('dieu-phoi/hooks/hooks.json', '{}\n');
+  ghi('plugins/dispatch/hooks/hooks.json', '{}\n');
   g('add', '-A'); g('commit', '-q', '-m', 'goc');
   g('checkout', '-q', '-b', 'pr');
-  ghi(prSua ? 'dieu-phoi/hooks/hooks.json' : 'khac.txt', '{"pr":1}\n');
+  ghi(prSua ? 'plugins/dispatch/hooks/hooks.json' : 'khac.txt', '{"pr":1}\n');
   g('add', '-A'); g('commit', '-q', '-m', 'pr');
   g('checkout', '-q', 'main');
   g('merge', '-q', '--no-ff', '-m', `Merge pull request #${SO_PR} from x/pr`, 'pr');
-  ghi('dieu-phoi/hooks/hooks.json', '{"vong_sau":1}\n');
+  ghi('plugins/dispatch/hooks/hooks.json', '{"vong_sau":1}\n');
   g('add', '-A'); g('commit', '-q', '-m', 'vong sau sua hooks.json');
   return kho;
 }
@@ -82,23 +82,23 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === fs.realpathSync(proces
   const { soSo, lech } = khoiLech(skillBase, skillMoi);
   ghi(lech.length === 0 && soSo > 0, 'DP7-09 khoi-khac', `so ${soSo} khối, mốc ${moc.nguon}${lech.length ? `; lệch: ${lech.join(', ')}` : ''}`);
 
-  const doi = doiGiua(KIT, moc, 'feature-loop/scripts', 'feature-loop/workflows');
-  const la = doi.filter((f) => f !== 'feature-loop/scripts/trong-dot.mjs');
+  const doi = doiGiua(KIT, moc, 'plugins/feature-loop/scripts', 'plugins/feature-loop/workflows');
+  const la = doi.filter((f) => f !== 'plugins/feature-loop/scripts/trong-dot.mjs');
   ghi(la.length === 0, 'DP7-09 script-khac', `đổi: ${doi.join(', ') || '(không)'}`);
 
-  const hookDoi = doiGiua(KIT, moc, 'dieu-phoi/hooks/hooks.json').join(', ');
+  const hookDoi = doiGiua(KIT, moc, 'plugins/dispatch/hooks/hooks.json').join(', ');
   ghi(hookDoi === '', 'DP7-09 hook', hookDoi ? `đổi ${hookDoi}` : 'hooks.json byte-bằng base');
 
   // Chiều đỏ của mốc: PR sửa hooks.json → nêu tệp; PR không sửa, vòng sau sửa → im (đối chứng dương).
   const doMoc = [true, false].map((prSua) => {
     const kho = khoPrThu(prSua);
     try {
-      return doiGiua(kho, timMoc(kho), 'dieu-phoi/hooks/hooks.json');
+      return doiGiua(kho, timMoc(kho), 'plugins/dispatch/hooks/hooks.json');
     } finally {
       fs.rmSync(kho, { recursive: true, force: true });
     }
   });
-  ghi(doMoc[0].includes('dieu-phoi/hooks/hooks.json') && doMoc[1].length === 0, 'DP7-09-do moc-pr', `PR sửa → [${doMoc[0].join(', ')}] · PR không sửa, vòng sau sửa → [${doMoc[1].join(', ')}]`);
+  ghi(doMoc[0].includes('plugins/dispatch/hooks/hooks.json') && doMoc[1].length === 0, 'DP7-09-do moc-pr', `PR sửa → [${doMoc[0].join(', ')}] · PR không sửa, vòng sau sửa → [${doMoc[1].join(', ')}]`);
 
   const tiem = skillMoi.replace(/(<!-- <<<GOAL-TEMPLATE -->[\s\S]*?)HOÀN THÀNH/, '$1HOAN THANH');
   const do_ = tiem !== skillMoi ? khoiLech(skillBase, tiem).lech : [];

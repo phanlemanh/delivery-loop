@@ -1,4 +1,4 @@
-// LN — làn re-pin bằng MÁY (feature-loop/scripts/repin-lane.mjs), đo trên một
+// LN — làn re-pin bằng MÁY (plugins/feature-loop/scripts/repin-lane.mjs), đo trên một
 // kho git CODE-SINH trong chính lần chạy. Chiều xanh: làn ghi dòng + section,
 // chính reader (recheck + pre-merge) nhận. Chiều đỏ «phá vật thật»: xoá tiền đề
 // mà eval của hồ sơ đo → làn ĐỎ, KHÔNG ghi gì — đúng ca crm-onehub 07/09 mà
@@ -14,10 +14,10 @@ import { evalsYamlWith } from './repin-fixture.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const LANE = path.join(ROOT, 'feature-loop', 'scripts', 'repin-lane.mjs');
-const RC = path.join(ROOT, 'scripts', 'recheck-evidence.cjs');
-const CHECK = path.join(ROOT, 'scripts', 'pre-merge-check.sh');
-const SKILL = readFileSync(path.join(ROOT, 'feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
+const LANE = path.join(ROOT, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs');
+const RC = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'recheck-evidence.cjs');
+const CHECK = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh');
+const SKILL = readFileSync(path.join(ROOT, 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md'), 'utf8');
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
 
@@ -43,7 +43,7 @@ git('add', '-A'); git('commit', '-qm', 'evidence');
 const HEAD_E = git('rev-parse', 'HEAD'); // HEAD lúc làn chạy (commit evidence chỉ chạm _acceptance/ nên không stale)
 const REPORT = path.join(WS, 'evidence-report.md');
 const LOG = path.join(WS, 'run-log.jsonl');
-const lane = (...a) => spawnSync(process.execPath, [LANE, '--root', R, '--ag-root', ROOT, ...a], { encoding: 'utf8' });
+const lane = (...a) => spawnSync(process.execPath, [LANE, '--root', R, '--ag-root', `${ROOT}/plugins/acceptance-gate`, ...a], { encoding: 'utf8' });
 const rc = () => spawnSync(process.execPath, [RC, REPORT], { encoding: 'utf8' });
 const pm = () => spawnSync('bash', [CHECK, R], { encoding: 'utf8' });
 const repinLines = () => readFileSync(LOG, 'utf8').split('\n').filter(l => l.includes('"kind":"repin"'));
@@ -152,7 +152,7 @@ check('LN5 khoá dòng repin của SCRIPT == khoá khuôn REPIN-TEMPLATE trong S
   // trước chỉ đo `feat-lane` (không khai ô nào) nên phép đo writer↔khuôn bị làm
   // mù đúng chỗ nhánh này thêm vào (rà cuối 12/09/2026).
   const f = mkNotRunRepo();
-  const rNR = spawnSync(process.execPath, [LANE, '--root', f.root, '--ag-root', ROOT, '--slug', 'feat-nr', '--reason', 'khuôn nói-ra', '--write'], { encoding: 'utf8' });
+  const rNR = spawnSync(process.execPath, [LANE, '--root', f.root, '--ag-root', `${ROOT}/plugins/acceptance-gate`, '--slug', 'feat-nr', '--reason', 'khuôn nói-ra', '--write'], { encoding: 'utf8' });
   assert.equal(rNR.status, 0, rNR.stderr);
   const dongNR = JSON.parse(readFileSync(f.logPath, 'utf8').split('\n').filter(l => l.includes('"kind":"repin"')).pop());
   // Khuôn mang BA khoá tuỳ chọn (evals_not_run 2.12.0 · evals_not_machine +
@@ -206,7 +206,7 @@ function mkEERepo(exitCode, expectedExit) {
   const head = g('rev-parse', 'HEAD');
   return { root, ws, head, reportPath: path.join(ws, 'evidence-report.md'), logPath: path.join(ws, 'run-log.jsonl') };
 }
-const eeLane = (root, ...a) => spawnSync(process.execPath, [LANE, '--root', root, '--ag-root', ROOT, '--slug', 'feat-ee', ...a], { encoding: 'utf8' });
+const eeLane = (root, ...a) => spawnSync(process.execPath, [LANE, '--root', root, '--ag-root', `${ROOT}/plugins/acceptance-gate`, '--slug', 'feat-ee', ...a], { encoding: 'utf8' });
 
 check('RL-EE1 eval khai 2, lệnh trả 2: làn XANH, evals_exit giữ mã thật', () => {
   const f = mkEERepo(2, 2);

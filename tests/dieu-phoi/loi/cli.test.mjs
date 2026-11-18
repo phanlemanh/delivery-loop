@@ -4,9 +4,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { dongDot, moDot } from '../../../dieu-phoi/scripts/dieu-phoi.mjs';
-import { timThuMucDot } from '../../../dieu-phoi/scripts/dot.mjs';
-import { chayHook } from '../../../dieu-phoi/scripts/hook-chan-s4.mjs';
+import { dongDot, moDot } from '../../../plugins/dispatch/scripts/dieu-phoi.mjs';
+import { timThuMucDot } from '../../../plugins/dispatch/scripts/dot.mjs';
+import { chayHook } from '../../../plugins/dispatch/scripts/hook-chan-s4.mjs';
 
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp-')));
 

@@ -17,8 +17,8 @@ import assert from 'node:assert/strict';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');            // suy từ vị trí script
-const LANE = path.join(ROOT, 'feature-loop', 'scripts', 'repin-lane.mjs');
-const SIGNOFF = path.join(ROOT, 'commands', 'signoff.md');
+const LANE = path.join(ROOT, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs');
+const SIGNOFF = path.join(ROOT, 'plugins/acceptance-gate/commands', 'signoff.md');
 const RB = path.join(ROOT, 'tests', 'scripts', 'routing-baseline.mjs');
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
@@ -54,7 +54,7 @@ git('add', '-A'); git('commit', '-qm', 'evidence');
 
 const REPORT = path.join(WS, 'evidence-report.md');
 const LOG = path.join(WS, 'run-log.jsonl');
-const lane = (...a) => spawnSync(process.execPath, [LANE, '--root', R, '--ag-root', ROOT, ...a], { encoding: 'utf8' });
+const lane = (...a) => spawnSync(process.execPath, [LANE, '--root', R, '--ag-root', `${ROOT}/plugins/acceptance-gate`, ...a], { encoding: 'utf8' });
 const vcOf = () => readFileSync(REPORT, 'utf8').match(/^verified_commit:\s*(\S+)/m)[1];
 const marker = () => (existsSync(MARKER) ? readFileSync(MARKER, 'utf8') : '');
 const clearMarker = () => { if (existsSync(MARKER)) rmSync(MARKER); };
@@ -193,7 +193,7 @@ check('SK5 lenh 7b rut tu SIGNOFF-LANE-CLAUSE chay o trang thai hau-buoc-6 -> sk
   assert.match(readFileSync(BASE, 'utf8'), /^feat\t/m, 'dòng của slug phải do writer thật ghi vào bản ghi mốc');
 
   clearMarker();
-  const r = spawnSync(process.execPath, [LANE, ...argv, '--ag-root', ROOT], { encoding: 'utf8' });
+  const r = spawnSync(process.execPath, [LANE, ...argv, '--ag-root', `${ROOT}/plugins/acceptance-gate`], { encoding: 'utf8' });
   assert.equal(r.status, 0, `lệnh 7b ở trạng thái hậu-bước-6 phải exit 0:\n${r.stderr}`);
   assert.equal(JSON.parse(r.stdout).skipped, true, `chữ ký + bản ghi mốc bẩn mà làn vẫn chạy trọn — cắt không có hiệu lực ở lượt ký thật:\n${r.stderr}`);
   assert.equal(marker(), '', 'lượt bỏ qua mà suite vẫn chạy');

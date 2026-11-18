@@ -1,5 +1,5 @@
 // Lưới hồ sơ thuoc-co-cua AC-13: một dòng vật · thước · nhát trên thẻ Cổng Bằng chứng.
-// Seam bên-VIẾT → bên-ĐỌC: dòng `kind: thuoc-vat` do CHÍNH feature-loop/scripts/thuoc-vat.mjs
+// Seam bên-VIẾT → bên-ĐỌC: dòng `kind: thuoc-vat` do CHÍNH plugins/feature-loop/scripts/thuoc-vat.mjs
 // --write ghi trên kho git code-sinh (tests/scripts/thuoc-vat-fixture.mjs); số mong đợi đọc
 // ĐỘC LẬP qua `thuoc-vat.mjs --json`, không qua bên đọc của thẻ. Dòng là dòng BÁO: bản ghi
 // định tuyến (routingLine) của hồ sơ đã ký không được đổi.
@@ -13,8 +13,8 @@ import { routingLine } from './routing-baseline.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');
-const GC = path.join(KIT, 'scripts', 'gate-card.js');
-const TV = path.join(KIT, 'feature-loop', 'scripts', 'thuoc-vat.mjs');
+const GC = path.join(KIT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
+const TV = path.join(KIT, 'plugins/feature-loop', 'scripts', 'thuoc-vat.mjs');
 const SRC = readFileSync(GC, 'utf8');
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
@@ -73,8 +73,8 @@ function kho(signoff = '') {
   writeFileSync(path.join(d, '_acceptance', SLUG, 'evidence-report.md'), report(signoff));
   return d;
 }
-const ghi = d => { const r = spawnSync(process.execPath, [TV, '--root', d, '--slug', SLUG, '--write', '--ag-root', KIT], { encoding: 'utf8' }); if (r.status !== 0) die('thuoc-vat --write loi: ' + r.stderr); };
-const soDocLap = d => { const r = spawnSync(process.execPath, [TV, '--root', d, '--slug', SLUG, '--json', '--ag-root', KIT], { encoding: 'utf8' }); return JSON.parse(r.stdout); };
+const ghi = d => { const r = spawnSync(process.execPath, [TV, '--root', d, '--slug', SLUG, '--write', '--ag-root', `${KIT}/plugins/acceptance-gate`], { encoding: 'utf8' }); if (r.status !== 0) die('thuoc-vat --write loi: ' + r.stderr); };
+const soDocLap = d => { const r = spawnSync(process.execPath, [TV, '--root', d, '--slug', SLUG, '--json', '--ag-root', `${KIT}/plugins/acceptance-gate`], { encoding: 'utf8' }); return JSON.parse(r.stdout); };
 const the = d => { const r = spawnSync(process.execPath, [GC, '--root', d, '--slug', SLUG], { encoding: 'utf8' }); if (r.status !== 0) die('gate-card loi: ' + r.stderr); return r.stdout.replace(/\x1b\[[0-9;]*m/g, ''); };
 const extract = d => JSON.parse(spawnSync(process.execPath, [GC, '--root', d, '--slug', SLUG, '--extract'], { encoding: 'utf8' }).stdout);
 

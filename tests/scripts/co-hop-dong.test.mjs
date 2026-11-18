@@ -3,8 +3,8 @@
 // cờ vàng; khoảng đọc từ CHÍNH khối CAT-LUOT-CO; năm chỗ dạy nói cùng chính sách; đồng hồ cỡ đếm dòng giữ.
 //
 // Luật đo:
-//  - Kho thử dựng trong lần chạy (khuôn workspace dùng chung `gate-fixture.mjs`); gọi CHÍNH scripts/gate-card.js
-//    và scripts/cat-luot.mjs như tiến trình con.
+//  - Kho thử dựng trong lần chạy (khuôn workspace dùng chung `gate-fixture.mjs`); gọi CHÍNH plugins/acceptance-gate/scripts/gate-card.js
+//    và plugins/acceptance-gate/scripts/cat-luot.mjs như tiến trình con.
 //  - Ma trận + kỳ vọng VIẾT TRƯỚC (hằng dưới), không tính từ mã sản phẩm; số khẳng định = số hàng (in ra).
 //  - Chiều đỏ: bản sao TRỌN các thư mục dạy/chạy (scripts lib skills feature-loop commands dieu-phoi + ba tệp
 //    gốc) bị tiêm đúng một kim (kim khớp đúng một lần, không thì ca đỏ vì hạ tầng ca), thông điệp ghim; bản
@@ -23,7 +23,7 @@ const KIT = path.resolve(HERE, '..', '..');
 const require = createRequire(import.meta.url);
 // Hai trạng thái «đã qua Cổng Bằng chứng» rút từ lib (MỘT nguồn — nếp hskt/htkd): tệp ca không mang chuỗi trạng
 // thái của riêng nó, nên không phải khai gạch ở RT13 của hồ sơ ra-co-ten-lam-va-trao.
-const [DA_KY, MAY_THONG] = require(path.join(KIT, 'lib', 'workspace-record.cjs')).DA_THONG_CONG_2;
+const [DA_KY, MAY_THONG] = require(path.join(KIT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs')).DA_THONG_CONG_2;
 
 const CA = ['AC-1', 'AC-1-do', 'AC-1-hong', 'AC-2', 'AC-2-vong', 'AC-2-do', 'AC-3', 'AC-3-do', 'AC-3-do-rut', 'AC-4', 'AC-4-kho-that', 'AC-4-do',
   'AC-5', 'AC-5-do-khoa', 'AC-5-do-nghia', 'AC-6', 'AC-6-do-khoi', 'AC-6-do-lop', 'AC-7', 'AC-7-do', 'AC-7-do-ngay-ky', 'AC-8', 'AC-8-do'];
@@ -50,7 +50,7 @@ async function ca(ten, fn) {
 }
 
 // ── Bản sao gói (trọn thư mục) + kim ──────────────────────────────────────────────────────────────────
-const THU_MUC_GOI = ['scripts', 'lib', 'skills', 'feature-loop', 'commands', 'dieu-phoi'];
+const THU_MUC_GOI = ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/acceptance-gate/skills', 'plugins/feature-loop', 'plugins/acceptance-gate/commands', 'plugins/dispatch'];
 const TEP_GOC = ['GUIDE.md', 'README.md', 'QUICKSTART.md'];
 function banSao() {
   const d = thuMuc('goi');
@@ -83,7 +83,7 @@ const DONG_GIU = (id, ly = 'kết quả một màn không tách được mà gi�
 function khoThu({ contract, decisions = '' }) {
   return mkWs('g', { 'contract.md': contract, 'evals.yaml': EVALS, 'decisions.jsonl': decisions, 'gap-probe.md': PROBE('clean') });
 }
-const the = (goi, root, extra = []) => spawnSync('node', [path.join(goi, 'scripts', 'gate-card.js'), '--root', root, '--slug', 'g', '--gate', '1', ...extra], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+const the = (goi, root, extra = []) => spawnSync('node', [path.join(goi, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '--root', root, '--slug', 'g', '--gate', '1', ...extra], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 function theDu(goi, root) {
   const h = the(goi, root); const x = the(goi, root, ['--extract']);
   let j = null; try { j = JSON.parse(x.stdout); } catch { /* để ca báo */ }
@@ -97,7 +97,7 @@ const giaiHtml = s => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&qu
 
 // Khoảng ĐỘC LẬP với mô-đun: đọc khối bằng regex riêng của ca (kỳ vọng không chép công thức bên viết).
 function khoangDocLap(goi) {
-  const t = doc(goi, 'skills/cat-luot/SKILL.md');
+  const t = doc(goi, 'plugins/acceptance-gate/skills/scope-slice/SKILL.md');
   const m = t.match(/<!-- <<<CAT-LUOT-CO -->\n```\n([\s\S]*?)```\n<!-- CAT-LUOT-CO>>> -->/);
   if (!m) return null;
   const v = k => (m[1].match(new RegExp(`^${k}:\\s*(\\S+)`, 'm')) || [])[1];
@@ -107,7 +107,7 @@ function khoangDocLap(goi) {
 
 // ── AC-1: một nguồn khoảng ────────────────────────────────────────────────────────────────────────────
 const dongHo = (goi, root, extra = []) => {
-  const r = spawnSync('node', [path.join(goi, 'scripts', 'cat-luot.mjs'), '--root', root, '--co', ...extra], { encoding: 'utf8' });
+  const r = spawnSync('node', [path.join(goi, 'plugins/acceptance-gate/scripts', 'cat-luot.mjs'), '--root', root, '--co', ...extra], { encoding: 'utf8' });
   let j = null; try { j = JSON.parse(r.stdout); } catch { /* để ca báo */ }
   return { ma: r.status, j, err: r.stderr || '' };
 };
@@ -115,8 +115,8 @@ const nhomCua = (j, slugN) => j && j.nhom.find(g => g.n_chot === slugN);
 function kho11(status) { return khoThu({ contract: hopDong({ n: 11, status }) }); }
 await ca('AC-1', async () => {
   const loi = [];
-  const CL = await import(pathToFileURL(path.join(KIT, 'scripts', 'cat-luot.mjs')).href);
-  const CHD = require(path.join(KIT, 'scripts', 'co-hop-dong.cjs'));
+  const CL = await import(pathToFileURL(path.join(KIT, 'plugins/acceptance-gate/scripts', 'cat-luot.mjs')).href);
+  const CHD = require(path.join(KIT, 'plugins/acceptance-gate/scripts', 'co-hop-dong.cjs'));
   if (CL.docKhoang !== CHD.docKhoang) loi.push('cat-luot.mjs xuất docKhoang KHÁC hàm của co-hop-dong.cjs');
   if (CL.napKhoang !== CHD.napKhoang) loi.push('cat-luot.mjs xuất napKhoang KHÁC hàm của co-hop-dong.cjs');
   const t = theDu(KIT, kho11('draft'));
@@ -131,7 +131,7 @@ await ca('AC-1', async () => {
 await ca('AC-1-do', async () => {
   { const t0 = theDu(KIT, kho11('draft')); doiChung('thẻ 11 tiêu chí', t0.co && t0.co.chan === false && coCo(t0.html).length === 1 && coCo(t0.html)[0].lop === 'fwarn' ? [] : [JSON.stringify(t0.co)]); }
   const goi = banSao(); const loi = [];
-  tiem(goi, 'skills/cat-luot/SKILL.md', '\ncho_phep_den: 12\ntach_tu: 13\n', '\ncho_phep_den: 10\ntach_tu: 11\n');
+  tiem(goi, 'plugins/acceptance-gate/skills/scope-slice/SKILL.md', '\ncho_phep_den: 12\ntach_tu: 13\n', '\ncho_phep_den: 10\ntach_tu: 11\n');
   const t = theDu(goi, kho11('draft'));
   const co = coCo(t.html);
   if (!(co.length === 1 && co[0].lop === 'fred') || !t.co || t.co.chan !== true) loi.push(`khoảng đọc từ khối: bản sửa khối, thẻ 11 tiêu chí vẫn ${JSON.stringify(co.map(x => x.lop))} chan=${t.co && t.co.chan}`);
@@ -143,7 +143,7 @@ await ca('AC-1-do', async () => {
 await ca('AC-1-hong', async () => {
   { const t0 = theDu(KIT, kho11('draft')); doiChung('thẻ 11 tiêu chí', t0.co && !t0.co.loi ? [] : [JSON.stringify(t0.co)]); }
   const goi = banSao(); const loi = [];
-  const f = path.join(goi, 'skills/cat-luot/SKILL.md'); const t0 = fs.readFileSync(f, 'utf8');
+  const f = path.join(goi, 'plugins/acceptance-gate/skills/scope-slice/SKILL.md'); const t0 = fs.readFileSync(f, 'utf8');
   const m = t0.match(/<!-- <<<CAT-LUOT-CO -->[\s\S]*?<!-- CAT-LUOT-CO>>> -->\n/);
   if (!m) throw new Error('không thấy khối CAT-LUOT-CO để gỡ');
   fs.writeFileSync(f, t0.replace(m[0], ''));
@@ -153,7 +153,7 @@ await ca('AC-1-hong', async () => {
   if (!(co.length === 1 && co[0].lop === 'fwarn' && /không đọc được khoảng cỡ/i.test(co[0].van))) loi.push(`cờ: ${JSON.stringify(co)}`);
   if (!t.co || t.co.chan !== false || !/thiếu khối CAT-LUOT-CO/.test(String(t.co.loi))) loi.push(`extract: ${JSON.stringify(t.co)}`);
   // Vế bộ đọc vắng: bản sao gỡ chính mô-đun — thẻ vẫn dựng, cờ vàng nói ra, không chặn.
-  const goi2 = banSao(); fs.rmSync(path.join(goi2, 'scripts', 'co-hop-dong.cjs'));
+  const goi2 = banSao(); fs.rmSync(path.join(goi2, 'plugins/acceptance-gate/scripts', 'co-hop-dong.cjs'));
   const t2 = theDu(goi2, kho11('draft')); const co2 = coCo(t2.html);
   if (t2.ma !== 0) loi.push(`thẻ thoát ${t2.ma} khi thiếu co-hop-dong.cjs: ${t2.err.slice(0, 200)}`);
   if (!(co2.length === 1 && co2[0].lop === 'fwarn' && /không nạp được bộ đọc cỡ/.test(co2[0].van)) || !t2.co || t2.co.chan !== false) loi.push(`thiếu mô-đun: cờ ${JSON.stringify(co2)} extract ${JSON.stringify(t2.co)}`);
@@ -219,7 +219,7 @@ await ca('AC-2-vong', async () => {
 await ca('AC-2-do', async () => {
   { const t0 = theDu(KIT, khoThu({ contract: hopDong({ n: 13 }) })); doiChung('13 tiêu chí không dòng giữ', t0.co && t0.co.chan === true ? [] : [JSON.stringify(t0.co)]); }
   const goi = banSao();
-  tiem(goi, 'scripts/co-hop-dong.cjs', 'if (n <= k.cho_phep_den) return \'cho-phep\';', 'if (n <= k.tach_tu) return \'cho-phep\';');
+  tiem(goi, 'plugins/acceptance-gate/scripts/co-hop-dong.cjs', 'if (n <= k.cho_phep_den) return \'cho-phep\';', 'if (n <= k.tach_tu) return \'cho-phep\';');
   const t = theDu(goi, khoThu({ contract: hopDong({ n: 13 }) }));
   if (t.co && t.co.chan === false) return { mo: 'bản sao nới ngưỡng tách trong nhomCo: 13 tiêu chí không dòng giữ ra chan false — «ngưỡng tách lệch khối» bắt được' };
   return { loi: [`ngưỡng tách lệch khối KHÔNG đổi kết luận: ${JSON.stringify(t.co)}`] };
@@ -269,7 +269,7 @@ await ca('AC-3', async () => ({ loi: chayAC3(KIT), mo: `${BANG_AC3.length} ca s�
 await ca('AC-3-do-rut', async () => {
   doiChung('ma trận sổ', chayAC3(KIT));
   const goi = banSao();
-  tiem(goi, 'scripts/co-hop-dong.cjs', 'const biRut = new Set(ds.filter(e => e.supersedes != null).flatMap(e => [].concat(e.supersedes)).map(String));', 'const biRut = new Set();');
+  tiem(goi, 'plugins/acceptance-gate/scripts/co-hop-dong.cjs', 'const biRut = new Set(ds.filter(e => e.supersedes != null).flatMap(e => [].concat(e.supersedes)).map(String));', 'const biRut = new Set();');
   const loi = chayAC3(goi);
   const rut = loi.find(l => l.startsWith('[bị rút]'));
   if (rut && /thẻ d-1 ≠ null/.test(rut) && /n_giu 1 ≠ 0/.test(rut)) return { mo: 'bản sao bỏ bước xét supersedes: ca «bị rút» ra «nhận» ở CẢ thẻ lẫn đồng hồ — «dòng giữ đã rút vẫn mở cổng» bắt được' };
@@ -278,7 +278,7 @@ await ca('AC-3-do-rut', async () => {
 await ca('AC-3-do', async () => {
   doiChung('ma trận sổ', chayAC3(KIT));
   const goi = banSao();
-  tiem(goi, 'scripts/co-hop-dong.cjs', "e.decision.normalize('NFC')", 'e.decision');
+  tiem(goi, 'plugins/acceptance-gate/scripts/co-hop-dong.cjs', "e.decision.normalize('NFC')", 'e.decision');
   const loi = chayAC3(goi);
   const nfd = loi.find(l => l.startsWith('[NFD]'));
   if (nfd && /thẻ null/.test(nfd) && /n_giu 0/.test(nfd) && loi.length === 1) return { mo: 'bản sao bỏ chuẩn NFC: ca NFD ra «không» ở CẢ thẻ lẫn đồng hồ — hai bên đọc cùng một hàm' };
@@ -308,14 +308,14 @@ await ca('AC-4', async () => ({ loi: chayAC4(KIT), mo: `${DA_QUA.length} trạng
 await ca('AC-4-do', async () => {
   doiChung('sáu trạng thái', chayAC4(KIT));
   const goi = banSao();
-  tiem(goi, 'scripts/co-hop-dong.cjs', "const chan = draft && nhom === 'phai-tach' && !giu;", "const chan = nhom === 'phai-tach' && !giu;");
+  tiem(goi, 'plugins/acceptance-gate/scripts/co-hop-dong.cjs', "const chan = draft && nhom === 'phai-tach' && !giu;", "const chan = nhom === 'phai-tach' && !giu;");
   const loi = chayAC4(goi); const x = loi.chiTiet[DA_KY] || {};
   // Ghim GIÁ TRỊ của lỗi được tiêm (Ngoài-6 lượt 1): thẻ phải chạy và trả chặn + cờ đỏ — thẻ sập không tính là bắt.
   if (x.chay && x.chan === true && x.lop.includes('fred')) return { mo: `bản sao gỡ điều kiện draft: hồ sơ ${DA_KY} ra chặn — «đường đọc-cũ gãy» bắt được` };
   return { loi: ['gỡ điều kiện draft mà hồ sơ đã qua cổng vẫn không bị chặn — phép đo đường đọc-cũ không sống'] };
 });
 await ca('AC-4-kho-that', async () => {
-  const CHD = require(path.join(KIT, 'scripts', 'co-hop-dong.cjs'));
+  const CHD = require(path.join(KIT, 'plugins/acceptance-gate/scripts', 'co-hop-dong.cjs'));
   const fm = (t, k) => ((t.match(new RegExp(`^${k}:\\s*(.*)$`, 'm')) || [])[1] || '').replace(/\s+#.*$/, '').trim();
   const acc = path.join(KIT, '_acceptance'); const loi = []; let so = 0;
   for (const s of fs.readdirSync(acc).sort()) {
@@ -325,7 +325,7 @@ await ca('AC-4-kho-that', async () => {
     const n = CHD.demTieuChi(c); if (n < 11) continue;
     so++;
     const giuTxt = fs.existsSync(path.join(acc, s, 'decisions.jsonl')) ? fs.readFileSync(path.join(acc, s, 'decisions.jsonl'), 'utf8') : '';
-    const r = spawnSync('node', [path.join(KIT, 'scripts', 'gate-card.js'), '--root', KIT, '--slug', s, '--gate', '1'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+    const r = spawnSync('node', [path.join(KIT, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '--root', KIT, '--slug', s, '--gate', '1'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
     if (coCo(r.stdout || '').length) loi.push(`${s} (${st}, ${n}): thẻ ép mang cờ cỡ`);
     // Đối chứng dương trên CÙNG hồ sơ: chép sang kho thử với status: draft.
     const root = mkWs('g', { 'contract.md': c.replace(/^status:.*$/m, 'status: draft').replace(/^slug:.*$/m, 'slug: g'), 'evals.yaml': EVALS, 'decisions.jsonl': giuTxt, 'gap-probe.md': PROBE('clean') });
@@ -338,10 +338,10 @@ await ca('AC-4-kho-that', async () => {
 });
 
 // ── AC-5: ba bên đọc cùng một khoá ────────────────────────────────────────────────────────────────────
-const TEP_CHAN = ['commands/approve.md', 'feature-loop/skills/feature-loop/SKILL.md'];
+const TEP_CHAN = ['plugins/acceptance-gate/commands/approve.md', 'plugins/feature-loop/skills/feature-loop/SKILL.md'];
 const MONG_CHAN = {
-  'commands/approve.md': { ghi_duyet: 'khong', loi_ra: 'tach, giu' },
-  'feature-loop/skills/feature-loop/SKILL.md': { lan_v: 'khong', moi_nguoi: 'khong', loi_ra: 'tach, giu' },
+  'plugins/acceptance-gate/commands/approve.md': { ghi_duyet: 'khong', loi_ra: 'tach, giu' },
+  'plugins/feature-loop/skills/feature-loop/SKILL.md': { lan_v: 'khong', moi_nguoi: 'khong', loi_ra: 'tach, giu' },
 };
 function dongDieuKien(goi, rel) {
   const t = doc(goi, rel);
@@ -355,7 +355,7 @@ function dongDieuKien(goi, rel) {
   return { duong: mm[1], gt: mm[2], cap, khoi: m[1] };
 }
 function chayAC5(goi) {
-  const CHD = require(path.join(goi, 'scripts', 'co-hop-dong.cjs'));
+  const CHD = require(path.join(goi, 'plugins/acceptance-gate/scripts', 'co-hop-dong.cjs'));
   const t = theDu(goi, khoThu({ contract: hopDong({ n: 14 }) }));
   const loi = []; const lech = [];
   for (const rel of TEP_CHAN) {
@@ -363,7 +363,7 @@ function chayAC5(goi) {
     const gt = d.duong.split('.').reduce((o, k) => (o == null ? undefined : o[k]), t.j);
     if (gt !== true || d.gt !== 'true') { loi.push(`${rel}: đường khoá ${d.duong} → ${JSON.stringify(gt)} trên thẻ`); lech.push(rel); }
     for (const [k, v] of Object.entries(MONG_CHAN[rel])) if (d.cap[k] !== v) loi.push(`${rel}: ${k}=${d.cap[k]} ≠ ${v}`);
-    if (rel === 'commands/approve.md' && !d.khoi.includes(`sửa: ${CHD.GIU_CO_MO_DAU}`)) loi.push(`${rel}: khối thiếu lối «sửa: ${CHD.GIU_CO_MO_DAU}…»`);
+    if (rel === 'plugins/acceptance-gate/commands/approve.md' && !d.khoi.includes(`sửa: ${CHD.GIU_CO_MO_DAU}`)) loi.push(`${rel}: khối thiếu lối «sửa: ${CHD.GIU_CO_MO_DAU}…»`);
   }
   return { loi, lech, j: t.j };
 }
@@ -371,7 +371,7 @@ await ca('AC-5', async () => ({ loi: chayAC5(KIT).loi, mo: 'hai khối CO-HOP-DO
 await ca('AC-5-do-khoa', async () => {
   doiChung('hai khối điều kiện', chayAC5(KIT).loi);
   const goi = banSao();
-  tiem(goi, 'scripts/gate-card.js', 'co_hop_dong: coHD,', 'co_hop_dong_x: coHD,');
+  tiem(goi, 'plugins/acceptance-gate/scripts/gate-card.js', 'co_hop_dong: coHD,', 'co_hop_dong_x: coHD,');
   const { lech, j } = chayAC5(goi);
   // Ghim GIÁ TRỊ của lỗi được tiêm: bản sao chạy, phát khoá đã đổi tên và không còn khoá cũ — thẻ sập không tính.
   const dungKim = !!j && j.co_hop_dong_x !== undefined && j.co_hop_dong === undefined;
@@ -381,20 +381,20 @@ await ca('AC-5-do-khoa', async () => {
 await ca('AC-5-do-nghia', async () => {
   doiChung('hai khối điều kiện', chayAC5(KIT).loi);
   const goi = banSao();
-  tiem(goi, 'feature-loop/skills/feature-loop/SKILL.md', '→ lan_v: khong', '→ lan_v: co');
+  tiem(goi, 'plugins/feature-loop/skills/feature-loop/SKILL.md', '→ lan_v: khong', '→ lan_v: co');
   const { loi } = chayAC5(goi);
   if (loi.some(l => l.includes('lan_v=co'))) return { mo: 'bản sao đổi lan_v khong → co: «khối cho làn V khi khoá đúng» bắt được' };
   return { loi: ['khối cho làn V khi khoá đúng mà ca vẫn xanh'] };
 });
 
 // ── AC-6: năm chỗ dạy ─────────────────────────────────────────────────────────────────────────────────
-const BON_TEP = ['feature-loop/skills/feature-loop/SKILL.md', 'skills/acceptance/SKILL.md', 'skills/acceptance/references/contract-template.md', 'GUIDE.md'];
+const BON_TEP = ['plugins/feature-loop/skills/feature-loop/SKILL.md', 'plugins/acceptance-gate/skills/acceptance/SKILL.md', 'plugins/acceptance-gate/skills/acceptance/references/contract-template.md', 'GUIDE.md'];
 const NGUONG_CU = /\b5\s*[-–]\s*15\b|>\s*15\b/;
 const CHU_CO = /\bAC\b|criteri|tiêu chí|\bCore\b/i;
 function cayDay(goi) {
   const ra = [];
   const di = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) { if (e.name !== 'node_modules') di(p); } else if (/\.(md|mjs|cjs|js|json|ya?ml)$/.test(e.name)) ra.push(p); } };
-  for (const t of ['skills', 'feature-loop', 'commands', 'dieu-phoi']) if (fs.existsSync(path.join(goi, t))) di(path.join(goi, t));
+  for (const t of ['plugins/acceptance-gate/skills', 'plugins/feature-loop', 'plugins/acceptance-gate/commands', 'plugins/dispatch']) if (fs.existsSync(path.join(goi, t))) di(path.join(goi, t));
   for (const t of TEP_GOC) if (fs.existsSync(path.join(goi, t))) ra.push(path.join(goi, t));
   return ra;
 }
@@ -419,14 +419,14 @@ await ca('AC-6', async () => {
 await ca('AC-6-do-khoi', async () => {
   { const r0 = chayAC6(KIT); doiChung('bốn tệp dạy', [...r0.loi, ...r0.thieu, ...r0.cu]); }
   const goi = banSao();
-  tiem(goi, 'skills/cat-luot/SKILL.md', '\nmuc_tieu: 8-10\n', '\nmuc_tieu: 6-9\n');
+  tiem(goi, 'plugins/acceptance-gate/skills/scope-slice/SKILL.md', '\nmuc_tieu: 8-10\n', '\nmuc_tieu: 6-9\n');
   const r = chayAC6(goi);
   if (r.thieu.length === 4 && BON_TEP.every(t => r.thieu.includes(t))) return { mo: 'bản sao sửa muc_tieu 6-9: liệt đúng bốn tệp' };
   return { loi: [`sửa khối mà tệp thiếu = ${JSON.stringify(r.thieu)}`] };
 });
 await ca('AC-6-do-lop', async () => {
   { const r0 = chayAC6(KIT); doiChung('quét lớp', [...r0.loi, ...r0.thieu, ...r0.cu]); }
-  const goi = banSao(); const rel = 'skills/morphological-scan/SKILL.md';
+  const goi = banSao(); const rel = 'plugins/acceptance-gate/skills/morphological-scan/SKILL.md';
   fs.appendFileSync(path.join(goi, rel), '\nCore >15 → hợp nhất ô.\n');
   const r = chayAC6(goi);
   if (r.cu.length === 1 && r.cu[0].startsWith(`${rel}:`)) return { mo: `bản sao chèn «Core >15» vào ${rel} (ngoài bốn tệp): nêu đúng tệp ấy` };
@@ -446,7 +446,7 @@ const HS7 = [
 const TAY7 = { tat_ca: { n_giu: [1, 1, 1, 2], khong_dong: 2 }, tu_moc: { n_giu: [1, 1, 1, 1], khong_dong: 1 } };
 // Báo cáo đã ký dựng từ KHUÔN của bên ghi (evidence-report-template.md), không viết tay frontmatter: hồ sơ `h`
 // chốt trước mốc mà KÝ sau mốc — ngày ký phải nằm đúng chỗ bên ghi đặt nó (human_signoff).
-const KHUON_BC = (() => { const t = doc(KIT, 'skills/acceptance/references/evidence-report-template.md'); const m = t.match(/\n---\nschema_version: 2[\s\S]*?\n---\n/); if (!m) throw new Error('khuôn báo cáo thiếu frontmatter schema_version 2'); return m[0].trim() + '\n'; })();
+const KHUON_BC = (() => { const t = doc(KIT, 'plugins/acceptance-gate/skills/acceptance/references/evidence-report-template.md'); const m = t.match(/\n---\nschema_version: 2[\s\S]*?\n---\n/); if (!m) throw new Error('khuôn báo cáo thiếu frontmatter schema_version 2'); return m[0].trim() + '\n'; })();
 const KY_SAU_MOC = { h: '2026-10-08', b: '2026-10-06', g: '2026-10-06' };
 const baoCaoKy = (slug, ngay) => { if (!/^human_signoff:/m.test(KHUON_BC)) throw new Error('khuôn báo cáo không có khoá human_signoff'); return KHUON_BC.replace(/^feature_slug:.*$/m, `feature_slug: ${slug}`).replace(/^verdict:.*$/m, 'verdict: PASS').replace(/^human_signoff:.*$/m, `human_signoff: manh ${ngay}`); };
 function kho7({ boGiu = false } = {}) {
@@ -480,7 +480,7 @@ await ca('AC-7', async () => ({ loi: chayAC7(KIT), mo: `kho ${HS7.length} hồ s
 await ca('AC-7-do', async () => {
   doiChung('đồng hồ kho 10 hồ sơ', chayAC7(KIT));
   const goi = banSao();
-  tiem(goi, 'scripts/cat-luot.mjs', 'n_giu: g.filter(x => x.giu).length', 'n_giu: g.length');
+  tiem(goi, 'plugins/acceptance-gate/scripts/cat-luot.mjs', 'n_giu: g.filter(x => x.giu).length', 'n_giu: g.length');
   const loi = chayAC7(goi);
   if (loi.some(l => /n_giu .* ≠ tay/.test(l))) return { mo: 'bản sao đếm n_giu bằng mọi hồ sơ của nhóm: lệch số tay — «n_giu phải đếm dòng giữ» bắt được' };
   return { loi: ['n_giu đếm mọi hồ sơ mà ca vẫn xanh'] };
@@ -488,7 +488,7 @@ await ca('AC-7-do', async () => {
 
 // ── AC-8: bên ghi (khối DEC-GIU-CO + DEC-ID-RECIPE của SKILL Feature Loop) → thẻ thật ──────────────────
 function chayAC8(goi) {
-  const fl = doc(goi, 'feature-loop/skills/feature-loop/SKILL.md');
+  const fl = doc(goi, 'plugins/feature-loop/skills/feature-loop/SKILL.md');
   const recipe = (fl.match(/<!-- <<<DEC-ID-RECIPE -->\n```\n([\s\S]*?)```\n<!-- DEC-ID-RECIPE>>> -->/) || [])[1];
   const giua = (fl.match(/<!-- <<<DEC-GIU-CO -->\n```\n([\s\S]*?)```\n<!-- DEC-GIU-CO>>> -->/) || [])[1];
   if (!recipe || !giua) return { loi: [`SKILL Feature Loop thiếu khối ${!recipe ? 'DEC-ID-RECIPE' : 'DEC-GIU-CO'}`] };
@@ -509,7 +509,7 @@ function chayAC8(goi) {
 await ca('AC-7-do-ngay-ky', async () => {
   doiChung('đồng hồ kho 10 hồ sơ', chayAC7(KIT));
   const goi = banSao();
-  tiem(goi, 'scripts/cat-luot.mjs', '      const d = ngayChot(c);', "      const d = ngayDau(frontmatterField(doc(path.join(acc, slug, 'evidence-report.md')) || '', 'human_signoff')) || ngayChot(c);");
+  tiem(goi, 'plugins/acceptance-gate/scripts/cat-luot.mjs', '      const d = ngayChot(c);', "      const d = ngayDau(frontmatterField(doc(path.join(acc, slug, 'evidence-report.md')) || '', 'human_signoff')) || ngayChot(c);");
   const loi = chayAC7(goi);
   if (loi.some(l => l.startsWith(`[--tu ${MOC}] phai-tach n_chot − n_giu = 2 ≠ tay 1`))) return { mo: 'bản sao cho --tu lọc theo ngày ký: hồ sơ h (chốt trước mốc, ký sau mốc) lọt vào nhóm — «--tu lọc theo ngày ký» bắt được' };
   return { loi: [`lọc theo ngày ký mà ca không lệch đúng chỗ: ${loi.join(' | ') || '(xanh)'}`] };
@@ -522,10 +522,10 @@ await ca('AC-8', async () => {
 await ca('AC-8-do', async () => {
   { const r0 = chayAC8(KIT); doiChung('bên ghi → thẻ', r0.t && r0.t.co && r0.t.co.chan === false ? r0.loi : [...(r0.loi || []), JSON.stringify(r0.t && r0.t.co)]); }
   const goi = banSao();
-  const fl = doc(goi, 'feature-loop/skills/feature-loop/SKILL.md');
+  const fl = doc(goi, 'plugins/feature-loop/skills/feature-loop/SKILL.md');
   const khoi = (fl.match(/<!-- <<<DEC-GIU-CO -->[\s\S]*?<!-- DEC-GIU-CO>>> -->/) || [''])[0];
   if (!khoi.includes('giữ cỡ')) throw new Error('khối DEC-GIU-CO không chứa «giữ cỡ»');
-  fs.writeFileSync(path.join(goi, 'feature-loop/skills/feature-loop/SKILL.md'), fl.replace(khoi, khoi.replace('giữ cỡ', 'giữ co')));
+  fs.writeFileSync(path.join(goi, 'plugins/feature-loop/skills/feature-loop/SKILL.md'), fl.replace(khoi, khoi.replace('giữ cỡ', 'giữ co')));
   const r = chayAC8(goi);
   if (r.t && r.t.co && r.t.co.chan === true) return { mo: 'bản sao khối đổi «cỡ» → «co»: thẻ trả chan true — «bên ghi lệch bên đọc» bắt được' };
   return { loi: [`bên ghi lệch mà thẻ vẫn nhận: ${JSON.stringify(r.t && r.t.co)}`] };

@@ -35,7 +35,7 @@ const MT = [
   ['_acceptance/config.yaml', 'thuoc'], ['_acceptance/s/evals.yaml', 'thuoc'], ['_acceptance/s/rang/r.mjs', 'thuoc'], ['_acceptance/s/do.sh', 'thuoc'],
 ];
 const chayMT = pl => { const sai = []; let n = 0; for (const [p, mong] of MT) { n += 1; const t = pl(p, {}); if (t !== mong) sai.push(`${p}: mong ${mong}, that ${t}`); } return { n, sai }; };
-const PL_REL = 'feature-loop/scripts/lib/phan-loai.mjs';
+const PL_REL = 'plugins/feature-loop/scripts/lib/phan-loai.mjs';
 
 if (want('NT-AC1')) {
   try {
@@ -49,14 +49,14 @@ if (want('NT-AC1')) {
 
 if (want('NT-AC1-dot-bien')) {
   try {
-    const d = banSao(['feature-loop']);
+    const d = banSao(['plugins/feature-loop']);
     const f = path.join(d, PL_REL);
     const goc = readFileSync(f, 'utf8');
     const KIM_EVALS = "  if (path.posix.basename(p) === 'evals.yaml') return true;\n";
     if (goc.split(KIM_EVALS).length !== 2) throw new Error('kim ve evals.yaml khong khop dung 1 lan');
     // Bản A: gỡ vế evals.yaml → đúng MỘT ô lật.
     const fa = path.join(d, 'scripts-a.mjs');
-    writeFileSync(fa, goc.replace(KIM_EVALS, '').replace("from '../carry-plan.mjs'", `from '${pathToFileURL(path.join(d, 'feature-loop/scripts/carry-plan.mjs')).href}'`));
+    writeFileSync(fa, goc.replace(KIM_EVALS, '').replace("from '../carry-plan.mjs'", `from '${pathToFileURL(path.join(d, 'plugins/feature-loop/scripts/carry-plan.mjs')).href}'`));
     if (readFileSync(fa, 'utf8') === goc) throw new Error('ban A khong doi byte');
     const { phanLoai: plA } = await import(pathToFileURL(fa).href);
     const latA = MT.filter(([p, mong]) => plA(p, {}) !== mong).map(([p]) => p);
@@ -65,7 +65,7 @@ if (want('NT-AC1-dot-bien')) {
     if (goc.split(KIM_DAU).length !== 2) throw new Error('kim dau laThuoc khong khop dung 1 lan');
     const fb = path.join(d, 'scripts-b.mjs');
     writeFileSync(fb, goc.replace(KIM_DAU, KIM_DAU + '  if (DO_GLOBS.map(globToRe).some(re => re.test(p))) return true;\n')
-      .replace("from '../carry-plan.mjs'", `from '${pathToFileURL(path.join(d, 'feature-loop/scripts/carry-plan.mjs')).href}'`));
+      .replace("from '../carry-plan.mjs'", `from '${pathToFileURL(path.join(d, 'plugins/feature-loop/scripts/carry-plan.mjs')).href}'`));
     const { phanLoai: plB } = await import(pathToFileURL(fb).href);
     const latB = MT.filter(([p, mong]) => plB(p, {}) !== mong).map(([p]) => p).sort();
     const mongB = MT.filter(([, m]) => m === 'vat').map(([p]) => p).sort();
@@ -76,11 +76,11 @@ if (want('NT-AC1-dot-bien')) {
 }
 
 // ── AC-2 ────────────────────────────────────────────────────────────────────
-const S4ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
-const THUOC_VAT = path.join(KIT, 'feature-loop', 'scripts', 'thuoc-vat.mjs');
+const S4ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
+const THUOC_VAT = path.join(KIT, 'plugins/feature-loop', 'scripts', 'thuoc-vat.mjs');
 const chayS4 = (d, script = S4ARGS) => {
   const out = path.join(d, '.args-' + Math.random().toString(36).slice(2) + '.json');
-  const r = spawnSync(process.execPath, [script, '--slug', SLUG, '--root', d, '--ag-root', KIT, '--out', out, '--diff-base', 'main'], { encoding: 'utf8' });
+  const r = spawnSync(process.execPath, [script, '--slug', SLUG, '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', out, '--diff-base', 'main'], { encoding: 'utf8' });
   return { ...r, out };
 };
 const khoBaNhat = () => dungKho(mkdtempSync(path.join(TMP, 'kho-')), ['vat', 'implemented', 'thuoc', 'thuoc', 'thuoc']);
@@ -101,14 +101,14 @@ if (want('NT-AC2')) {
 if (want('NT-AC2-dem-loi')) {
   try {
     const { d } = khoBaNhat();
-    const bs = banSao(['feature-loop']);
-    const tv = path.join(bs, 'feature-loop', 'scripts', 'thuoc-vat.mjs');
+    const bs = banSao(['plugins/feature-loop']);
+    const tv = path.join(bs, 'plugins/feature-loop', 'scripts', 'thuoc-vat.mjs');
     const KIM = 'export function demThuocVat({ root, slug, t1SkipGlobs = [], frontmatterField }) {\n';
     const src = readFileSync(tv, 'utf8');
     if (src.split(KIM).length !== 2) throw new Error('kim demThuocVat khong khop dung 1 lan');
     writeFileSync(tv, src.replace(KIM, KIM + "  throw new Error('dot bien bo dem');\n"));
-    const r = chayS4(d, path.join(bs, 'feature-loop', 'scripts', 's4-args.mjs'));
-    const lanh = chayS4(d, path.join(bs, 'feature-loop', 'scripts', 's4-args.mjs').replace(bs, KIT));
+    const r = chayS4(d, path.join(bs, 'plugins/feature-loop', 'scripts', 's4-args.mjs'));
+    const lanh = chayS4(d, path.join(bs, 'plugins/feature-loop', 'scripts', 's4-args.mjs').replace(bs, KIT));
     if (lanh.status !== 0) bad('NT-AC2-dem-loi', `doi chung: ban lanh tren cung kho thoat ${lanh.status}`);
     else if (r.status === 0) bad('NT-AC2-dem-loi', 'bo dem nem loi ma s4-args van thoat 0 — hong lang');
     else if (!r.stderr.includes('bộ đếm nhát sửa thước lỗi')) bad('NT-AC2-dem-loi', `thoat ${r.status} nhung thieu thong diep ghim: ${String(r.stderr).slice(0, 200)}`);
@@ -125,11 +125,11 @@ function khoAC3() {
   mkdirSync(path.join(d, 'tests'), { recursive: true });
   writeFileSync(path.join(d, 'tests', 'k.test.mjs'), '// test kho\n');
   git(d, 'add', '-A'); git(d, 'commit', '-qm', 'test kho');
-  const r = spawnSync(process.execPath, [S4ARGS, '--slug', SLUG, '--root', d, '--ag-root', KIT, '--out', path.join(WS(d), 's4-args.json'), '--diff-base', 'main'], { encoding: 'utf8' });
+  const r = spawnSync(process.execPath, [S4ARGS, '--slug', SLUG, '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', path.join(WS(d), 's4-args.json'), '--diff-base', 'main'], { encoding: 'utf8' });
   if (r.status !== 0) throw new Error(`s4-args thoat ${r.status}: ${String(r.stderr).split('\n')[0]}`);
   return d;
 }
-const chayTV = d => spawnSync(process.execPath, [THUOC_VAT, '--root', d, '--slug', SLUG, '--ag-root', KIT, '--write'], { encoding: 'utf8' });
+const chayTV = d => spawnSync(process.execPath, [THUOC_VAT, '--root', d, '--slug', SLUG, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--write'], { encoding: 'utf8' });
 const dongLech = d => readFileSync(path.join(WS(d), 'run-log.jsonl'), 'utf8').split('\n').filter(l => /"kind"\s*:\s*"thuoc-lech"/.test(l)).map(l => JSON.parse(l));
 // Khoá dòng RÚT từ khối marker của bên viết — không gõ literal.
 const khoaMarker = () => {

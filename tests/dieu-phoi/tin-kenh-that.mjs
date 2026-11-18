@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// E4b của hồ sơ vong-mo-co-chu-giu: CHỈ ĐỌC kênh thật phanlemanh/acceptance-gate-kit#308 bằng gh thật, vào một trạng thái
+// E4b của hồ sơ vong-mo-co-chu-giu: CHỈ ĐỌC kênh thật phanlemanh/delivery-loop#308 bằng gh thật, vào một trạng thái
 // cục bộ TẠM (kho git tạm, không chạm .acceptance-runs/ của kho này, không ghi gì lên kênh). In
 // «tong <n> · doc-lap <m> · co-ma <a> · khuon-cu <b> · bo-qua <c>»; m đếm ĐỘC LẬP bằng gh api --paginate --jq length,
 // không qua tin.mjs. Thoát 0 khi n === m, a + b + c === n, b > 0, n > 30. gh vắng / chưa đăng nhập → thoát 2.
@@ -10,7 +10,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const KIT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const KENH = { chu: 'phanlemanh', kho: 'acceptance-gate-kit', so: '308' };
+const KENH = { chu: 'phanlemanh', kho: 'delivery-loop', so: '308' };
 
 const auth = spawnSync('gh', ['auth', 'status'], { encoding: 'utf8' });
 if (auth.error || auth.status !== 0) {
@@ -29,10 +29,10 @@ try {
   execFileSync('git', ['init', '-q', '-b', 'main'], { cwd: tam });
   const env = { ...process.env };
   delete env.DIEU_PHOI_GH;
-  const vai = spawnSync(process.execPath, [path.join(KIT, 'dieu-phoi', 'scripts', 'tin.mjs'), 'vai', '--kenh', `${KENH.chu}/${KENH.kho}#${KENH.so}`, '--may', 'DOC'], { cwd: tam, env, encoding: 'utf8' });
+  const vai = spawnSync(process.execPath, [path.join(KIT, 'plugins/dispatch', 'scripts', 'tin.mjs'), 'vai', '--kenh', `${KENH.chu}/${KENH.kho}#${KENH.so}`, '--may', 'DOC'], { cwd: tam, env, encoding: 'utf8' });
   if (vai.status !== 0) throw new Error(vai.stderr);
-  const { tachKenh, tepKenh, dongBo, docTrangThai } = await import(pathToFileURL(path.join(KIT, 'dieu-phoi', 'scripts', 'tin-kenh.mjs')).href);
-  const { docDongDau } = await import(pathToFileURL(path.join(KIT, 'dieu-phoi', 'scripts', 'tin-doc.mjs')).href);
+  const { tachKenh, tepKenh, dongBo, docTrangThai } = await import(pathToFileURL(path.join(KIT, 'plugins/dispatch', 'scripts', 'tin-kenh.mjs')).href);
+  const { docDongDau } = await import(pathToFileURL(path.join(KIT, 'plugins/dispatch', 'scripts', 'tin-doc.mjs')).href);
   const k = tachKenh(`${KENH.chu}/${KENH.kho}#${KENH.so}`);
   const p = tepKenh(tam, k);
   const db = dongBo(p, k, { tranMs: 60_000 });

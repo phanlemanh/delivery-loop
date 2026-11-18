@@ -45,7 +45,7 @@ export async function doKhoa(hd, goc, gocKit = GOC_KIT) {
 }
 
 // Khối tri thức (FL4): chỉ mục `knowledge/index.json` của bản ghim và mọi tệp nó trỏ — băm + byte. Lệnh S1 của vòng
-// (scripts/design-floor-s1.mjs) chỉ tin tệp tri thức khớp khối này. Gốc không có chỉ mục (bản vendored chỉ mang mã)
+// (plugins/acceptance-gate/scripts/design-floor-s1.mjs) chỉ tin tệp tri thức khớp khối này. Gốc không có chỉ mục (bản vendored chỉ mang mã)
 // → không có khối; soKhoa chỉ so khối khi cả hai bên có.
 export function khoiTriThuc(goc) {
   const cm = join(goc, 'knowledge', 'index.json');

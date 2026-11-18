@@ -21,6 +21,8 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
 const GOC_SHA = '2c90e4ca3a096abf79f2efa8216c355952594ada'; // cùng bản gốc với khong-do-duoc.test.mjs
+// GOC_SHA có trước dọn nhà (lib/ vendor/ scripts/ ở gốc kho): bản gốc lấy về đặt dưới AG để cùng hình với ROOT.
+const AG = 'plugins/acceptance-gate';
 const KHO = ['crm', 'artifact-platform', 'onehub-invest'];
 const LY_DO = ['css-khong-ap-duoc', 'nen-to-tien-bi-bo', 'chu-gradient'];
 const DUOI = /\.(html?|tsx|jsx)$/i;
@@ -62,7 +64,7 @@ function cong(goc, dich) {
   return new Promise((xong) => {
     const chay = () => {
       dang++;
-      execFile(process.execPath, [path.join(goc, 'scripts', 'design-gate.mjs'), dich, '--jsdom', JSDOM_DIR],
+      execFile(process.execPath, [path.join(goc, 'plugins/acceptance-gate/scripts', 'design-gate.mjs'), dich, '--jsdom', JSDOM_DIR],
         { maxBuffer: 64 * 1024 * 1024, timeout: 180000 }, (_loi, stdout) => {
           dang--;
           let j = null;
@@ -82,7 +84,7 @@ if (thieu.length) process.exit(2);
 const tam = fs.mkdtempSync(path.join(os.tmpdir(), 'kdd-vi-phan-'));
 const goc = path.join(tam, 'goc');
 fs.mkdirSync(goc);
-execFileSync('bash', ['-c', 'git -C "$1" archive "$2" lib vendor scripts | tar -x -C "$3"', '_', ROOT, GOC_SHA, goc]);
+execFileSync('bash', ['-c', 'git -C "$1" archive --prefix="$4/" "$2" lib vendor scripts | tar -x -C "$3"', '_', ROOT, GOC_SHA, goc, AG]);
 
 let tongDich = 0, tongDoi = 0, tongMu = 0;
 for (const ten of KHO) {

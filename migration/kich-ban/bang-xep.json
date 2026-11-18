@@ -1,0 +1,78 @@
+{
+  "_ghi_chu": "Bảng xếp của kịch bản chuyển nhà (vòng B1 kich-ban-chuyen-nha). Thiết kế: migration/kich-ban/THIET-KE.md §3–§7. thu_muc: thư mục gốc của nguồn → đích (dời trọn thư mục; tệp mới bên trong đi theo). tep: tệp lẻ dời riêng. giu: mục gốc ở nguyên chỗ. Mục gốc của nguồn không nằm trong ba nhóm ấy → kịch bản dừng. bo: tệp sản phẩm cố ý bỏ, mỗi dòng {tep, ly_do} — rỗng theo Hỏi-4 (chủ kho duyệt 13/11). Đường tương đối tính từ tệp này.",
+  "nguon_mac_dinh": "kit-cu/main",
+  "nhanh_mac_dinh": "don-nha/3.0",
+  "tac_gia": { "ten": "delivery-loop don-nha", "email": "don-nha@delivery-loop.invalid" },
+  "bang_ten": "../chay-thu-phien/bang-ten.json",
+  "cho_moi": { "ten_cu": "acceptance-gate-kit", "ten_moi": "delivery-loop" },
+  "luat_cho": { "mau": "acceptance-gate-kit(?![\\w-])", "thay": "delivery-loop", "_ghi_chu": "neo đuôi giữ acceptance-gate-kit-tri-thuc (kho tri thức riêng) nguyên" },
+  "thu_muc": {
+    "skills": "plugins/acceptance-gate/skills",
+    "commands": "plugins/acceptance-gate/commands",
+    "hooks": "plugins/acceptance-gate/hooks",
+    "scripts": "plugins/acceptance-gate/scripts",
+    "lib": "plugins/acceptance-gate/lib",
+    "vendor": "plugins/acceptance-gate/vendor",
+    "evals": "plugins/acceptance-gate/evals",
+    "design-floor": "plugins/acceptance-gate/design-floor",
+    "feature-loop": "plugins/feature-loop",
+    "diagram-design": "plugins/diagram-design",
+    "dieu-phoi": "plugins/dispatch",
+    "road-map": "plugins/roadmap",
+    "tri-thuc": "plugins/knowledge"
+  },
+  "tep": {
+    ".claude-plugin/plugin.json": "plugins/acceptance-gate/.claude-plugin/plugin.json"
+  },
+  "giu": [
+    ".claude-plugin/marketplace.json", ".claude", ".gitattributes", ".github", ".gitignore", ".nvmrc", ".out-of-scope",
+    "CHANGELOG.md", "CLAUDE.md", "CONTEXT.md", "GUIDE.md", "LICENSE", "LO-TRINH.html", "NOTICE", "PRODUCT-MAP.md",
+    "QUICKSTART.md", "README.md", "_acceptance", "docs", "tests"
+  ],
+  "bo": [],
+  "khong_doi_chu": ["diagram-design/skills/"],
+  "_khong_doi_chu": "Cây vendor có băm ghim ở NOTICE (tree-hash.sh): bước 3 không đổi chữ bên trong — đổi một byte là lệch NOTICE (P196, B2 lượt 5).",
+  "tai_lieu_doi_chu": ["README.md", "GUIDE.md", "QUICKSTART.md", ".claude/settings.json"],
+  "con_tro": {
+    "url": "https://github.com/phanlemanh/acceptance-gate-kit/blob/{ma}/{duong}",
+    "_ghi_chu": "Con trỏ = chỗ DẪN người đọc sang tệp không phải sản phẩm. Bốn loại giữ nguyên, mỗi loại một lý do: lenh — lệnh chạy ở gốc kho (tests/ vẫn ở gốc kho mới) · tu-host — chỉ dẫn trong tệp .md trỏ bộ kiểm (tests/), việc của kho tự chạy kit, đường tương đối đúng ở kho mới · du-lieu — giá trị trong tệp dữ liệu, hay chuỗi trong mã ngoài chú thích · duong-kho-tieu-thu — đường của kho TIÊU THỤ trùng tên một tệp của kit (đổi sang URL kit là trỏ sai). Hai dòng sổ S3 của hồ sơ, 13/11.",
+    "giu": {
+      "duong_kho_tieu_thu": ["docs/reference/diagram-skin.md"],
+      "duoi_du_lieu": [".json"],
+      "md_tu_host_tien_to": ["tests/"],
+      "duoi_ma_chi_doi_chu_thich": [".mjs", ".cjs", ".js", ".ts", ".sh", ".py"],
+      "lenh_dung_truoc": ["node", "bash", "sh", "python3", "python", "npm", "npx", "--prefix"]
+    }
+  },
+  "khuon": {
+    "the": "repo-setup-v0.5.0",
+    "ma": "4dc53e079df7d1a71c36147a994bf8d9db4f4f56",
+    "apply": "plugins/repo-setup/scripts/apply.py",
+    "vars": {
+      "project_name": "delivery-loop",
+      "owner": "phanlemanh",
+      "description": "Claude Code plugin marketplace for an acceptance-gated feature loop: contracts, self-proving evidence, few real human decisions."
+    },
+    "trung_duoc_phep": [".claude/settings.json", ".nvmrc", "CLAUDE.md", "LICENSE", "README.md"],
+    "duoc_cham": {
+      "them": [".editorconfig", "Makefile", "tools/plugin_lint.py", "tools/bump_version.py", ".repo-setup.json"],
+      "sua": [".gitignore", ".gitattributes"],
+      "xoa": []
+    },
+    "bo_tep": [".claude/skills/review-change/SKILL.md"],
+    "make_test": "bash tests/scripts/run-tests.sh && bash tests/hooks/run-tests.sh && bash tests/plugins/run-tests.sh && bash tests/workflows/run-tests.sh && node --test \"tests/dieu-phoi/**/*.test.mjs\""
+  },
+  "bo_kiem": {
+    "_ghi_chu": "B2 bo-kiem-xanh-o-kho-moi — bước 6 «bộ kiểm theo bố cục mới» (THIET-KE-B2.md §3). Tập tệp: mọi tệp văn bản dưới `tap` trừ đường chứa `tru`, cộng `tep_goc`. Luật đường dẫn chung đổi `<gốc cũ>/<đoạn>` theo thu_muc khi gốc + đoạn kế có thật ở nguồn và đứng sau một neo (đầu chuỗi, ../, biến gốc kho trong `bien_goc`, HEAD:); sau biến khác thì chỉ đổi khi đường không mơ hồ (không có ở thư mục gốc khác). Mảng toàn tên gốc và đối số ngay sau biến gốc kho cũng đổi. Rồi luật đổi tên của bước 3, rồi bảng vá `va` (mỗi mục ghim so_lan).",
+    "tap": "tests/",
+    "tru": "/fixtures/",
+    "duoi": [".sh", ".mjs", ".js", ".cjs", ".py", ".ts", ".yml", ".yaml"],
+    "tep_goc": [".github/workflows/", "Makefile", "_acceptance/config.yaml", ".claude/settings.json"],
+    "bien_goc": ["KIT", "ROOT", "GOC", "SELF_ROOT", "repoRoot", "ROOT_REAL", "ROOT_REAL_GC", "PMROOT", "REPO", "REPO_ROOT"],
+    "bien_goc_va": ["kit", "goc", "may"],
+    "va": "va-bo-kiem.json",
+    "dao_mo_ho": "dao-mo-ho.tsv",
+    "doi_sot": "doi-sot.tsv",
+    "tu_dung": "tu-dung-duong.txt"
+  }
+}

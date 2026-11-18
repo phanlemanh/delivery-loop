@@ -127,7 +127,7 @@ export function kiemManh(yml, K) {
     'bash tests/hooks/run-tests.sh',
     'bash tests/workflows/run-tests.sh',
     'node --test --test-reporter=tap "tests/dieu-phoi/**/*.test.mjs"',
-    'node scripts/product-map.mjs --root . --check',
+    'node plugins/acceptance-gate/scripts/product-map.mjs --root . --check',
   ]);
   const boQua = new Set(['bash tests/bo-chay.sh node']);
   for (const l of can) if (!co.has(l)) { const m = /--manh (\S+)$/.exec(l); return `mảnh thiếu: ${m ? m[1] : l}`; }
@@ -151,7 +151,7 @@ export function kiemTron(yml) {
     scripts: 'bash tests/scripts/run-tests.sh', hooks: 'bash tests/hooks/run-tests.sh',
     plugins: 'bash tests/plugins/run-tests.sh', workflows: 'bash tests/workflows/run-tests.sh',
     'dieu-phoi': 'node --test --test-reporter=tap "tests/dieu-phoi/**/*.test.mjs"',
-    'bản đồ': 'node scripts/product-map.mjs --root . --check',
+    'bản đồ': 'node plugins/acceptance-gate/scripts/product-map.mjs --root . --check',
   };
   for (const [bo, lenh] of Object.entries(can)) if (!runs.includes(lenh)) return `lượt trọn thiếu bộ: ${bo}`;
   return { so: runs.length };

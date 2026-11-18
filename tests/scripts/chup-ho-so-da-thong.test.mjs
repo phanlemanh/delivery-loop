@@ -1,12 +1,12 @@
 // CH — răng «làn không được chạm hồ sơ đã thông Cổng Bằng chứng»
-// (feature-loop/scripts/chup-ho-so-da-thong.mjs, cắm trong repin-lane.mjs).
+// (plugins/feature-loop/scripts/chup-ho-so-da-thong.mjs, cắm trong repin-lane.mjs).
 //
 // Ca thật: crm-onehub 16/09/2026 — một spec trong suite chung ghi đè
 // `evidence/ve-that.json` của hồ sơ đã ký sau MỖI lượt chạy. Mọi ca dưới
 // chạy CHÍNH làn thật trên MỘT kho git code-sinh; executor ghi vào đường dẫn
 // lấy từ env `DICH`, nên chiều xanh và chiều đỏ là CÙNG fixture, chỉ khác đúng
 // biến đang đo: tệp đích nằm trong hay ngoài cây hồ sơ đã thông cổng.
-// Hai trạng thái «đã thông cổng» của fixture RÚT từ lib/workspace-record.cjs —
+// Hai trạng thái «đã thông cổng» của fixture RÚT từ plugins/acceptance-gate/lib/workspace-record.cjs —
 // một nguồn, không chép (owner veto 17/09 lối khai gạch hai tệp này trong hồ sơ
 // đã ký ra-co-ten-lam-va-trao). Mọi đường dẫn suy từ vị trí tệp này.
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -17,15 +17,15 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import assert from 'node:assert/strict';
 import { evalsYamlWith } from './repin-fixture.mjs';
-import { hoSoDaThong } from '../../feature-loop/scripts/chup-ho-so-da-thong.mjs';
+import { hoSoDaThong } from '../../plugins/feature-loop/scripts/chup-ho-so-da-thong.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const LANE = path.join(ROOT, 'feature-loop', 'scripts', 'repin-lane.mjs');
-const CHUP = path.join(ROOT, 'feature-loop', 'scripts', 'chup-ho-so-da-thong.mjs');
+const LANE = path.join(ROOT, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs');
+const CHUP = path.join(ROOT, 'plugins/feature-loop', 'scripts', 'chup-ho-so-da-thong.mjs');
 const req = createRequire(import.meta.url);
-const { DA_THONG_CONG_2 } = req(path.join(ROOT, 'lib', 'workspace-record.cjs'));
-const { frontmatterField } = req(path.join(ROOT, 'lib', 'evidence-core.cjs'));
+const { DA_THONG_CONG_2 } = req(path.join(ROOT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs'));
+const { frontmatterField } = req(path.join(ROOT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
 let passed = 0, failed = 0;
 const check = (n, f) => { try { f(); passed++; console.log(`  PASS: ${n}`); } catch (e) { failed++; console.log(`  FAIL: ${n}\n    ${e.message}`); } };
 
@@ -91,7 +91,7 @@ check('CH0 module không chép mảng trạng thái (hỏi lib); thiếu mảng 
 
 const REPORT = path.join(WS, 'evidence-report.md');
 const LOG = path.join(WS, 'run-log.jsonl');
-const lane = (env, ...a) => spawnSync(process.execPath, [LANE, '--root', R, '--ag-root', ROOT, '--slug', 'feat-ky', ...a], { encoding: 'utf8', env: { ...process.env, ...env } });
+const lane = (env, ...a) => spawnSync(process.execPath, [LANE, '--root', R, '--ag-root', `${ROOT}/plugins/acceptance-gate`, '--slug', 'feat-ky', ...a], { encoding: 'utf8', env: { ...process.env, ...env } });
 const trangThai = () => ({ log: readFileSync(LOG, 'utf8'), rep: readFileSync(REPORT, 'utf8') });
 
 check('CH1 ĐỐI CHỨNG DƯƠNG: tạo phẩm ra .acceptance-runs/ + suite ghi vào hồ sơ implemented → làn XANH, dòng chụp nói 2 hồ sơ, 0 tệp bị chạm', () => {

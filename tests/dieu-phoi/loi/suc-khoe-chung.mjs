@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
-export const GOI = path.resolve(DAY, '..', '..', '..', 'dieu-phoi');
+export const GOI = path.resolve(DAY, '..', '..', '..', 'plugins/dispatch');
 export const FIXTURE = path.join(DAY, 'so-do-mbp-2110.txt');
 export const GB = 1024 ** 3;
 

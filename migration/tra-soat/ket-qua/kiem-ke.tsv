@@ -1,0 +1,708 @@
+# máy sinh bởi migration/tra-soat/kiem-ke.mjs từ kit-cu/main @ 0c4e503b (2026-11-13) — đừng sửa tay, chạy lại kịch bản
+tep	lop	plugin	cach_vao	ghi_chu
+.claude-plugin/marketplace.json	san-pham	acceptance-gate	diem-vao:tep-khai	
+.claude-plugin/plugin.json	san-pham	acceptance-gate	diem-vao:tep-khai	
+.claude/settings.json	cong-cu-kho			cài đặt phiên Claude của chính kho
+.gitattributes	cong-cu-kho			cài đặt git
+.github/actions/node-tu-xung/action.yml	cong-cu-kho			lượt kiểm tự động
+.github/workflows/gate.yml	cong-cu-kho			lượt kiểm tự động
+.gitignore	cong-cu-kho			cài đặt git
+.nvmrc	cong-cu-kho			khai bản Node của kho
+CHANGELOG.md	nhat-ky			nhật ký thay đổi
+CLAUDE.md	tai-lieu-song			luật của người sửa kit
+CONTEXT.md	tai-lieu-song			bảng thuật ngữ của người sửa kit
+GUIDE.md	tai-lieu-song			tài liệu người dùng
+LICENSE	phap-ly			giấy phép
+LO-TRINH.html	may-ve			tệp máy vẽ từ hồ sơ
+NOTICE	phap-ly			ghi công mã bên thứ ba
+PRODUCT-MAP.md	may-ve			tệp máy vẽ từ hồ sơ
+QUICKSTART.md	tai-lieu-song			tài liệu người dùng
+README.md	tai-lieu-song			tài liệu người dùng
+commands/acceptance-card.md	san-pham	acceptance-gate	diem-vao:commands	
+commands/acceptance-init.md	san-pham	acceptance-gate	diem-vao:commands	
+commands/acceptance-report.md	san-pham	acceptance-gate	diem-vao:commands	
+commands/acceptance-status.md	san-pham	acceptance-gate	diem-vao:commands	
+commands/approve.md	san-pham	acceptance-gate	diem-vao:commands	
+commands/observed.md	san-pham	acceptance-gate	diem-vao:commands	
+commands/signoff.md	san-pham	acceptance-gate	diem-vao:commands	
+commands/start.md	san-pham	acceptance-gate	diem-vao:commands	
+design-floor/HOP-DONG-NHAP.md	san-pham	acceptance-gate	lan-tu:scripts/design-floor-s4.mjs	
+design-floor/LOCAL-PATCHES.md	san-pham	acceptance-gate	lan-tu:design-floor/HOP-DONG-NHAP.md	
+design-floor/dist/ui.mjs	san-pham	acceptance-gate	lan-tu:scripts/design-floor-s1.mjs	
+design-floor/patches/A-bo-cham-khong-but.patch	san-pham	acceptance-gate	lan-tu:design-floor/LOCAL-PATCHES.md	
+design-floor/patches/B-ma-thoat-ba-trang-thai.patch	san-pham	acceptance-gate	lan-tu:design-floor/LOCAL-PATCHES.md	
+design-floor/patches/C-dau-vao-tuong-minh.patch	san-pham	acceptance-gate	lan-tu:design-floor/LOCAL-PATCHES.md	
+design-floor/patches/D-cay-token-trung-tinh.patch	san-pham	acceptance-gate	lan-tu:design-floor/LOCAL-PATCHES.md	
+design-floor/upstream.lock.json	san-pham	acceptance-gate	lan-tu:scripts/design-floor-s1.mjs	
+design-floor/vendor/design-os/src/commands/autofix.ts	san-pham	acceptance-gate	lan-tu:design-floor/vo/ui.ts	
+design-floor/vendor/design-os/src/commands/flow.ts	san-pham	acceptance-gate	lan-tu:design-floor/vo/ui.ts	
+design-floor/vendor/design-os/src/commands/gate.ts	san-pham	acceptance-gate	lan-tu:design-floor/vo/ui.ts	
+design-floor/vendor/design-os/src/commands/reuse-plan-check-impl.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/reuse-plan.ts	
+design-floor/vendor/design-os/src/commands/reuse-plan.ts	san-pham	acceptance-gate	lan-tu:design-floor/vo/ui.ts	
+design-floor/vendor/design-os/src/commands/taste-lint.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/gate.ts	
+design-floor/vendor/design-os/src/commands/token-coverage.ts	san-pham	acceptance-gate	lan-tu:design-floor/vo/ui.ts	
+design-floor/vendor/design-os/src/core/a11y-checks-contrast.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/tell-lint.ts	
+design-floor/vendor/design-os/src/core/a11y-checks-focus-and-labels.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/a11y-lint.ts	
+design-floor/vendor/design-os/src/core/a11y-checks.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/a11y-lint.ts	
+design-floor/vendor/design-os/src/core/a11y-lint.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/gate.ts	
+design-floor/vendor/design-os/src/core/check-catalog.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/gate.ts	
+design-floor/vendor/design-os/src/core/cli-args.ts	san-pham	acceptance-gate	lan-tu:design-floor/vo/ui.ts	
+design-floor/vendor/design-os/src/core/color-convert.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/gate.ts	
+design-floor/vendor/design-os/src/core/color-scale.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/a11y-checks-contrast.ts	
+design-floor/vendor/design-os/src/core/command-signatures.ts	san-pham	acceptance-gate	lan-tu:design-floor/vo/ui.ts	
+design-floor/vendor/design-os/src/core/content-checks-metadata.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/tell-lint.ts	
+design-floor/vendor/design-os/src/core/content-checks-punctuation.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/content-checks.ts	
+design-floor/vendor/design-os/src/core/content-checks-voice.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/tell-lint.ts	
+design-floor/vendor/design-os/src/core/content-checks.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/gate.ts	
+design-floor/vendor/design-os/src/core/css-selector-blocks.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/token-coverage-extract.ts	
+design-floor/vendor/design-os/src/core/css-selector-mode.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/token-coverage-extract.ts	
+design-floor/vendor/design-os/src/core/design-facts/extractor-registry.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/extractors/html/html-extractor.ts	
+design-floor/vendor/design-os/src/core/design-facts/fact-collector.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/extractors/html/html-extractor.ts	
+design-floor/vendor/design-os/src/core/design-facts/fact-kinds.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/design-facts/index.ts	
+design-floor/vendor/design-os/src/core/design-facts/fact-model.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/design-facts/index.ts	
+design-floor/vendor/design-os/src/core/design-facts/index.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/gate.ts	
+design-floor/vendor/design-os/src/core/design-facts/role-synthesis.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/tell-lint.ts	
+design-floor/vendor/design-os/src/core/design-facts/rule-requirements.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/design-facts/index.ts	
+design-floor/vendor/design-os/src/core/design-system.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/gate.ts	
+design-floor/vendor/design-os/src/core/ds-a11y.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/a11y-checks-contrast.ts	
+design-floor/vendor/design-os/src/core/ds-docs.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/ds-guidelines-components.ts	
+design-floor/vendor/design-os/src/core/ds-guidelines-components.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/reuse-plan-names.ts	
+design-floor/vendor/design-os/src/core/ds-guidelines-model.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/ds-guidelines-components.ts	
+design-floor/vendor/design-os/src/core/ds-guidelines-render.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/ds-guidelines-components.ts	
+design-floor/vendor/design-os/src/core/ds-kit-evidence.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/ds-kit-seal.ts	
+design-floor/vendor/design-os/src/core/ds-kit-files.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/design-system.ts	
+design-floor/vendor/design-os/src/core/ds-kit-inventory.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/ds-kit-validate.ts	
+design-floor/vendor/design-os/src/core/ds-kit-parse.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/ds-kit-seal.ts	
+design-floor/vendor/design-os/src/core/ds-kit-seal.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/design-system.ts	
+design-floor/vendor/design-os/src/core/ds-kit-theme.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/ds-kit-seal.ts	
+design-floor/vendor/design-os/src/core/ds-kit-types.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/design-system.ts	
+design-floor/vendor/design-os/src/core/ds-kit-validate.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/ds-kit-seal.ts	
+design-floor/vendor/design-os/src/core/ds-manifest.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/design-system.ts	
+design-floor/vendor/design-os/src/core/dtcg-token-tree.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/css-selector-mode.ts	
+design-floor/vendor/design-os/src/core/extractors/html/css-cascade.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/extractors/html/html-extractor.ts	
+design-floor/vendor/design-os/src/core/extractors/html/css-custom-properties.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/extractors/html/html-extractor.ts	
+design-floor/vendor/design-os/src/core/extractors/html/css-shorthands.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/extractors/html/css-cascade.ts	
+design-floor/vendor/design-os/src/core/extractors/html/css-values.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/extractors/html/html-extractor.ts	
+design-floor/vendor/design-os/src/core/extractors/html/html-dom.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/extractors/html/html-extractor.ts	
+design-floor/vendor/design-os/src/core/extractors/html/html-extractor.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/gate.ts	
+design-floor/vendor/design-os/src/core/figma-ds-tokens.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/token-model.ts	
+design-floor/vendor/design-os/src/core/finding-schema.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/gate.ts	
+design-floor/vendor/design-os/src/core/flag-guard.ts	san-pham	acceptance-gate	lan-tu:design-floor/vo/ui.ts	
+design-floor/vendor/design-os/src/core/flow-lint.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/flow.ts	
+design-floor/vendor/design-os/src/core/flow-model.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/flow.ts	
+design-floor/vendor/design-os/src/core/gate.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/gate.ts	
+design-floor/vendor/design-os/src/core/html-autofix-floor-repairs.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/html-autofix.ts	
+design-floor/vendor/design-os/src/core/html-autofix-font-display.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/html-autofix.ts	
+design-floor/vendor/design-os/src/core/html-autofix.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/autofix.ts	
+design-floor/vendor/design-os/src/core/html-css-loader.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/gate.ts	
+design-floor/vendor/design-os/src/core/html-export.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/registry-shards.ts	
+design-floor/vendor/design-os/src/core/html-img-fallback-script.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/html-autofix.ts	
+design-floor/vendor/design-os/src/core/insight-recurrence.ts	chua-ro	acceptance-gate	khong-ai-goi	
+design-floor/vendor/design-os/src/core/layout-checks-craft.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/layout-lint.ts	
+design-floor/vendor/design-os/src/core/layout-checks-delivery.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/layout-lint.ts	
+design-floor/vendor/design-os/src/core/layout-checks-hover.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/layout-lint.ts	
+design-floor/vendor/design-os/src/core/layout-checks-mobile.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/layout-lint.ts	
+design-floor/vendor/design-os/src/core/layout-checks-viewport.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/layout-lint.ts	
+design-floor/vendor/design-os/src/core/layout-checks.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/layout-lint.ts	
+design-floor/vendor/design-os/src/core/layout-lint.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/gate.ts	
+design-floor/vendor/design-os/src/core/lifecycle-name.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/reuse-plan-names.ts	
+design-floor/vendor/design-os/src/core/line-index.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/token-coverage-extract.ts	
+design-floor/vendor/design-os/src/core/memory-autorecord.ts	chua-ro	acceptance-gate	khong-ai-goi	
+design-floor/vendor/design-os/src/core/memory-error.ts	chua-ro	acceptance-gate	khong-ai-goi	
+design-floor/vendor/design-os/src/core/memory-events.ts	chua-ro	acceptance-gate	khong-ai-goi	
+design-floor/vendor/design-os/src/core/memory-graph-cache.ts	chua-ro	acceptance-gate	khong-ai-goi	
+design-floor/vendor/design-os/src/core/memory-graph.ts	chua-ro	acceptance-gate	khong-ai-goi	
+design-floor/vendor/design-os/src/core/memory-lesson-evidence.ts	chua-ro	acceptance-gate	khong-ai-goi	
+design-floor/vendor/design-os/src/core/memory-lessons.ts	chua-ro	acceptance-gate	khong-ai-goi	
+design-floor/vendor/design-os/src/core/memory-store.ts	chua-ro	acceptance-gate	chi-trung-ten-tep-trong-bo-kiem	
+design-floor/vendor/design-os/src/core/output.ts	san-pham	acceptance-gate	lan-tu:design-floor/vo/ui.ts	
+design-floor/vendor/design-os/src/core/redirect-stub.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/layout-lint.ts	
+design-floor/vendor/design-os/src/core/registry-shards.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/registry-store.ts	
+design-floor/vendor/design-os/src/core/registry-store.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/design-system.ts	
+design-floor/vendor/design-os/src/core/registry-token-check.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/reuse-plan-check-row.ts	
+design-floor/vendor/design-os/src/core/reuse-plan-check-new.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/reuse-plan-check.ts	
+design-floor/vendor/design-os/src/core/reuse-plan-check-row.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/reuse-plan-check.ts	
+design-floor/vendor/design-os/src/core/reuse-plan-check.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/reuse-plan-check-impl.ts	
+design-floor/vendor/design-os/src/core/reuse-plan-names.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/reuse-plan-check-impl.ts	
+design-floor/vendor/design-os/src/core/reuse-plan-parse.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/reuse-plan-check-impl.ts	
+design-floor/vendor/design-os/src/core/reuse-plan-reason.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/reuse-plan-check.ts	
+design-floor/vendor/design-os/src/core/reuse-plan-render.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/reuse-plan-check-impl.ts	
+design-floor/vendor/design-os/src/core/taste-checks-concentric-radius.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-consistency.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-checks-shared.ts	
+design-floor/vendor/design-os/src/core/taste-checks-depth.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-font-scale.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-gradient.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-gsap.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-invisible-surface.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-motion-state.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-motion.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-checks-shared.ts	
+design-floor/vendor/design-os/src/core/taste-checks-nesting.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-radius.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-shared.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/layout-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-tap-target.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-typography.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks-video-scrub.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-checks.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/taste-lint.ts	
+design-floor/vendor/design-os/src/core/taste-lint.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/gate.ts	
+design-floor/vendor/design-os/src/core/tell-lint.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/gate.ts	
+design-floor/vendor/design-os/src/core/tell-rules-color.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/gate.ts	
+design-floor/vendor/design-os/src/core/tell-rules-labels.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/tell-lint.ts	
+design-floor/vendor/design-os/src/core/tell-rules-motion.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/tell-lint.ts	
+design-floor/vendor/design-os/src/core/tell-rules-rendered.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/tell-lint.ts	
+design-floor/vendor/design-os/src/core/tell-rules-surface.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/tell-lint.ts	
+design-floor/vendor/design-os/src/core/tell-rules-type.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/tell-lint.ts	
+design-floor/vendor/design-os/src/core/tell-rules.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/tell-rules-color.ts	
+design-floor/vendor/design-os/src/core/tell-thresholds.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/tell-rules-color.ts	
+design-floor/vendor/design-os/src/core/token-coverage-classify.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/token-coverage.ts	
+design-floor/vendor/design-os/src/core/token-coverage-extract.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/token-coverage.ts	
+design-floor/vendor/design-os/src/core/token-coverage-io.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/gate.ts	
+design-floor/vendor/design-os/src/core/token-coverage.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/gate.ts	
+design-floor/vendor/design-os/src/core/token-emit.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/token-model.ts	
+design-floor/vendor/design-os/src/core/token-model.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/commands/taste-lint.ts	
+design-floor/vendor/design-os/src/core/token-pairs.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/ds-a11y.ts	
+design-floor/vendor/design-os/src/core/token-resolve.ts	san-pham	acceptance-gate	lan-tu:design-floor/vendor/design-os/src/core/design-system.ts	
+design-floor/vo/ui.ts	san-pham	acceptance-gate	lan-tu:design-floor/HOP-DONG-NHAP.md	
+diagram-design/.claude-plugin/plugin.json	san-pham	diagram-design	diem-vao:tep-khai	
+diagram-design/NOTICE	chua-ro	diagram-design	bo-kiem-hoac-luot-kiem-goi	
+diagram-design/commands/export-diagram.md	san-pham	diagram-design	diem-vao:commands	
+diagram-design/commands/import-drawio.md	san-pham	diagram-design	diem-vao:commands	
+diagram-design/skills/diagram-design/INSTALL-PROVENANCE.txt	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/LICENSE	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/LOCAL-PATCHES.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/SKILL.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/THIRD_PARTY_LICENSES.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-architecture-backed.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-architecture-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-architecture-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-architecture.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-bar-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-bar-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-bar.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-cadence-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-cadence-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-cadence.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-capability-map-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-capability-map-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-capability-map.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-data-flow-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-data-flow-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-data-flow.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-datalake-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-datalake-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-datalake.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-deployment-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-deployment-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-deployment.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-disposition-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-disposition-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-disposition.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-dp-integration-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-dp-integration-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-dp-integration.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-dp-security-matrix-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-dp-security-matrix-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-dp-security-matrix.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-er-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-er-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-er.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-event-flow-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-event-flow-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-event-flow.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-evidence-chain-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-evidence-chain-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-evidence-chain.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-flowchart-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-flowchart-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-flowchart.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-gantt-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-gantt-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-gantt.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-high-level-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-high-level-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-high-level-vertical-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-high-level-vertical-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-high-level-vertical.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-high-level.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-import-drawio.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-it-state-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-it-state-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-it-state.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-journey-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-journey-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-journey.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-layers-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-layers-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-layers.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-line-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-line-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-line.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-loop-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-loop-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-loop-terminal.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-loop.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-medallion-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-medallion-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-medallion.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-morph-box-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-morph-box-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-morph-box.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-nested-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-nested-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-nested.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-org-chart-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-org-chart-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-org-chart.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-process-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-process-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-process.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-pyramid-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-pyramid-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-pyramid.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-quadrant-consultant.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-quadrant-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-quadrant-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-quadrant.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-raci-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-raci-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-raci.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-radar-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-radar-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-radar.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-sankey-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-sankey-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-sankey.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-scatter-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-scatter-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-scatter.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-sequence-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-sequence-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-sequence-oauth-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-sequence-oauth-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-sequence-oauth.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-sequence.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-service-blueprint-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-service-blueprint-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-service-blueprint.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-solution-tree-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-solution-tree-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-solution-tree.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-stakeholder-map-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-stakeholder-map-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-stakeholder-map.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-state-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-state-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-state.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-swimlane-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-swimlane-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-swimlane.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-system-context-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-system-context-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-system-context.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-threshold-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-threshold-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-threshold.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-timeline-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-timeline-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-timeline.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-tree-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-tree-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-tree.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-venn-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-venn-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-venn.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-wireflow-backed.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-wireflow-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-wireflow-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/example-wireflow.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/icons.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/index.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/template-dark.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/template-full.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/template-terminal.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/assets/template.html	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/export.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/import-drawio.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/onboarding.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/output-spec.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/primitive-annotation.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/primitive-icons.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/primitive-sketchy.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/primitive-terminal.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/style-guide.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-architecture.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-bar.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-cadence.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-capability-map.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-data-flow.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-deployment.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-disposition.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-dp-integration.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-dp-security-matrix.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-er.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-event-flow.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-evidence-chain.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-flowchart.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-gantt.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-high-level.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-it-state.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-journey.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-layers.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-line.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-loop.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-medallion.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-morph-box.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-nested.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-org-chart.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-process.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-pyramid.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-quadrant.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-raci.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-radar.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-sankey.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-scatter.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-sequence.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-service-blueprint.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-solution-tree.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-stakeholder-map.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-state.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-swimlane.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-system-context.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-threshold.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-timeline.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-tree.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-venn.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/type-wireflow.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/references/verified-backs.md	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/scripts/check_backs.py	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/scripts/check_label_occlusion.py	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/scripts/check_overflow.py	san-pham	diagram-design	diem-vao:skills	
+diagram-design/skills/diagram-design/scripts/drawio_extract.py	san-pham	diagram-design	diem-vao:skills	
+diagram-design/tree-hash.sh	chua-ro	diagram-design	bo-kiem-hoac-luot-kiem-goi	
+diagram-design/vendor-sync.sh	chua-ro	diagram-design	bo-kiem-hoac-luot-kiem-goi	
+dieu-phoi/.claude-plugin/plugin.json	san-pham	dieu-phoi	diem-vao:tep-khai	
+dieu-phoi/README.md	san-pham	dieu-phoi	diem-vao:tai-lieu-plugin	
+dieu-phoi/commands/ban-giao.md	san-pham	dieu-phoi	diem-vao:commands	
+dieu-phoi/commands/dong-dot.md	san-pham	dieu-phoi	diem-vao:commands	
+dieu-phoi/commands/mo-dot.md	san-pham	dieu-phoi	diem-vao:commands	
+dieu-phoi/commands/tiep-tuc.md	san-pham	dieu-phoi	diem-vao:commands	
+dieu-phoi/commands/xem.md	san-pham	dieu-phoi	diem-vao:commands	
+dieu-phoi/hooks/hooks.json	san-pham	dieu-phoi	diem-vao:moc	
+dieu-phoi/hooks/mod/doc-muc-dung.ts	san-pham	dieu-phoi	lan-tu:dieu-phoi/hooks/mod/register.ts	
+dieu-phoi/hooks/mod/khung.ts	san-pham	dieu-phoi	lan-tu:dieu-phoi/README.md	
+dieu-phoi/hooks/mod/register.ts	san-pham	dieu-phoi	diem-vao:moc	
+dieu-phoi/scripts/ban-giao.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/bang.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/phat-lich.mjs	
+dieu-phoi/scripts/cau-hinh.mjs	san-pham	dieu-phoi	goi-cheo-tu:commands/acceptance-init.md	
+dieu-phoi/scripts/chan-doan.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/cua-tin-hieu.mjs	san-pham	dieu-phoi	goi-cheo-tu:scripts/gui-tin-hieu.mjs	
+dieu-phoi/scripts/danh-thuc.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/dau.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/hook-het-han-muc.mjs	
+dieu-phoi/scripts/dem.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/dieu-phoi.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/commands/ban-giao.md	
+dieu-phoi/scripts/do-gop.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/phat-lich.mjs	
+dieu-phoi/scripts/do-lan.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/dot.mjs	san-pham	dieu-phoi	goi-cheo-tu:commands/acceptance-init.md	
+dieu-phoi/scripts/ghi.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/giu-nhip.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/mau/LUAT.md	
+dieu-phoi/scripts/glob.mjs	san-pham	dieu-phoi	goi-cheo-tu:scripts/cat-luot.mjs	
+dieu-phoi/scripts/goi-dot.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/gop.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/han-muc.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/hang.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/hinh-dang.mjs	san-pham	dieu-phoi	goi-cheo-tu:commands/acceptance-init.md	
+dieu-phoi/scripts/hoi.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/hook-chan-s4.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/hooks/hooks.json	
+dieu-phoi/scripts/hook-cho-nguoi.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/hooks/hooks.json	
+dieu-phoi/scripts/hook-het-han-muc.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/hooks/hooks.json	
+dieu-phoi/scripts/hook-nhip.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/hooks/hooks.json	
+dieu-phoi/scripts/hook-tin.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/hooks/hooks.json	
+dieu-phoi/scripts/khoa-hang-viec.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/hang.mjs	
+dieu-phoi/scripts/khung.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/hooks/mod/khung.ts	
+dieu-phoi/scripts/kiem-chuyen.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/lich.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/ghi.mjs	
+dieu-phoi/scripts/mau/LUAT.md	san-pham	dieu-phoi	lan-tu:dieu-phoi/README.md	
+dieu-phoi/scripts/mau/ban-giao-xong.json	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/mau/ban-giao.json	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/mau/dieu-phoi.config.json	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/mau/LUAT.md	
+dieu-phoi/scripts/mau/han-muc.json	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/mau/hang-viec.json	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/may.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/mo-hinh.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/hooks/mod/khung.ts	
+dieu-phoi/scripts/mod-luat.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/hooks/mod/register.ts	
+dieu-phoi/scripts/moi-truong.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/chan-doan.mjs	
+dieu-phoi/scripts/muc-day.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/tiep-tuc.mjs	
+dieu-phoi/scripts/nguon-hang.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/nhay.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/hook-chan-s4.mjs	
+dieu-phoi/scripts/pha.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/phan-loai-s4.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/hook-chan-s4.mjs	
+dieu-phoi/scripts/phat-lich.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/song.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/suc-khoe.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/do-lan.mjs	
+dieu-phoi/scripts/the.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/tho.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/tiep-tuc.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/tin-doc.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/tin-dua.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/tin-gh.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/tin.mjs	
+dieu-phoi/scripts/tin-giao.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/tiep-tuc.mjs	
+dieu-phoi/scripts/tin-kenh.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/hook-tin.mjs	
+dieu-phoi/scripts/tin-noi-chua.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/tin.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/trung-tep.mjs	san-pham	dieu-phoi	goi-cheo-tu:scripts/cat-luot.mjs	
+dieu-phoi/scripts/vai.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/dieu-phoi.mjs	
+dieu-phoi/scripts/viec-cho.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/chan-doan.mjs	
+dieu-phoi/scripts/wip.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/hook-het-han-muc.mjs	
+dieu-phoi/scripts/yeu-cau.mjs	san-pham	dieu-phoi	lan-tu:dieu-phoi/scripts/phat-lich.mjs	
+dieu-phoi/types/index.d.ts	san-pham	dieu-phoi	diem-vao:tep-khai	
+docs/MAP.md	tai-lieu-song			mục lục tài liệu
+docs/adr/0001-commit-plugins-mirror.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0002-human-gate-invocation-lock.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0003-resolve-plugin-not-cache-glob.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0004-gap-probe-required-fail-closed-floor.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0005-t1-escape-opt-out-flag.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0006-rules-ledger-fail-closed-at-output.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0007-product-map-t1-exemption.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0008-luu-kho-harness-codex.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0009-khai-tu-nghi-le-design-loop.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0010-thu-pham-vi-luat-recheck-theo-diff-pr.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0011-rang-ho-so-la-lop-re-bao-dam-dai-han-vao-luoi-thuong-truc.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0012-chu-ky-la-quyet-dinh-provenance-tu-forge.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0013-mo-that-mit-va-ban-chep-mo-hinh-cong.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0014-lan-ghim-lai-chay-lai-eval-cua-ho-so.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0015-luu-kho-24-ho-so-no-lan-suite-only.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0016-eval-khai-ma-thoat-mong-doi.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0017-noi-giu-nguyen-o-tra-loi-bang-nam-dong-so.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0018-cong-can-phe-duyet-khong-cam-giu-don-gian.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0019-ban-ghi-dinh-tuyen-la-vat-t1-may-sinh.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0020-reality-co-quyen-dong-ho-so-mot-dong-hieu-chuan.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0021-ba-ve-mot-cau-mot-so-quyet-dinh.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0022-can-cu-lua-chon-buoc-thiet-ke-la-khoa-may-doc.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0023-che-do-phan-loai-pr-song-trong-cong.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0024-luat-san-pham-cua-kho.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0025-lo-trinh-rang-buoc-theo-bac-thang.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0026-bo-moc-ngoai-viec-cua-nguoi-ra-khoi-kho.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0027-bon-chan-cua-mot-quyet-dinh-cua-nguoi.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/adr/0028-bang-chung-cu-chi-keo-ho-so-khi-cham-tep-vat.md	tai-lieu-song			quyết định kiến trúc — còn hiệu lực
+docs/reference/DIAGRAM-RULE.md	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/diagram-skin.md	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/ben-trong-s4.html	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/ben-trong-s4.png	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/ben-trong-s4.svg	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/chuoi-bang-chung.html	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/chuoi-bang-chung.png	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/chuoi-bang-chung.svg	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/index.md	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/kien-truc-ho-so-la-truc.html	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/kien-truc-ho-so-la-truc.png	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/kien-truc-ho-so-la-truc.svg	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/kit-cam-vao-dau.html	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/kit-cam-vao-dau.png	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/kit-cam-vao-dau.svg	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/trang-thai-ho-so.html	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/trang-thai-ho-so.png	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/trang-thai-ho-so.svg	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/vao-cua-nao-day-bao-nhieu.html	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/vao-cua-nao-day-bao-nhieu.png	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/vao-cua-nao-day-bao-nhieu.svg	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/vat-x-vai.html	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/vat-x-vai.png	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/vat-x-vai.svg	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/vong-lam-s0-s5.html	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/vong-lam-s0-s5.png	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/figures/vong-lam-s0-s5.svg	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/lai-thu-nguoi-la.md	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+docs/reference/su-mo-ta-plugin-toi-2-38-1.md	tai-lieu-song			tài liệu tra cứu — còn hiệu lực
+evals/README.md	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/goi-thang-ten/case.yaml	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/goi-thang-ten/graders/chay-renderer-that.md	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/goi-thang-ten/graders/the-co-khoi-khong-lam.md	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/goi-thang-ten/graders/the-co-khoi-se-lam.md	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/goi-thang-ten/prompt.md	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/goi-thang-ten/scaffold.sh	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/kich-hoat-tu-ngu-canh/case.yaml	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/kich-hoat-tu-ngu-canh/graders/goi-dung-skill.md	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/kich-hoat-tu-ngu-canh/graders/the-co-khoi-se-lam.md	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/kich-hoat-tu-ngu-canh/prompt.md	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/kich-hoat-tu-ngu-canh/scaffold.sh	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/thieu-ho-so-khong-ve-the-ma/case.yaml	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/thieu-ho-so-khong-ve-the-ma/graders/khong-co-khoi-se-lam.md	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/thieu-ho-so-khong-ve-the-ma/graders/khong-hoi-duyet-ho-so-ma.md	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/thieu-ho-so-khong-ve-the-ma/prompt.md	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+evals/thieu-ho-so-khong-ve-the-ma/scaffold.sh	san-pham	acceptance-gate	diem-vao:ca-do-skill	
+feature-loop/.claude-plugin/plugin.json	san-pham	feature-loop	diem-vao:tep-khai	
+feature-loop/README.md	san-pham	feature-loop	diem-vao:tai-lieu-plugin	
+feature-loop/agents/cham-doc.md	san-pham	feature-loop	diem-vao:agents	
+feature-loop/agents/cham-lenh.md	san-pham	feature-loop	diem-vao:agents	
+feature-loop/agents/cham-ui.md	san-pham	feature-loop	diem-vao:agents	
+feature-loop/scripts/carry-plan.mjs	san-pham	feature-loop	goi-cheo-tu:lib/evidence-core.cjs	
+feature-loop/scripts/chup-ho-so-da-thong.mjs	san-pham	feature-loop	goi-cheo-tu:skills/acceptance/references/eval-executors.md	
+feature-loop/scripts/claim-scan.mjs	chua-ro	feature-loop	bo-kiem-hoac-luot-kiem-goi	
+feature-loop/scripts/dem-dung-lai-model.mjs	chua-ro	feature-loop	bo-kiem-hoac-luot-kiem-goi	
+feature-loop/scripts/duong-nen.mjs	san-pham	feature-loop	lan-tu:feature-loop/skills/feature-loop/SKILL.md	
+feature-loop/scripts/giu-tuoi.mjs	chua-ro	feature-loop	bo-kiem-hoac-luot-kiem-goi	
+feature-loop/scripts/lib/cay-doi.mjs	san-pham	feature-loop	lan-tu:feature-loop/scripts/thuoc-vat.mjs	
+feature-loop/scripts/lib/chay-lai.mjs	san-pham	feature-loop	lan-tu:feature-loop/scripts/repin-lane.mjs	
+feature-loop/scripts/lib/chay-lenh.mjs	san-pham	feature-loop	lan-tu:feature-loop/scripts/repin-lane.mjs	
+feature-loop/scripts/lib/dung-lai-model.mjs	san-pham	feature-loop	lan-tu:feature-loop/scripts/repin-lane.mjs	
+feature-loop/scripts/lib/ghi-boi.mjs	san-pham	feature-loop	lan-tu:feature-loop/scripts/thuoc-vat.mjs	
+feature-loop/scripts/lib/hoi-ngoai-inputs.mjs	san-pham	feature-loop	lan-tu:feature-loop/scripts/s4-args.mjs	
+feature-loop/scripts/lib/lan-khoa.mjs	san-pham	feature-loop	lan-tu:feature-loop/scripts/repin-lane.mjs	
+feature-loop/scripts/lib/phan-loai.mjs	san-pham	feature-loop	lan-tu:feature-loop/scripts/thuoc-vat.mjs	
+feature-loop/scripts/lib/tep-cua-vong.mjs	san-pham	feature-loop	goi-cheo-tu:skills/acceptance/references/duong-nen-template.md	
+feature-loop/scripts/pr-san-sang.mjs	san-pham	feature-loop	lan-tu:feature-loop/skills/feature-loop/SKILL.md	
+feature-loop/scripts/repin-lane.mjs	san-pham	feature-loop	lan-tu:feature-loop/skills/feature-loop/SKILL.md	
+feature-loop/scripts/resolve-plugin.mjs	san-pham	feature-loop	lan-tu:feature-loop/skills/feature-loop/SKILL.md	
+feature-loop/scripts/round-tally-read.mjs	chua-ro	feature-loop	chi-trung-ten-tep-trong-bo-kiem	
+feature-loop/scripts/s4-args.mjs	san-pham	feature-loop	lan-tu:feature-loop/skills/feature-loop/SKILL.md	
+feature-loop/scripts/tai-may.mjs	san-pham	feature-loop	lan-tu:feature-loop/scripts/repin-lane.mjs	
+feature-loop/scripts/thuoc-vat.mjs	san-pham	feature-loop	lan-tu:feature-loop/skills/feature-loop/SKILL.md	
+feature-loop/scripts/trong-dot.mjs	san-pham	feature-loop	lan-tu:feature-loop/skills/feature-loop/SKILL.md	
+feature-loop/scripts/wf-usage.mjs	san-pham	feature-loop	lan-tu:feature-loop/README.md	
+feature-loop/skills/feature-loop/SKILL.md	san-pham	feature-loop	diem-vao:skills	
+feature-loop/workflows/acceptance-verify.js	san-pham	feature-loop	diem-vao:workflows	
+feature-loop/workflows/execute-parallel.js	san-pham	feature-loop	diem-vao:workflows	
+hooks/acceptance-evidence-gate.js	san-pham	acceptance-gate	lan-tu:hooks/hooks.json	
+hooks/hooks.json	san-pham	acceptance-gate	diem-vao:moc	
+hooks/ruling-truoc-khi-xoa.js	san-pham	acceptance-gate	lan-tu:hooks/hooks.json	
+lib/ac-line.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+lib/chan-lo-trinh.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+lib/context-glossary.js	san-pham	acceptance-gate	lan-tu:scripts/gate-card.js	
+lib/design-bundle.mjs	san-pham	acceptance-gate	lan-tu:scripts/design-scan.js	
+lib/design-detect.mjs	san-pham	acceptance-gate	lan-tu:scripts/design-gate.mjs	
+lib/do-san-tren-nen.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+lib/eval-yaml.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+lib/evidence-core.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+lib/gap-probe.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+lib/lop-nhin-thay.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+lib/md-section.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+lib/nguong-o-co-hoi.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+lib/nhan-canh-gay.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+lib/out-of-contract.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+lib/p-tiers.json	san-pham	acceptance-gate	lan-tu:skills/acceptance/references/design-ui-check.md	
+lib/workspace-record.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+road-map/.claude-plugin/plugin.json	san-pham	road-map	diem-vao:tep-khai	
+road-map/README.md	san-pham	road-map	diem-vao:tai-lieu-plugin	
+road-map/commands/bo-ghim.md	san-pham	road-map	diem-vao:commands	
+road-map/commands/ghim.md	san-pham	road-map	diem-vao:commands	
+road-map/commands/gui.md	san-pham	road-map	diem-vao:commands	
+road-map/commands/tra-lai.md	san-pham	road-map	diem-vao:commands	
+road-map/commands/xem.md	san-pham	road-map	diem-vao:commands	
+scripts/acceptance-gold.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-report.md	
+scripts/anh-ho-so.cjs	san-pham	acceptance-gate	lan-tu:scripts/gate-card.js	
+scripts/ban-do-khuon.cjs	san-pham	acceptance-gate	lan-tu:skills/acceptance/references/ban-do-khuon-template.md	
+scripts/build-design-scan.mjs	san-pham	acceptance-gate	lan-tu:scripts/design-scan.js	
+scripts/can-cu-s1.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-card.md	
+scripts/cat-luot.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/cau-noi-ruling.mjs	san-pham	acceptance-gate	goi-cheo-tu:feature-loop/skills/feature-loop/SKILL.md	
+scripts/co-hop-dong.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/config-patch.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/design-floor-bac.mjs	san-pham	acceptance-gate	goi-cheo-tu:feature-loop/skills/feature-loop/SKILL.md	
+scripts/design-floor-khuon.mjs	san-pham	acceptance-gate	goi-cheo-tu:feature-loop/skills/feature-loop/SKILL.md	
+scripts/design-floor-s1.mjs	san-pham	acceptance-gate	goi-cheo-tu:feature-loop/skills/feature-loop/SKILL.md	
+scripts/design-floor-s3.mjs	san-pham	acceptance-gate	goi-cheo-tu:feature-loop/skills/feature-loop/SKILL.md	
+scripts/design-floor-s4.mjs	san-pham	acceptance-gate	goi-cheo-tu:feature-loop/skills/feature-loop/SKILL.md	
+scripts/design-gate.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/design-scan.js	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/dinh-tuyen-may.cjs	san-pham	acceptance-gate	goi-cheo-tu:feature-loop/skills/feature-loop/SKILL.md	
+scripts/do-vong.mjs	san-pham	acceptance-gate	goi-cheo-tu:feature-loop/skills/feature-loop/SKILL.md	
+scripts/eval-coverage-lint.js	san-pham	acceptance-gate	lan-tu:commands/approve.md	
+scripts/evidence-page.js	san-pham	acceptance-gate	lan-tu:skills/acceptance/references/lo-trinh-du-lieu.md	
+scripts/gate-card.js	san-pham	acceptance-gate	lan-tu:commands/acceptance-card.md	
+scripts/gio-may.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/gui-tin-hieu.mjs	san-pham	acceptance-gate	goi-cheo-tu:road-map/commands/gui.md	
+scripts/han-quet.cjs	san-pham	acceptance-gate	lan-tu:scripts/gate-card.js	
+scripts/hieu-chuan-moc.mjs	chua-ro	acceptance-gate	bo-kiem-hoac-luot-kiem-goi	
+scripts/ho-so-tom-tat.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/khong-can-nguoi.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/kiem-ban-cai.mjs	chua-ro	acceptance-gate	bo-kiem-hoac-luot-kiem-goi	
+scripts/lo-trinh-khoa.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/lo-trinh-khoi-tao.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/lo-trinh.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/loi-ra-tran-luot.cjs	san-pham	acceptance-gate	lan-tu:scripts/gate-card.js	
+scripts/loop-health.mjs	chua-ro	acceptance-gate	bo-kiem-hoac-luot-kiem-goi	
+scripts/luat-san-pham.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/plugin-declare.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/pre-merge-check.sh	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/product-map.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/recheck-evidence.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/start-scan.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-status.md	
+scripts/tin-hieu-khoa.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/tin-hieu.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/trang-thai-ho-so.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/tri-thuc-ghi.mjs	san-pham	acceptance-gate	goi-cheo-tu:tri-thuc/README.md	
+scripts/tri-thuc-khoa.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/tri-thuc-nguon.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/tri-thuc-tra.cjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/tri-thuc.mjs	san-pham	acceptance-gate	lan-tu:commands/acceptance-init.md	
+scripts/yaml-chuan.cjs	san-pham	acceptance-gate	lan-tu:skills/acceptance/references/eval-executors.md	
+skills/acceptance/SKILL.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/ban-do-khuon-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/contract-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/design-ui-check.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/duong-nen-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/eval-executors.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/evidence-report-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/human-facing-language.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/judge-personas.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/lo-trinh-du-lieu.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/lo-trinh-template.json	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/measure-birth.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/opportunity-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/pham-vi-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/product-invariants-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/stranger-drive-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/tin-hieu-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/tool-kill-rule.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/tri-thuc-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/uat-session-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/ui-capture.reference.mjs	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/ux-spec-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/acceptance/references/vlm-assert.reference.mjs	san-pham	acceptance-gate	diem-vao:skills	
+skills/cat-luot/SKILL.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/design-pass/SKILL.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/gom-tin-hieu/SKILL.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/morphological-scan/SKILL.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/morphological-scan/references/benchmark.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/morphological-scan/references/content-matrix.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/morphological-scan/references/entity-feature.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/morphological-scan/references/metrics-tree.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/morphological-scan/references/product-context-template.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/morphological-scan/references/risk-premortem.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/morphological-scan/references/test-matrix.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/uat-session/SKILL.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/SKILL.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/references/color-craft.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/references/component-contracts.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/references/css-technique.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/references/direction-craft.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/references/guidance-craft.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/references/ia-craft.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/references/layout-craft.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/references/mobile-app.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/references/typography-craft.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/references/web.md	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/scripts/check_contrast.py	san-pham	acceptance-gate	diem-vao:skills	
+skills/ux-ui-craft/scripts/measure_layout.js	san-pham	acceptance-gate	diem-vao:skills	
+tri-thuc/.claude-plugin/plugin.json	san-pham	tri-thuc	diem-vao:tep-khai	
+tri-thuc/README.md	san-pham	tri-thuc	diem-vao:tai-lieu-plugin	
+tri-thuc/commands/ghi.md	san-pham	tri-thuc	diem-vao:commands	
+tri-thuc/commands/kiem.md	san-pham	tri-thuc	diem-vao:commands	
+vendor/impeccable/LICENSE	chua-ro	acceptance-gate	khong-ai-goi	
+vendor/impeccable/NOTICE	chua-ro	acceptance-gate	chi-trung-ten-tep-trong-bo-kiem	
+vendor/impeccable/engine/browser/injected/index.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/design-system.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/detect-antipatterns-browser.js	san-pham	acceptance-gate	lan-tu:scripts/design-scan.js	
+vendor/impeccable/engine/engines/browser/detect-url.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/engines/regex/detect-text.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/engines/static-html/css-cascade.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/engines/static-html/detect-html.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/engines/visual/screenshot-contrast.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/findings.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/profile/profiler.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/registry/antipatterns.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/rules/checks.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/shared/color.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/shared/constants.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/shared/inline-ignores.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/engine/shared/page.mjs	san-pham	acceptance-gate	lan-tu:lib/design-detect.mjs	
+vendor/impeccable/vendor-sync.sh	chua-ro	acceptance-gate	chi-trung-ten-tep-trong-bo-kiem	

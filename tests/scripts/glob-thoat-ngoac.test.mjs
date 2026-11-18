@@ -28,8 +28,8 @@ process.on('exit', () => { try { fs.rmSync(TMP, { recursive: true, force: true }
 let seq = 0;
 const mk = (p) => { const d = path.join(TMP, `${p}${++seq}`); fs.mkdirSync(d, { recursive: true }); return d; };
 const cut = (s, n = 200) => (String(s).length > n ? String(s).slice(0, n) + '…' : String(s));
-const lib = (kit) => req(path.join(kit, 'lib', 'evidence-core.cjs'));
-const carry = (kit) => import(pathToFileURL(path.join(kit, 'feature-loop', 'scripts', 'carry-plan.mjs')).href);
+const lib = (kit) => req(path.join(kit, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'));
+const carry = (kit) => import(pathToFileURL(path.join(kit, 'plugins/feature-loop', 'scripts', 'carry-plan.mjs')).href);
 
 // ── bảng viết trước (AC-1) ──────────────────────────────────────────────────
 const G = ['a/[[]slug]/c/**', 'a/[[]slug]/c/x.tsx', 'a/[]]/x', 'a/[slug]/c/**', 'a/(app)/[[]slug]/[[]id]/*.tsx'];
@@ -83,10 +83,10 @@ function dungKho(kit, { slug, evalsYaml, tep, staleScope }) {
   const doi = (ds) => { for (const t of ds) fs.appendFileSync(path.join(R, t), '# v2\n'); git('add', '-A', '--', ...ds); git('commit', '-qm', 'diff sau pin'); };
   return { R, slug, doi, log: path.join(R, '_acceptance', slug, 'run-log.jsonl') };
 }
-const chayLan = (kit, R, slug) => spawnSync(process.execPath, [path.join(kit, 'feature-loop', 'scripts', 'repin-lane.mjs'),
-  '--root', R, '--ag-root', kit, '--slug', slug, '--reason', 'ca GT', '--write'], { encoding: 'utf8' });
+const chayLan = (kit, R, slug) => spawnSync(process.execPath, [path.join(kit, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs'),
+  '--root', R, '--ag-root', path.join(kit, 'plugins/acceptance-gate'), '--slug', slug, '--reason', 'ca GT', '--write'], { encoding: 'utf8' });
 const dongRepinCuoi = (log) => JSON.parse(fs.readFileSync(log, 'utf8').split('\n').filter(l => l.includes('"kind":"repin"')).pop());
-const chayPremerge = (kit, R) => { const r = spawnSync('bash', [path.join(kit, 'scripts', 'pre-merge-check.sh'), R], { encoding: 'utf8' }); return (r.stdout || '') + (r.stderr || ''); };
+const chayPremerge = (kit, R) => { const r = spawnSync('bash', [path.join(kit, 'plugins/acceptance-gate/scripts', 'pre-merge-check.sh'), R], { encoding: 'utf8' }); return (r.stdout || '') + (r.stderr || ''); };
 
 // ── các phép phán: (kit) → mảng lỗi ─────────────────────────────────────────
 async function phanBoDich(kit, ca) {
@@ -156,7 +156,7 @@ async function phanMangSang(kit, ca) {
   const { plan } = await carry(kit);
   const evalsText = `schema_version: 1\nevals:\n  - id: E1\n    criterion: AC-1\n    executor: script\n    cmd: config:executors.script.rang_ok\n    paths: ["apps/app/app/(app)/[[]slug]/contacts/**"]\n`;
   const runLogText = JSON.stringify({ ts: '2026-10-01T00:00:00Z', sha: 'a'.repeat(40), round: 1, evalId: 'E1', run_id: 'r1-E1', exit_code: 0, cmd: 'true' }) + '\n';
-  const r = plan({ runLogText, evalsText, contractText: '## Criteria\n\n- AC-1: x\n', deltaFiles: ca === 'GT4' ? [TEP_THAT] : ['other/z.js'], round: 2, agRoot: kit });
+  const r = plan({ runLogText, evalsText, contractText: '## Criteria\n\n- AC-1: x\n', deltaFiles: ca === 'GT4' ? [TEP_THAT] : ['other/z.js'], round: 2, agRoot: path.join(kit, 'plugins/acceptance-gate') });
   const ly = (r.reason || {}).E1 || '';
   const carried = (r.carriedEvals || []).some(c => c.id === 'E1');
   if (ca === 'GT4') return !carried && ly.startsWith('diff-fix chạm ' + TEP_THAT) ? [] : [`khong chay lai du diff cham: carried=${carried}, ly do «${ly}»`];
@@ -176,7 +176,7 @@ function phanHoaCu(kit, ca) {
 // ── bản sao bị tiêm (AC-6) ──────────────────────────────────────────────────
 function banSao(tep, tu, thanh) {
   const D = mk('sao-');
-  for (const d of ['lib', 'scripts', 'feature-loop']) fs.cpSync(path.join(KIT, d), path.join(D, d), { recursive: true });
+  for (const d of ['plugins/acceptance-gate/lib', 'plugins/acceptance-gate/scripts', 'plugins/feature-loop']) fs.cpSync(path.join(KIT, d), path.join(D, d), { recursive: true });
   const p = path.join(D, tep); const s = fs.readFileSync(p, 'utf8');
   const n = s.split(tu).length - 1;
   if (n !== 1) throw new Error(`tiem hut: kim «${cut(tu, 70)}» xuat hien ${n} lan trong ${tep}`);
@@ -185,13 +185,13 @@ function banSao(tep, tu, thanh) {
 }
 const KIM_DICH = "else if (c === '[' && (g.startsWith('[[]', i) || g.startsWith('[]]', i))) { re += '\\\\' + g[i + 1]; i += 2; }";
 const DOT_BIEN = [
-  { id: 'GT5a', title: 'gỡ thành ngữ ở pathGlobToRe → làn ghim lại gắn oan (chiều im GT3 đỏ)', tep: 'lib/evidence-core.cjs', tu: KIM_DICH, thanh: '', phan: (k) => phanLan(k, 'GT3'), ghim: 'gan oan' },
-  { id: 'GT5b', title: 'gỡ thành ngữ ở globToRe → mang sang eval đã chạm (GT4 đỏ)', tep: 'feature-loop/scripts/carry-plan.mjs', tu: KIM_DICH, thanh: '', phan: (k) => phanMangSang(k, 'GT4'), ghim: 'carried=true' },
-  { id: 'GT5c', title: 'gỡ nhánh «thành ngữ là glob» ở phanLoaiMucPaths → mục không * bị từ chối (GT2b đỏ)', tep: 'lib/evidence-core.cjs', tu: 'if (/[*?]|\\[\\[\\]|\\[\\]\\]/.test(v)) {', thanh: 'if (/[*?]/.test(v)) {', phan: (k) => phanPhanLoai(k, 'GT2b'), ghim: 'muc khong * bi tu choi' },
-  { id: 'GT5d', title: 'nhánh thành ngữ bỏ kiểm tồn tại → mục gõ sai được nhận (GT2d đỏ)', tep: 'lib/evidence-core.cjs',
+  { id: 'GT5a', title: 'gỡ thành ngữ ở pathGlobToRe → làn ghim lại gắn oan (chiều im GT3 đỏ)', tep: 'plugins/acceptance-gate/lib/evidence-core.cjs', tu: KIM_DICH, thanh: '', phan: (k) => phanLan(k, 'GT3'), ghim: 'gan oan' },
+  { id: 'GT5b', title: 'gỡ thành ngữ ở globToRe → mang sang eval đã chạm (GT4 đỏ)', tep: 'plugins/feature-loop/scripts/carry-plan.mjs', tu: KIM_DICH, thanh: '', phan: (k) => phanMangSang(k, 'GT4'), ghim: 'carried=true' },
+  { id: 'GT5c', title: 'gỡ nhánh «thành ngữ là glob» ở phanLoaiMucPaths → mục không * bị từ chối (GT2b đỏ)', tep: 'plugins/acceptance-gate/lib/evidence-core.cjs', tu: 'if (/[*?]|\\[\\[\\]|\\[\\]\\]/.test(v)) {', thanh: 'if (/[*?]/.test(v)) {', phan: (k) => phanPhanLoai(k, 'GT2b'), ghim: 'muc khong * bi tu choi' },
+  { id: 'GT5d', title: 'nhánh thành ngữ bỏ kiểm tồn tại → mục gõ sai được nhận (GT2d đỏ)', tep: 'plugins/acceptance-gate/lib/evidence-core.cjs',
     tu: "if (cay.dsThuMuc.some(d => re.test(d))) return { nhan: false, ma: 'dang-khai-la' };\n    return coTep ? { nhan: true, glob: v } : { nhan: false, ma: 'paths-khong-tro-toi-tep' };",
     thanh: "if (cay.dsThuMuc.some(d => re.test(d))) return { nhan: false, ma: 'dang-khai-la' };\n    return { nhan: true, glob: v };", phan: (k) => phanPhanLoai(k, 'GT2d'), ghim: 'muc go sai duoc nhan' },
-  { id: 'GT5e', title: 'bộ đọc chung cắt ở «]» đầu tiên (không nhận vỏ nháy) → khứ hồi paths của carry-plan đỏ (GT4 đỏ)', tep: 'lib/evidence-core.cjs',
+  { id: 'GT5e', title: 'bộ đọc chung cắt ở «]» đầu tiên (không nhận vỏ nháy) → khứ hồi paths của carry-plan đỏ (GT4 đỏ)', tep: 'plugins/acceptance-gate/lib/evidence-core.cjs',
     tu: "if (dauMuc && (ch === '\"' || ch === \"'\")) { q = ch; dauMuc = false; continue; }", thanh: '', phan: (k) => phanMangSang(k, 'GT4'), ghim: 'thiếu paths' },
 ];
 

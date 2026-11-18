@@ -11,8 +11,8 @@ import path from 'node:path';
 import { runWorkflow, check, summary } from './harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const WF = path.join(HERE, '..', '..', 'feature-loop', 'workflows', 'acceptance-verify.js');
-const READER = path.join(HERE, '..', '..', 'feature-loop', 'scripts', 'round-tally-read.mjs');
+const WF = path.join(HERE, '..', '..', 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
+const READER = path.join(HERE, '..', '..', 'plugins/feature-loop', 'scripts', 'round-tally-read.mjs');
 const VC = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2';
 
 const baseArgs = (over = {}) => ({

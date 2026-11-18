@@ -1,0 +1,6 @@
+# Chỗ đổi sót đã khai (thước đổi sót, kiem-cho.mjs mangDoiSot): «tệp<TAB>chuỗi trong mảng<TAB>lý do». Mỗi chỗ là ca ĐỎ đã có chủ
+# ở viec-kho-cu-b2.md §4 — không phải xanh giả; vòng kho cũ sửa xong thì chỗ ấy biến mất và dòng khai phải gỡ (thước đỏ «không còn»).
+# Ngoại lệ có tên: mảng là đối số của bộ dịch boPhan (tests/bo-cuc.mjs, vòng phan-du-bo-cuc-moi) — bộ dịch nhận cả đường phẳng
+# lẫn dạng plugins/<gói>/… (duong(duong(p)) = duong(p)), nên mảng trộn ở đó vô hại; lý do mở đầu «vô hại».
+tests/scripts/ban-do-khuon-roi-nhom-hai-kho.mjs	'plugins/acceptance-gate/scripts', 'lib']	K4: như trên
+tests/dieu-phoi/tiep-tuc.test.mjs	'plugins/feature-loop/skills', 'tests/fixtures'	vô hại: đối số boPhan của caySaoLb (DP3-12, sửa ở 475d5ed5) — bộ dịch chuẩn hoá cả hai dạng đường

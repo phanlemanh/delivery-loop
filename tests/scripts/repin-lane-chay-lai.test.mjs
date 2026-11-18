@@ -5,7 +5,7 @@ import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { mkKho, boKiem, ok, lenhChapChon, ROOT } from './gia-lan-fixture.mjs';
 
-const lib = (f) => import(path.join(ROOT, 'feature-loop', 'scripts', 'lib', f));
+const lib = (f) => import(path.join(ROOT, 'plugins/feature-loop', 'scripts', 'lib', f));
 const { coChayLai, BANG_CHAN_TRI, rutTenCa } = await lib('chay-lai.mjs');
 
 const ALL = ['AC1-bang-chan-tri', 'AC1-rut-ten-ca', 'AC1-suite-chap-chon', 'AC1-eval-chap-chon', 'AC1-do-hai-lan',

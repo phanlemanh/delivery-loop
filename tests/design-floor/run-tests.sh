@@ -3,7 +3,7 @@
 # chiều đỏ của chính các bộ đó (tu-thu) · móc S0/S1 của vòng (moc-s0-s1, hồ sơ design-floor-moc-s0-s1) · móc cuối S3/S4,
 # răng bộ chấm tổng và vòng mẫu (moc-s3-s4, hồ sơ design-floor-moc-s3-s4) · kho lớn và nhánh chính tên khác
 # (kho-lon-nhanh-chinh, hồ sơ va-design-floor-kho-lon-nhanh-chinh). Nguồn sự
-# thật: khối máy của design-floor/HOP-DONG-NHAP.md và design-floor/LOCAL-PATCHES.md. Chạy NGOẠI TUYẾN trên bản vendored
+# thật: khối máy của plugins/acceptance-gate/design-floor/HOP-DONG-NHAP.md và design-floor/LOCAL-PATCHES.md. Chạy NGOẠI TUYẾN trên bản vendored
 # trong kit; CI đặt DESIGN_FLOOR_KHONG_MANG=1. Hai đường chạm mạng: tests/design-floor/dong-bo.mjs (đổi ghim, đổi bản vá)
 # và ca TT-THAT của moc-s0-s1.mjs (tải chỉ mục tri thức thật — in SKIP có tên khi không mạng).
 set -u

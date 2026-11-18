@@ -15,6 +15,9 @@ import path, { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const KIT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+// Gốc plugin lõi — bố cục mà `kit` của mọi ca mô hình hoá (scripts/ · lib/ · design-floor/), cùng hình bản gốc 2.36.0
+// lấy từ cây phát hành trước dọn nhà (ở đó ba thư mục ấy nằm ở gốc kho).
+const AG = join(KIT, 'plugins', 'acceptance-gate');
 const TMP = mkdtempSync(join(tmpdir(), 'df-va460-'));
 const GOC_SHA = '4f891b078abae111b60301e31984961362d8da08'; // thẻ v2.36.0
 const SLUG = 'vd';
@@ -46,10 +49,10 @@ function banGoc() {
 // biến được chép rồi sửa. Chuỗi cũ phải có đúng một lần (không thì đột biến hỏng).
 function kitDotBien(tep, ...cap) {
   const K = moi('kit');
-  for (const d of ['lib', 'design-floor']) symlinkSync(join(KIT, d), join(K, d));
+  for (const d of ['lib', 'design-floor']) symlinkSync(join(AG, d), join(K, d));
   mkdirSync(join(K, 'scripts'));
-  for (const f of readdirSync(join(KIT, 'scripts'))) if (f !== tep) symlinkSync(join(KIT, 'scripts', f), join(K, 'scripts', f));
-  let noi = readFileSync(join(KIT, 'scripts', tep), 'utf8');
+  for (const f of readdirSync(join(AG, 'scripts'))) if (f !== tep) symlinkSync(join(AG, 'scripts', f), join(K, 'scripts', f));
+  let noi = readFileSync(join(AG, 'scripts', tep), 'utf8');
   for (const [cu, thay] of cap) {
     if (noi.split(cu).length !== 2) throw new Error(`đột biến hỏng: «${cu.slice(0, 60)}» không có đúng một lần trong ${tep}`);
     noi = noi.replace(cu, thay);
@@ -281,7 +284,9 @@ const CA = {
     gitR(H, 'push', '-q', 'origin', 'main');
     gitR(B, 'symbolic-ref', 'HEAD', 'refs/heads/main');
     gitR(H, 'push', '-q', 'origin', '--delete', 'master');
-    gitR(R, 'fetch', '-q', '--prune', 'origin');
+    // Git từ 2.48 (remote.<tên>.followRemoteHEAD) tự trỏ lại origin/HEAD treo khi fetch — tắt tường minh để fixture
+    // giữ origin/HEAD treo trên mọi bản git, như CU-CI gỡ origin/HEAD tường minh.
+    gitR(R, '-c', 'remote.origin.followRemoteHEAD=never', 'fetch', '-q', '--prune', 'origin');
     if (coRef(R, 'origin/master') || !coRef(R, 'master') || gitR(R, 'symbolic-ref', 'refs/remotes/origin/HEAD') !== 'refs/remotes/origin/master') return 'CU-DOI-TEN: fixture không đúng hình (origin/master phải mất, master cục bộ còn, origin/HEAD treo)';
     commitVong(R, { 'web/a.css': '.a { color: #fff; }\n' }, 'origin/main');
     const sua = s4(kit, R);
@@ -349,8 +354,8 @@ const TRAN = 'maxBuffer: 64 * 1024 * 1024';
 // Ma trận đột biến LOP: mỗi lời gọi một đột biến gỡ trần của RIÊNG nó — phải đỏ đúng tệp:dòng của nó.
 function dotTungLoiGoi() {
   const ds = [];
-  for (const f of readdirSync(join(KIT, 'scripts')).filter((t) => /^design-floor-.*\.mjs$/.test(t)).sort()) {
-    const noi = readFileSync(join(KIT, 'scripts', f), 'utf8');
+  for (const f of readdirSync(join(AG, 'scripts')).filter((t) => /^design-floor-.*\.mjs$/.test(t)).sort()) {
+    const noi = readFileSync(join(AG, 'scripts', f), 'utf8');
     for (const m of noi.matchAll(RE_GOI)) {
       const loi = loiGoi(noi, m.index + m[0].length - 1);
       const dongSo = noi.slice(0, m.index).split('\n').length;
@@ -443,7 +448,7 @@ const NHAN = {
   },
 };
 
-function chayCa(id, kit = KIT) {
+function chayCa(id, kit = AG) {
   try {
     return CA[id](kit);
   } catch (e) {

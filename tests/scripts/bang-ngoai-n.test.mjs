@@ -21,11 +21,11 @@ import { runWorkflow } from '../workflows/harness.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
 const BASE = '6ed3e410';
-const WF = path.join(ROOT, 'feature-loop', 'workflows', 'acceptance-verify.js');
+const WF = path.join(ROOT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js');
 const WF_SRC = fs.readFileSync(WF, 'utf8');
-const CARRY_PLAN = path.join(ROOT, 'feature-loop', 'scripts', 'carry-plan.mjs');
+const CARRY_PLAN = path.join(ROOT, 'plugins/feature-loop', 'scripts', 'carry-plan.mjs');
 const req = createRequire(import.meta.url);
-const ooc = req(path.join(ROOT, 'lib', 'out-of-contract.cjs'));
+const ooc = req(path.join(ROOT, 'plugins/acceptance-gate/lib', 'out-of-contract.cjs'));
 
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'bn-'));
 process.on('exit', () => { try { fs.rmSync(TMP, { recursive: true, force: true }); } catch { /* dọn tạm */ } });
@@ -92,9 +92,9 @@ test('BN-1-cu', () => {
 });
 test('BN-1-do', () => {
   // (a) bộ đọc bỏ khoá «Căn cứ» — bản sao trọn lib/ của cây.
-  const d = banSao(ROOT, ['lib']);
-  tiemTep(path.join(d, 'lib', 'out-of-contract.cjs'), '|Người dùng thấy gì|Căn cứ)', '|Người dùng thấy gì)', 'bộ đọc bỏ Căn cứ');
-  const sao = req(path.join(d, 'lib', 'out-of-contract.cjs'));
+  const d = banSao(ROOT, ['plugins/acceptance-gate/lib']);
+  tiemTep(path.join(d, 'plugins/acceptance-gate/lib', 'out-of-contract.cjs'), '|Người dùng thấy gì|Căn cứ)', '|Người dùng thấy gì)', 'bộ đọc bỏ Căn cứ');
+  const sao = req(path.join(d, 'plugins/acceptance-gate/lib', 'out-of-contract.cjs'));
   const fa = sao.parse(docMoi()).findings;
   if (!fa.length || fa[0].can_cu !== '') throw new Error(`chiều đỏ không đỏ: bộ đọc bỏ Căn cứ vẫn ra [${fa[0] && fa[0].can_cu}]`);
   console.log('  do OK: bộ đọc bỏ Căn cứ');
@@ -139,7 +139,7 @@ const chayCarryPlan = (runLog, planFile = CARRY_PLAN) => {
   w(d, 'evals.yaml', 'evals:\n  - id: E1\n    criterion: AC-1\n    executor: test\n    cmd: x\n    paths: [lib/x.js]\n');
   w(d, 'contract.md', '- AC-1: Given x When y Then z\n');
   const cp = spawnSync(process.execPath, [planFile, '--run-log', path.join(d, 'run-log.jsonl'), '--evals', path.join(d, 'evals.yaml'),
-    '--contract', path.join(d, 'contract.md'), '--round', '2', '--ag-root', ROOT, '--no-delta'], { encoding: 'utf8' });
+    '--contract', path.join(d, 'contract.md'), '--round', '2', '--ag-root', `${ROOT}/plugins/acceptance-gate`, '--no-delta'], { encoding: 'utf8' });
   let j = null; try { j = JSON.parse(cp.stdout); } catch { /* xử dưới */ }
   return { status: cp.status, stderr: cp.stderr, cf: (j && j.carriedFindings) || [] };
 };
@@ -187,8 +187,8 @@ test('BN-2-do', async () => {
     ['sổ finding mất căn cứ', { src: tiem(WF_SRC, "plain: f.plain || '', can_cu: f.can_cu || '',", "plain: f.plain || '',", 'FINDING-LINE') }],
     ['tổng hợp không thấy căn cứ', { src: tiem(WF_SRC, "    can_cu: (ok && t.inContract !== true && t.can_cu) ? t.can_cu : null,\n", '', 'triagedRaw') }],
   ];
-  const d = banSao(ROOT, ['feature-loop', 'lib']);
-  const plan = path.join(d, 'feature-loop', 'scripts', 'carry-plan.mjs');
+  const d = banSao(ROOT, ['plugins/feature-loop', 'plugins/acceptance-gate/lib']);
+  const plan = path.join(d, 'plugins/feature-loop', 'scripts', 'carry-plan.mjs');
   tiemTep(plan, "can_cu: l.can_cu || '', ", '', 'carry-plan');
   dotBien.push(['mang sang mất căn cứ', { planFile: plan }]);
   for (const [ghim, opt] of dotBien) {
@@ -199,7 +199,7 @@ test('BN-2-do', async () => {
 });
 
 // ══ AC-3…AC-5 · bảng trên thẻ Cổng 2 ═════════════════════════════════════════════════════════
-const GC = path.join(ROOT, 'scripts', 'gate-card.js');
+const GC = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
 const GC_BASE = () => path.join(BASE_DIR(), 'scripts', 'gate-card.js');
 const COT = ['Mục', 'Người dùng gặp gì', 'Máy đề xuất', 'Căn cứ'];
 const escH = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -227,9 +227,9 @@ const bang = k => {
 };
 const coCua = h => [...h.matchAll(/class="flag [^"]*">([^<]*)/g)].map(m => m[1]);
 const BA_NHAN = (() => {
-  const t = fs.readFileSync(path.join(ROOT, 'commands', 'acceptance-card.md'), 'utf8');
+  const t = fs.readFileSync(path.join(ROOT, 'plugins/acceptance-gate/commands', 'acceptance-card.md'), 'utf8');
   const m = t.match(/\(a\) \*\*([^*]*)\*\*.*\(b\) \*\*([^*]*)\*\*.*\(c\) \*\*([^*]*)\*\*/);
-  if (!m) throw new Error('không rút được ba nhãn lựa chọn từ commands/acceptance-card.md');
+  if (!m) throw new Error('không rút được ba nhãn lựa chọn từ plugins/acceptance-gate/commands/acceptance-card.md');
   return [m[1], m[2], m[3]];
 })();
 const muc = (i, proposal, can_cu) => ({ title: `globToRe muc ${i}`, plain: `Người dùng thấy lỗi ${i}.`, can_cu, file: 'src/x.ts:1', severity: 'low', proposal });
@@ -272,10 +272,10 @@ test('BN-3-do', () => {
   const loiBase = kiemBN3(GC_BASE());
   if (!loiBase.some(x => x.includes('base không bảng'))) throw new Error(`base không đỏ đúng chỗ: ${loiBase.join(' · ')}`);
   console.log('  do OK: base không bảng');
-  const d = banSao(ROOT, ['scripts', 'lib', 'feature-loop', 'commands', 'skills']);
-  tiemTep(path.join(d, 'scripts', 'gate-card.js'), "aiCua(f, fi),\n      f.can_cu ? esc(f.can_cu) : '<span class=\"mo\">chưa có căn cứ</span>'];",
+  const d = banSao(ROOT, ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/feature-loop', 'plugins/acceptance-gate/commands', 'plugins/acceptance-gate/skills']);
+  tiemTep(path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'), "aiCua(f, fi),\n      f.can_cu ? esc(f.can_cu) : '<span class=\"mo\">chưa có căn cứ</span>'];",
     "f.can_cu ? esc(f.can_cu) : '<span class=\"mo\">chưa có căn cứ</span>', aiCua(f, fi)];", 'tráo hai ô cuối');
-  const loi = kiemBN3(path.join(d, 'scripts', 'gate-card.js'));
+  const loi = kiemBN3(path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'));
   if (!loi.some(x => x.includes('ô lệch cột'))) throw new Error(`tráo ô không đỏ: ${loi.join(' · ')}`);
   console.log('  do OK: ô lệch cột');
 });
@@ -289,7 +289,7 @@ const MA_TRAN = [
 const khoMaTran = o => {
   const kho = mkKho(o.props.map((p, i) => muc(i + 1, p, `Căn cứ mục ${i + 1}.`)), { config: o.bat ? 'feature_loop:\n  ngoai_n_tu_dinh_tuyen: true\n' : '' });
   if (o.bat) {
-    const r = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'dinh-tuyen-may.cjs'), '--write', '--root', kho, '--slug', 'demo'], { encoding: 'utf8' });
+    const r = spawnSync(process.execPath, [path.join(ROOT, 'plugins/acceptance-gate/scripts', 'dinh-tuyen-may.cjs'), '--write', '--root', kho, '--slug', 'demo'], { encoding: 'utf8' });
     const so = fs.existsSync(path.join(kho, '_acceptance/demo/decisions.jsonl')) ? fs.readFileSync(path.join(kho, '_acceptance/demo/decisions.jsonl'), 'utf8').trim().split('\n').length : 0;
     if (r.status !== 0 || so !== 2) throw new Error(`hồ sơ B: dinh-tuyen-may không ghi đủ 2 dòng máy (thoát ${r.status}, ${so} dòng): ${r.stdout}${r.stderr}`);
   }
@@ -320,15 +320,15 @@ test('BN-4', () => {
 });
 test('BN-4-do', () => {
   if (kiemBN4(GC).loi.length) throw new Error('đối chứng dương hỏng: cây đỏ');
-  const d = banSao(ROOT, ['scripts', 'lib', 'feature-loop', 'commands', 'skills']);
-  tiemTep(path.join(d, 'scripts', 'gate-card.js'), '  hang.sort((a, b) => a.g - b.g || a.fi - b.fi);\n', '', 'bỏ bước xếp nhóm');
-  const { loi } = kiemBN4(path.join(d, 'scripts', 'gate-card.js'));
+  const d = banSao(ROOT, ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/feature-loop', 'plugins/acceptance-gate/commands', 'plugins/acceptance-gate/skills']);
+  tiemTep(path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '  hang.sort((a, b) => a.g - b.g || a.fi - b.fi);\n', '', 'bỏ bước xếp nhóm');
+  const { loi } = kiemBN4(path.join(d, 'plugins/acceptance-gate/scripts', 'gate-card.js'));
   if (!loi.some(x => x.startsWith('hồ sơ A: hàng 1 = Ngoài-1'))) throw new Error(`bỏ xếp nhóm không đỏ thứ tự tệp: ${loi.join(' · ')}`);
   console.log('  do OK: thứ tự tệp');
   // Chốt «ma trận hụt» phải đỏ được: bản sao bỏ hàng của mục cuối tệp → thẻ in thiếu một hàng.
-  const d2 = banSao(ROOT, ['scripts', 'lib', 'feature-loop', 'commands', 'skills']);
-  tiemTep(path.join(d2, 'scripts', 'gate-card.js'), '  for (const { f, fi, g } of hang) {\n', '  for (const { f, fi, g } of hang) {\n    if (fi === ooc.findings.length - 1) continue;\n', 'bỏ hàng mục cuối');
-  const r2 = kiemBN4(path.join(d2, 'scripts', 'gate-card.js'));
+  const d2 = banSao(ROOT, ['plugins/acceptance-gate/scripts', 'plugins/acceptance-gate/lib', 'plugins/feature-loop', 'plugins/acceptance-gate/commands', 'plugins/acceptance-gate/skills']);
+  tiemTep(path.join(d2, 'plugins/acceptance-gate/scripts', 'gate-card.js'), '  for (const { f, fi, g } of hang) {\n', '  for (const { f, fi, g } of hang) {\n    if (fi === ooc.findings.length - 1) continue;\n', 'bỏ hàng mục cuối');
+  const r2 = kiemBN4(path.join(d2, 'plugins/acceptance-gate/scripts', 'gate-card.js'));
   if (!r2.loi.some(x => x.startsWith('ma trận hụt'))) throw new Error(`bỏ một hàng không đỏ «ma trận hụt»: ${r2.loi.join(' · ')}`);
   console.log('  do OK: ma trận hụt');
 });

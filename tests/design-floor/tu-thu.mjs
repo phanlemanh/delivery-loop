@@ -11,7 +11,7 @@ import { spawnSync } from 'node:child_process';
 import { appendFileSync, cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { DUONG_KHOA, GOC_KIT, docHopDong, soVaTai } from './lib/hop-dong.mjs';
+import { DUONG_KHOA, GOC_KIT, NODE_MODULES_DO, docHopDong, soVaTai } from './lib/hop-dong.mjs';
 import { apVa, dungBanGoi } from './lib/upstream.mjs';
 
 const chi = (() => {
@@ -40,7 +40,7 @@ function banSao({ tu = GOC_KIT, sua, suaKhoa, suaSo, suaCay } = {}) {
   const goc = mkdtempSync(join(TMP, 'b-'));
   cpSync(join(tu, 'design-floor'), join(goc, 'design-floor'), { recursive: true });
   mkdirSync(join(goc, 'tests', 'design-floor'), { recursive: true });
-  symlinkSync(join(GOC_KIT, 'tests', 'design-floor', 'node_modules'), join(goc, 'tests', 'design-floor', 'node_modules'));
+  symlinkSync(NODE_MODULES_DO, join(goc, 'tests', 'design-floor', 'node_modules'));
   const hdMd = join(goc, 'design-floor/HOP-DONG-NHAP.md');
   const khoa = join(goc, 'design-floor/upstream.lock.json');
   if (sua) thayKhoi(hdMd, 'DESIGN-FLOOR-HOP-DONG', sua);

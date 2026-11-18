@@ -19,10 +19,10 @@ import { createRequire } from 'node:module';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');              // suy từ vị trí tệp ca
-// Trạng thái đã thông Cổng Bằng chứng rút từ MỘT nguồn của lib (lib/workspace-record.cjs), không gõ
+// Trạng thái đã thông Cổng Bằng chứng rút từ MỘT nguồn của lib (plugins/acceptance-gate/lib/workspace-record.cjs), không gõ
 // tay chuỗi: fixture chỉ cần một hồ sơ đã thông cổng để làn ghim lại đọc pin (ca RT13 vế hai).
-const { DA_THONG_CONG_2 } = createRequire(import.meta.url)(path.join(KIT, 'lib', 'workspace-record.cjs'));
-const LANE = path.join(KIT, 'feature-loop', 'scripts', 'repin-lane.mjs');
+const { DA_THONG_CONG_2 } = createRequire(import.meta.url)(path.join(KIT, 'plugins/acceptance-gate/lib', 'workspace-record.cjs'));
+const LANE = path.join(KIT, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs');
 const ADR = path.join(KIT, 'docs', 'adr', '0019-ban-ghi-dinh-tuyen-la-vat-t1-may-sinh.md');
 const TMP = mkdtempSync(path.join(tmpdir(), 'dn-lane-'));
 let passed = 0, failed = 0;
@@ -62,7 +62,7 @@ function dungKho(ten, { sub = '', slugs = ['demo'] } = {}) {
   }
   git('add', '-A'); git('commit', '-qm', 'evidence');
   const env = { ...process.env, SK_MARKER: MARKER };
-  const chay = (bin, ...a) => spawnSync(process.execPath, [bin, '--root', L, '--ag-root', KIT, ...a], { encoding: 'utf8', env });
+  const chay = (bin, ...a) => spawnSync(process.execPath, [bin, '--root', L, '--ag-root', `${KIT}/plugins/acceptance-gate`, ...a], { encoding: 'utf8', env });
   // PIN do WRITER THẬT ghi, một lượt cho mọi slug
   const w = chay(LANE, ...slugs.flatMap(s => ['--slug', s]), '--reason', 'ghim ban dau', '--write');
   if (w.status !== 0) throw new Error(`fixture ${ten}: writer thật không ghi được pin (exit ${w.status}):\n${w.stderr}`);
@@ -92,7 +92,7 @@ function sua(file, kim, thay) {
 let soDotBien = 0;
 function dotBien(kim, thay) {
   const d = path.join(TMP, `dot-bien-${soDotBien++}`);
-  cpSync(path.join(KIT, 'feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
   const f = path.join(d, 'feature-loop', 'scripts', 'repin-lane.mjs');
   const src = readFileSync(f, 'utf8');
   const n = src.split(kim).length - 1;

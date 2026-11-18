@@ -1,0 +1,557 @@
+#!/usr/bin/env node
+// kiem-cho.mjs — thước ĐỘC LẬP cho cây kịch bản chuyển nhà dựng (hồ sơ _acceptance/kich-ban-chuyen-nha/).
+//
+// Đọc bảng xếp làm DỮ LIỆU nhưng tự cài mọi phép tính (đích của một tệp, phép áp luật đổi chữ, phép đổi con trỏ) —
+// không nhập hàm nào của don-nha.mjs, để một lỗi trong kịch bản không tự chấm xanh chính nó (AC-4, ca KB-AC4-doc-lap).
+// Sổ kiểm kê của nguồn lấy từ migration/tra-soat/kiem-ke.mjs (công cụ đã có kiểm hai chiều riêng).
+//
+//   AC-3  mỗi tệp sản phẩm (san-pham + chua-ro) có đúng một chỗ ở cây mới; tệp khác giữ nguyên chỗ
+//   AC-5  tệp khai chợ và plugin của cây mới
+//   (Task 2–3 thêm AC-4 nội dung đúng luật, AC-7 con trỏ)
+//
+// Dùng:  node kiem-cho.mjs --kho <git> --nguon <ref> --dich <ref> [--bang-xep <tệp>]
+// Thoát: 0 đạt (in các dòng «AC-<n> đạt: …») · 1 có lỗi (mỗi lỗi một dòng stderr) · 2 sai đối số.
+
+import fs from 'node:fs';
+import os from 'node:os';
+import { isDeepStrictEqual } from 'node:util';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { kiemKe } from '../tra-soat/kiem-ke.mjs';
+
+const DAY = path.dirname(fileURLToPath(import.meta.url));
+const LUAT_XEP = path.join(DAY, '..', 'tra-soat', 'luat-xep.json');
+
+const git = (kho, args) => execFileSync('git', ['-C', kho, ...args], { encoding: 'utf8', maxBuffer: 1 << 30, stdio: ['ignore', 'pipe', 'pipe'] });
+const lsTree = (kho, ref) => git(kho, ['ls-tree', '-r', '--name-only', '-z', ref]).split('\0').filter(Boolean);
+
+export function docBang(tep) {
+  const bx = JSON.parse(fs.readFileSync(tep, 'utf8'));
+  const dir = path.dirname(path.resolve(tep));
+  return { ...bx, _dir: dir, ten: JSON.parse(fs.readFileSync(path.resolve(dir, bx.bang_ten), 'utf8')) };
+}
+
+// Đích của một tệp nguồn theo bảng xếp (tính lại ở đây, không hỏi kịch bản).
+export function dichCua(t, bx) {
+  if (bx.tep[t]) return bx.tep[t];
+  const dau = t.split('/')[0];
+  if (bx.thu_muc[dau]) return bx.thu_muc[dau] + t.slice(dau.length);
+  return t;
+}
+
+// ── AC-4: nội dung chỉ đổi bởi luật đã khai (phép áp luật CÀI LẠI ở đây) ───────────────────────────────────────
+const thoat = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function luatRieng(bx, dp = {}) {
+  const L = [];
+  // B2: đường tới skill / lệnh đổi tên trong mã của chính plugin ấy (cài lại; phần tử thứ tư = thư mục giới hạn).
+  for (const [a, b] of Object.entries(bx.ten.lenh)) {
+    const [pa, la] = a.split(':'); const lb = b.split(':')[1]; const D = dp[pa]; if (!D) continue;
+    L.push([a, new RegExp(`(['"])skills\\1(\\s*,\\s*)(['"])${thoat(la)}\\3`, 'g'), `$1skills$1$2$3${lb}$3`, D]);
+    L.push([a, new RegExp(`(?<![\\w-])skills/${thoat(la)}(?=/)`, 'g'), `skills/${lb}`, D]);
+    L.push([a, new RegExp(`(?<![\\w-])commands/${thoat(la)}\\.md(?![\\w-])`, 'g'), `commands/${lb}.md`, D]);
+  }
+  for (const [a, b] of Object.entries(bx.ten.lenh)) L.push([a, new RegExp('(?<![\\w-])' + thoat(a) + '(?![\\w-])', 'g'), b]);
+  for (const [p, q] of Object.entries(bx.ten.plugin)) {
+    L.push([p, new RegExp('(?<![\\w-])' + thoat(p) + ':(?=[a-z])', 'g'), q + ':']);
+    L.push([p, new RegExp('(?<![\\w-])' + thoat(p) + '@', 'g'), q + '@']);
+    L.push([p, new RegExp('--plugin ' + thoat(p) + '(?![\\w-])', 'g'), '--plugin ' + q]);
+    L.push([p, new RegExp("plugin: '" + thoat(p) + "'", 'g'), "plugin: '" + q + "'"]);
+    L.push([p, new RegExp("'" + thoat(p) + "': \\{", 'g'), "'" + q + "': {"]);
+  }
+  L.push([bx.cho_moi.ten_cu, new RegExp(bx.luat_cho.mau, 'g'), bx.luat_cho.thay]);
+  return L;
+}
+const apLuat = (s, L, d = '') => L.reduce((x, [, re, thay, D]) => (D && !d.startsWith(`${D}/`) ? x : x.replace(re, thay)), s);
+
+// ── B2 AC-2: tệp bộ kiểm chỉ khác bản gốc ở đường và tên (phép ĐẢO, cài lại ở đây) ────────────────────────────────
+// Tập bước 6 (đọc bo_kiem của bảng xếp làm dữ liệu): tệp mã dưới `tap` trừ `tru`, cộng `tep_goc`.
+function thuocBuoc6(t, k) {
+  if (!k) return false;
+  return (t.startsWith(k.tap) && !t.includes(k.tru) && k.duoi.some(d => t.endsWith(d)))
+    || k.tep_goc.some(g => (g.endsWith('/') ? t.startsWith(g) : t === g));
+}
+// Phép đảo: tên mới → tên cũ theo bảng tên đảo, đường mới → đường cũ theo bảng xếp đảo (đổi tên tệp lệnh / thư mục skill
+// trước). KHÔNG đảo bảng vá — mục vá chỉ qua được khi nó chỉ đổi đường và tên.
+export function phepDao(bx, dp) {
+  const L = [];
+  const neo = '(?=[/\'"`\\s)\\],:;]|$)';
+  for (const [a, b] of Object.entries(bx.ten.lenh)) {
+    const [pa, la] = a.split(':'); const lb = b.split(':')[1]; const D = dp[pa]; if (!D) continue;
+    L.push([new RegExp(thoat(`${D}/commands/${lb}.md`), 'g'), `${D}/commands/${la}.md`]);
+    L.push([new RegExp(thoat(`${D}/skills/${lb}`) + neo, 'g'), `${D}/skills/${la}`]);
+  }
+  // Gốc plugin lõi truyền qua --ag-root / CLAUDE_PLUGIN_ROOT: `${X}/<gốc lõi>` (mã) và "$X/<gốc lõi>" (bash) → X.
+  const lo = path.posix.dirname(path.posix.dirname(bx.tep['.claude-plugin/plugin.json']));
+  if (bx.bo_kiem) {
+    // bien_goc_va: biến gốc kho chỉ mục vá dùng (luật xuôi không đọc) — chiều đảo phải nhận cả hai.
+    const bien = [...bx.bo_kiem.bien_goc, ...(bx.bo_kiem.bien_goc_va || [])].map(thoat).join('|');
+    L.push([new RegExp('`\\$\\{(' + bien + ')\\}/' + thoat(lo) + '`', 'g'), '$1']);
+    L.push([new RegExp('"\\$(\\{?)(' + bien + ')(\\}?)/' + thoat(lo) + '"', 'g'), '"$$$1$2$3"']);
+    // `${X}/<gốc lõi>` nằm giữa một template dài hơn (mục vá: AG='${may}/<gốc lõi>') → `${X}`.
+    L.push([new RegExp('\\$\\{(' + bien + ')\\}/' + thoat(lo) + '(?![\\w/-])', 'g'), '$${$1}']);
+  }
+  // Gốc lõi làm một mảnh đường riêng (mục vá chỉ ra gốc plugin lõi): path.join(X, '<gốc lõi>'[, …]) → path.join(X[, …]),
+  // Python `X / "<gốc lõi>"` → X; còn đứng trần trong nháy là nguồn '.' của plugin lõi ở chợ cũ. Chuỗi '<gốc lõi>' đứng
+  // riêng không thể có ở bản gốc (bố cục cũ không có plugins/), nên phép ngược không mơ hồ.
+  L.push([new RegExp(`path\\.join\\(([\\w.]+)\\s*,\\s*(['"])${thoat(lo)}\\2\\)`, 'g'), '$1']);
+  L.push([new RegExp(`\\s*,\\s*(['"])${thoat(lo)}\\1(?=\\s*[,)])`, 'g'), '']);
+  L.push([new RegExp(`\\s*/\\s*(['"])${thoat(lo)}\\1`, 'g'), '']);
+  L.push([new RegExp(`(['"])${thoat(lo)}\\1`, 'g'), '$1.$1']);
+  // Tên tệp lệnh trần «<lá>.md» — chỉ khi lá mới ứng với đúng một lá cũ. Lá trần không đuôi (`status`, `open`) là chữ
+  // thường gặp nên chỉ đảo khi đứng trong một mảng mà MỌI phần tử là lá mới (mảng tên lệnh khoá, P32).
+  const la = new Map();
+  for (const [a, b] of Object.entries(bx.ten.lenh)) { const lb = b.split(':')[1], lc = a.split(':')[1]; if (lb !== lc) la.set(lb, [...new Set([...(la.get(lb) || []), lc])]); }
+  const laMot = new Map([...la].filter(([, ds]) => ds.length === 1).map(([lb, ds]) => [lb, ds[0]]));
+  for (const [lb, lc] of laMot) L.push([new RegExp(`(?<![\\w./-])${thoat(lb)}\\.md(?![\\w-])`, 'g'), `${lc}.md`]);
+  const hoi = [...laMot.keys()].map(thoat).join('|');
+  if (hoi) L.push([new RegExp(`\\[\\s*(['"])(?:${hoi})\\1(?:\\s*,\\s*\\1(?:${hoi})\\1)*\\s*\\]`, 'g'),
+    (m) => m.replace(new RegExp(`(['"])(${hoi})\\1`, 'g'), (x, q, lb) => q + laMot.get(lb) + q)]);
+  // Đổi tên skill / lệnh ở dạng cặp phần tử: '<D>/skills', '<mới>' → '<D>/skills', '<cũ>' (đường đảo tiếp ở dưới).
+  for (const [a, b] of Object.entries(bx.ten.lenh)) {
+    const [pa, la] = a.split(':'); const lb = b.split(':')[1]; const D = dp[pa]; if (!D) continue;
+    L.push([new RegExp(`(['"])(${thoat(D)}/skills)\\1(\\s*[,/]\\s*)(['"])${thoat(lb)}\\4`, 'g'), `$1$2$1$3$4${la}$4`]);
+    L.push([new RegExp(`(['"])(${thoat(D)}/commands)\\1(\\s*[,/]\\s*)(['"])${thoat(lb)}\\.md\\4`, 'g'), `$1$2$1$3$4${la}.md$4`]);
+    // Dạng ba phần tử của mục vá: '<D>', 'commands', '<mới>.md' → '<D>', 'commands', '<cũ>.md'.
+    L.push([new RegExp(`(['"]${thoat(D)}['"]\\s*,\\s*['"]commands['"]\\s*,\\s*)(['"])${thoat(lb)}\\.md\\2`, 'g'), `$1$2${la}.md$2`]);
+  }
+  for (const [cu, moi] of Object.entries(bx.tep)) L.push([new RegExp(thoat(moi), 'g'), cu]);
+  for (const [cu, moi] of Object.entries(bx.thu_muc).sort((x, y) => y[1].length - x[1].length)) {
+    L.push([new RegExp('(?<![\\w.-])' + thoat(moi) + neo, 'g'), cu]);
+  }
+  for (const [a, b] of Object.entries(bx.ten.lenh)) L.push([new RegExp('(?<![\\w-])' + thoat(b) + '(?![\\w-])', 'g'), a]);
+  for (const [p, q] of Object.entries(bx.ten.plugin)) {
+    L.push([new RegExp('(?<![\\w-])' + thoat(q) + ':(?=[a-z])', 'g'), p + ':']);
+    L.push([new RegExp('(?<![\\w-])' + thoat(q) + '@', 'g'), p + '@']);
+    L.push([new RegExp('--plugin ' + thoat(q) + '(?![\\w-])', 'g'), '--plugin ' + p]);
+    L.push([new RegExp("plugin: '" + thoat(q) + "'", 'g'), "plugin: '" + p + "'"]);
+    L.push([new RegExp("'" + thoat(q) + "': \\{", 'g'), "'" + p + "': {"]);
+    // Tên plugin trần trong nháy (mục vá tra chợ theo tên, Python `"dispatch" in p.parts`): 'roadmap' → 'road-map'.
+    L.push([new RegExp(`(['"])${thoat(q)}\\1`, 'g'), `$1${p}$1`]);
+    // Trong một regex literal: `\/dispatch:` → `\/dieu-phoi:` (dấu «/» thoát đứng trước, chữ sau là ngoặc hoặc «/»).
+    L.push([new RegExp('(?<=\\\\/)' + thoat(q) + ':(?=[\\[/])', 'g'), p + ':']);
+    // Một nhánh của nhóm lựa chọn tên plugin trong regex: `(acceptance-gate|feature-loop|dispatch):` → `…|dieu-phoi):`
+    // (mục vá moi-cong-khong-qua-nut — chỉ trong nhóm có một nhánh là tên plugin không đổi, để chữ thường không bị đảo).
+    const conGiu = Object.keys(dp).filter(k => !(k in bx.ten.plugin)).map(thoat).join('|');
+    L.push([new RegExp(`(\\((?:[\\w-]+\\|)*(?:${conGiu})(?:\\|[\\w-]+)*\\))`, 'g'),
+      (m) => m.replace(new RegExp(`(?<=[(|])${thoat(q)}(?=[|)])`, 'g'), p)]);
+  }
+  L.push([new RegExp('(?<![\\w-])' + thoat(bx.luat_cho.thay) + '(?![\\w-])', 'g'), bx.cho_moi.ten_cu]);
+  return (s) => L.reduce((x, [re, thay]) => x.replace(re, thay), s);
+}
+// Chỗ đảo mơ hồ đã khai: «tệp<TAB>chuỗi<TAB>lý do» — chuỗi ấy ở cây mới vốn có sẵn ở bản gốc, không được đảo.
+function docMoHo(bx) {
+  const p = bx.bo_kiem?.dao_mo_ho ? path.resolve(bx._dir, bx.bo_kiem.dao_mo_ho) : null;
+  if (!p || !fs.existsSync(p)) return [];
+  return fs.readFileSync(p, 'utf8').split('\n').filter(d => d.trim() && !d.startsWith('#')).map(d => { const [tep, chuoi, lyDo] = d.split('\t'); return { tep, chuoi, lyDo }; });
+}
+// Dạng lịch sử `<mã khác HEAD>:<đường>` phải giữ đường CŨ (commit cũ mang bố cục cũ): đường mới đứng sau một mã như thế là
+// một sửa mà phép đảo tự xoá dấu — đo riêng, trước khi đảo.
+function lichSuBiDoi(sb, bx) {
+  const moi = [...Object.values(bx.thu_muc), ...Object.values(bx.tep)].map(thoat).join('|');
+  for (const m of sb.matchAll(new RegExp(`([^\\s'"\`(=,]*):(?:${moi})(?=[/'"\`\\s]|$)`, 'g'))) if (!/(^|[^\w])HEAD$/.test(m[1])) return true;
+  return false;
+}
+export function daoTep(t, sb, dao, moHo, bx) {
+  const giu = moHo.filter(x => x.tep === t);
+  let s = sb; const loi = [];
+  if (bx && lichSuBiDoi(sb, bx)) loi.push(`tệp kiểm lệch luật: ${t}`);
+  giu.forEach((x, i) => { if (!s.includes(x.chuoi)) loi.push(`chỗ đảo mơ hồ không còn: ${t}`); s = s.split(x.chuoi).join(`\u0000MOHO${i}\u0000`); });
+  s = dao(s);
+  giu.forEach((x, i) => { s = s.split(`\u0000MOHO${i}\u0000`).join(x.chuoi); });
+  return { s, loi };
+}
+// ── B2 đổi sót: phép đảo chỉ bắt chỗ đổi SAI; chỗ luật BỎ SÓT tự về đúng bản gốc khi đảo, nên đo riêng trên cây mới ──
+// Một mảng mà phần tử chuỗi trực tiếp (bỏ phần trong ngoặc tròn — đối số path.join…) vừa có đường `plugins/…` vừa có tên
+// thư mục gốc cũ trần là mảng đổi nửa chừng (JI12, 15/11: năm thư mục lõi còn tên cũ, existsSync bỏ qua, ca vẫn xanh).
+// Tên gốc cũ đứng ngay sau đúng một gốc plugin (`'plugins/feature-loop', 'scripts', 'x.mjs'`) là chuỗi đoạn đường, không nêu.
+export function mangDoiSot(s, goc) {
+  const ra = [];
+  for (const m of s.matchAll(/\[([^[\]]*)\]/g)) {
+    let c = m[1], c0;
+    do { c0 = c; c = c.replace(/\([^()]*\)/g, '()'); } while (c !== c0);
+    const el = [...c.matchAll(/(['"`])([^'"`\n]*)\1/g)].map(x => x[2]);
+    if (!el.some(e => e.startsWith('plugins/'))) continue;
+    if (el.some((e, i) => goc.has(e) && !/^plugins\/[\w-]+$/.test(el[i - 1] || ''))) ra.push({ dong: s.slice(0, m.index).split('\n').length, doan: m[0] });
+  }
+  return ra;
+}
+function docDoiSot(bx) {
+  const p = bx.bo_kiem?.doi_sot ? path.resolve(bx._dir, bx.bo_kiem.doi_sot) : null;
+  if (!p || !fs.existsSync(p)) return [];
+  return fs.readFileSync(p, 'utf8').split('\n').filter(d => d.trim() && !d.startsWith('#')).map(d => { const [tep, chuoi, lyDo] = d.split('\t'); return { tep, chuoi, lyDo }; });
+}
+function docTuDung(bx) {
+  const p = bx.bo_kiem?.tu_dung ? path.resolve(bx._dir, bx.bo_kiem.tu_dung) : null;
+  if (!p) return new Set();
+  return new Set(fs.readFileSync(p, 'utf8').split('\n').map(s => s.trim()).filter(s => s && !s.startsWith('#')));
+}
+const laChu = (b) => !b.subarray(0, 8192).includes(0);
+const CHUOI_GIU = ['dieu-phoi.mjs', 'cat-luot.mjs', 'acceptance-gate-kit-tri-thuc'];
+
+function giaiNen(kho, ref) {
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), 'kiem-cho-'));
+  execFileSync('sh', ['-c', 'git -C "$1" archive "$2" | tar -x -C "$3"', 'sh', kho, ref, d], { maxBuffer: 1 << 30 });
+  return d;
+}
+
+// Thư mục đích của từng plugin cũ, đọc từ tệp khai của NGUỒN.
+export function dichPluginCua(choNguon, bx) {
+  const m = {};
+  for (const p of choNguon.plugins) {
+    const src = path.posix.normalize(p.source).replace(/^\.\/?/, '').replace(/\/$/, '');
+    m[p.name] = src === '' || src === '.' ? path.posix.dirname(path.posix.dirname(bx.tep['.claude-plugin/plugin.json'])) : bx.thu_muc[src];
+  }
+  return m;
+}
+
+// Đích sau bước 1 + đổi tên tệp lệnh / thư mục skill của bước 3.
+function dichDayDu(t, bx, dp) {
+  let d = dichCua(t, bx);
+  for (const [a, b] of Object.entries(bx.ten.lenh)) {
+    const [pa, la] = a.split(':'); const lb = b.split(':')[1]; const D = dp[pa]; if (!D) continue;
+    if (d === `${D}/commands/${la}.md`) d = `${D}/commands/${lb}.md`;
+    else if (d.startsWith(`${D}/skills/${la}/`)) d = `${D}/skills/${lb}/` + d.slice(`${D}/skills/${la}/`.length);
+  }
+  return d;
+}
+
+function ac4(kho, nguon, dich, kk, bx, ngoai) {
+  const loi = [];
+  const A = giaiNen(kho, nguon), B = giaiNen(kho, dich);
+  try {
+    const docA = (t) => fs.readFileSync(path.join(A, t)); const docB = (t) => fs.readFileSync(path.join(B, t));
+    const choNguon = JSON.parse(docA('.claude-plugin/marketplace.json').toString('utf8'));
+    const dp = dichPluginCua(choNguon, bx);
+    const L = luatRieng(bx, dp);
+    const sp = new Set(kk.hang.filter(h => h.lop === 'san-pham' || h.lop === 'chua-ro').map(h => h.tep));
+    const taiLieu = new Set(bx.tai_lieu_doi_chu);
+    const khuonSua = new Set(bx.khuon?.duoc_cham?.sua || []);
+    const skillDoi = new Map(Object.entries(bx.ten.lenh).map(([a, b]) => [a.split(':'), b.split(':')[1]]).filter(([[pa, la]]) => dp[pa]).map(([[pa, la], lb]) => [`${dp[pa]}/skills/${lb}/SKILL.md`, [la, lb]]));
+    const cayMoi = new Set(lsTree(kho, dich)); const daCo = new Set();
+    const maNguon = git(kho, ['rev-parse', nguon]).trim();
+    const dao = phepDao(bx, dp); const moHo = docMoHo(bx); let n6 = 0, tong6 = 0;
+    const gocCu = new Set(Object.keys(bx.thu_muc)); const doiSot = docDoiSot(bx); const daKhai = new Set();
+    const tuDung = docTuDung(bx);
+    // Luật tên của bước 6: luật đổi chữ của bước 3 (không luật đường skill), luật tên chợ thêm neo phía trước.
+    const L6ten = luatRieng(bx, {}).map(r => (r[0] === bx.cho_moi.ten_cu ? [r[0], new RegExp(`(?<![\\w-])(?:${r[1].source})`, 'g'), r[2]] : r));
+    // Tệp một mục vá chạm (kể cả fixture ngoài tập luật) cũng là tệp bước 6 — kịch bản áp vá lên bất kỳ tệp nào nó nêu.
+    const vaDs = bx.bo_kiem?.va ? JSON.parse(fs.readFileSync(path.resolve(bx._dir, bx.bo_kiem.va), 'utf8')) : [];
+    const vaTep = new Set(vaDs.map(v => v.tep));
+    // Mục vá khai `ngoai_dao` (đổi không phải đường/tên, có căn cứ quyết định ghi trong mục): thước gỡ ĐÚNG mục ấy — phải
+    // khớp đúng so_lan lần — rồi mới đảo; mọi chỗ khác của tệp vẫn qua phép đảo như thường.
+    const ngoaiDao = new Map();
+    for (const v of vaDs) if (v.ngoai_dao) ngoaiDao.set(v.tep, [...(ngoaiDao.get(v.tep) || []), v]);
+    const goNgoaiDao = (t, s) => {
+      for (const v of ngoaiDao.get(t) || []) {
+        const c = s.split(v.moi).length - 1;
+        if (c !== v.so_lan) { loi.push(`mục vá ngoài phép đảo không khớp (${c}/${v.so_lan}): ${t}`); continue; }
+        s = s.split(v.moi).join(v.cu);
+      }
+      return s;
+    };
+    let n = 0, m = 0; const demGiu = Object.fromEntries(CHUOI_GIU.map(x => [x, [0, 0]]));
+    // Số chỗ khớp của từng mục bảng tên: chữ khớp + đổi tên thư mục plugin, tệp lệnh, thư mục skill.
+    const demLuat = new Map([...Object.keys(bx.ten.lenh), ...Object.keys(bx.ten.plugin), bx.cho_moi.ten_cu].map(k => [k, 0]));
+    for (const p of Object.keys(bx.ten.plugin)) if (dp[p]) demLuat.set(p, demLuat.get(p) + 1);
+    demLuat.set(bx.cho_moi.ten_cu, demLuat.get(bx.cho_moi.ten_cu) + 1);
+    for (const t of lsTree(kho, nguon)) {
+      const d = sp.has(t) ? dichDayDu(t, bx, dp) : t; daCo.add(d);
+      if (d !== dichCua(t, bx)) for (const [a, b] of Object.entries(bx.ten.lenh)) {
+        const [pa, la] = a.split(':'); const D = dp[pa];
+        if (D && (dichCua(t, bx) === `${D}/commands/${la}.md` || dichCua(t, bx) === `${D}/skills/${la}/SKILL.md`)) demLuat.set(a, demLuat.get(a) + 1);
+      }
+      if (!cayMoi.has(d)) continue; // AC-3 đã báo
+      const a = docA(t), b = docB(d);
+      // Cây vendor có băm ghim (khong_doi_chu): dời mà không đổi chữ — so từng byte.
+      const doiChu = ((sp.has(t) && d.startsWith('plugins/')) || taiLieu.has(t)) && !(bx.khong_doi_chu || []).some(g => t.startsWith(g));
+      const la6 = (thuocBuoc6(t, bx.bo_kiem) || vaTep.has(t)) && laChu(a);
+      // Tệp tự đúng đường: bước 6 chỉ áp luật tên — so thẳng với bản gốc qua đúng luật tên ấy, không phép đảo đường.
+      // Tệp ngoài tập bước 6 mà mọi mục vá của nó đều khai ngoai_dao: gỡ các mục ấy rồi so từng byte với bản gốc.
+      if (la6 && !thuocBuoc6(t, bx.bo_kiem) && ngoaiDao.has(t) && vaDs.every(v => v.tep !== t || v.ngoai_dao)) {
+        tong6++;
+        if (goNgoaiDao(t, b.toString('utf8')) !== a.toString('utf8')) loi.push(`tệp kiểm lệch luật: ${t}`); else n6++;
+        continue;
+      }
+      if (la6 && tuDung.has(t)) {
+        tong6++;
+        if (apLuat(a.toString('utf8'), L6ten) !== b.toString('utf8')) loi.push(`tệp tự đúng đường lệch luật tên: ${t}`); else n6++;
+        continue;
+      }
+      // Tài liệu đổi chữ ở bước 3 mà cũng thuộc tập bước 6 (.claude/settings.json): phép đảo về bản gốc đo cả hai bước.
+      if (!doiChu || (la6 && taiLieu.has(t))) {
+        if (t === '.claude-plugin/marketplace.json' || khuonSua.has(t)) continue; // AC-5 và AC-8 đo
+        if (la6) { // B2 AC-2: phép đảo thay phép so từng byte
+          tong6++;
+          const { s: daoLai, loi: l6 } = daoTep(t, goNgoaiDao(t, b.toString('utf8')), dao, moHo, bx);
+          loi.push(...l6);
+          if (daoLai !== a.toString('utf8')) loi.push(`tệp kiểm lệch luật: ${t}`); else if (!l6.length) n6++;
+          for (const r of mangDoiSot(b.toString('utf8'), gocCu)) {
+            const k = doiSot.findIndex(x => x.tep === t && r.doan.includes(x.chuoi));
+            if (k < 0) loi.push(`đổi sót: ${t}:${r.dong}`); else daKhai.add(k);
+          }
+          continue;
+        }
+        if (!a.equals(b)) loi.push(`tệp không phải sản phẩm bị sửa: ${t}`); else m++;
+        continue;
+      }
+      if (!laChu(a)) { if (!a.equals(b)) loi.push(`nội dung lệch luật: ${d}`); else n++; continue; }
+      const sa = a.toString('utf8'), sb = b.toString('utf8');
+      for (const x of CHUOI_GIU) { demGiu[x][0] += sa.split(x).length - 1; demGiu[x][1] += sb.split(x).length - 1; }
+      for (const [k, re] of L) demLuat.set(k, demLuat.get(k) + (sa.match(re) || []).length);
+      let [ky] = doiConTro(t, d, apLuat(sa, L, d), kk, bx, maNguon, ngoai);
+      if (skillDoi.has(d)) { const [la, lb] = skillDoi.get(d); ky = ky.replace(new RegExp(`^name: ${thoat(la)}$`, 'm'), `name: ${lb}`); }
+      if (/(^|\/)\.claude-plugin\/plugin\.json$/.test(d)) {
+        const o = JSON.parse(ky);
+        const cu = Object.keys(dp).find(k => `${dp[k]}/.claude-plugin/plugin.json` === d);
+        if (cu && bx.ten.plugin[cu]) o.name = bx.ten.plugin[cu];
+        if (!isDeepStrictEqual(o, JSON.parse(sb))) loi.push(`nội dung lệch luật: ${d}`); else n++;
+        continue;
+      }
+      if (ky !== sb) loi.push(`nội dung lệch luật: ${d}`); else n++;
+    }
+    const them = new Set(bx.khuon?.duoc_cham?.them || []);
+    for (const d of cayMoi) if (!daCo.has(d) && !them.has(d)) loi.push(`tệp lạ ở cây mới: ${d}`);
+    for (const [x, [u, v]] of Object.entries(demGiu)) if (u !== v) loi.push(`chuỗi phải giữ đổi số: ${x} ${u}→${v}`);
+    for (const [k, v] of demLuat) if (!v) loi.push(`luật không khớp chỗ nào: ${k}`);
+    doiSot.forEach((x, k) => { if (!daKhai.has(k)) loi.push(`chỗ đổi sót đã khai không còn: ${x.tep}`); });
+    const dong = loi.length ? [] : [
+      `AC-4 đạt: ${n} tệp đúng luật, ${m} tệp không phải sản phẩm giữ nguyên`,
+      ...(bx.bo_kiem ? [`AC-2 (B2) đạt: ${n6}/${tong6} tệp bộ kiểm chỉ khác bản gốc ở đường và tên · ${moHo.length} chỗ đảo mơ hồ đã khai`,
+        `đổi sót (B2): 0 mảng trộn tên gốc cũ với đường mới ngoài ${doiSot.length} chỗ đã khai`] : []),
+      'chuỗi phải giữ: ' + CHUOI_GIU.map(x => `${x} ${demGiu[x][0]}→${demGiu[x][1]}`).join(' · '),
+      `luật đổi chữ: ${demLuat.size}/${demLuat.size} mục bảng tên có chỗ khớp — ` + [...demLuat].map(([k, v]) => `${k} ${v}`).join(' · '),
+    ];
+    return { loi, dong };
+  } finally { fs.rmSync(A, { recursive: true, force: true }); fs.rmSync(B, { recursive: true, force: true }); }
+}
+
+// ── AC-7: con trỏ sang kho cũ (phép đổi và phép xếp loại giữ CÀI LẠI ở đây) ───────────────────────────────────
+function loaiGiuRieng(tep, truoc, giu, toi) {
+  if (giu.duoi_du_lieu.some(x => tep.endsWith(x))) return 'du-lieu';
+  const dong = giu.lenh_dung_truoc.map(thoat).join('|');
+  if (new RegExp('(?:^|[\\s`(|&;])(?:' + dong + ')\\s+(?:\\S+\\s+){0,3}$').test(truoc)) return 'lenh';
+  if (tep.endsWith('.md') && giu.md_tu_host_tien_to.some(x => toi.startsWith(x))) return 'tu-host';
+  const laMa = giu.duoi_ma_chi_doi_chu_thich.some(x => tep.endsWith(x));
+  if (laMa && !(/^\s*(#|\*|\/\*)/.test(truoc) || truoc.includes('//'))) return 'du-lieu';
+  return null;
+}
+const reConTro = (toi) => new RegExp('(?<![\\w./-])((?:\\.\\.?/)*)' + thoat(toi) + '(?![\\w-]|/[\\w-])', 'g');
+// Chuỗi khớp có tiền tố tương đối thì chỉ tính khi nó giải (từ thư mục tệp nguồn t) về đúng toi.
+const giaiVe = (t, m, toi) => path.posix.normalize(path.posix.join(path.posix.dirname(t), m)) === toi;
+// Phép kiểm KHÁC cơ chế với phép đổi: một URL kho cũ dính ngay sau ký tự đường dẫn là con trỏ bị đổi nửa chừng.
+const URL_DINH = /[\w.\/-]https:\/\/github\.com\/phanlemanh\/acceptance-gate-kit\//;
+
+// Con trỏ tương đối ngoài sổ (cài lại, không lấy từ kịch bản): chuỗi có tiền tố ../ hay ./ trong tệp sản phẩm, giải từ
+// thư mục tệp NGUỒN ra một tệp không phải sản phẩm của nguồn mà sổ không có dòng rõ (t, tệp ấy) → Map t → [tệp].
+function timNgoaiSo(kho, nguon, kk) {
+  const dsNguon = lsTree(kho, nguon);
+  const sp = new Set(kk.hang.filter(h => h.lop === 'san-pham' || h.lop === 'chua-ro').map(h => h.tep));
+  // Đích: tệp của nguồn, hoặc thư mục của nguồn không chứa tệp sản phẩm nào.
+  const coSp = cayCo([...sp]); const coNguon = cayCo(dsNguon); const tepNguon = new Set(dsNguon);
+  const laDich = (p) => tepNguon.has(p) || (coNguon(p) && !coSp(p));
+  const ro = new Set(kk.con_tro.filter(r => !r.mo_ho).map(r => r.tu + '\0' + r.toi));
+  const ra = new Map();
+  for (const t of sp) {
+    const chu = git(kho, ['show', `${nguon}:${t}`]);
+    if (chu.includes('\0')) continue;
+    for (const m of chu.matchAll(/(?<![\w./@-])(?:\.\.?\/)+[\w@.\-/]*[\w@-]/g)) {
+      const toi = path.posix.normalize(path.posix.join(path.posix.dirname(t), m[0]));
+      if (toi.startsWith('../') || sp.has(toi) || !laDich(toi) || ro.has(t + '\0' + toi)) continue;
+      const ds = ra.get(t) || []; if (!ds.includes(toi)) ra.set(t, [...ds, toi]);
+    }
+  }
+  return ra;
+}
+
+// Đổi con trỏ của một tệp (đường NGUỒN t, đường ĐÍCH d) → [chữ mới, {toi: 'doi' | loại giữ}].
+function doiConTro(t, d, chu, kk, bx, ma, ngoai) {
+  const giu = bx.con_tro.giu; const ket = {};
+  const hang = [...kk.con_tro.filter(r => !r.mo_ho && r.tu === t).map(r => ({ toi: r.toi, chiTien: false })),
+    ...(ngoai.get(t) || []).map(toi => ({ toi, chiTien: true }))];
+  for (const r of hang) {
+    if (giu.duong_kho_tieu_thu.includes(r.toi)) { ket[r.toi] = 'duong-kho-tieu-thu'; continue; }
+    let doi = 0, loai = null;
+    chu = chu.split('\n').map(L => L.replace(reConTro(r.toi), (m, tien, i) => {
+      if (r.chiTien && !tien) return m;
+      if (tien && !giaiVe(t, m, r.toi)) return m;
+      const k = loaiGiuRieng(d, L.slice(0, i), giu, r.toi); if (k) { loai = loai || k; return m; }
+      doi++; return bx.con_tro.url.replace('{ma}', ma).replace('{duong}', r.toi);
+    })).join('\n');
+    ket[r.toi] = doi ? 'doi' : (loai || 'khong-thay');
+  }
+  return [chu, ket];
+}
+
+function ac7(kho, nguon, dich, kk, bx, dp, ngoai) {
+  const loi = []; const ma = git(kho, ['rev-parse', nguon]).trim();
+  const dem = { doi: 0, lenh: 0, 'tu-host': 0, 'du-lieu': 0, 'duong-kho-tieu-thu': 0 };
+  const tu = [...new Set([...kk.con_tro.filter(r => !r.mo_ho).map(r => r.tu), ...ngoai.keys()])];
+  for (const t of tu) {
+    const chu = apLuat(git(kho, ['show', `${nguon}:${t}`]), luatRieng(bx, dp), dichDayDu(t, bx, dp));
+    const [, ket] = doiConTro(t, dichDayDu(t, bx, dp), chu, kk, bx, ma, ngoai);
+    for (const [toi, k] of Object.entries(ket)) { if (k === 'khong-thay') loi.push(`con trỏ không tìm thấy trên nguồn: ${t} → ${toi}`); else dem[k]++; }
+  }
+  // Quét lại cây mới: mọi lần xuất hiện của con trỏ rõ dưới plugins/ phải thuộc một loại giữ.
+  const kkMoi = kiemKe({ kho, ref: dich, luat: LUAT_XEP });
+  const giu = bx.con_tro.giu;
+  for (const r of kkMoi.con_tro) {
+    if (r.mo_ho || !r.tu.startsWith('plugins/') || giu.duong_kho_tieu_thu.includes(r.toi)) continue;
+    const chu = git(kho, ['show', `${dich}:${r.tu}`]);
+    const treo = chu.split('\n').some(L => [...L.matchAll(reConTro(r.toi))].some(m => (!m[1] || giaiVe(r.tu, m[0], r.toi)) && !loaiGiuRieng(r.tu, L.slice(0, m.index), giu, r.toi)));
+    if (treo) loi.push(`con trỏ còn treo: ${r.tu} → ${r.toi}`);
+  }
+  for (const t of lsTree(kho, dich).filter(x => x.startsWith('plugins/'))) {
+    const b = git(kho, ['show', `${dich}:${t}`]);
+    if (URL_DINH.test(b)) loi.push(`con trỏ hỏng: ${t}`);
+  }
+  // Quét theo sổ NGUỒN: con trỏ tương đối còn nguyên ở cây mới không giải về toi từ thư mục MỚI (nên lượt quét trên
+  // bằng sổ của cây mới không thấy nó) — giải từ thư mục của tệp NGUỒN thì thấy.
+  for (const r of kk.con_tro) {
+    if (r.mo_ho || giu.duong_kho_tieu_thu.includes(r.toi)) continue;
+    const d = dichDayDu(r.tu, bx, dp); if (!d.startsWith('plugins/')) continue;
+    let chu; try { chu = git(kho, ['show', `${dich}:${d}`]); } catch { continue; }
+    const treo = chu.split('\n').some(L => [...L.matchAll(reConTro(r.toi))].some(m => (!m[1] || giaiVe(r.tu, m[0], r.toi)) && !loaiGiuRieng(d, L.slice(0, m.index), giu, r.toi)));
+    if (treo) loi.push(`con trỏ còn treo: ${d} → ${r.toi}`);
+  }
+  const vp = quetViPhan(kho, nguon, dich, kk, bx, dp, loi);
+  loi.splice(0, loi.length, ...new Set(loi));
+  const g = dem.lenh + dem['tu-host'] + dem['du-lieu'] + dem['duong-kho-tieu-thu'];
+  const dong = loi.length ? [] : [`AC-7 đạt: ${dem.doi} con trỏ đã đổi, ${g} giữ có lý do (lenh ${dem.lenh} · tu-host ${dem['tu-host']} · du-lieu ${dem['du-lieu']} · duong-kho-tieu-thu ${dem['duong-kho-tieu-thu']}), 0 còn treo trong plugins/`,
+    `AC-7 quét vi phân: ${vp.n} đường tương đối còn ở plugins/ và giải được ở nguồn; gãy vì dời — trỏ tệp sản phẩm ${vp.goiCheo.length} (vòng B2), giữ có lý do ${vp.giu}, treo 0`,
+    ...vp.goiCheo.map(x => `  trỏ tệp sản phẩm (B2): ${x}`)];
+  return { loi, dong };
+}
+
+// Quét VI PHÂN — khác cơ chế với sổ kiểm kê và với phép đổi: lấy mọi đường tương đối trong tệp sản phẩm ở cây mới
+// (chuỗi có tiền tố ../ ./, hoặc đích liên kết markdown), giải từ thư mục tệp ĐÍCH trên cây mới; không giải được mà cùng
+// chuỗi ấy giải được từ thư mục tệp NGUỒN trên nguồn thì việc dời đã làm gãy nó. Đích không phải sản phẩm, không thuộc
+// loại giữ → «con trỏ còn treo»; đích là tệp sản phẩm (gọi chéo plugin, hay tệp khai chợ ở gốc) → việc của vòng B2 (đếm,
+// in, không đỏ ở đây — AC-7 chỉ hứa về con trỏ sang tệp KHÔNG phải sản phẩm).
+const RE_VP = [/\]\(([^)\s#?]+)(?:[#?][^)\s]*)?\)/g, /(?<![\w./@-])((?:\.\.?\/)+[\w@.\-/]*[\w@-])/g];
+function cayCo(ds) {
+  const tep = new Set(ds); const dir = new Set();
+  for (const x of ds) for (let p = path.posix.dirname(x); p !== '.'; p = path.posix.dirname(p)) dir.add(p);
+  return (p) => tep.has(p) || dir.has(p);
+}
+function quetViPhan(kho, nguon, dich, kk, bx, dp, loi) {
+  const coA = cayCo(lsTree(kho, nguon)), dsB = lsTree(kho, dich), coB = cayCo(dsB), tepB = new Set(dsB);
+  const spDs = kk.hang.filter(h => h.lop === 'san-pham' || h.lop === 'chua-ro').map(h => h.tep);
+  const laSp = cayCo(spDs); const giu = bx.con_tro.giu;
+  const ra = { n: 0, goiCheo: [], giu: 0 };
+  for (const t of spDs) {
+    const d = dichDayDu(t, bx, dp);
+    if (!d.startsWith('plugins/') || !tepB.has(d)) continue;
+    const chu = git(kho, ['show', `${dich}:${d}`]);
+    if (chu.includes('\0')) continue;
+    chu.split('\n').forEach((L, i) => {
+      const thay = new Set();
+      for (const re of RE_VP) for (const m of L.matchAll(re)) {
+        const s = m[1];
+        if (/^(https?:|mailto:|#|\/|~|\$|\{)/.test(s) || thay.has(s)) continue;
+        thay.add(s);
+        const pA = path.posix.normalize(path.posix.join(path.posix.dirname(t), s));
+        if (pA.startsWith('../') || !coA(pA)) continue;
+        ra.n++;
+        if (coB(path.posix.normalize(path.posix.join(path.posix.dirname(d), s)))) continue;
+        if (laSp(pA)) { ra.goiCheo.push(`${d}:${i + 1} → ${pA}`); continue; }
+        if (giu.duong_kho_tieu_thu.includes(pA) || loaiGiuRieng(d, L.slice(0, L.indexOf(s)), giu, pA)) { ra.giu++; continue; }
+        loi.push(`con trỏ còn treo: ${d} → ${pA}`);
+      }
+    });
+  }
+  return ra;
+}
+
+function ac3(kk, cayMoi, bx, dp) {
+  const loi = [];
+  const sp = kk.hang.filter(h => h.lop === 'san-pham' || h.lop === 'chua-ro');
+  const bo = new Set((bx.bo || []).map(b => b.tep));
+  const demDich = new Map();
+  for (const h of sp) {
+    if (bo.has(h.tep)) continue;
+    const d = dichDayDu(h.tep, bx, dp);
+    demDich.set(d, (demDich.get(d) || 0) + 1);
+    if (!cayMoi.has(d)) loi.push(`tệp sản phẩm không có chỗ: ${h.tep}`);
+    else if (d !== h.tep && cayMoi.has(h.tep)) loi.push(`tệp sản phẩm hai chỗ: ${h.tep}`);
+  }
+  for (const [d, n] of demDich) if (n > 1) loi.push(`hai tệp chung một đích: ${d}`);
+  for (const h of kk.hang) if (h.lop !== 'san-pham' && h.lop !== 'chua-ro' && !cayMoi.has(h.tep)) loi.push(`tệp không phải sản phẩm mất chỗ: ${h.tep}`);
+  const n = sp.length - bo.size;
+  const dem = (l) => sp.filter(h => h.lop === l).length;
+  const dong = loi.length ? [] : [
+    `AC-3 đạt: ${n}/${n} tệp sản phẩm có đúng một chỗ · bỏ: ${bo.size}`,
+    `san-pham ${dem('san-pham')} · chua-ro ${dem('chua-ro')}`,
+  ];
+  return { loi, dong };
+}
+
+function ac5(kho, dich, cayMoi, kk, bx) {
+  const loi = [];
+  const cho = JSON.parse(git(kho, ['show', `${dich}:.claude-plugin/marketplace.json`]));
+  if (cho.name !== bx.cho_moi.ten_moi) loi.push(`chợ chưa đổi tên: ${cho.name}`);
+  const tenCu = kk.plugin.map(p => p.ten);
+  const tenMongDoi = tenCu.map(t => bx.ten.plugin[t] || t);
+  for (const p of cho.plugins) {
+    const src = path.posix.normalize(p.source).replace(/^\.\//, '').replace(/\/$/, '');
+    if (src === '' || src === '.') { loi.push(`nguồn plugin là gốc kho: ${p.name}`); continue; }
+    const khai = `${src}/.claude-plugin/plugin.json`;
+    if (!cayMoi.has(khai)) { loi.push(`nguồn plugin không có: ${p.name}`); continue; }
+    const ten = JSON.parse(git(kho, ['show', `${dich}:${khai}`])).name;
+    if (ten !== p.name) loi.push(`tên plugin lệch tệp khai: ${p.name} ≠ ${ten}`);
+  }
+  const ten = cho.plugins.map(p => p.name);
+  if (JSON.stringify([...ten].sort()) !== JSON.stringify([...tenMongDoi].sort())) loi.push(`bộ plugin lệch bảng tên: ${ten.join(', ')} ≠ ${tenMongDoi.join(', ')}`);
+  const dong = loi.length ? [] : [`AC-5 đạt: chợ ${cho.name}, ${ten.length} plugin (${ten.join(', ')})`];
+  return { loi, dong };
+}
+
+export function kiemCho({ kho, nguon, dich, bangXep = path.join(DAY, 'bang-xep.json'), luat = LUAT_XEP }) {
+  const bx = docBang(bangXep);
+  const kk = kiemKe({ kho, ref: nguon, luat });
+  const cayMoi = new Set(lsTree(kho, dich));
+  const dp = dichPluginCua(JSON.parse(git(kho, ['show', `${nguon}:.claude-plugin/marketplace.json`])), bx);
+  const ngoai = timNgoaiSo(kho, nguon, kk);
+  const ket = [ac3(kk, cayMoi, bx, dp), ac4(kho, nguon, dich, kk, bx, ngoai), ac5(kho, dich, cayMoi, kk, bx), ac7(kho, nguon, dich, kk, bx, dp, ngoai)];
+  return { loi: ket.flatMap(k => k.loi), dong: ket.flatMap(k => k.dong), kk };
+}
+
+// AC-1: so hai lần chạy. null = giống nhau.
+export function soHaiLan(kho, a, b) {
+  const r = (x) => git(kho, ['rev-parse', x]).trim();
+  if (r(`${a}^{tree}`) !== r(`${b}^{tree}`)) return 'hai lần chạy khác mã cây';
+  if (r(a) !== r(b)) return 'hai lần chạy khác mã commit';
+  return null;
+}
+
+// AC-2: ảnh chụp ref, HEAD, thư mục làm việc và danh sách cây làm việc của kho.
+export function chupKho(kho) {
+  const refs = new Map(git(kho, ['for-each-ref', '--format=%(refname) %(objectname)']).split('\n').filter(Boolean).map(d => d.split(' ')));
+  return {
+    refs, head: git(kho, ['rev-parse', 'HEAD']).trim(), sym: git(kho, ['symbolic-ref', '-q', 'HEAD']).trim(),
+    status: git(kho, ['status', '--porcelain']), worktree: git(kho, ['worktree', 'list', '--porcelain']),
+  };
+}
+
+export function soChup(truoc, sau, nhanhDich) {
+  const loi = [];
+  const dich = `refs/heads/${nhanhDich}`;
+  for (const ref of new Set([...truoc.refs.keys(), ...sau.refs.keys()])) {
+    if (ref !== dich && truoc.refs.get(ref) !== sau.refs.get(ref)) loi.push(`ref không phải đích bị đổi: ${ref}`);
+  }
+  if (truoc.head !== sau.head || truoc.sym !== sau.sym) loi.push('HEAD bị đổi');
+  if (truoc.status !== sau.status) loi.push('thư mục làm việc bị đổi');
+  if (truoc.worktree !== sau.worktree) loi.push('danh sách cây làm việc bị đổi');
+  return loi;
+}
+
+if (process.argv[1] && fs.realpathSync(process.argv[1]) === fs.realpathSync(fileURLToPath(import.meta.url))) {
+  const a = {}; const k = { '--kho': 'kho', '--nguon': 'nguon', '--dich': 'dich', '--bang-xep': 'bangXep' };
+  const av = process.argv.slice(2);
+  for (let i = 0; i < av.length; i++) { if (!k[av[i]]) { process.stderr.write(`kiem-cho: cờ lạ ${av[i]}\n`); process.exit(2); } a[k[av[i]]] = av[++i]; }
+  if (!a.kho || !a.nguon || !a.dich) { process.stderr.write('dùng: node kiem-cho.mjs --kho <git> --nguon <ref> --dich <ref> [--bang-xep <tệp>]\n'); process.exit(2); }
+  const kq = kiemCho(a);
+  for (const d of kq.dong) process.stdout.write(d + '\n');
+  for (const l of kq.loi) process.stderr.write('kiem-cho: ' + l + '\n');
+  process.exitCode = (kq.loi.length ? 1 : 0); // exitCode, không exit(): ống cắt đầu ra ở 64 KiB khi thoát ngay sau write
+}

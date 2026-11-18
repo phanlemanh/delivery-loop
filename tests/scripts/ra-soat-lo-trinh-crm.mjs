@@ -26,7 +26,7 @@ let pass = 0; let fail = 0;
 const ok = (id, m) => { pass += 1; console.log(`  PASS: ${id} — ${m}`); };
 const bad = (id, m) => { fail += 1; console.log(`  FAIL: ${id} — ${m}`); };
 const rs = r => {
-  const x = spawnSync(process.execPath, [path.join(KIT, 'scripts', 'lo-trinh.mjs'), '--root', r, '--ra-soat', '--json'], { encoding: 'utf8', maxBuffer: 1 << 26, env: { ...process.env, ACCEPTANCE_TODAY: HOM_NAY } });
+  const x = spawnSync(process.execPath, [path.join(KIT, 'plugins/acceptance-gate/scripts', 'lo-trinh.mjs'), '--root', r, '--ra-soat', '--json'], { encoding: 'utf8', maxBuffer: 1 << 26, env: { ...process.env, ACCEPTANCE_TODAY: HOM_NAY } });
   if (x.status !== 0) throw new Error(`--ra-soat thoát ${x.status}: ${x.stderr.slice(0, 200)}`);
   return JSON.parse(x.stdout);
 };

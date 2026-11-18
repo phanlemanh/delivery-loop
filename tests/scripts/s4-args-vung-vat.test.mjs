@@ -21,7 +21,7 @@ import path from 'node:path';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');
-const S4ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
+const S4ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
 let pass = 0, fail = 0;
 const ok = m => { console.log(`  PASS: ${m}`); pass += 1; };
 const bad = (m, d) => { console.log(`  FAIL: ${m}${d ? ` (${d})` : ''}`); fail += 1; };
@@ -35,9 +35,9 @@ const sorted = a => JSON.stringify([...(a || [])].sort());
 // chứ không lấy hàm của bên VIẾT rồi gọi là bên đọc (bản trước làm vậy nên VV4 xanh
 // vĩnh viễn với mọi divergence — lượt chấm 1 của hồ sơ này bắt, và hai bản ĐÃ trôi thật
 // ở ký tự `?`).
-const { globToRe: globVIET } = await import(path.join(KIT, 'feature-loop', 'scripts', 'carry-plan.mjs'));
+const { globToRe: globVIET } = await import(path.join(KIT, 'plugins/feature-loop', 'scripts', 'carry-plan.mjs'));
 const globDOC = (() => {
-  const src = readFileSync(path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
+  const src = readFileSync(path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js'), 'utf8');
   const m = src.match(/function globToRe\(g\) \{[\s\S]*?\n\}/);
   if (!m) throw new Error('khong rut duoc globToRe tu acceptance-verify.js — ben doc doi khuon');
   return new Function('return ' + m[0].replace(/^function globToRe/, 'function'))();
@@ -84,7 +84,7 @@ function buildRepo({ t1 = true } = {}) {
 
 const run = (d, ...extra) => {
   const out = path.join(d, 'args.json');
-  execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d, '--ag-root', KIT,
+  execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`,
     '--out', out, '--diff-base', 'main', ...extra], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
   return JSON.parse(readFileSync(out, 'utf8'));
 };
@@ -192,7 +192,7 @@ const loi = e => String((e && e.stderr) || (e && e.message) || e).split('\n').fi
     let raA = null;
     execFileSync('git', ['-C', d, 'checkout', '-q', 'main']);
     try {
-      execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d, '--ag-root', KIT,
+      execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`,
         '--out', path.join(d, 'aA.json')], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
       raA = 'KHONG NO';
     } catch (e) { raA = String((e && e.stderr) || ''); }
@@ -206,7 +206,7 @@ const loi = e => String((e && e.stderr) || (e && e.message) || e).split('\n').fi
     execFileSync('git', ['-C', d3, 'checkout', '-q', 'main']);
     let ghiChu3 = '', a3 = null;
     try {
-      execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d3, '--ag-root', KIT,
+      execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d3, '--ag-root', `${KIT}/plugins/acceptance-gate`,
         '--out', path.join(d3, 'a3.json'), '--diff-base', 'HEAD'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
       a3 = JSON.parse(readFileSync(path.join(d3, 'a3.json'), 'utf8'));
     } catch (e) { ghiChu3 = String(e.stderr || e.message).slice(-160); }
@@ -220,7 +220,7 @@ const loi = e => String((e && e.stderr) || (e && e.message) || e).split('\n').fi
     writeFileSync(path.join(d2, 'docs', 'note.md'), 'chi doi tai lieu\n');
     git(d2, 'add', '-A'); git(d2, 'commit', '-qm', 'chi tai lieu');
     let ghiChu = '';
-    try { execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d2, '--ag-root', KIT,
+    try { execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d2, '--ag-root', `${KIT}/plugins/acceptance-gate`,
       '--out', path.join(d2, 'a.json'), '--diff-base', 'main'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }); }
     catch (e) { ghiChu = 'NO: ' + String(e.stderr || '').slice(-160); }
     const a2 = ghiChu ? null : JSON.parse(readFileSync(path.join(d2, 'a.json'), 'utf8'));
@@ -287,7 +287,7 @@ function buildRepoDo({ coPaths = true, doiGi } = {}) {
 function s4Mutant(before, after) {
   const d = path.join(TMP, 'mut-' + String(pass + fail) + '-' + String(Date.now() % 100000));
   mkdirSync(d, { recursive: true });
-  cpSync(path.join(KIT, 'feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
+  cpSync(path.join(KIT, 'plugins/feature-loop'), path.join(d, 'feature-loop'), { recursive: true });
   const f = path.join(d, 'feature-loop', 'scripts', 's4-args.mjs');
   const src = readFileSync(f, 'utf8');
   const n = src.split(before).length - 1;
@@ -299,7 +299,7 @@ function s4Mutant(before, after) {
 }
 const runBang = (script, d, ...extra) => {
   const out = path.join(d, 'args.json');
-  execFileSync(process.execPath, [script, '--slug', 'demo', '--root', d, '--ag-root', KIT,
+  execFileSync(process.execPath, [script, '--slug', 'demo', '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`,
     '--out', out, '--diff-base', 'main', ...extra], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
   return JSON.parse(readFileSync(out, 'utf8'));
 };

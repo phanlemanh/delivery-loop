@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { veBang } from '../../../dieu-phoi/scripts/bang.mjs';
+import { veBang } from '../../../plugins/dispatch/scripts/bang.mjs';
 
 const TT = {
   dot: 'sau-14-10',

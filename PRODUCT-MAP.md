@@ -12,7 +12,7 @@ flowchart TD
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
   B --> CD["Chờ duyệt phạm vi<br/>chưa có"] --> GP{"Cổng Phạm vi"}
   GP --> DL["Đang làm<br/>2 việc"] --> GB{"Cổng Bằng chứng"}
-  GB --> DG["Đã giao<br/>154 việc"]
+  GB --> DG["Đã giao<br/>157 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>73 việc"] --> GG{"Cổng Giá trị"}
   GG --> NT["Đã nghiệm thu giá trị<br/>7 việc"]
 ```
@@ -130,6 +130,7 @@ flowchart TD
 - Thẻ Cổng Bằng chứng in các mục ngoài hợp đồng thành một bảng có cột «Căn cứ» — mỗi mục một hàng (Mục · Người dùng gặp gì · Máy đề xuất · Căn cứ), mục cần người quyết lên đầu; căn cứ do tác tử phân loại viết và đi trọn đường tới thẻ, kể cả mục mang sang lượt sau (`bang-ngoai-n-co-can-cu`)
 - Làn đối chứng S4 (baseline:diffBase) chạy MỘT lệnh do kit sinh — có trần mỗi lệnh và trần tổng, bỏ qua eval trỏ tệp chưa có ở merge-base (ghi lý do vào báo cáo), tự dọn worktree tạm khi bị dừng/hỏng; lane không về trọn là BLOCKED hạ tầng có tên, lượt chấm vẫn ra báo cáo (`baseline-tran-bo-qua-don`)
 - Kit đọc hồ sơ thật của kho tiêu thụ không im lặng sai — evals.yaml không phải YAML chuẩn lên cờ vàng có tên (thẻ hai cổng + một lệnh kiểm kho tự bật trong CI), và chữ ký ghi ngày kiểu ngày/tháng/năm được bốn mặt đọc ra ngày qua một bộ đọc chung (`bo-doc-ho-so-khoan-dung`)
+- Kịch bản chuyển nhà thêm bước đổi đường dẫn và tên trong bộ kiểm theo bố cục mới; bộ kiểm sáu bước xanh trên cây kịch bản dựng từ kit-cu/main mà không bớt ca nào của kho cũ (thước giữ đủ khoá ca hai chiều); báo cáo lớp đỏ có chiều đỏ khi lượt chạy chết ngầm; --nhanh chỉ nhận don-nha/<tên>; tệp trạng thái sống của đợt không làm hồ sơ hoá cũ (`bo-kiem-xanh-o-kho-moi`) — đã giao — không đo, khai ở Cổng Đáng
 - Thẻ quyết định in đúng thứ hồ sơ viết — đường dẫn có dấu sao không còn bị cụt khi lột định dạng, và mọi hình dạng dấu sao khác đều có kỳ vọng đã khai trước thay vì tuỳ hệ quả (`card-text-fidelity`)
 - Kit thôi đo phút người ở mọi cổng — gỡ cả lớp HỎI lẫn lớp KHẲNG ĐỊNH về phút, giữ đường đọc-cũ cho hồ sơ đã ký và giữ nguyên mọi răng bằng chứng (`cat-hinh-thuc`) — đã giao — đã nghỉ, giữ sử liệu
 - Cắt khối 👉 VIỆC CỦA ANH khỏi TIN mời cổng — thay khuôn N-mục-3-vế bằng một câu «mời cổng như đồng nghiệp hỏi»; thẻ HTML giữ nguyên; chỉ TRỪ (`cat-khoi-viec-cua-anh-tren-tin`) — đã giao — đã nghỉ, giữ sử liệu
@@ -173,6 +174,7 @@ flowchart TD
 - verdict judgment không-PASS phải kèm danh sách bằng-chứng-thiếu (required_evidence) chảy từ judge → memo → report → thẻ → round fix; gộp gold-seed O4: acceptance-gold.mjs dẫn xuất gold set + báo cáo G3 từ corpus sẵn có, không file mới (`judge-required-evidence`)
 - Khối tìm-lỗi trả phí theo vật — triage trước refute, finder không soi văn bản hồ sơ, finding có sổ, baseline rời đường găng, thước token/phút cho năm dòng số (`khoi-tim-loi-tra-phi-theo-vat`)
 - Khối "👉 VIỆC CỦA ANH" — thành phần cứng máy-sinh của khuôn trình-người (thẻ cổng + lời-mời-cổng) (`khoi-viec-cua-anh`)
+- Một kịch bản lấy nhánh chính kho cũ và dựng nhánh cục bộ don-nha/3.0 bằng năm commit dọn nhà tất định — sản phẩm vào plugins/<tên>/, tên chợ, plugin, lệnh, skill theo bảng tên, con trỏ sang kho cũ bằng đường dẫn đầy đủ, khuôn Repo Standards — kèm ba thước của B1 và số đo lớp ca kiểm đỏ do đổi bố cục cho B2 (`kich-ban-chuyen-nha`) — đã giao — không đo, khai ở Cổng Đáng
 - Đoạn ký → gộp có thước và có chủ máy — lịch tránh giao hai việc cùng tệp, PR sẵn sàng ngay lúc trình thẻ Cổng Bằng chứng, gộp không chạy lại CI khi PR không trùng tệp với nhánh chính, và lệnh đếm đợt trừ được giờ ký khỏi giờ gộp (`ky-den-gop`)
 - Làn ghim lại và bên đọc pin cùng loại eval khai `status: not-run` từ MỘT nguồn — pin nói ra ô nào không đo, và hồ sơ lành thôi bị đọc thành nợ (`lan-doc-status-not-run`)
 - Làn ghim lại giữ trọn lời lỗi, để lại dấu lượt đỏ kèm tải máy, và ghi thời lượng làn (`lan-ghim-lai-giu-tron-loi-loi`) — đã giao — đã nghỉ, giữ sử liệu
@@ -255,6 +257,7 @@ flowchart TD
 - Phát hành kit 2.7.0 — đóng số cho vòng «lời mời cổng thành vật máy sinh» (#136), để repo tiêu thụ nhận thẻ điền sẵn + ba đường fail-quiet đã đóng theo mốc có chủ đích (`release-2-7-0`)
 - Phát hành kit 2.8.0 — đóng số cho vòng «vũ trang /goal lúc gọi tên» (#140), để repo tiêu thụ nhận thẻ Cổng 1 in sẵn dòng /goal và skill feature-loop vũ trang ở mọi lượt người đứng trước đoạn máy, theo mốc có chủ đích (`release-2-8-0`)
 - Phát hành kit 2.9.0 — đóng số cho ba vòng sửa của cửa sổ 2.8→2.9 (PR 146 inputs-tinh-tu-goc-kho · 149 co-qua-timebox-nhom-da-xong · 151 thuoc-khai-mot-dang-do-mot-neo), bộ audit 05/09 + giấy phép MIT, và bộ tài liệu playbook 07/09 — để repo tiêu thụ nhận bộ máy theo mốc có chủ đích (`release-2-9-0`)
+- Phát hành kit 3.0.0 — mốc «Chuyển nhà»: kho delivery-loop thành nguồn, sáu plugin ở plugins/<tên>/ với tên mới, kho cũ đóng băng ở 2.39.0; kho chờ nhận onehub-quy-hang (`release-3-0-0`)
 - Repo khai plugin — acceptance-init ghi .claude/settings.json (marketplace + 4 plugin) bằng script hợp nhất JSON, tên plugin lấy từ marketplace.json ship cùng plugin; GUIDE §5.1 từ 5 lệnh còn 1 cho máy sau; diagram-design bắt buộc (`repo-khai-plugin`)
 - Road-map dễ dùng — cắt lượt theo luật 17/10 (không mốc ngoài; việc vận hành ra khỏi kho, không vào bản phạm vi), khối Mốc của trang đọc bằng tên tiếng sản phẩm kèm trạng thái, luật «chỉ việc phát triển» kiểm trên mọi lần đọc tệp, ngày dự kiến nối tiếp theo làn (`road-map-de-dung`)
 - Mã lượt chạy chỉ được ghi khi đúng hình dạng mã — mã rác của tác tử (dấu huyền, chữ không có số, chuỗi có khoảng trắng) thành mã máy đúc, và lượt sau không mang sang eval có mã rác trong sổ cũ (`run-id-danh-sach-cho-phep`) — đã giao — không đo, khai ở Cổng Đáng

@@ -1,5 +1,5 @@
 // s4-args-expected-exit.test.mjs — Task 5 phía SINH ARGS: `evals.yaml` khai
-// `expected_exit` (lib/eval-yaml.cjs::expectedExits) phải chảy vào tệp args
+// `expected_exit` (plugins/acceptance-gate/lib/eval-yaml.cjs::expectedExits) phải chảy vào tệp args
 // dưới tên ĐÃ ĐỔI DẠNG `expectedExit` trên từng phần tử `evals[]` — workflow
 // (acceptance-verify.js) chạy không có filesystem nên không tự đọc evals.yaml
 // được; s4-args.mjs là nơi RÚT kỳ vọng DUY NHẤT. Vắng trường và khai 0 tường
@@ -8,7 +8,7 @@
 // tên eval — không đoán.
 //
 // SA-EE4 là ràng buộc TĨNH: chuỗi "expected_exit" (dạng snake_case của
-// lib/eval-yaml.cjs) không được rò vào bất kỳ bộ đọc nào khác — đó là cách kit
+// plugins/acceptance-gate/lib/eval-yaml.cjs) không được rò vào bất kỳ bộ đọc nào khác — đó là cách kit
 // chứng "không bộ đọc nào tự đọc trường", tên đã đổi dạng thành `expectedExit`
 // ở mọi nơi khác.
 import { fileURLToPath } from 'node:url';
@@ -19,7 +19,7 @@ import path from 'node:path';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');
-const S4ARGS = path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs');
+const S4ARGS = path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs');
 let pass = 0, fail = 0;
 const ok = m => { console.log(`  PASS: ${m}`); pass += 1; };
 const bad = (m, d) => { console.log(`  FAIL: ${m}${d ? ` (${d})` : ''}`); fail += 1; };
@@ -54,7 +54,7 @@ const run = (d, ...extra) => {
   const out = path.join(d, 'args.json');
   // --ag-root KIT: cây kit NÀY đóng vai bản cài (xem s4-args-delta.test.mjs) —
   // không có nó, s4-args đi tìm plugin cài trên máy tác giả, xanh cục bộ ĐỎ ở CI.
-  const stdout = execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d, '--ag-root', KIT, '--out', out, '--diff-base', 'main', ...extra],
+  const stdout = execFileSync(process.execPath, [S4ARGS, '--slug', 'demo', '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', out, '--diff-base', 'main', ...extra],
     { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
   return { out: JSON.parse(readFileSync(out, 'utf8')), stdout, outPath: out };
 };
@@ -110,14 +110,14 @@ const run = (d, ...extra) => {
 }
 
 // SA-EE4 — ràng buộc tĩnh: chuỗi "expected_exit" (dạng snake_case của
-// lib/eval-yaml.cjs) khớp ĐÚNG 0 lần trong 4 bộ đọc dưới đây — mọi nơi khác
+// plugins/acceptance-gate/lib/eval-yaml.cjs) khớp ĐÚNG 0 lần trong 4 bộ đọc dưới đây — mọi nơi khác
 // PHẢI dùng tên đã đổi dạng `expectedExit`.
 {
   const files = [
-    path.join(KIT, 'feature-loop', 'scripts', 's4-args.mjs'),
-    path.join(KIT, 'feature-loop', 'workflows', 'acceptance-verify.js'),
-    path.join(KIT, 'feature-loop', 'scripts', 'repin-lane.mjs'),
-    path.join(KIT, 'lib', 'evidence-core.cjs'),
+    path.join(KIT, 'plugins/feature-loop', 'scripts', 's4-args.mjs'),
+    path.join(KIT, 'plugins/feature-loop', 'workflows', 'acceptance-verify.js'),
+    path.join(KIT, 'plugins/feature-loop', 'scripts', 'repin-lane.mjs'),
+    path.join(KIT, 'plugins/acceptance-gate/lib', 'evidence-core.cjs'),
   ];
   const hits = [];
   for (const f of files) {

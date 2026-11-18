@@ -29,7 +29,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 // Đường dẫn SUY TỪ VỊ TRÍ SCRIPT, không hardcode ROOT (luật «thước gắn vào vật»,
 // hình dạng 4 — phép đo từng so với checkout của tác giả thay vì cây đang kiểm).
 export const FIXTURE_REL = 'tests/scripts/fixtures/routing-baseline.txt';
-const GATE_CARD = path.join(HERE, '..', '..', 'scripts', 'gate-card.js');
+const GATE_CARD = path.join(HERE, '..', '..', 'plugins/acceptance-gate/scripts', 'gate-card.js');
 
 // ── Vị từ 1: hồ sơ đã ĐỊNH ĐOẠT chưa ────────────────────────────────────────
 // `[ \t]*` chứ KHÔNG `\s*`: \s nuốt cả xuống dòng, nên chữ ký RỖNG sẽ khớp dòng

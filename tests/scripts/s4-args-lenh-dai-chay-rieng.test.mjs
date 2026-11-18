@@ -16,7 +16,7 @@ import { runWorkflow } from '../workflows/harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.join(HERE, '..', '..');
-const FL = path.join(KIT, 'feature-loop');
+const FL = path.join(KIT, 'plugins/feature-loop');
 let pass = 0, fail = 0;
 const ok = m => { console.log(`  PASS: ${m}`); pass += 1; };
 const bad = (m, d) => { console.log(`  FAIL: ${m}${d ? ` (${d})` : ''}`); fail += 1; };
@@ -49,7 +49,7 @@ function buildRepo(evalsBody, flExtra = '', exExtra = '') {
 function run(d, s4Root = FL) {
   const out = path.join(d, 'args.json');
   try {
-    execFileSync(process.execPath, [path.join(s4Root, 'scripts', 's4-args.mjs'), '--slug', 'demo', '--root', d, '--ag-root', KIT, '--out', out, '--diff-base', 'main'],
+    execFileSync(process.execPath, [path.join(s4Root, 'scripts', 's4-args.mjs'), '--slug', 'demo', '--root', d, '--ag-root', `${KIT}/plugins/acceptance-gate`, '--out', out, '--diff-base', 'main'],
       { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
     return { status: 0, args: JSON.parse(readFileSync(out, 'utf8')), stderr: '' };
   } catch (e) {

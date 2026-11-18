@@ -205,3 +205,8 @@ assert "REJECT quá 3 round" in sb, "template phai co loi thoat escalate (REJECT
 assert kw in desc(".claude-plugin/plugin.json"), f"desc acceptance-gate thieu {kw}"
 assert kw in d, f"desc feature-loop thieu {kw}"
 assert mut_desc.find("v1.30:") < 0 or not (0 <= mut_desc.find("v1.29:") < mut_desc.find("v1.30:") <= mut_desc.find("/start session-entry")), \
+# Đợt khai: 2026-11-16 — hồ sơ phan-du-bo-cuc-moi-vong-ba, Hỏi-1 (chủ kho duyệt ở Cổng Phạm vi, sổ d-20261116T075920Z-9).
+# Kịch bản chuyển nhà B2 thêm hai dòng này ở kho mới: hai mục vá của B2 đổi gốc gói lõi trong hai assert P32 thành
+# root / "plugins/acceptance-gate"; bộ dịch ngược của E11 chỉ đảo chuỗi đường, không đảo biểu thức Python.
+assert check_claude(root) == [], check_claude(root)      # doi chung DUONG goi Claude
+assert (root / ct).is_file(), f"con tro khuon KHONG giai duoc: {m.group(1)} -> {ct}"

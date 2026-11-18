@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.join(HERE, '..', '..');
-export const GC = path.join(ROOT, 'scripts', 'gate-card.js');
+export const GC = path.join(ROOT, 'plugins/acceptance-gate/scripts', 'gate-card.js');
 export const SRC = readFileSync(GC, 'utf8');
 export function mkWs(slug, files, cfg) {
   const root = mkdtempSync(path.join(tmpdir(), 'lmcms-'));

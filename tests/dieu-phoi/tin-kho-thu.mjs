@@ -11,7 +11,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export const DAY = path.dirname(fileURLToPath(import.meta.url));
 export const KIT = path.resolve(DAY, '..', '..');
-export const GOI = path.join(KIT, 'dieu-phoi');
+export const GOI = path.join(KIT, 'plugins/dispatch');
 export const ENV = Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('GIT_') && k !== 'NODE_TEST_CONTEXT' && !k.startsWith('DIEU_PHOI_')));
 
 const canDon = [];

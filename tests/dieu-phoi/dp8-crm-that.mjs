@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const KIT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const GOI = path.join(KIT, 'dieu-phoi');
+const GOI = path.join(KIT, 'plugins/dispatch');
 const KHO = path.join(os.homedir(), 'dev', 'crm-onehub');
 const SHA = { 'merge-base': 'b9a3b1609b47f175d44b9a9236b26b7cabec84af', 'đỉnh nhánh chuyển': '48703713311ab96ba33e13da20cb73fdef62a2a1' };
 const MOC_CU = 'a1e2e0b9c42bfd1c0914b17816cd61bf9e08beb7';
@@ -43,7 +43,7 @@ const goiCu = path.join(tam, 'goi-cu');
 fs.mkdirSync(goiCu);
 execFileSync('tar', ['-x', '-C', goiCu], { input: execFileSync('git', ['archive', MOC_CU, 'dieu-phoi'], { cwd: KIT, maxBuffer: 1 << 28 }) });
 const moi = await import(pathToFileURL(path.join(GOI, 'scripts', 'kiem-chuyen.mjs')).href);
-const cu = await import(pathToFileURL(path.join(goiCu, 'dieu-phoi', 'scripts', 'dieu-phoi.mjs')).href);
+const cu = await import(pathToFileURL(path.join(goiCu, 'plugins/dispatch', 'scripts', 'dieu-phoi.mjs')).href);
 console.log(`nguồn: kho ${KHO} · ${Object.entries(SHA).map(([t, s]) => `${t} ${s.slice(0, 12)}`).join(' · ')} · gói lúc này ${GOI} · gói v2.27.0 ${MOC_CU.slice(0, 12)}`);
 
 const loi = [];

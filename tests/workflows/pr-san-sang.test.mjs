@@ -7,9 +7,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Loi, prSanSang } from '../../feature-loop/scripts/pr-san-sang.mjs';
+import { Loi, prSanSang } from '../../plugins/feature-loop/scripts/pr-san-sang.mjs';
 
-const LENH = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'feature-loop', 'scripts', 'pr-san-sang.mjs');
+const LENH = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'plugins/feature-loop', 'scripts', 'pr-san-sang.mjs');
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'pss-')));
 const git = (cwd, ...a) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', ...a], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const ghi = (k, f, t) => {
@@ -118,8 +118,8 @@ test('H-5 dòng lệnh: thoát 2 kèm lý do khi chưa verified; thiếu --slug 
 
 // Thước gắn vào vật: dòng lệnh trong khối PR-SAN-SANG của SKILL.md (thứ phiên thật chạy) phải trỏ đúng lệnh này và
 // chạy được. Đối chứng: khối thay tên tệp → lệnh rút ra không tồn tại (mã 1 của node, không phải 2).
-const SKILL = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
-const WORKFLOWS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'feature-loop', 'workflows');
+const SKILL = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'plugins/feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+const WORKFLOWS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'plugins/feature-loop', 'workflows');
 function chayKhoi(t, k) {
   const khoi = /<!-- <<<PR-SAN-SANG -->\n([\s\S]*?)<!-- PR-SAN-SANG>>> -->/.exec(t)?.[1];
   assert.ok(khoi, 'SKILL.md thiếu khối PR-SAN-SANG');

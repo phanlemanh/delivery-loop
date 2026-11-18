@@ -51,7 +51,7 @@ lệnh nào: bản sao thứ hai là bản sao sẽ trôi.
 
 Tối thiểu (chỉ gate, không vòng lặp): cài marketplace + `acceptance-gate` là đủ.
 
-> Repo `phanlemanh/acceptance-gate-kit` là **public** — không cần xin quyền đọc.
+> Repo `phanlemanh/delivery-loop` là **public** — không cần xin quyền đọc.
 > Sau khi cài, mở phiên Claude Code mới để runtime nạp plugin.
 
 ## Cập nhật plugin (quan trọng với cả đội)
@@ -165,9 +165,9 @@ trả lời mua bằng giá một vòng dựng, không phải thất bại của
 **Đo sức khoẻ cổng:** `/acceptance-gate:acceptance-report` (verdict mix, số vòng verify, vệ sinh gate)
 
 **Chạy nhiều hàng song song (gói dieu-phoi, bật theo kho):** khai ổ cắm `dieu_phoi.goi_dot` một lần,
-rồi `/dieu-phoi:mo-dot <tên>` mở đợt (duyệt thẻ khởi tạo là đi) · `/dieu-phoi:xem` xem đợt ở bất kỳ
-phiên nào · `/dieu-phoi:dong-dot` đóng đợt · `/dieu-phoi:tiep-tuc` nối lại sau khi app khởi động lại hay
-hết ngữ cảnh · `/dieu-phoi:ban-giao` bàn giao trước khi đổi tài khoản (rồi `/dieu-phoi:tiep-tuc` ở tài khoản kia).
+rồi `/dispatch:open <tên>` mở đợt (duyệt thẻ khởi tạo là đi) · `/dispatch:status` xem đợt ở bất kỳ
+phiên nào · `/dispatch:close` đóng đợt · `/dispatch:resume` nối lại sau khi app khởi động lại hay
+hết ngữ cảnh · `/dispatch:handoff` bàn giao trước khi đổi tài khoản (rồi `/dispatch:resume` ở tài khoản kia).
 Chi tiết: GUIDE §6.6.
 
 ---
@@ -264,4 +264,4 @@ luôn vào gói Cổng 2.
 
 ---
 
-Chi tiết kỹ thuật: [README.md](README.md) · feature-loop: [feature-loop/README.md](feature-loop/README.md) · Thiết kế: [docs/specs/](docs/superpowers/specs/2026-06-10-acceptance-gate-kit-design.md)
+Chi tiết kỹ thuật: [README.md](README.md) · feature-loop: [plugins/feature-loop/README.md](plugins/feature-loop/README.md) · Thiết kế: [docs/specs/](docs/superpowers/specs/2026-06-10-acceptance-gate-kit-design.md)

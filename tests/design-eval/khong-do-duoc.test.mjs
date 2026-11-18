@@ -24,6 +24,9 @@ const JSDOM_GHIM = '24.1.3';
 // Nhánh chính lúc mở vòng (đường nền 27/10) — bản cổng TRƯỚC lớp lọc. Ghim cứng: sau khi gộp, merge-base đã chứa
 // lớp lọc nên không còn là «bản gốc».
 const GOC_SHA = '2c90e4ca3a096abf79f2efa8216c355952594ada';
+// GOC_SHA có trước dọn nhà: lib/ vendor/ scripts/ nằm ở gốc kho. Mọi bản cổng ở đây có hình gốc kho bố cục mới
+// (plugin lõi dưới AG), nên bản gốc lấy về được đặt dưới AG (git archive --prefix).
+const AG = 'plugins/acceptance-gate';
 const CSS = 'css-khong-ap-duoc';
 const NEN = 'nen-to-tien-bi-bo';
 const GRADIENT = 'chu-gradient';
@@ -38,7 +41,7 @@ function chayCong(goc, trang, them = []) {
     boNho.set(khoa, new Promise((xong) => {
       const batDau = () => {
         dangChay++;
-        execFile(process.execPath, [path.join(goc, 'scripts', 'design-gate.mjs'), trang, '--jsdom', HERE, ...them],
+        execFile(process.execPath, [path.join(goc, 'plugins/acceptance-gate/scripts', 'design-gate.mjs'), trang, '--jsdom', HERE, ...them],
           { maxBuffer: 64 * 1024 * 1024 }, (loi, stdout, stderr) => {
             dangChay--;
             const ma = loi ? (typeof loi.code === 'number' ? loi.code : -1) : 0;
@@ -241,11 +244,11 @@ const nhanDotBien = (nhanh) => `// nhánh: ${nhanh}`;
 
 function banSao(tam, ten) {
   const dich = path.join(tam, ten);
-  for (const d of ['lib', 'vendor', 'scripts']) fs.cpSync(path.join(ROOT, d), path.join(dich, d), { recursive: true });
+  for (const d of ['plugins/acceptance-gate/lib', 'plugins/acceptance-gate/vendor', 'plugins/acceptance-gate/scripts']) fs.cpSync(path.join(ROOT, d), path.join(dich, d), { recursive: true });
   return dich;
 }
 function gaiDotBien(goc, nhanh) {
-  const tep = path.join(goc, 'lib', 'design-detect.mjs');
+  const tep = path.join(goc, 'plugins/acceptance-gate/lib', 'design-detect.mjs');
   const dong = fs.readFileSync(tep, 'utf8').split('\n');
   const trung = dong.filter((l) => l.includes(nhanDotBien(nhanh)));
   if (trung.length !== 1) return `DOT_BIEN_LECH ${nhanh}: ${trung.length} dòng mang nhãn «${nhanDotBien(nhanh)}»`;
@@ -298,7 +301,7 @@ CA.push(
   } },
   { id: 'KD8-thieu-jsdom', moi: async (c) => {
     const goc = path.join(c.tam, 'thieu-jsdom');
-    for (const d of ['lib', 'vendor', 'scripts']) fs.cpSync(path.join(ROOT, d), path.join(goc, d), { recursive: true });
+    for (const d of ['plugins/acceptance-gate/lib', 'plugins/acceptance-gate/vendor', 'plugins/acceptance-gate/scripts']) fs.cpSync(path.join(ROOT, d), path.join(goc, d), { recursive: true });
     fs.cpSync(HERE, path.join(goc, 'tests', 'design-eval'), { recursive: true, filter: (p) => !p.includes(`${path.sep}node_modules`) });
     const sh = path.join(goc, 'tests', 'design-eval', 'run-tests.sh');
     const env = { ...process.env, NODE_PATH: '' };
@@ -308,8 +311,11 @@ CA.push(
     return co.ma !== 0 && /FAIL: .*jsdom/.test(co.ra) ? null : `có cờ mà thiếu jsdom: mã ${co.ma}, không thấy dòng FAIL nêu jsdom`;
   } },
   { id: 'KD8-vendor', moi: async () => {
-    const r = chayLenh('git', ['-C', ROOT, 'diff', '--quiet', GOC_SHA, '--', 'vendor/impeccable']);
-    return r.ma === 0 ? null : `vendor/impeccable khác bản gốc ${GOC_SHA.slice(0, 8)} (git diff mã ${r.ma})`;
+    // Bản gốc ở bố cục cũ (vendor/impeccable), cây đang chạy ở bố cục mới: so cây của bản gốc với cây của HEAD ở đường
+    // mới, rồi cây làm việc với HEAD — hai vế ghép lại đúng phép so cây làm việc ↔ bản gốc.
+    let r = chayLenh('git', ['-C', ROOT, 'diff', '--quiet', `${GOC_SHA}:vendor/impeccable`, `HEAD:${AG}/vendor/impeccable`]);
+    if (r.ma === 0) r = chayLenh('git', ['-C', ROOT, 'diff', '--quiet', 'HEAD', '--', `${AG}/vendor/impeccable`]);
+    return r.ma === 0 ? null : `plugins/acceptance-gate/vendor/impeccable khác bản gốc ${GOC_SHA.slice(0, 8)} (git diff mã ${r.ma})`;
   } },
   { id: 'KD8-ci', moi: async () => {
     const can = LENH_CI();
@@ -365,8 +371,8 @@ const canGoc = chon.some((ca) => ca.goc || ca.id === 'KD1-goc' || ca.id.startsWi
 if (canGoc) {
   goc = path.join(tam, 'goc');
   fs.mkdirSync(goc);
-  const r = chayLenh('bash', ['-c', `git -C "$1" archive "$2" lib vendor scripts | tar -x -C "$3"`, '_', ROOT, GOC_SHA, goc]);
-  if (r.ma !== 0 || !fs.existsSync(path.join(goc, 'scripts', 'design-gate.mjs'))) {
+  const r = chayLenh('bash', ['-c', `git -C "$1" archive --prefix="$4/" "$2" lib vendor scripts | tar -x -C "$3"`, '_', ROOT, GOC_SHA, goc, AG]);
+  if (r.ma !== 0 || !fs.existsSync(path.join(goc, 'plugins/acceptance-gate/scripts', 'design-gate.mjs'))) {
     console.log(`FAIL: KD-goc — không dựng được bản gốc ${GOC_SHA.slice(0, 8)} (cần lịch sử git đủ sâu): ${r.ra.trim()}`);
     process.exit(1);
   }
