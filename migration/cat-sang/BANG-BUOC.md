@@ -36,8 +36,8 @@ commit gộp. Nhánh ứng viên = nhánh chính kho cũ + 6 commit dọn nhà (
 
 ## Chặng 2 — OneHub-Inventory cài 3.0 (đổi 18/11; một PR ở kho ấy, trên cây làm việc riêng cắt từ `origin/main`)
 
-Chủ kho đổi kho nhận đầu tiên từ Quỹ hàng sang `onehub-inventory` ngày 18/11 («Đổi, cho diễn tập»; sổ quyết định
-`_acceptance/release-3-0-0/decisions.jsonl`, dòng 36). Lý do: mốc chỉ có kết quả khi một vòng thật gộp được trên 3.0, và trong
+Chủ kho Phan Le Manh đổi kho nhận đầu tiên từ Quỹ hàng sang `onehub-inventory` ngày 18/11 («Đổi, cho diễn tập»). Ghi ở
+đây, không ở sổ quyết định của hồ sơ `release-3-0-0` đã ký: chạm sổ ấy làm hồ sơ vào diện kiểm lại của mọi PR sau. Lý do: mốc chỉ có kết quả khi một vòng thật gộp được trên 3.0, và trong
 bảy ngày 11–18/11 Inventory có 47 chữ ký Cổng Bằng chứng, Quỹ hàng 0. Quỹ hàng nhận sau, cùng đợt với crm; bảng Quỹ hàng
 cũ giữ nguyên ở dưới làm sử liệu, bài diễn tập 17/11 của nó không áp cho Inventory.
 
