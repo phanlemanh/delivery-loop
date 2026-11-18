@@ -11,7 +11,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MA_TRAN_THUC } from './ma-tran-thuc.mjs';
-import { boPhan } from '../bo-cuc.mjs';
+import { boPhan, pathspec } from '../bo-cuc.mjs';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(DAY, '..', '..');
@@ -269,8 +269,10 @@ function goiTaiMergeBase() {
   }
   assert.ok(mb, 'không tìm được merge-base');
   const dir = tam('dp3-goc-');
-  execFileSync('tar', ['-x', '-C', dir], { input: execFileSync('git', ['archive', mb, 'dieu-phoi'], { cwd: KIT, env: ENV, maxBuffer: 1 << 28 }) });
-  goiMergeBase = path.join(dir, 'dieu-phoi');
+  // Thư mục gói giải theo bố cục của CHÍNH merge-base (phẳng: `dieu-phoi`, bố cục mới: `plugins/dispatch`).
+  const tm = pathspec('dieu-phoi', { kho: KIT, ref: mb });
+  execFileSync('tar', ['-x', '-C', dir], { input: execFileSync('git', ['archive', mb, tm], { cwd: KIT, env: ENV, maxBuffer: 1 << 28 }) });
+  goiMergeBase = path.join(dir, tm);
   return goiMergeBase;
 }
 // Mỗi hàng: một đợt mới, dãy P1 ở đúng trạng thái; giám sát ghi một nhịp để thư mục song/ có (trừ (g)).
@@ -783,7 +785,10 @@ const khuonNeoLichSu = () => {
   assert.ok(bo, 'không tìm được commit gỡ «rm -rf» khỏi khuôn LUAT.md');
   return gitKit('show', `${bo}^:${LUAT_MAU}`);
 };
-const khuonMergeBaseSong = () => gitKit('show', `${gitKit('merge-base', 'HEAD', 'origin/main').trim()}:${LUAT_MAU}`);
+const khuonMergeBaseSong = () => {
+  const mb = gitKit('merge-base', 'HEAD', 'origin/main').trim();
+  return gitKit('show', `${mb}:${pathspec(LUAT_MAU, { kho: KIT, ref: mb })}`);
+};
 const kiemKhuonCu = (layKhuon) => {
   const loi = kiemLuat(layKhuon());
   return loi.includes('còn «rm -rf»') ? [] : [`khuôn của nhánh chính phải bị nêu «rm -rf»: ${loi.join(' | ')}`];

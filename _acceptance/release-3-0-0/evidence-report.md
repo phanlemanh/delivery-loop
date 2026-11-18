@@ -7,7 +7,7 @@ reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
-verified_commit: 9d98da111a10081957dfbfd902a1ed7ccb5339ae
+verified_commit: 199784df3a6913b56bc27d06004763ddbc30670d
 human_signoff: Phan Le Manh 2026-11-18 — ký với 10 known-limits (Ngoài-2/3/5/6/7/8/12/13/14/15); Ngoài-1, Ngoài-9 chấp nhận không sửa; Ngoài-4, Ngoài-10, Ngoài-11 mở hợp đồng mới; đồng ý phạm vi đã cắt; phê hết quyết định ghi sau Cổng Phạm vi
 ---
 
@@ -274,3 +274,7 @@ Round 3: mọi eval máy xanh ở a4151d5b (E4, E5, E6, E8, E9, E11, E12 mang t�
 ### Re-pin lần 1 — 2026-11-18, do PR #1: sửa ca kiểm theo bố cục mới sau pin (run-tests.sh P196, kiem-ban-cai.ca.mjs, design-floor, design-eval)
 run_id: repin-20261118T020047Z-29249
 sha: 9d98da111a10081957dfbfd902a1ed7ccb5339ae · suites: 11 lệnh exit 0 · evals: 20/20 eval máy đạt kỳ vọng · ngoài làn máy: E10 (E10 không khai paths) · AC không có chốt máy: AC-10
+
+### Re-pin lần 2 — 2026-11-18, do PR #2: sửa sáu ca kiểm lấy bản base theo bố cục của chính base (DP4-08, DP3-03, DP3-11-do, P150)
+run_id: repin-20261118T145551Z-16571
+sha: 199784df3a6913b56bc27d06004763ddbc30670d · suites: 11 lệnh exit 0 · evals: 20/20 eval máy đạt kỳ vọng · ngoài làn máy: E10 (E10 không khai paths) · AC không có chốt máy: AC-10

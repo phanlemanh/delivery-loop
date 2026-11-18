@@ -11,6 +11,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { pathspec } from '../bo-cuc.mjs';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(DAY, '..', '..');
@@ -818,11 +819,13 @@ test('DP4-08 phien-cu', async () => {
 test('DP4-08 khong-ban-giao', async () => {
   const base = execFileSync('git', ['merge-base', 'HEAD', 'origin/main'], { cwd: KIT, env: ENV, encoding: 'utf8' }).trim();
   const goiCu = tam('dp4-base-');
-  execFileSync('sh', ['-c', `git archive ${base} dieu-phoi | tar -x -C "${goiCu}"`], { cwd: KIT, env: ENV });
+  // Thư mục gói giải theo bố cục của CHÍNH merge-base (phẳng: `dieu-phoi`, bố cục mới: `plugins/dispatch`).
+  const tm = pathspec('dieu-phoi', { kho: KIT, ref: base });
+  execFileSync('tar', ['-x', '-C', goiCu], { input: execFileSync('git', ['archive', base, tm], { cwd: KIT, env: ENV, maxBuffer: 1 << 28 }) });
   const k = khoLienKet();
   chayHook('PostToolUse', { session_id: 's-p1' }, { cwd: k.w1, nowMs: T });
   const moi = (await nap(GOI, 'tiep-tuc.mjs')).keHoachDay(k.dot, { nowMs: T + 3 * PHUT }).map((x) => [x.day, x.hanh_dong]);
-  const cu = (await nap(path.join(goiCu, 'dieu-phoi'), 'tiep-tuc.mjs')).keHoachDay(k.dot, { nowMs: T + 3 * PHUT }).map((x) => [x.day, x.hanh_dong]);
+  const cu = (await nap(path.join(goiCu, tm), 'tiep-tuc.mjs')).keHoachDay(k.dot, { nowMs: T + 3 * PHUT }).map((x) => [x.day, x.hanh_dong]);
   console.log(`  mới ${JSON.stringify(moi)} · merge-base ${JSON.stringify(cu)}`);
   assert.deepEqual(moi, cu);
 });

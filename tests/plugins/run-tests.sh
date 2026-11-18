@@ -6162,9 +6162,12 @@ run "P150 required_evidence tren the + report cu render y het ban base" \
     # lan V, va start-scan lai doc khuon opportunity-template — nen cay base thieu bat ky
     # mon nao se cam co canh bao HA TANG va ca do bien thanh "khac ban base": do vi THIEU DO
     # chu khong vi VAT. lib/ cung phai lay TAI CUNG BASE (dot .cjs 1.39.1 lam ban ghep chet).
-    git -C "'"$ROOT"'" archive "$BASE" scripts lib skills/acceptance/references | tar -x -C "$T/base"
+    # Goc loi giai theo bo cuc cua CHINH base: bo cuc moi (plugins/acceptance-gate/) truoc, bo cuc phang sau.
+    PB=""; git -C "'"$ROOT"'" cat-file -e "$BASE:plugins/acceptance-gate/scripts/gate-card.js" 2>/dev/null && PB="plugins/acceptance-gate/"
+    git -C "'"$ROOT"'" archive "$BASE" "${PB}scripts" "${PB}lib" "${PB}skills/acceptance/references" | tar -x -C "$T/base"
+    [ -f "$T/base/${PB}scripts/gate-card.js" ] || { echo "HA TANG: ban base khong co ${PB}scripts/gate-card.js"; exit 1; }
     A=$(cd "$T/ws" && node "'"$ROOT"'/plugins/acceptance-gate/scripts/gate-card.js" --slug feat-jr5 2>/dev/null)
-    B=$(cd "$T/ws" && node "$T/base/scripts/gate-card.js" --slug feat-jr5 2>/dev/null)
+    B=$(cd "$T/ws" && node "$T/base/${PB}scripts/gate-card.js" --slug feat-jr5 2>/dev/null)
     [ -n "$A" ] || { echo "stdout moi rong"; exit 1; }
     # DOI-THUOC-CO-KHAI (chip (2) khoi-viec-cua-anh) — danh sach DONG cac thay
     # doi render co chu dich, moi thu co case canh rieng; phan CON LAI cua duong
