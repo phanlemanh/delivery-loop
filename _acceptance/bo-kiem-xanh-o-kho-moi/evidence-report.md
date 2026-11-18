@@ -7,7 +7,7 @@ reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
-verified_commit: 1da75b07805857da131b2144b2cf46b2169e8f57
+verified_commit: 9d98da111a10081957dfbfd902a1ed7ccb5339ae
 human_signoff: Phan Le Manh 2026-11-17
 ---
 
@@ -231,3 +231,7 @@ Round 2: Đã thêm hai ca BK-AC5-do-chet-cu và BK-AC5-do-khong-do-cu; toàn b�
 ### Re-pin lần 1 — 2026-11-17, do mốc 3.0: hồ sơ B1, B2 lên nhánh ứng viên bố cục mới (mọi tệp đã dời)
 run_id: repin-20261117T160702Z-10236
 sha: 1da75b07805857da131b2144b2cf46b2169e8f57 · suites: 11 lệnh exit 0 · evals: 13/13 eval máy đạt kỳ vọng
+
+### Re-pin lần 2 — 2026-11-18, do PR #1: sửa ca kiểm theo bố cục mới sau pin (run-tests.sh P196, kiem-ban-cai.ca.mjs, design-floor, design-eval)
+run_id: repin-20261118T020047Z-29249
+sha: 9d98da111a10081957dfbfd902a1ed7ccb5339ae · suites: 11 lệnh exit 0 · evals: 13/13 eval máy đạt kỳ vọng
