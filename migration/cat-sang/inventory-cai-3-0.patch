@@ -1,0 +1,154 @@
+diff --git a/.claude/settings.json b/.claude/settings.json
+index 6bfe3b38..17978048 100644
+--- a/.claude/settings.json
++++ b/.claude/settings.json
+@@ -71,19 +71,19 @@
+     ]
+   },
+   "enabledPlugins": {
+-    "acceptance-gate@acceptance-gate-kit": true,
+-    "feature-loop@acceptance-gate-kit": true,
+-    "diagram-design@acceptance-gate-kit": true,
++    "acceptance-gate@delivery-loop": true,
++    "feature-loop@delivery-loop": true,
++    "diagram-design@delivery-loop": true,
+     "superpowers@claude-plugins-official": true,
+-    "road-map@acceptance-gate-kit": true,
+-    "tri-thuc@acceptance-gate-kit": true,
+-    "dieu-phoi@acceptance-gate-kit": true
++    "roadmap@delivery-loop": true,
++    "knowledge@delivery-loop": true,
++    "dispatch@delivery-loop": true
+   },
+   "extraKnownMarketplaces": {
+-    "acceptance-gate-kit": {
++    "delivery-loop": {
+       "source": {
+         "source": "github",
+-        "repo": "phanlemanh/acceptance-gate-kit"
++        "repo": "phanlemanh/delivery-loop"
+       }
+     }
+   }
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index be57f2c6..bc836185 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -69,7 +69,7 @@ jobs:
+   gate:
+     runs-on: ubuntu-latest
+     env:
+-      KIT_TAG: v2.38.1
++      KIT_TAG: v3.0.0
+     steps:
+       - uses: actions/checkout@v7
+         with:
+@@ -80,9 +80,9 @@ jobs:
+       - name: Fetch the kit by tag, outside the repository
+         run: |
+           git init -q "$RUNNER_TEMP/kit"
+-          git -C "$RUNNER_TEMP/kit" fetch -q --depth 1 https://github.com/phanlemanh/acceptance-gate-kit "refs/tags/$KIT_TAG"
++          git -C "$RUNNER_TEMP/kit" fetch -q --depth 1 https://github.com/phanlemanh/delivery-loop "refs/tags/$KIT_TAG"
+           git -C "$RUNNER_TEMP/kit" checkout -q FETCH_HEAD
+-          echo "CLAUDE_PLUGIN_ROOT=$RUNNER_TEMP/kit" >> "$GITHUB_ENV"
++          echo "CLAUDE_PLUGIN_ROOT=$RUNNER_TEMP/kit/plugins/acceptance-gate" >> "$GITHUB_ENV"
+       - name: pre-merge-check
+         run: |
+           if [ -n "${GITHUB_BASE_REF:-}" ]; then
+diff --git a/docs/tri-thuc/TRI-THUC.md b/docs/tri-thuc/TRI-THUC.md
+index 371587eb..92b5a6c7 100644
+--- a/docs/tri-thuc/TRI-THUC.md
++++ b/docs/tri-thuc/TRI-THUC.md
+@@ -1,11 +1,11 @@
+ # Tri thức của onehub-inventory
+ 
+-Gốc tri thức theo khuôn của acceptance-gate-kit (skills/acceptance/references/tri-thuc-template.md).
++Gốc tri thức theo khuôn của kit delivery-loop (plugins/acceptance-gate/skills/acceptance/references/tri-thuc-template.md).
+ 
+ - raw/<YYYY-MM-DD>-<tên>/ — bất biến; nguon.md liệt mọi tệp kèm băm git hash-object.
+ - wiki/nen/ — nền chung mọi vòng đọc. wiki/chu-de/ — chủ đề. wiki/dot/<đợt>.md — mã → trang.
+ - Không commit index.md hay log.md.
+ 
+-Ghi bằng `/tri-thuc:ghi`, kiểm bằng `/tri-thuc:kiem`. Kho đã công khai từ 10/11/2026 và chủ kho chọn giữ tài liệu thô ngay trong kho, nên mọi thứ ghi vào đây đều công khai. Muốn tách riêng thì chuyển tài liệu thô sang kho riêng (khai `cong_khai` và `kho` trong `_acceptance/config.yaml`).
++Ghi bằng `/knowledge:ingest`, kiểm bằng `/knowledge:health`. Kho đã công khai từ 10/11/2026 và chủ kho chọn giữ tài liệu thô ngay trong kho, nên mọi thứ ghi vào đây đều công khai. Muốn tách riêng thì chuyển tài liệu thô sang kho riêng (khai `cong_khai` và `kho` trong `_acceptance/config.yaml`).
+ 
+ Không đưa vào: tên, số điện thoại, địa chỉ thật của chủ nhà, khách hay môi giới (dùng `[Tên]`, `0900 000 0xx`, `[Tên sàn]`); ảnh sổ, giấy tờ, giá đáy của căn thật; ảnh chụp màn có dữ liệu của sàn thật; khoá, chuỗi kết nối, token.
+diff --git a/tests/kit-root.test.ts b/tests/kit-root.test.ts
+index 997e1921..21b2a438 100644
+--- a/tests/kit-root.test.ts
++++ b/tests/kit-root.test.ts
+@@ -1,6 +1,6 @@
+ import { describe, expect, it } from "vitest";
+ 
+-import { chooseInstall } from "../tools/kit-root.mjs";
++import { chooseInstall, installEntries } from "../tools/kit-root.mjs";
+ import { tempDir } from "./support/temp-dir";
+ 
+ const dir = (name: string) => tempDir(name);
+@@ -25,3 +25,23 @@ describe("chooseInstall", () => {
+     expect(chooseInstall([{ scope: "user", installPath: "/missing" }], ["/repo"])).toBe("");
+   });
+ });
++
++describe("installEntries", () => {
++  const entry = { scope: "user", installPath: "/kit" };
++
++  it("reads the acceptance-gate install of the delivery-loop marketplace", () => {
++    expect(installEntries({ plugins: { "acceptance-gate@delivery-loop": [entry] } })).toEqual([
++      entry,
++    ]);
++  });
++
++  it("ignores an install left from the old acceptance-gate-kit marketplace", () => {
++    expect(installEntries({ plugins: { "acceptance-gate@acceptance-gate-kit": [entry] } })).toEqual(
++      [],
++    );
++  });
++
++  it("returns nothing for a registry without plugins", () => {
++    expect(installEntries({})).toEqual([]);
++  });
++});
+diff --git a/tools/kit-root.d.mts b/tools/kit-root.d.mts
+index 6c43589f..2f1576e2 100644
+--- a/tools/kit-root.d.mts
++++ b/tools/kit-root.d.mts
+@@ -5,3 +5,7 @@ export interface PluginInstall {
+ }
+ 
+ export function chooseInstall(entries: PluginInstall[], roots: string[]): string;
++
++export const PLUGIN_KEY: string;
++
++export function installEntries(registry: unknown): PluginInstall[];
+diff --git a/tools/kit-root.mjs b/tools/kit-root.mjs
+index 37b1e74b..6bf605b4 100644
+--- a/tools/kit-root.mjs
++++ b/tools/kit-root.mjs
+@@ -9,6 +9,15 @@ import { homedir } from "node:os";
+ import { dirname, resolve } from "node:path";
+ import { fileURLToPath } from "node:url";
+ 
++// The kit ships from the delivery-loop marketplace since 3.0.0. An install from the old
++// acceptance-gate-kit marketplace is not read: running its scripts here would mix two kit versions.
++export const PLUGIN_KEY = "acceptance-gate@delivery-loop";
++
++export function installEntries(registry) {
++  const entries = registry?.plugins?.[PLUGIN_KEY];
++  return Array.isArray(entries) ? entries : [];
++}
++
+ export function chooseInstall(entries, roots) {
+   const usable = (e) => e?.installPath && existsSync(e.installPath);
+   for (const root of roots) {
+@@ -40,9 +49,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === realpathSync(process.a
+     process.env.PLUGIN_REGISTRY ?? `${homedir()}/.claude/plugins/installed_plugins.json`;
+   let entries;
+   try {
+-    entries =
+-      JSON.parse(readFileSync(registry, "utf8")).plugins?.["acceptance-gate@acceptance-gate-kit"] ??
+-      [];
++    entries = installEntries(JSON.parse(readFileSync(registry, "utf8")));
+   } catch {
+     entries = [];
+   }

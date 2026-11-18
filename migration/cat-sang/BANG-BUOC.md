@@ -34,7 +34,29 @@ commit gộp. Nhánh ứng viên = nhánh chính kho cũ + 6 commit dọn nhà (
 | 1.9 | 5 PR đang mở và 26 vấn đề ở kho cũ: dời sang kho mới hay đóng | có | mở lại | chủ kho quyết từng nhóm | đọc 17/11: PR #377, #389, #396, #417, #418 |
 | 1.10 | Bật quét bí mật + chặn đẩy bí mật, tự xoá nhánh sau gộp ở hai kho (việc số 1 còn treo của `TRANG-THAI.md`) | có | tắt lại | chủ kho bảo | đọc 17/11: kho cũ tắt cả; kho mới riêng tư không đọc được mục này |
 
-## Chặng 2 — Quỹ hàng cài 3.0 (một PR ở kho ấy, trên cây làm việc riêng cắt từ `origin/main`)
+## Chặng 2 — OneHub-Inventory cài 3.0 (đổi 18/11; một PR ở kho ấy, trên cây làm việc riêng cắt từ `origin/main`)
+
+Chủ kho đổi kho nhận đầu tiên từ Quỹ hàng sang `onehub-inventory` ngày 18/11 («Đổi, cho diễn tập»; sổ quyết định
+`_acceptance/release-3-0-0/decisions.jsonl`, dòng 36). Lý do: mốc chỉ có kết quả khi một vòng thật gộp được trên 3.0, và trong
+bảy ngày 11–18/11 Inventory có 47 chữ ký Cổng Bằng chứng, Quỹ hàng 0. Quỹ hàng nhận sau, cùng đợt với crm; bảng Quỹ hàng
+cũ giữ nguyên ở dưới làm sử liệu, bài diễn tập 17/11 của nó không áp cho Inventory.
+
+Diễn tập 18/11 trên bản sao rời của Inventory ở `8925e8ff` (nhánh chính hôm ấy; kit đang ghim `v2.38.1`, 66 hồ sơ, 57 đã
+ký). Kit lấy bằng thẻ đúng như CI: `v2.38.1` (`88d31b6`) từ kho cũ, `v3.0.0` (`c16d25d`) từ kho mới. Bản vá đủ của PR cài:
+`migration/cat-sang/inventory-cai-3-0.patch` (6 tệp, +48 −17).
+
+| # | Bước | Đảo được? | Ai làm | Diễn tập 18/11 |
+|---|---|---|---|---|
+| 2.0 | Điều kiện: kho mới công khai | — | — | đạt — `delivery-loop` công khai từ 1.2; CI kéo kit không cần mã truy cập |
+| 2.1 | Phía CI — `ci.yml`: `KIT_TAG: v3.0.0`, kéo từ `phanlemanh/delivery-loop`, `CLAUDE_PLUGIN_ROOT=$RUNNER_TEMP/kit/plugins/acceptance-gate`. Tệp nằm trong `t1_skip_globs` | có — đảo PR | máy soạn, chủ kho bảo mở PR | đối chứng trên cây gốc chưa sửa, `--recheck-all`: kit 2.38.1 → 57 OK, 0 `VIOLATION`; kit 3.0 → 57 OK, 0 `VIOLATION`; `product-map --check` khớp cả hai (bản đồ và `LO-TRINH.html`). Đổi engine một mình không làm hồ sơ nào hoá cũ hay đỏ, kể cả luật mới của 2.39 |
+| 2.2 | Phía phiên — `.claude/settings.json` (chợ `delivery-loop`, sáu khoá bật plugin, ba tên mới `roadmap` · `knowledge` · `dispatch`); `tools/kit-root.mjs` + `.d.mts` đọc khoá `acceptance-gate@delivery-loop`, KHÔNG đọc lùi khoá cũ (đọc lùi thì máy chưa cài chợ mới lặng lẽ chạy lõi 2.38 trong khi CI chạy 3.0); `docs/tri-thuc/TRI-THUC.md` đổi sang `/knowledge:ingest` · `/knowledge:health` | có — đảo PR | máy soạn, chủ kho bảo | ca kiểm `tests/kit-root.test.ts` thêm 3 ca, đỏ trước khi viết vật, xanh sau (6/6). Bộ kiểm đơn vị trọn: bản sửa và cây gốc đỏ CÙNG 106 ca ở cùng 11 tệp (bản sao thiếu tệp sinh lúc dựng, vd `design/component-registry.json`) — 0 ca đỏ chỉ ở bản sửa, bản sửa thêm 3 ca đạt. `tsc --noEmit` thoát 0 cả hai cây; eslint 0 lỗi; prettier sạch. Thông điệp commit của `/knowledge:ingest` vẫn mở đầu `tri-thuc:` nên `tools/commit_msg.py` không phải đổi |
+| 2.3 | **PR cài phải mang một hồ sơ nghiệm thu** | — | **chủ kho quyết** | `gate` chế độ PR (`--base origin/main`) trên bản sửa: đúng 1 `VIOLATION` — «T3 paths changed but the PR carries NO _acceptance/<slug>/ artifacts», ba tệp: `.claude/settings.json`, `tools/kit-root.mjs`, `tools/kit-root.d.mts`. Không hồ sơ nào của Inventory phủ `kit-root` (tệp dựng ở `701f098c` không kèm hồ sơ); lần nâng 2.38.1 (`9969ad90`) chỉ chạm `ci.yml` nên chưa từng vấp. Quỹ hàng không lộ lớp này vì PR của nó mang sẵn hồ sơ `ghim-lai-ban-that-qua-ci`. Bỏ `settings.json` khỏi PR thì phiên không nạp chợ mới → không vòng nào chạy trên 3.0 → vế 1 của Chặng 4 không đo được |
+| 2.4 | Trên máy làm vòng: thêm chợ `delivery-loop`, cài sáu plugin, gỡ bật chợ cũ ở kho này — TRƯỚC khi gộp 2.5 (sau gộp, `kit-root` chỉ đọc khoá mới) | có — cài lại chợ cũ | **chủ kho bảo** | chưa chạy trên máy thật. Máy này hôm nay chỉ có khoá `…@acceptance-gate-kit`: `kit-root` của bản sửa in rỗng, đúng chiều hỏng-to-tiếng |
+| 2.5 | Gộp PR ở Inventory bằng commit gộp — SAU khi vòng đang chạy `upgrade-design-assembly-0-7-1` (lượt chấm 2, commit 18/11) và PR #83 gộp xong, theo luật không đổi engine dưới chân một vòng đang chạy | có — đảo commit cài + bật lại chợ cũ | chủ kho bảo | — |
+
+Chặng 4 đọc «kho nhận» là `onehub-inventory` từ 18/11; các lệnh đo giữ nguyên, đổi `--kho`.
+
+## Chặng 2 (sử liệu, trước 18/11) — Quỹ hàng cài 3.0 (một PR ở kho ấy, trên cây làm việc riêng cắt từ `origin/main`)
 
 | # | Bước | Đảo được? | Đường lùi | Ai làm | Diễn tập 17/11 (bản sao rời của Quỹ hàng `f1d123ee`, thẻ diễn tập) |
 |---|---|---|---|---|---|
