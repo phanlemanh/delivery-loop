@@ -5,7 +5,7 @@ slug: release-3-0-0
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật của riêng mốc không chạm đường T3 (đo 17/11: --hang-pr với nền là commit gộp ra T2); PR số 1 thì bộ phân hạng trả «không rõ» — xem Notes
 surfaces: [cli]
-status: verified
+status: signed-off
 approved_by:
 approved_at:
 veto_state: mo
@@ -105,3 +105,14 @@ chấm lại ở đây; mốc chỉ đòi chúng đúng là thứ kịch bản s
   đường kịch bản đổi sai, tên plugin cũ, hay tệp tiêm nằm ngoài mọi gói), sửa cùng vòng. Không quét lại các ca kiểm khác tìm đường bố cục cũ; ngưỡng
   đang đếm: ≥ 1 ca kiểm nữa lộ ra đọc đường cũ sau ngày cắt → mở hồ sơ quét theo lớp.
 - Lượt này phiên chấm chạy plugin `feature-loop` 2.38.1 từ chợ cũ, điều phối bằng tệp workflow của chính cây (`plugins/feature-loop/workflows/`).
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-18:
+  - Ngoài-2: E12 khai `paths` hẹp hơn những tệp lượt kiểm bản cài thật sự dùng, nên một lượt chấm sau có thể mang màu xanh cũ sang dù bản cài đã hỏng.
+  - Ngoài-3: ca KB-13 tiêm vào một tệp mà cả chế độ nghiêm lẫn chế độ khoan dung đều báo đỏ, nên nó không còn phân biệt được hai chế độ.
+  - Ngoài-5: dòng «Khớp phiên bản» của GUIDE còn nhãn tên cũ `dieu-phoi` cho plugin nay tên `dispatch`; số phiên bản vẫn đúng.
+  - Ngoài-6: vài lệnh viết liền dòng trong README và GUIDE còn chỉ đường `feature-loop/scripts/…` theo bố cục cũ, và phép kiểm tài liệu của AC-8 không quét dạng lệnh ấy.
+  - Ngoài-7: mô tả gói đồ họa trên chợ còn nói số phiên bản đi theo kỹ năng bên trong, trái với số 3.0.0.
+  - Ngoài-8: phép so hai kho hứa che tên hồ sơ của kho riêng, nhưng trên đường lỗi vẫn in tên hồ sơ ra nhật ký.
+  - Ngoài-12: như Ngoài-8 — dòng LỆCH của phép so hai kho in tên hồ sơ của kho riêng.
+  - Ngoài-13: như Ngoài-7 — mô tả gói đồ họa nói sai quy tắc đặt số, người bảo trì làm theo có thể hạ số nhầm.
+  - Ngoài-14: phép so hai kho coi «0 lệch» là đạt mà không kiểm số hồ sơ chấm được ở mỗi bên lớn hơn 0.
+  - Ngoài-15: ca kiểm lượt cắt mốc không phân biệt «đọc được hai số khác nhau» với «không đọc được số»; lỗi nghiêng về phía chạy trọn.

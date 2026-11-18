@@ -8,7 +8,7 @@ verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
 verified_commit: a4151d5b2fc1845d808ae86448a5754de49661e6
-human_signoff:
+human_signoff: Phan Le Manh 2026-11-18 — ký với 10 known-limits (Ngoài-2/3/5/6/7/8/12/13/14/15); Ngoài-1, Ngoài-9 chấp nhận không sửa; Ngoài-4, Ngoài-10, Ngoài-11 mở hợp đồng mới; đồng ý phạm vi đã cắt; phê hết quyết định ghi sau Cổng Phạm vi
 ---
 
 # Evidence Report: release-3-0-0
