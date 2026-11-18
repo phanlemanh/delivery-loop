@@ -1,10 +1,4 @@
 {
   "feature_plain": "Kit lên 3.0.0 «Chuyển nhà»: kho delivery-loop thành nguồn, sáu plugin mang tên mới ở chỗ mới, kho cũ dừng ở 2.39.0, và Quỹ hàng là kho đầu tiên nhận.",
-  "decisions": [
-    {
-      "id": "E10",
-      "q": "Ghi chú phát hành 3.0.0 chép đúng chữ hồ sơ chưa?",
-      "why": "Máy đã đối chiếu: bốn chỗ lệch là có thật nhưng nhỏ. Câu «Vật» của B2 bị cắt cụt. Số 5 807 lấy từ tệp đo, không có trong hồ sơ. B1 có một câu ngoặc tự thêm. Chữ KIT_TAG không có trong khối mẫu CI. Ghi chú này đi ra ngoài cùng bản phát hành, nên máy khuyên trả lại để sửa."
-    }
-  ]
+  "decisions": []
 }
