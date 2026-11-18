@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
 const GOC_SHA = 'c8fa5a65';
-const BUNDLE = 'lib/design-bundle.mjs';
+const BUNDLE = 'plugins/acceptance-gate/lib/design-bundle.mjs';
 const WRAPPER = 'plugins/acceptance-gate/scripts/build-design-scan.mjs';
 
 function banSao() {
@@ -60,7 +60,8 @@ async function phaThu(tep, cu, moi, caXanh, thongDiep) {
 function boMayGoc() {
   const goc = fs.mkdtempSync(path.join(os.tmpdir(), 'mau-lab-goc-'));
   const tar = path.join(goc, 'goc.tar');
-  execFileSync('git', ['-C', ROOT, 'archive', '-o', tar, GOC_SHA, 'scripts', 'lib', 'vendor']);
+  // GOC_SHA có trước dọn nhà (scripts/ lib/ vendor/ ở gốc kho): đặt dưới plugins/acceptance-gate/ cho cùng hình cây mới.
+  execFileSync('git', ['-C', ROOT, 'archive', '--prefix=plugins/acceptance-gate/', '-o', tar, GOC_SHA, 'scripts', 'lib', 'vendor']);
   execFileSync('tar', ['-xf', tar, '-C', goc]);
   return goc;
 }

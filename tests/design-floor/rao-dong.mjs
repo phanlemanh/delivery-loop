@@ -14,7 +14,7 @@
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative } from 'node:path';
-import { docDoiSo, docHopDong, inKetQua, phanXu, soVaTai } from './lib/hop-dong.mjs';
+import { NODE_MODULES_DO, docDoiSo, docHopDong, inKetQua, phanXu, soVaTai } from './lib/hop-dong.mjs';
 import { doKhoa, soKhoa } from './lib/khoa.mjs';
 import { apVa, bam, bamBuf, boChuThich, chuanBiNguon, dungBanGoi, layUpstream, tepCuaVa } from './lib/upstream.mjs';
 
@@ -166,7 +166,7 @@ if (muon('BG-01')) {
     const khac = join(TMP, 'goc-khac');
     for (const p of [dirname(hd.vendor.vo), hd.vendor.goc]) cpSync(join(GOC, p), join(khac, p), { recursive: true });
     mkdirSync(join(khac, 'tests', 'design-floor'), { recursive: true });
-    symlinkSync(join(GOC, 'tests', 'design-floor', 'node_modules'), join(khac, 'tests', 'design-floor', 'node_modules'));
+    symlinkSync(NODE_MODULES_DO, join(khac, 'tests', 'design-floor', 'node_modules'));
     const c = readFileSync(duong);
     const a = dungBanGoi(hd, GOC);
     const b = dungBanGoi(hd, khac);

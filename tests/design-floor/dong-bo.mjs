@@ -9,7 +9,7 @@
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { docDoiSo, docHopDong, soVaTai } from './lib/hop-dong.mjs';
+import { NODE_MODULES_DO, docDoiSo, docHopDong, soVaTai } from './lib/hop-dong.mjs';
 import { apVa, bam, dungBanGoi, layUpstream, tepCuaVa } from './lib/upstream.mjs';
 
 const ds = docDoiSo(process.argv.slice(2));
@@ -74,7 +74,7 @@ if (ds.ghi) {
 const TMP = mkdtempSync(join(tmpdir(), 'design-floor-dong-bo-'));
 cpSync(join(GOC, dirname(hd.vendor.vo)), join(TMP, dirname(hd.vendor.vo)), { recursive: true });
 mkdirSync(join(TMP, 'tests', 'design-floor'), { recursive: true });
-symlinkSync(join(GOC, 'tests', 'design-floor', 'node_modules'), join(TMP, 'tests', 'design-floor', 'node_modules'));
+symlinkSync(NODE_MODULES_DO, join(TMP, 'tests', 'design-floor', 'node_modules'));
 const lech = [];
 try {
   const { dong, banGoi } = dung(up, TMP, khoa, so);
