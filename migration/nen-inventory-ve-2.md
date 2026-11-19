@@ -51,3 +51,34 @@ Trung vị của tập lẻ là phần tử giữa. Cột làm-xong → ký lấ
 - `loop-health` in «vòng bị hạ-tầng đốt: 78» cho TOÀN BỘ hồ sơ của kho, không tách theo cửa sổ. Với vòng thật trên 3.0, dòng
   này đếm tay trên chính hồ sơ của vòng.
 - Chín vòng là một mẫu nhỏ, và một vòng (1 301 phút) kéo dài qua đêm. Ngưỡng dùng trung vị nên không bị nó kéo.
+
+## Vòng thật đầu tiên trên kit 3.0 (đo 19/11 17:40)
+
+`split-log-ledger` — T2, PR #92 của Inventory, gộp tại `1ad8469f` (19/11 15:58), `KIT_TAG v3.0.0`. Việc dọn: tách sổ log của
+wiki ra khỏi git, nửa đầu của nâng `repo-setup` 0.9.0. Ngưỡng ở trên không sửa.
+
+| Dòng | Số | Ngưỡng | Kết |
+|---|--:|---|---|
+| Lượt gọi người ngoài thiết kế quy về kit mới | 0 | 0 | đạt |
+| Lượt chấm bị hạ tầng kit đốt | 0 | 0 | đạt |
+| Lượt gọi người của vòng | 3 | ≤ 3 (T2) | đạt |
+| Ký → gộp | 50′ | ≤ 51′ | đạt, sát ngưỡng |
+| Làm-xong → ký | 146′ | ≤ 383′ | đạt |
+| Token và phút máy | S4 hai lượt: 67 106 + 54 256 token ra · 751 s + 734 s đồng hồ | chỉ đọc | — |
+
+Cách đếm từng dòng:
+
+- **Ký → gộp:** `nguong-thuc-te.mjs cua-so --tu 47d52b06 --den 1ad8469f` — 1 vòng, 50′, 0 lần gộp nhánh chính vào nhánh.
+- **Làm-xong → ký:** cùng định nghĩa với `loop-health` (commit đầu ghi `status: implemented` → commit đầu ghi
+  trạng thái đã ký): `c5ae6f4d` 12:42:25 → `3b9fa0da` 15:08:14. Đo tay vì `loop-health` đọc lịch sử của HEAD bản kéo
+  (`c79189dd`, chậm nhánh chính 17 commit) chứ không của `--at`, nên không thấy vòng này.
+- **Lượt gọi người:** ba lần chủ kho ký — Cổng Phạm vi 12:41, Cổng Phạm vi lần hai 14:43, Cổng Bằng chứng 15:08. Lần hai do
+  chủ kho đổi câu trả lời Hỏi-2 sau lượt chấm 1 (không sửa ba hồ sơ đã ký, để khỏi phải ghim lại chúng); nguyên nhân là
+  quyết định của người, không quy về kit.
+- **Hạ tầng đốt:** lượt chấm 1 REJECT vì phép đo E6 của chính vòng đọc CI khi lượt CI của PR chưa xong; lượt 2 chấm lại,
+  không sửa sản phẩm. Đỏ vì thước của vòng, không vì vật và không vì hạ tầng kit; không có làn ghim lại.
+- **Token và phút:** `_acceptance/split-log-ledger/usage-report.md` tại `1ad8469f`.
+
+Quan sát ghi lại, không phải việc của đợt: hồ sơ của vòng ghi hai hồ sơ đã ký của Inventory đỏ sẵn trên nhánh chính
+(`tat-plugin-cho-cu` E1, `upgrade-repo-setup-0-9-0` «rules-kept»). Đó là việc của kho ấy, theo dõi ở lượt ghim lại kế.
+
