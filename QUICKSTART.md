@@ -54,6 +54,10 @@ Tối thiểu (chỉ gate, không vòng lặp): cài marketplace + `acceptance-g
 > Repo `phanlemanh/delivery-loop` là **public** — không cần xin quyền đọc.
 > Sau khi cài, mở phiên Claude Code mới để runtime nạp plugin.
 
+**Đang ở kit cũ (chợ `acceptance-gate-kit`, bản 2.39 trở về trước)?** Từ 3.0.0 kit sống ở kho `delivery-loop`.
+Cài chợ mới không tự chuyển kho đang dùng: nó thêm plugin mới cạnh plugin cũ, và một phiên có thể nạp cả hai bản.
+Các bước chuyển — tệp khai plugin của kho, lượt kiểm tự động, tên lệnh đã đổi — ở **GUIDE §5.4 «Chuyển từ chợ cũ»**.
+
 ## Cập nhật plugin (quan trọng với cả đội)
 
 Lệnh cập nhật nằm cùng thủ tục cài ở **GUIDE §5.1** — file này không chép lại.

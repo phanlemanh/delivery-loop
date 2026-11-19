@@ -1,4 +1,8 @@
-# Acceptance-Gate Kit
+# Delivery Loop
+
+> Formerly **Acceptance-Gate Kit** (repo `acceptance-gate-kit`, frozen at `v2.39.0`). Since 3.0.0 the kit lives in this repo; to move a repo off the old marketplace see [GUIDE §5.4](GUIDE.md#54-chuyển-từ-chợ-cũ-acceptance-gate-kit).
+>
+> **English** · [Tiếng Việt](docs/README.vi.md)
 
 Evidence-backed acceptance gate for AI-generated features. Replaces hours of
 hand-testing with machine evidence, and puts the human at the edge of the loop
@@ -53,7 +57,7 @@ Enforcement is deterministic, not aspirational:
   UNCERTAIN judgments — and blocks contract `status` transitions that skip
   Gate 1 (approved/signed-off, or draft → implemented/verified, with an empty
   `approved_by` and no `gate1_skipped: true`).
-- **CI** (`scripts/pre-merge-check.sh`): blocks merge of implemented T2/T3
+- **CI** (`pre-merge-check.sh`, in the kit at `plugins/acceptance-gate/scripts/`): blocks merge of implemented T2/T3
   features without a signed PASS evidence report, without a recorded Gate-1
   approval, with STALE evidence (non-gate files changed after the report's
   `verified_commit`), or — via the committed-evidence re-check — with run_ids
@@ -89,7 +93,8 @@ this file does not repeat them.
 > authoritative backstop is still the vendored CI set:
 > `scripts/pre-merge-check.sh`, `scripts/recheck-evidence.cjs`, and the five
 > `lib/*.cjs` files (`evidence-core`, `gap-probe`, `workspace-record`,
-> `ac-line`, `md-section`).
+> `ac-line`, `md-section`) — in the kit they live under
+> `plugins/acceptance-gate/`.
 
 For local development, replace `phanlemanh/delivery-loop` with the
 absolute path to this checkout. Source files are used directly — there is no
@@ -131,9 +136,15 @@ uncommitted (absolute machine paths).
 
 Run `/acceptance-gate:acceptance-init`; it writes the `_acceptance/config.yaml` artifact.
 
+[GUIDE §5.3](GUIDE.md#53-wire-ci-bắt-buộc-để-gate-có-răng-ở-pr) is the source for
+wiring CI; its default route runs the gate from a kit checkout pinned in the CI
+job (`CLAUDE_PLUGIN_ROOT` = `<kit>/plugins/acceptance-gate`) and copies nothing.
+The older copy route below still works.
+
 Copy `scripts/pre-merge-check.sh`, `scripts/recheck-evidence.cjs`, and the five
 `lib/*.cjs` files (`evidence-core`, `gap-probe`, `workspace-record`, `ac-line`,
-`md-section`) into the repo (keep the `scripts/` + `lib/` layout so the
+`md-section`) from the kit's core plugin (`plugins/acceptance-gate/`) into the
+repo (keep the `scripts/` + `lib/` layout so the
 re-check can `require ../lib`; the `.cjs` extension keeps them CommonJS even
 when the repo declares `"type": "module"`), and run the gate in CI:
 
@@ -177,7 +188,7 @@ committed reports meet the current evidence shape.
   or deletion — see [ADR 0007](docs/adr/0007-product-map-t1-exemption.md).
   Repos initialised before 1.31.0 keep working: the gate bodies read the config,
   skip the redraw, and print how to opt in.
-- Phiên nghiệm thu / **Cổng Giá trị** (`skills/uat-session`) → the human gate
+- Phiên nghiệm thu / **Cổng Giá trị** (`plugins/acceptance-gate/skills/uat-session`) → the human gate
   AFTER shipping, for work that came from an opportunity decided `build` or
   `iterate`. Gate 2 asks "did we build what we promised?"; this one asks "did it
   actually matter?". Thresholds are copied verbatim from when the round opened
@@ -217,7 +228,8 @@ committed reports meet the current evidence shape.
 
 | Path | What |
 |---|---|
-| `.claude-plugin/marketplace.json` | Claude Code marketplace entry |
+| `.claude-plugin/marketplace.json` | Claude Code marketplace entry — marketplace `delivery-loop`, six plugins |
+| `plugins/<name>/` | One directory per plugin: `acceptance-gate` (core), `feature-loop`, `diagram-design`, `dispatch`, `roadmap`, `knowledge`. Every path below is inside `plugins/acceptance-gate/` unless it starts at the repo root |
 | `skills/acceptance/` | The 3-phase skill + templates |
 | `skills/ux-ui-craft/` | Design-engineer skill: 7-step UI process, hard gates (contrast, type/alignment budgets, structure–space coherence, states), Layout Contract + layout meter (`measure_layout.js`), System+Prototype+Audit modes, 10 craft references |
 | `skills/morphological-scan/` | CT-S coverage skill: Zwicky-box AC-space scan (MECE axes + CE evidence + Pareto Core/Later/Never) feeding the contract's Coverage section on the Gate-1 card |
@@ -229,23 +241,23 @@ committed reports meet the current evidence shape.
 | `scripts/gate-card.js` | Render the Gate 1 / Gate 2 human decision card |
 | `scripts/config-patch.mjs` | THE splice path for programmatic config.yaml writes (dry-run, .bak, abort-on-existing) |
 | `scripts/evidence-page.js` | Render the full Gate-2 evidence page (screenshots/output/slideshow) |
-| `tests/` | Fixture tests: `for t in hooks scripts plugins design-eval workflows skills; do bash tests/$t/run-tests.sh; done` |
+| `tests/` (repo root) | Fixture tests: `for t in hooks scripts plugins design-eval workflows skills; do bash tests/$t/run-tests.sh; done` |
 
 ## Kit chạy cổng của chính nó (self-hosting)
 
 `_acceptance/config.yaml` ở repo này cấu hình kit làm **consumer của chính nó**.
 Ba điểm khác một repo tiêu thụ bình thường, mỗi điểm là một bài học dogfood:
 
-- **Executor trỏ vào `scripts/` trong repo, không qua `${CLAUDE_PLUGIN_ROOT}`.**
+- **Executor trỏ vào mã trong repo (`tests/`, `plugins/acceptance-gate/scripts/`), không qua `${CLAUDE_PLUGIN_ROOT}`.**
   Kit LÀ nguồn của plugin, nên cổng phải chấm bằng mã đang sửa chứ không bằng
   bản trong plugin cache — cache thường tụt version (đo được: cache 1.18.0 khi
   repo đã 1.21.0). feature-loop S4 resolve bằng
-  `node feature-loop/scripts/resolve-plugin.mjs --plugin acceptance-gate --root .`
+  `node plugins/feature-loop/scripts/resolve-plugin.mjs --plugin acceptance-gate --root .`
 - **`*.md` KHÔNG nằm trong `t1_skip_globs`.** Mặc định sinh sẵn coi mọi markdown
-  là tài liệu; ở đây mọi `SKILL.md` và mọi file trong `commands/` LÀ hành vi thật. Chỉ docs được
+  là tài liệu; ở đây mọi `SKILL.md` và mọi file trong `plugins/<tên>/commands/` LÀ hành vi thật. Chỉ docs được
   liệt đích danh mới bỏ qua cổng — nếu không, sửa hành vi của cổng lại lọt cổng.
-- **`t3_paths` là lõi cưỡng chế** (`hooks/`, `lib/`, `pre-merge-check.sh`,
-  `recheck-evidence.cjs`): bug ở đây thành false-green im lặng trên MỌI repo dùng kit.
+- **`t3_paths` là lõi cưỡng chế** (dưới `plugins/acceptance-gate/`: `hooks/`, `lib/`,
+  `scripts/pre-merge-check.sh`, `scripts/recheck-evidence.cjs`): bug ở đây thành false-green im lặng trên MỌI repo dùng kit.
 
 CI ở [`.github/workflows/gate.yml`](.github/workflows/gate.yml): 3 test suite +
 `pre-merge-check.sh` + **răng T1-escape (ĐANG BẬT)** — mọi PR chạm `t3_paths`
@@ -367,6 +379,7 @@ Design spec: `docs/superpowers/specs/2026-06-10-acceptance-gate-kit-design.md`
 ## Licence
 
 MIT — see [LICENSE](LICENSE). Two vendored trees keep their own licences
-(`vendor/impeccable/` Apache-2.0, `diagram-design/skills/diagram-design/` MIT);
+(`plugins/acceptance-gate/vendor/impeccable/` Apache-2.0,
+`plugins/diagram-design/skills/diagram-design/` MIT);
 [NOTICE](NOTICE) names both. See [ADR 0013](docs/adr/0013-mo-that-mit-va-ban-chep-mo-hinh-cong.md)
 for why the repo is open and what that costs.

@@ -1280,6 +1280,76 @@ Lý do và trade-off: [ADR 0006](docs/adr/0006-rules-ledger-fail-closed-at-outpu
 `_acceptance/` nào → VIOLATION. Không truyền base → backstop chỉ in NOTE (chủ đích,
 để nâng cấp kit không làm đỏ CI cũ — nhưng hãy wire nó).
 
+### 5.4 Chuyển từ chợ cũ `acceptance-gate-kit`
+
+Dành cho kho đang chạy kit 2.39 trở về trước, cài từ chợ `acceptance-gate-kit`. Từ 3.0.0 kit sống ở kho
+`phanlemanh/delivery-loop`: chợ tên `delivery-loop`, sáu plugin ở `plugins/<tên>/`. Ba plugin đổi tên (`dieu-phoi` →
+`dispatch`, `road-map` → `roadmap`, `tri-thuc` → `knowledge`), mười hai lệnh và hai skill đổi tên, **không có bí danh
+tên cũ**. Bảng tên đủ ở CHANGELOG, mục 3.0.0 «Ai bị ảnh hưởng»; dạng máy đọc ở `migration/chay-thu-phien/bang-ten.json`.
+
+**Cài chợ mới KHÔNG tự chuyển một kho đang dùng kit cũ.** Nó thêm sáu plugin mới CẠNH plugin cũ. Máy còn bật plugin
+của chợ cũ ở phạm vi người dùng thì một phiên nạp CẢ HAI bản và có lệnh trùng tên. Vì thế kho phải tự đổi năm chỗ dưới
+đây; bốn chỗ đầu đi chung MỘT PR, chỗ thứ năm làm trên từng máy trước khi gộp PR ấy.
+
+1. **`.claude/settings.json` của kho.** Khai chợ `delivery-loop`, bật sáu plugin dạng `<tên>@delivery-loop`, và TẮT
+   ĐÍCH DANH (`false`) sáu plugin của chợ cũ dạng `<tên>@acceptance-gate-kit` — dòng tắt ở phạm vi kho thắng dòng bật ở
+   phạm vi người dùng, nên máy nào còn bật bản cũ cũng không nạp nó trong kho này. Mười hai dòng bật/tắt:
+
+   ```json
+   {
+     "extraKnownMarketplaces": {
+       "delivery-loop": {
+         "source": { "source": "github", "repo": "phanlemanh/delivery-loop" }
+       }
+     },
+     "enabledPlugins": {
+       "acceptance-gate@delivery-loop": true,
+       "feature-loop@delivery-loop": true,
+       "diagram-design@delivery-loop": true,
+       "dispatch@delivery-loop": true,
+       "roadmap@delivery-loop": true,
+       "knowledge@delivery-loop": true,
+       "acceptance-gate@acceptance-gate-kit": false,
+       "feature-loop@acceptance-gate-kit": false,
+       "diagram-design@acceptance-gate-kit": false,
+       "dieu-phoi@acceptance-gate-kit": false,
+       "road-map@acceptance-gate-kit": false,
+       "tri-thuc@acceptance-gate-kit": false
+     }
+   }
+   ```
+
+   Các dòng khác đang có trong tệp (ví dụ `superpowers@claude-plugins-official`) giữ nguyên. `dispatch`, `roadmap`,
+   `knowledge` là ba plugin bật theo lựa chọn của kho: kho trước đây không bật bản cũ của plugin nào thì bỏ dòng
+   `true` của plugin ấy, vẫn giữ đủ sáu dòng `false`.
+2. **Lượt kiểm tự động (§5.3).** Đổi kho kéo kit sang `https://github.com/phanlemanh/delivery-loop`, ghim ở thẻ
+   `v3.0.0` (`KIT_SHA` mang sha của thẻ, hoặc bước «Lấy kit» lấy `refs/tags/v3.0.0`), và đặt `CLAUDE_PLUGIN_ROOT` vào
+   `<bản kit>/plugins/acceptance-gate` — gốc kho kit không còn là gốc plugin lõi. Kho nào tự gọi thêm script của
+   feature-loop qua gốc lõi thì đổi sang `<bản kit>/plugins/feature-loop/scripts/…`. Hồ sơ nào có eval kéo kit theo
+   thẻ thì ghim lại sau khi đổi.
+3. **Tệp của kho đọc khoá `<tên>@acceptance-gate-kit` để tìm gốc kit** (script, cấu hình — tìm bằng
+   `git grep -n 'acceptance-gate-kit'`): đổi sang khoá `<tên>@delivery-loop`, ba plugin đổi tên thì đổi cả tên. Gốc
+   plugin lõi trong bản clone chợ nay là `~/.claude/plugins/marketplaces/delivery-loop/plugins/acceptance-gate`.
+4. **Tệp sống còn nhắc tên lệnh cũ** (tài liệu, cấu hình, lời dặn cho phiên như `CLAUDE.md`): đổi theo bảng tên. Hồ
+   sơ đã khép là sử liệu — để nguyên.
+5. **Trên từng máy dev, TRƯỚC khi gộp PR.** Thêm chợ mới rồi cài sáu plugin `<tên>@delivery-loop`, để phiên mở sau
+   khi gộp có sẵn bản mới. Lệnh thêm chợ và lệnh cài ở §5.1 — mục này không chép lại; ba plugin bật theo lựa chọn
+   cài ở phạm vi kho, như README trong `plugins/<tên>/` của từng plugin dặn. Kiểm bản cài bằng chế độ `--may` của §7.2.
+
+**Không phải đổi:** hồ sơ `_acceptance/` đã có (phán quyết của lưới trước-merge trên chúng không đổi) · khoá cấu
+hình trong `_acceptance/config.yaml` (không khoá mới, không khoá đổi tên) · giá trị trạng thái hồ sơ và khuôn hồ sơ ·
+tên tác tử chấm, chữ người đọc (thẻ, thông báo, tên các cổng), tên script nội bộ.
+
+**PR chuyển chợ có thể là một vòng có cổng người.** PR ấy chạm tệp workflow và `.claude/settings.json`; đường nào
+trong đó kho khai ở `risk_tiers.t3_paths` thì lưới trước-merge đòi PR mang một hồ sơ nghiệm thu được chấm cho chính
+thay đổi ấy. Mở vòng bằng `/feature-loop:feature-loop` như mọi việc T3 — không sửa tay rồi gộp.
+
+**Tự kiểm bằng tay sau khi gộp.** Mở một phiên MỚI ở gốc kho rồi xem danh sách plugin phiên đã nạp: plugin của kit
+chỉ còn sáu dòng `@delivery-loop` (hoặc ít hơn, đúng số dòng `true` kho giữ), không dòng `@acceptance-gate-kit` nào,
+và không lệnh nào hiện hai lần.
+
+**Đường lùi:** đảo commit của PR và bật lại chợ cũ — kho cũ vẫn cài được ở `v2.39.0`, kho không mất hồ sơ nào.
+
 ## 6. Vận hành hằng ngày
 
 ### 6.1 Luồng khuyến nghị — `/feature-loop:feature-loop`
