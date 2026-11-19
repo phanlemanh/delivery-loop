@@ -166,9 +166,9 @@ Mỗi lần thức, phiên giữ đợt đọc bảng này, làm việc đầu t
 | II.0 (1) viết lại tệp luật của nhánh | xong 19/11 | `.claude/rules/chuyen-nha.md` trên nhánh này |
 | II.0 (2) số nền năm dòng của Inventory + ngưỡng vế 2 | xong 19/11 15:11 | `migration/nen-inventory-ve-2.md`: 9 vòng 11–18/11, ký→gộp trung vị 34′ (ngưỡng 51′), làm-xong→ký trung vị 255′ (ngưỡng 383′) |
 | II.0 (3) phép thử phiên thật ở mọi máy làm vòng | Mac Studio đạt 19/11 06:05 · MacBook Pro CHƯA đo | cần một phiên trên máy ấy |
-| II.0 (4) bảng kết cục 5 PR + 26 vấn đề kho cũ | đang làm | xong thì trình chủ kho một lượt (điểm dừng) |
-| II.0 (5) crm ghim bản nào · ba giới hạn Design Assembly | xong 19/11 15:11 | crm thật là `crm-onehub` (công khai, nhánh mặc định `onehub` ở `74a29a68`, đẩy lần cuối 03/11, 0 PR mở): `.claude/settings.json` bật sáu plugin `…@acceptance-gate-kit` từ chợ kho cũ; hai workflow `acceptance.yml`, `ci.yml` không kéo kit theo thẻ. Kho `crm` khác (nhánh `release`) không nhắc kit. Ba giới hạn: `migration/hat-giong-giai-doan-2.md` §2 |
-| II.0 (6) công cụ kiểm chuyển kho `migration/chuyen-kho/` | đang làm | — |
+| II.0 (4) bảng kết cục 5 PR + 26 vấn đề kho cũ | soạn xong 19/11 15:21, chờ chủ kho | `migration/bang-ket-cuc-kho-cu.md`: chuyển 3 · đóng kèm lời trỏ 13 · hạt giống rồi đóng 9 · dựng lại 6 |
+| II.0 (5) crm ghim bản nào · ba giới hạn Design Assembly | xong 19/11 15:11 | crm thật là `crm-onehub` (công khai, nhánh mặc định `onehub` ở `74a29a68`, đẩy lần cuối 03/11, 0 PR mở): `.claude/settings.json` bật sáu plugin `…@acceptance-gate-kit` từ chợ kho cũ; hai workflow `acceptance.yml`, `ci.yml` không kéo kit theo thẻ — **SỬA 15:21:** đọc thiếu, workflow `tin-hieu-gom.yml` có kéo kit từ kho cũ (công cụ kiểm chuyển kho bắt được). Kho `crm` khác (nhánh `release`) không nhắc kit. Ba giới hạn: `migration/hat-giong-giai-doan-2.md` §2 |
+| II.0 (6) công cụ kiểm chuyển kho `migration/chuyen-kho/` | xong 19/11 15:21 | tác tử nền dựng; phiên giữ đợt chạy lại: bộ kiểm 11/11 đạt (Node 24.16); trên Inventory `f6c47332` thoát 0, `47d52b06^1` thoát 1 (5 điểm), `47d52b06` thoát 1 (chỉ K2). Chạy thử trên crm `74a29a68`: 5 điểm CHƯA, gồm workflow `tin-hieu-gom.yml` kéo kit cũ, `scripts/kiem-cheo/cau-hinh.mjs` đọc khoá cũ, 40 chỗ tên lệnh cũ. K6 trên kho thật chưa chạy |
 | II.1 vế 1 — vòng sản phẩm thật ở Inventory gộp trên 3.0 | chờ | chủ kho mở vòng sản phẩm kế ở Inventory; chuông hằng ngày phát hiện |
 | II.1 vế 2 — năm dòng số so với nền | chờ | sau vế 1 |
 | II.1 vế 3 — chủ kho ghi quan sát lên `release-3-0-0` | chờ | không sớm hơn 02/12 (điểm dừng) |
@@ -176,7 +176,7 @@ Mỗi lần thức, phiên giữ đợt đọc bảng này, làm việc đầu t
 | II.2 crm sang 3.0 | chờ | sau Quỹ hàng · II.0 (5) xong |
 | II.3 (a) README: tiêu đề + bản tiếng Việt | đang làm (tác tử nền, cùng PR với (b)) | PR hạng T1 vào `main`, gộp khi xanh (A3) |
 | II.3 (b) hướng dẫn «chuyển từ chợ cũ» trong GUIDE, QUICKSTART | đang làm (tác tử nền) | PR hạng T1, gộp khi xanh (A3) |
-| II.3 (c) bản phát hành GitHub cho `v3.0.0` | xong 19/11 15:09 | «3.0 — Chuyển nhà», gắn thẻ `v3.0.0` (`--verify-tag`), đánh dấu Latest; ghi chú hai thứ tiếng gồm các bước kho cũ phải làm |
+| II.3 (c) bản phát hành GitHub cho `v3.0.0` | xong 19/11 15:09 | «3.0.0 — Chuyển nhà», gắn thẻ `v3.0.0` (`--verify-tag`), đánh dấu Latest; ghi chú hai thứ tiếng gồm các bước kho cũ phải làm |
 | II.3 (d) tự xoá nhánh sau gộp ở kho mới · xoá ba nhánh `claude/b*` | xong 19/11 15:09 | `delete_branch_on_merge=true` (chỉ gộp bằng commit gộp vẫn giữ); ba nhánh B1, B2, B3 đã nằm trọn trong `main` trước khi xoá; còn lại `main`, `chuyen-nha` |
 | II.3 (e) bước 1.9: 26 vấn đề, 5 PR kho cũ | chờ | sau khi chủ kho duyệt bảng II.0 (4) |
 | II.3 (f) Repo Standards nửa (b) | đang làm (phiên `rs-tro-delivery-loop`, mở 19/11 15:11) | bốn tệp nhắc tên cũ; phiên dừng ở PR xanh, gộp chờ lời chủ kho (PR ở kho khác, không thuộc A3) |
@@ -221,6 +221,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 19/11 15:21 | Mac Studio | Công cụ kiểm chuyển kho xong (`migration/chuyen-kho/`, phiên giữ đợt chạy lại bộ kiểm và ba mốc); bảng kết cục kho cũ vào `migration/`; sửa dòng crm (có một workflow kéo kit cũ). PR [repo-standards#39](https://github.com/phanlemanh/repo-standards/pull/39) mở, chờ CI và lời chủ kho. |
 | 19/11 15:11 | Mac Studio | Giai đoạn 2, lượt đầu: số nền Inventory (`nen-inventory-ve-2.md`); bản phát hành GitHub `v3.0.0`; tự xoá nhánh sau gộp bật ở kho mới, ba nhánh B1–B3 đã gộp được xoá; crm đọc xong; nhật ký thay đổi có ca đọc phần cũ → hạt giống; ba giới hạn Design Assembly → hạt giống (`hat-giong-giai-doan-2.md`); mở phiên `rs-tro-delivery-loop` ở Repo Standards. Đang chạy nền: công cụ kiểm chuyển kho, bảng kết cục kho cũ, PR README và hướng dẫn. |
 | 19/11 15:06 | Mac Studio | **Chủ kho duyệt kế hoạch giai đoạn 2: «Bắt đầu».** Thêm mục «Bảng việc giai đoạn 2» vào sổ; viết lại tệp luật của nhánh cho giai đoạn 2 (việc II.0 (1)). Hai tác tử nền của phiên giữ đợt đang chạy: dựng công cụ kiểm chuyển kho, soạn bảng kết cục kho cũ (chỉ đọc). |
 | 19/11 14:53 | Mac Studio | Chủ kho hỏi cài chợ mới có tự chuyển kho đang dùng kit cũ không: không, và kit 3.0 chưa có công cụ hay mục hướng dẫn chuyển (đọc `c1cf031a`). Chủ kho: «Thêm vào kế hoạch» — thêm công cụ kiểm chuyển kho vào `KE-HOACH-GIAI-DOAN-2.md` (II.0 việc 6, B10). Kế hoạch vẫn chờ duyệt. |
