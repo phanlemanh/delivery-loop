@@ -85,15 +85,34 @@ Thứ tự phụ thuộc: II.0 trước mọi thứ · II.1 và II.3 chạy song
 
 | Chặng | Việc | Thước | Ai làm · mở khi |
 |---|---|---|---|
-| **II.0 Dựng nền** — không đổi kit, khoảng 1–2 giờ máy | (1) Viết lại `.claude/rules/chuyen-nha.md` cho giai đoạn 2: tệp đang dặn hai điều đã sai từ 18/11 («`main` là bản sao kho cũ», «sản phẩm chỉ sửa ở kho cũ»). (2) Đo số nền năm dòng của Inventory trên cửa sổ bảy ngày trước commit cài (11–18/11) và ghi ngưỡng vế 2 **trước** khi vòng thật đầu tiên ký. (3) Phép thử phiên thật ở mọi máy làm vòng tại Inventory (Mac Studio đã đo; MacBook Pro chưa). (4) Đọc 5 PR và 26 vấn đề kho cũ, soạn bảng kết cục từng cái. (5) Đọc crm ghim bản nào và có đợt điều phối nào đang chạy; đọc ba giới hạn phiên Design Assembly chuyển sang | Có số nền ghi trước, có bảng 1.9, mọi máy làm vòng nạp đúng sáu plugin 3.0 | phiên giữ đợt · ngay sau khi kế hoạch được duyệt |
+| **II.0 Dựng nền** — không đổi kit, khoảng 1–2 giờ máy | (1) Viết lại `.claude/rules/chuyen-nha.md` cho giai đoạn 2: tệp đang dặn hai điều đã sai từ 18/11 («`main` là bản sao kho cũ», «sản phẩm chỉ sửa ở kho cũ»). (2) Đo số nền năm dòng của Inventory trên cửa sổ bảy ngày trước commit cài (11–18/11) và ghi ngưỡng vế 2 **trước** khi vòng thật đầu tiên ký. (3) Phép thử phiên thật ở mọi máy làm vòng tại Inventory (Mac Studio đã đo; MacBook Pro chưa). (4) Đọc 5 PR và 26 vấn đề kho cũ, soạn bảng kết cục từng cái. (5) Đọc crm ghim bản nào và có đợt điều phối nào đang chạy; đọc ba giới hạn phiên Design Assembly chuyển sang. (6) Dựng công cụ kiểm chuyển kho ở `migration/chuyen-kho/` (xem dưới bảng) | Có số nền ghi trước, có bảng 1.9, mọi máy làm vòng nạp đúng sáu plugin 3.0, công cụ kiểm đỏ và xanh đúng trên lịch sử Inventory | phiên giữ đợt · ngay sau khi kế hoạch được duyệt |
 | **II.1 Đóng mốc 3.0** | Vế 1: chủ kho mở vòng sản phẩm kế ở Inventory như thường; lúc vòng mở, phiên giữ đợt chạy phép thử phiên thật trên cây làm việc của vòng (0 token); lúc gộp, kiểm `ci.yml` kéo `delivery-loop` ở `v3.0.x` và lệnh đếm của plugin điều phối thấy commit gộp mang chữ ký. Vế 2: đặt năm dòng số của vòng ấy cạnh số nền II.0. Vế 3: chủ kho ghi quan sát lên hồ sơ `release-3-0-0` sau 02/12 | 3/3 vế · 0 lượt gọi người ngoài thiết kế quy về kit · 0 lượt chấm bị hạ tầng kit đốt | chủ kho mở vòng; máy đo · vế 3 không sớm hơn 02/12 |
-| **II.2 Hai kho còn lại sang 3.0** | Quỹ hàng trước, crm sau; mỗi kho MỘT vòng, MỘT PR gồm: phía CI · phía phiên · sáu dòng tắt đích danh plugin chợ cũ · quét tên lệnh cũ trong tệp sống · ghim lại hồ sơ cần. Trước Cổng Phạm vi máy đã đo: ô `gate` trên bản sửa, phép thử phiên thật trước và sau, bộ kiểm của kho trên cây chưa sửa. Cài chợ mới lên máy trước khi gộp. Mốc cài là `v3.0.0` — không ghép chuyển chợ với đổi hành vi | Mỗi vòng ≤ 4 lượt gọi (đích 3) · 0 lượt chấm đỏ không vì vật · phiên thật nạp đúng sáu plugin 3.0, 0 plugin chợ cũ · 0 phán quyết đổi | phiên riêng tại từng kho · sau vế 1 · kho ấy không có vòng hay đợt điều phối đang chạy |
+| **II.2 Hai kho còn lại sang 3.0** | Quỹ hàng trước, crm sau; mỗi kho MỘT vòng, MỘT PR gồm: phía CI · phía phiên · sáu dòng tắt đích danh plugin chợ cũ · quét tên lệnh cũ trong tệp sống · ghim lại hồ sơ cần. Trước Cổng Phạm vi máy đã đo: công cụ kiểm chuyển kho (chế độ kiểm, rồi chế độ soạn để có bản vá phần chung), ô `gate` trên bản sửa, bộ kiểm của kho trên cây chưa sửa. Sau gộp chạy lại chế độ kiểm trên nhánh chính. Cài chợ mới lên máy trước khi gộp. Mốc cài là `v3.0.0` — không ghép chuyển chợ với đổi hành vi | Mỗi vòng ≤ 4 lượt gọi (đích 3) · 0 lượt chấm đỏ không vì vật · phiên thật nạp đúng sáu plugin 3.0, 0 plugin chợ cũ · 0 phán quyết đổi | phiên riêng tại từng kho · sau vế 1 · kho ấy không có vòng hay đợt điều phối đang chạy |
 | **II.3 Dọn kho mới** — không chạm engine | (a) README: sửa tiêu đề, thêm bản tiếng Việt. (b) GUIDE và QUICKSTART: thêm bước «tắt đích danh plugin chợ cũ» vào hướng dẫn nâng lên 3.0. (c) Bản phát hành GitHub cho `v3.0.0`, từ nay mỗi thẻ một bản; không làm bù 32 thẻ cũ. (d) Bật tự xoá nhánh sau gộp ở kho mới; xoá ba nhánh `claude/b*` sau khi kiểm đã gộp. (e) Bước 1.9: chuyển 26 vấn đề sang kho mới, 5 PR theo bảng II.0. (f) Repo Standards nửa (b): một PR ở kho ấy cho 4 tệp còn nhắc tên cũ. (g) Chạy `/repo-setup:doctor` chỉ đọc; nâng `.repo-setup.json` chỉ khi điểm cho thấy có lợi | Mỗi PR: CI xanh, các ca đọc README (P28, P101, P132) đạt · kho cũ: 0 PR mở, 0 vấn đề mở | phiên giữ đợt (a–e, g), phiên riêng ở Repo Standards (f) · song song II.1 |
 | **II.4 Đóng đợt** | PR đóng: đưa sổ `migration/` của nhánh `chuyen-nha` vào nhánh chính, gỡ tệp luật của đợt, hồ sơ mốc ghi năm dòng số và dòng hiệu chuẩn, hạt giống về `docs/plans/`. Lưu trữ kho cũ. Quyết khối bọc Node 24 ở máy. Xoá nhánh `chuyen-nha` | D1–D5 | chủ kho bảo · lưu trữ kho cũ khi: D2 đạt, 7 ngày sau kho cuối chuyển, bước 1.9 xong, máy đã gỡ chợ cũ ở mức người dùng |
 
 Ngưỡng vế 2, giữ công thức của `KE-HOACH.md` mục 12 và đổi mẫu sang Inventory: lượt gọi người mỗi vòng ≤ trần thiết kế ·
 làm-xong → ký và ký → gộp không vượt 1,5 lần trung vị nền; sàn của ký → gộp là một lượt CI trọn của kho ấy (đang khoảng 40
 phút) · token và phút máy chỉ đọc, không làm đỏ. Vượt thì ghi nguyên nhân; nguyên nhân thuộc kit mới thì vế đỏ.
+
+**Công cụ kiểm chuyển kho (chủ kho thêm 19/11, «Thêm vào kế hoạch»).** Lý do: cài chợ `delivery-loop` không tự chuyển một
+kho đang dùng kit cũ — nó chỉ thêm sáu plugin mới cạnh plugin cũ, và kit 3.0 chưa có công cụ hay mục hướng dẫn chuyển nào
+(đọc nhánh chính `c1cf031a`). Ở Inventory phần sửa chỉ 6 tệp; chỗ tốn là đo sai và đo thiếu, nên công cụ **kiểm là chính,
+sửa là phụ**. Nó ở `migration/`, không thành lệnh của plugin: chỉ hai kho còn cần, và thêm vào engine thì mọi kho về sau
+mang theo một lệnh dùng một lần.
+
+- **Một lệnh, chạy từ bản kéo của kit, trỏ vào đường dẫn kho tiêu thụ.** Dùng lại `chay-thu-phien/` và `bang-ten.json`.
+- **Chế độ kiểm (mặc định, chỉ đọc)** báo đạt hay chưa cho từng điểm: tệp cài đặt của kho (chợ mới, sáu dòng bật, sáu dòng
+  tắt đích danh plugin chợ cũ) · lượt kiểm tự động (kho nguồn, thẻ, gốc plugin lõi) · tệp trợ giúp tìm kit đọc khoá mới ·
+  tệp sống còn nhắc 14 tên cũ · phép thử phiên thật: phiên mở ở kho nạp đúng sáu plugin 3.0, 0 plugin chợ cũ (0 token).
+- **Chế độ soạn** in bản vá đề xuất cho phần chung, không tự ghi vào kho. Tệp trợ giúp và workflow riêng của từng kho thì
+  chỉ nêu chỗ, người hoặc vòng sửa.
+- **Hai chiều, phá thử trước khi tin**, bằng lịch sử thật của Inventory: đỏ ở cây trước commit cài `47d52b06`, ở chính
+  `47d52b06` chỉ còn đỏ đúng điểm «thiếu sáu dòng tắt», xanh ở `f6c47332`; sửa tài liệu hay hồ sơ vòng của kho thì im.
+  Điểm phép thử phiên thật phụ thuộc cài đặt của máy đang chạy, nên báo cáo ghi rõ nó đo trên máy nào.
+- **Giới hạn đã khai:** không cài chợ lên máy, không đụng cài đặt mức người dùng, không tạo hồ sơ nghiệm thu mà ô `gate`
+  đòi, không ghim lại hồ sơ — bốn việc ấy vẫn là của vòng và của chủ kho.
+- **Ngưỡng đưa vào plugin:** có kho thứ ba cần chuyển từ chợ cũ. Tới đó nó vẫn là công cụ của đợt.
 
 ## 5. Kết cục cho từng mục treo
 
@@ -123,6 +142,7 @@ phút) · token và phút máy chỉ đọc, không làm đỏ. Vượt thì ghi
 | Lượt chấm đỏ không vì vật, mỗi vòng chuyển kho | 4 | 0 |
 | Ký → gộp của vòng chuyển kho | 3 giờ 33 phút | ≤ 1,5 lần trung vị nền của kho ấy |
 | Phiên thật nạp plugin chợ cũ | 3 (trước vòng tắt) | 0 ở mọi kho, mọi máy làm vòng |
+| Điểm chưa đạt của công cụ kiểm chuyển kho, sau gộp | — | 0 ở mỗi kho |
 | Mục treo chưa có kết cục | 9 | 0 |
 | Lượt gọi người cả giai đoạn | — | ≤ 15 |
 
@@ -147,7 +167,8 @@ câu cần gõ và đường tới phiên.
 
 **Máy đi theo khuyến nghị, chủ kho veto được:** B1 Quỹ hàng trước crm · B2 mốc cài là `v3.0.0` · B3 không dọn nhánh kho cũ ·
 B4 bỏ «sổ làm việc ra khỏi kho» · B5 ba hạt giống ở mục 5 · B6 cửa sổ nền 11–18/11 và ngưỡng vế 2 ở mục 4 · B7 viết lại tệp
-luật của nhánh · B8 không làm bù bản phát hành cho thẻ cũ · B9 `.repo-setup.json` chỉ nâng khi điểm cho thấy có lợi.
+luật của nhánh · B8 không làm bù bản phát hành cho thẻ cũ · B9 `.repo-setup.json` chỉ nâng khi điểm cho thấy có lợi · B10 công cụ kiểm chuyển kho ở `migration/chuyen-kho/` (chủ kho đã
+bảo thêm 19/11; dựng ở II.0 sau khi kế hoạch được duyệt).
 
 ## 9. Rủi ro và lưới
 
