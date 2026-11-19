@@ -201,14 +201,16 @@ khuôn bằng chứng hiện hành.
   vệ sinh cổng (bỏ cổng / bypass / bằng chứng hết hạn). Chỉ đọc.
 - Risk tier: T1 không qua kit; T3 đòi người trực tiếp phán mọi mục judgment.
   Tier và glob khai theo từng repo trong `_acceptance/config.yaml`.
-- Bề mặt kiểm hiện tại (6 suite, đều chạy trên fixture): ca hook
+- Bề mặt kiểm hiện tại (8 suite, đều chạy trên fixture): ca hook
   (`tests/hooks/run-tests.sh`) + ca script
   (`tests/scripts/run-tests.sh`: lưới trước-merge + xuất xứ + re-check bằng
   chứng, lint độ phủ eval, gate-card, evidence-page) + kiểm đóng gói
   (`tests/plugins/run-tests.sh`: khớp phiên bản, đồ thị import của engine
   vendored, giải đường `${CLAUDE_PLUGIN_ROOT}`) + suite thước đo bố cục
   (`tests/skills/run-tests.sh`: hình học analyze() + fixture kiểm trên trình
-  duyệt) + các suite design-eval và workflow.
+  duyệt) + các suite design-eval và workflow + suite sàn thiết kế
+  (`tests/design-floor/run-tests.sh`) + suite lõi điều phối
+  (`node --test "tests/dieu-phoi/**/*.test.mjs"`). CI chạy tất cả trừ `skills`.
 
 ## Bố cục
 
@@ -245,8 +247,9 @@ Ba điểm khác một repo tiêu thụ bình thường, mỗi điểm là một
 - **`t3_paths` là lõi cưỡng chế** (dưới `plugins/acceptance-gate/`: `hooks/`, `lib/`,
   `scripts/pre-merge-check.sh`, `scripts/recheck-evidence.cjs`): bug ở đây thành false-green im lặng trên MỌI repo dùng kit.
 
-CI ở [`.github/workflows/gate.yml`](../.github/workflows/gate.yml): 3 test suite +
-`pre-merge-check.sh` + **răng T1-escape (ĐANG BẬT)** — mọi PR chạm `t3_paths`
+CI ở [`.github/workflows/gate.yml`](../.github/workflows/gate.yml): 7 test suite (scripts ·
+hooks · plugins · workflows · dieu-phoi, và hai việc riêng design-floor · design-eval) +
+`product-map.mjs --check` + `pre-merge-check.sh` + **răng T1-escape (ĐANG BẬT)** — mọi PR chạm `t3_paths`
 bắt buộc kèm thay đổi dưới `_acceptance/`. Hai điều chỉnh riêng cho repo kit:
 
 - Răng T1-escape chỉ cưỡng chế trên `pull_request`. Ở `push`, job truyền
