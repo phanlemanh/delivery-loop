@@ -90,11 +90,10 @@ this file does not repeat them.
 
 > **Enforcement note.** Write-time hook behavior depends on the active agent
 > runtime and hook trust, so do not rely on it as the only guard. The
-> authoritative backstop is still the vendored CI set:
-> `scripts/pre-merge-check.sh`, `scripts/recheck-evidence.cjs`, and the five
-> `lib/*.cjs` files (`evidence-core`, `gap-probe`, `workspace-record`,
-> `ac-line`, `md-section`) — in the kit they live under
-> `plugins/acceptance-gate/`.
+> authoritative backstop is still the CI gate (`scripts/pre-merge-check.sh`
+> and the files it loads, all under `plugins/acceptance-gate/` in the kit);
+> [GUIDE §5.3](GUIDE.md#53-wire-ci-bắt-buộc-để-gate-có-răng-ở-pr) is the
+> source for how CI runs it and which files it needs.
 
 For local development, replace `phanlemanh/delivery-loop` with the
 absolute path to this checkout. Source files are used directly — there is no
@@ -141,12 +140,14 @@ wiring CI; its default route runs the gate from a kit checkout pinned in the CI
 job (`CLAUDE_PLUGIN_ROOT` = `<kit>/plugins/acceptance-gate`) and copies nothing.
 The older copy route below still works.
 
-Copy `scripts/pre-merge-check.sh`, `scripts/recheck-evidence.cjs`, and the five
-`lib/*.cjs` files (`evidence-core`, `gap-probe`, `workspace-record`, `ac-line`,
-`md-section`) from the kit's core plugin (`plugins/acceptance-gate/`) into the
-repo (keep the `scripts/` + `lib/` layout so the
-re-check can `require ../lib`; the `.cjs` extension keeps them CommonJS even
-when the repo declares `"type": "module"`), and run the gate in CI:
+Copy every file named in the copy list of
+[GUIDE §5.3](GUIDE.md#53-wire-ci-bắt-buộc-để-gate-có-răng-ở-pr) from the kit's
+core plugin (`plugins/acceptance-gate/`) into the repo. That list is the source;
+this README does not repeat it, because a shorter copy is exactly how a repo ends
+up with a gate missing layers while CI stays green. Keep the `scripts/` + `lib/`
+layout so the re-check can `require ../lib`; the `.cjs` extension keeps the
+files CommonJS even when the repo declares `"type": "module"`. Then run the gate
+in CI:
 
 ```yaml
 # e.g. GitHub Actions job steps — same two-step form as GUIDE §5.3
@@ -215,14 +216,16 @@ committed reports meet the current evidence shape.
   gate hygiene (skips/bypasses/stale evidence). Read-only.
 - Risk tiers: T1 skips the kit; T3 requires direct human verdicts on all
   judgment items. Tiers/globs are per-repo in `_acceptance/config.yaml`.
-- Current test surface (6 suites, all fixture-driven): hook cases
+- Current test surface (8 suites, all fixture-driven): hook cases
   (`tests/hooks/run-tests.sh`) + script cases
   (`tests/scripts/run-tests.sh`: pre-merge check + provenance + evidence
   re-check, eval-coverage lint, gate-card, evidence-page) + packaging checks
   (`tests/plugins/run-tests.sh`: version alignment, vendored engine import
   graph, `${CLAUDE_PLUGIN_ROOT}` path resolution) + layout-meter suite
   (`tests/skills/run-tests.sh`: analyze() geometry + browser-verified
-  fixtures) + design-eval and workflow suites.
+  fixtures) + design-eval and workflow suites + the design-floor suite
+  (`tests/design-floor/run-tests.sh`) + the dispatch core suite
+  (`node --test "tests/dieu-phoi/**/*.test.mjs"`). CI runs all but `skills`.
 
 ## Layout
 
@@ -241,7 +244,7 @@ committed reports meet the current evidence shape.
 | `scripts/gate-card.js` | Render the Gate 1 / Gate 2 human decision card |
 | `scripts/config-patch.mjs` | THE splice path for programmatic config.yaml writes (dry-run, .bak, abort-on-existing) |
 | `scripts/evidence-page.js` | Render the full Gate-2 evidence page (screenshots/output/slideshow) |
-| `tests/` (repo root) | Fixture tests: `for t in hooks scripts plugins design-eval workflows skills; do bash tests/$t/run-tests.sh; done` |
+| `tests/` (repo root) | Fixture tests: `for t in hooks scripts plugins design-eval workflows skills design-floor; do bash tests/$t/run-tests.sh; done` plus `node --test "tests/dieu-phoi/**/*.test.mjs"` (full command list: GUIDE §10) |
 
 ## Kit chạy cổng của chính nó (self-hosting)
 
@@ -259,8 +262,9 @@ Ba điểm khác một repo tiêu thụ bình thường, mỗi điểm là một
 - **`t3_paths` là lõi cưỡng chế** (dưới `plugins/acceptance-gate/`: `hooks/`, `lib/`,
   `scripts/pre-merge-check.sh`, `scripts/recheck-evidence.cjs`): bug ở đây thành false-green im lặng trên MỌI repo dùng kit.
 
-CI ở [`.github/workflows/gate.yml`](.github/workflows/gate.yml): 3 test suite +
-`pre-merge-check.sh` + **răng T1-escape (ĐANG BẬT)** — mọi PR chạm `t3_paths`
+CI ở [`.github/workflows/gate.yml`](.github/workflows/gate.yml): 7 test suite (scripts ·
+hooks · plugins · workflows · dieu-phoi, và hai việc riêng design-floor · design-eval) +
+`product-map.mjs --check` + `pre-merge-check.sh` + **răng T1-escape (ĐANG BẬT)** — mọi PR chạm `t3_paths`
 bắt buộc kèm thay đổi dưới `_acceptance/`. Hai điều chỉnh riêng cho repo kit:
 
 - Răng T1-escape chỉ cưỡng chế trên `pull_request`. Ở `push`, job truyền

@@ -1,4 +1,4 @@
-# Hướng dẫn sử dụng đầy đủ — Acceptance-Gate Kit
+# Hướng dẫn sử dụng đầy đủ — Delivery Loop
 
 > Đọc nhanh 5 phút → [QUICKSTART.md](QUICKSTART.md). Tài liệu này là **bản đầy đủ**:
 > kiến trúc, cài đặt, vận hành hằng ngày, tra cứu enforcement, xử lý sự cố và tinh chỉnh.
@@ -628,12 +628,12 @@ Repo dựng trước 1.31.0 không tự bật: các thân cổng đọc `t1_skip
 thấy `PRODUCT-MAP.md` thì **bỏ qua** bước vẽ lại và in hai dòng chỉ cách bật.
 Không có bước này thì chính commit chữ ký làm bằng chứng cũ đi và merge kẹt.
 
-**Kho cài gói `road-map`** (hồ sơ kho-moi-cai-goi-road-map): chạy `/acceptance-gate:acceptance-init` (an toàn trên kho
+**Kho cài plugin `roadmap`** (hồ sơ kho-moi-cai-goi-road-map): chạy `/acceptance-gate:acceptance-init` (an toàn trên kho
 đã có cấu hình) — bước 5d làm sẵn mọi việc dưới đây: tệp `docs/plan/lo-trinh.json` rỗng đúng khuôn, khoá, miễn trừ,
-bản chép CI, trang. Chỉ khi `.claude/settings.json` của kho bật `road-map`; kho không cài gói thì không đổi byte nào.
+bản chép CI, trang. Chỉ khi `.claude/settings.json` của kho bật `roadmap`; kho không cài plugin thì không đổi byte nào.
 
 **Kho cam kết có lộ trình — chặn mở việc ngoài kế hoạch** (hồ sơ kho-cam-ket-co-lo-trinh, nấc 4 + nấc 3 của ADR 0025).
-Mặc định TẮT. Kho bật bằng hai điều kiện cùng lúc: gói `road-map` cài cho cả đội (`--scope project`, tức bật ở
+Mặc định TẮT. Kho bật bằng hai điều kiện cùng lúc: plugin `roadmap` cài cho cả đội (`--scope project`, tức bật ở
 `.claude/settings.json` — `settings.local.json` và phạm vi người dùng không tính) và một dòng `chan: true` (khoá `lo_trinh.chan`) trong khối
 `lo_trinh:` của `_acceptance/config.yaml`. Khi bật: (1) ghi `contract.md` hay `opportunity.md` mở một hồ sơ MỚI không thuộc
 hàng nào bị chặn lúc ghi, thông điệp nêu hai lối — mở từ một hàng, hoặc để máy thêm hàng; (2) lưới trước-merge chặn hồ sơ
@@ -657,7 +657,7 @@ lo_trinh:
 dương hoặc cặp `[thấp, cao]`; sai dạng thì trang có cờ và hàng coi như chưa khai. Đường đọc-cũ: hàng thiếu khoá: máy tự ước
 — theo luật (T2 4–7 · T3 7–10 · hàng nhóm `phat-hanh` là phần cắt bản 1,5–2), hoặc theo số đo khi kho đã có từ năm vòng
 cùng hạng mang dòng `gio-may` — và trang đếm số hàng máy tự ước trong một dòng. Mốc cộng giờ máy các hàng chưa giao, cộng
-gộp 1–1,5 mỗi hàng và cắt bản ở mốc phát hành; `ngay` của mốc đọc là MỤC TIÊU. `lo-trinh.mjs --xem` (lệnh xem bản đồ của gói road-map) in ngày bắt đầu và hoàn tất
+gộp 1–1,5 mỗi hàng và cắt bản ở mốc phát hành; `ngay` của mốc đọc là MỤC TIÊU. `lo-trinh.mjs --xem` (lệnh xem bản đồ của plugin `roadmap`) in ngày bắt đầu và hoàn tất
 dự kiến; `--mo-o` đóng băng dự báo vào `_acceptance/<slug>/du-bao.json`; bước đo vòng (khối `S4-DO-VONG` của feature-loop)
 ghi giờ máy và token thật; `lo-trinh.mjs --do-lech` so dự báo đóng băng với ngày khép thật.
 
@@ -1461,9 +1461,9 @@ Mục này là khuyến nghị vận hành, **không có răng máy** — không
 chặn theo nó; finding của lượt soi là chất liệu cho người quyết tại cổng,
 không thay được evidence của eval.
 
-### 6.6 Chạy đợt Điều phối – Thợ (gói dieu-phoi)
+### 6.6 Chạy đợt Điều phối – Thợ (plugin dispatch)
 
-Khi kho có nhiều hàng làm song song, gói thứ tư `dieu-phoi` chạy chúng thành một
+Khi kho có nhiều hàng làm song song, plugin thứ tư `dispatch` chạy chúng thành một
 **đợt**: một **phiên giám sát**, vài **dãy** (mỗi dãy một phiên thợ làm tuần tự
 các hàng của nó bằng `/feature-loop:feature-loop`), và một **bộ phát lịch** giữ
 khoá tài nguyên (S4, đường nền, merge) để hai dãy không chấm chồng nhau. Từ vựng
@@ -2027,19 +2027,24 @@ biết luật sản phẩm — chặn nằm ở thẻ và làn V.
 ## 10. Dành cho người bảo trì kit
 
 ```bash
-# chạy toàn bộ 6 suite test của kit (fixture-driven, không cần framework)
-for t in hooks scripts plugins design-eval workflows skills; do bash tests/$t/run-tests.sh; done
+# chạy toàn bộ 8 suite test của kit (fixture-driven, không cần framework)
+# design-floor cần `npm ci --prefix tests/design-floor` trước; design-eval cần `npm ci --prefix tests/design-eval` cho ca dom
+for t in hooks scripts plugins design-eval workflows skills design-floor; do bash tests/$t/run-tests.sh; done
+node --test --test-reporter=tap "tests/dieu-phoi/**/*.test.mjs"
 ```
 
-- Luật gate mới → thêm vào `lib/evidence-core.cjs` (hook + CI tự hưởng), kèm case trong
+CI chạy 7 trong 8 suite trên (mọi suite trừ `skills`) — nguồn là
+[`.github/workflows/gate.yml`](.github/workflows/gate.yml), danh sách ở đây là bản chiếu của nó.
+
+- Luật gate mới → thêm vào `plugins/acceptance-gate/lib/evidence-core.cjs` (hook + CI tự hưởng), kèm case trong
   `tests/hooks` hoặc `tests/scripts`, và cập nhật prompt synthesize trong
-  `feature-loop/workflows/acceptance-verify.js` nếu luật ảnh hưởng report.
-- 2 file workflow **không** parse được bằng `node --check` (top-level return) — suite
-  `tests/workflows` nạp chúng qua `vm` với harness giả lập; bảng routing bị pin bởi test
-  W10/E05.
-- Bump version khi ship (minor cho luật gate mới) → 6 suite xanh → commit theo
+  `plugins/feature-loop/workflows/acceptance-verify.js` nếu luật ảnh hưởng report.
+- 2 file workflow trong `plugins/feature-loop/workflows/` **không** parse được bằng `node --check`
+  (top-level return) — suite `tests/workflows` nạp chúng qua `vm` với harness giả lập; bảng routing
+  bị pin bởi test W10/E05.
+- Bump version khi ship (minor cho luật gate mới) → 8 suite xanh → commit theo
   nhóm logic. Lưu ý: suite `plugins` PIN version release (skill-routing) — bump
-  release là phải chạy CẢ 6 suite, không chỉ suite của phần vừa sửa (đợt 1.16 từng
+  release là phải chạy CẢ 8 suite, không chỉ suite của phần vừa sửa (đợt 1.16 từng
   để một suite đỏ 1 ngày vì chỉ chạy 3 suite).
 
 ### Chuẩn tự phản biện trước push (áp dụng từ 1.17)
@@ -2052,7 +2057,7 @@ không có bằng chứng là một ô FAIL, không phải "chắc ổn":
 | **A. Đúng hướng** | Đợt phục vụ mục tiêu số mấy (§0)? Có thêm điểm dừng người? Enforcement mới có tất định? | Trả lời 3 câu §0 thành văn |
 | **B. Đúng lời** | Mọi con số/khẳng định trong docs và commit message đối chiếu được với artifact thật? | Lệnh đếm + output thật |
 | **C. Code** | Review bởi context sạch (doer ≠ grader)? File <800 dòng, function tập trung, không secret/debug sót? | Báo cáo reviewer độc lập + grep |
-| **D. Kiểm chứng** | Mỗi behavior mới có test? TDD có RED thật trước GREEN? 6 suite xanh? | Output 6 suite, log RED |
+| **D. Kiểm chứng** | Mỗi behavior mới có test? TDD có RED thật trước GREEN? 8 suite xanh? | Output 8 suite, log RED |
 | **E. Nhất quán** | Version khớp 3 tầng (manifest × pin test × docs)? | `git status` rỗng |
 | **F. Giới hạn** | Giới hạn và rủi ro đã ghi thành văn (spec/report), không im lặng? | Trỏ tới mục known-limits |
 
