@@ -1899,7 +1899,7 @@ node <kit>/plugins/feature-loop/scripts/giu-tuoi.mjs --root . --tu <sha đầu k
   chia đôi; eval không khai `paths` thì mọi gộp có mã trong khoảng là ứng viên, bảng ghi chú «eval
   không khai paths».
 
-### 7.2 Kiểm bản cài sau phát hành (`scripts/kiem-ban-cai.mjs`)
+### 7.2 Kiểm bản cài sau phát hành (`plugins/acceptance-gate/scripts/kiem-ban-cai.mjs`)
 
 Thứ kho tiêu thụ cài về không phải lúc nào cũng là thứ đã chấm: chợ plugin của kit là kiểu THƯ MỤC, nên bản
 cài chép cây đang checkout lúc cài; và bộ đệm khoá theo số — lệnh cập nhật plugin báo «đã mới nhất» mà giữ
@@ -1907,11 +1907,11 @@ nội dung cũ (ca «2.27.0 = main» ở M5), còn bản cài thiếu `feature-l
 Lệnh kiểm bản cài có hai chế độ, mỗi dòng `[kiem-ban-cai] ĐẠT|ĐỎ|VÀNG <mục>: …`, dòng cuối `TỔNG KẾT:` —
 **đọc dòng TỔNG KẾT** (`ĐẠT` · `ĐỎ` · `KHÔNG CHẠY ĐƯỢC`), không đọc mã thoát một mình:
 
-- `node scripts/kiem-ban-cai.mjs --ref <tag|sha>` — cài đúng cây của ref vào một cấu hình Claude cách ly
+- `node plugins/acceptance-gate/scripts/kiem-ban-cai.mjs --ref <tag|sha>` — cài đúng cây của ref vào một cấu hình Claude cách ly
   (`CLAUDE_CONFIG_DIR` tạm, không chạm `~/.claude`) + một kho giả lập do code sinh, rồi kiểm tám mục: số phiên
   bản · khớp tag (thiếu/lệch đỏ, tệp thừa chỉ vàng) · thư mục gói · tác tử chấm · móc nối · thẻ cổng · lưới
   trước-gộp (hai chiều) · gói `dieu-phoi`.
-- `node scripts/kiem-ban-cai.mjs --may --ref <tag>` — CHỈ ĐỌC sổ cài `plugins/installed_plugins.json` của máy
+- `node plugins/acceptance-gate/scripts/kiem-ban-cai.mjs --may --ref <tag>` — CHỈ ĐỌC sổ cài `plugins/installed_plugins.json` của máy
   và so mọi bản ghi của chợ kit cùng số với cây của tag. `ĐỎ may:` = bản cài lệch tag hoặc thiếu thư mục → gỡ
   rồi cài lại theo bốn bước của mục A1 (CHANGELOG 2.27.0); `VÀNG may:` = bản ghi còn số cũ (cây phụ chưa nâng).
 
