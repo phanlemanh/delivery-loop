@@ -1,4 +1,4 @@
-# Bản đồ tài liệu — acceptance-gate-kit
+# Bản đồ tài liệu — delivery-loop
 
 > Điểm vào duy nhất cho tài liệu của kho này. Bản đồ này **chỉ định tuyến**,
 > không chứa nội dung gốc: mỗi sự thật sống ở đúng một nơi, nơi khác chỉ link.
@@ -17,6 +17,7 @@
 | Luật bất biến của kho, north star | [`CLAUDE.md`](../CLAUDE.md) | thường-trú |
 | Từ chuẩn khi viết SKILL/docs/message | [`CONTEXT.md`](../CONTEXT.md) | thường-trú |
 | Vận hành kit ở repo tiêu thụ | [`GUIDE.md`](../GUIDE.md) · [`QUICKSTART.md`](../QUICKSTART.md) · [`README.md`](../README.md) | thường-trú |
+| README bản tiếng Việt (bản dịch của `README.md`) | [`README.vi.md`](README.vi.md) | thường-trú |
 | Quy trình v2 — nguồn sự thật duy nhất | [`specs/workflow-v2-spec.md`](specs/workflow-v2-spec.md) | thường-trú |
 | Quyết định khó đảo đã chốt | [`adr/`](adr/) | thường-trú |
 | Ý chưa thành ô — hạt giống | `plans/*-hat-giong-*.md` | thường-trú |
@@ -53,7 +54,7 @@ bàn-giao       | thường-trú | docs/handoff/
 hình           | thường-trú | docs/diagrams/ · docs/plans/assets/
 công-cụ        | thường-trú | docs/tools/
 luật-máy       | thường-trú | CLAUDE.md · CONTEXT.md · skills/ · commands/
-tài-liệu-người | thường-trú | README.md · GUIDE.md · QUICKSTART.md · docs/reference/
+tài-liệu-người | thường-trú | README.md · docs/README.vi.md · GUIDE.md · QUICKSTART.md · docs/reference/
 <!-- DOC-HOMES>>> -->
 
 Ghi chú lời khai (13/09/2026, sau dọn nhà):

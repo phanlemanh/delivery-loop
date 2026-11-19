@@ -168,7 +168,7 @@ trả lời mua bằng giá một vòng dựng, không phải thất bại của
 **Duyệt Cổng 1 nhanh:** `/acceptance-gate:approve <slug>` · **Ký Cổng 2:** `/acceptance-gate:signoff <slug>` ·
 **Đo sức khoẻ cổng:** `/acceptance-gate:acceptance-report` (verdict mix, số vòng verify, vệ sinh gate)
 
-**Chạy nhiều hàng song song (gói dieu-phoi, bật theo kho):** khai ổ cắm `dieu_phoi.goi_dot` một lần,
+**Chạy nhiều hàng song song (plugin dispatch, bật theo kho):** khai ổ cắm `dieu_phoi.goi_dot` một lần,
 rồi `/dispatch:open <tên>` mở đợt (duyệt thẻ khởi tạo là đi) · `/dispatch:status` xem đợt ở bất kỳ
 phiên nào · `/dispatch:close` đóng đợt · `/dispatch:resume` nối lại sau khi app khởi động lại hay
 hết ngữ cảnh · `/dispatch:handoff` bàn giao trước khi đổi tài khoản (rồi `/dispatch:resume` ở tài khoản kia).
