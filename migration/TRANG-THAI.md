@@ -222,6 +222,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 19/11 | Mac Studio | II.2 Quỹ hàng: phiên `quy-hang-sang-3-0` trình thẻ Cổng Phạm vi (lượt gọi 1/4 của vòng). Bốn số đo trước cổng: công cụ kiểm chuyển kho trên cây chưa sửa ra 5 điểm chưa đạt; bản vá `--soan` áp sạch; ô `gate` chặn đúng 1 (hồ sơ của vòng chưa có); chạy lại hồ sơ cũ bằng kit 2.39.0 và 3.0.0 ra cùng tập đạt, 0 phán quyết đổi; bộ kiểm của kho xanh. **Giới hạn mới của công cụ kiểm chuyển kho:** K3 và `--soan` không bắt một workflow gọi `$CLAUDE_PLUGIN_ROOT/feature-loop/…` (đường bố cục phẳng cũ) — phiên ấy sửa tay; vá công cụ trước khi chạy cho crm. Phiên chờ chủ kho: lời duyệt cổng và lệnh cài sáu plugin chợ mới cho kho ấy trên máy. |
 | 19/11 19:35 | Mac Studio | **Chủ kho: «Tính, mở II.2»** (lượt gọi người thứ ba — câu cửa veto của vế 1, ngoài ngân sách mục 7 của kế hoạch). Vế 1 tính trên vòng dọn `split-log-ledger`. Mở phiên riêng ở Quỹ hàng cho II.2; phiên ấy đo trước Cổng Phạm vi, lời duyệt cổng chủ kho gõ ở phiên ấy. |
 | 19/11 18:10 | Mac Studio | PR #14 của kho này (GUIDE §7.2, `docs/README.vi.md`) CI 17/17, gộp bằng commit gộp `8baa836a` theo quyền A3 sau khi đọc diff (2 tệp tài liệu). Nhánh tự xoá, cây làm việc đã gỡ. II.3 (a′) xong. |
 | 19/11 17:50 | Mac Studio | II.3 (g): doctor chỉ đọc trên `main` `36d29038` — 87/100, bốn điểm hở ghi ở dòng II.3 (g), không sửa. Cây tách rời dựng trong vùng tạm của phiên và đã gỡ. |
