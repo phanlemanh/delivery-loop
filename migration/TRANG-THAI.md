@@ -174,17 +174,18 @@ Mỗi lần thức, phiên giữ đợt đọc bảng này, làm việc đầu t
 | II.1 vế 3 — chủ kho ghi quan sát lên `release-3-0-0` | chờ | không sớm hơn 02/12 (điểm dừng) |
 | II.2 Quỹ hàng sang 3.0 | chờ | sau vế 1 · II.0 (6) xong · kho ấy không có vòng đang chạy |
 | II.2 crm sang 3.0 | chờ | sau Quỹ hàng · II.0 (5) xong |
-| II.3 (a) README: tiêu đề + bản tiếng Việt | đang làm (tác tử nền, cùng PR với (b)) | PR hạng T1 vào `main`, gộp khi xanh (A3) |
-| II.3 (b) hướng dẫn «chuyển từ chợ cũ» trong GUIDE, QUICKSTART | đang làm (tác tử nền) | PR hạng T1, gộp khi xanh (A3) |
+| II.3 (a) README: tiêu đề + bản tiếng Việt | xong 19/11 15:57 — PR #3 gộp tại `f8731a73` | PR hạng T1 vào `main`, gộp khi xanh (A3) |
+| II.3 (b) hướng dẫn «chuyển từ chợ cũ» trong GUIDE, QUICKSTART | xong 19/11 15:57 — PR #3 gộp tại `f8731a73` (GUIDE §5.4) | PR hạng T1, gộp khi xanh (A3) |
 | II.3 (c) bản phát hành GitHub cho `v3.0.0` | xong 19/11 15:09 | «3.0.0 — Chuyển nhà», gắn thẻ `v3.0.0` (`--verify-tag`), đánh dấu Latest; ghi chú hai thứ tiếng gồm các bước kho cũ phải làm |
 | II.3 (d) tự xoá nhánh sau gộp ở kho mới · xoá ba nhánh `claude/b*` | xong 19/11 15:09 | `delete_branch_on_merge=true` (chỉ gộp bằng commit gộp vẫn giữ); ba nhánh B1, B2, B3 đã nằm trọn trong `main` trước khi xoá; còn lại `main`, `chuyen-nha` |
 | II.3 (e) bước 1.9: 26 vấn đề, 5 PR kho cũ | chờ | sau khi chủ kho duyệt bảng II.0 (4) |
-| II.3 (f) Repo Standards nửa (b) | đang làm (phiên `rs-tro-delivery-loop`, mở 19/11 15:11) | bốn tệp nhắc tên cũ; phiên dừng ở PR xanh, gộp chờ lời chủ kho (PR ở kho khác, không thuộc A3) |
+| II.3 (f) Repo Standards nửa (b) | PR [repo-standards#39](https://github.com/phanlemanh/repo-standards/pull/39) xanh 5/5 lúc 15:57, chờ chủ kho bảo gộp (phiên `rs-tro-delivery-loop`, mở 19/11 15:11) | bốn tệp nhắc tên cũ; phiên dừng ở PR xanh, gộp chờ lời chủ kho (PR ở kho khác, không thuộc A3) |
 | II.3 (g) đo `/repo-setup:doctor` | chưa | chỉ đọc |
+| II.3 (a′) lệch tài liệu còn lại PR #3 thấy mà không sửa | chưa | tiêu đề GUIDE còn tên kit cũ · GUIDE dòng phiên bản, §6.6 còn `dieu-phoi`, mục lộ trình còn `road-map` · GUIDE §10 đường bố cục phẳng · QUICKSTART dòng 167 «gói dieu-phoi» · `NOTICE` đường vendor phẳng · `docs/MAP.md` chưa liệt `docs/README.vi.md` · README: số bộ kiểm cũ, danh sách chép CI ngắn hơn GUIDE §5.3. Một PR hạng T1, gộp khi xanh (A3) |
 | Nhật ký thay đổi: đếm ca đọc phần cũ | xong 19/11 15:11 — CÓ ca đọc, không tách | hai ca cắt tệp tới mục mốc gốc cũ, 28 hồ sơ khai tệp làm đầu vào → hạt giống `migration/hat-giong-giai-doan-2.md` §1 |
 | II.4 PR đóng đợt | chờ | D1 đạt (điểm dừng) |
 | II.4 lưu trữ kho cũ | chờ | D2 đạt · 7 ngày sau kho cuối · 1.9 xong · máy đã gỡ chợ cũ (điểm dừng) |
-| Chuông hằng ngày | đặt 19/11 15:07, khoảng 8:37 mỗi sáng (lần đầu 20/11) | sống trong phiên giữ đợt, hết hạn 26/11 → đặt lại trước 25/11. Chuông thử một lần đặt 15:27 19/11 |
+| Chuông hằng ngày | đặt 19/11 15:07, khoảng 8:37 mỗi sáng (lần đầu 20/11) | sống trong phiên giữ đợt, hết hạn 26/11 → đặt lại trước 25/11. Chuông thử đặt 15:27 19/11, **nhận lúc 15:27 19/11** — chuông đánh thức được phiên giữ đợt |
 
 ## Chờ chủ kho (chưa ai được tự quyết)
 
@@ -221,6 +222,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 19/11 15:57 | Mac Studio | PR #3 của kho này (README đổi tiêu đề, `docs/README.vi.md`, GUIDE §5.4 «Chuyển từ chợ cũ», QUICKSTART) — CI 17/17, gộp 15:57 bằng commit gộp `f8731a73` theo quyền A3; phiên giữ đợt đọc diff trước khi gộp (4 tệp, không nhắc kho riêng tư); nhánh tự xoá, cây làm việc của tác tử đã gỡ. `v3.0.0` không dời. Thêm dòng II.3 (a′) cho lệch tài liệu còn lại. |
 | 19/11 15:21 | Mac Studio | Công cụ kiểm chuyển kho xong (`migration/chuyen-kho/`, phiên giữ đợt chạy lại bộ kiểm và ba mốc); bảng kết cục kho cũ vào `migration/`; sửa dòng crm (có một workflow kéo kit cũ). PR [repo-standards#39](https://github.com/phanlemanh/repo-standards/pull/39) mở, chờ CI và lời chủ kho. |
 | 19/11 15:11 | Mac Studio | Giai đoạn 2, lượt đầu: số nền Inventory (`nen-inventory-ve-2.md`); bản phát hành GitHub `v3.0.0`; tự xoá nhánh sau gộp bật ở kho mới, ba nhánh B1–B3 đã gộp được xoá; crm đọc xong; nhật ký thay đổi có ca đọc phần cũ → hạt giống; ba giới hạn Design Assembly → hạt giống (`hat-giong-giai-doan-2.md`); mở phiên `rs-tro-delivery-loop` ở Repo Standards. Đang chạy nền: công cụ kiểm chuyển kho, bảng kết cục kho cũ, PR README và hướng dẫn. |
 | 19/11 15:06 | Mac Studio | **Chủ kho duyệt kế hoạch giai đoạn 2: «Bắt đầu».** Thêm mục «Bảng việc giai đoạn 2» vào sổ; viết lại tệp luật của nhánh cho giai đoạn 2 (việc II.0 (1)). Hai tác tử nền của phiên giữ đợt đang chạy: dựng công cụ kiểm chuyển kho, soạn bảng kết cục kho cũ (chỉ đọc). |
