@@ -1,6 +1,8 @@
 # Chuyển nhà giai đoạn 2 — kế hoạch đề xuất
 
-> **Trạng thái:** ĐỀ XUẤT của phiên giữ đợt, viết 19/11/2026, **chưa ai duyệt**. Chủ kho đặt tên giai đoạn («chuyển nhà
+> **Trạng thái:** **CHỦ KHO DUYỆT 19/11/2026 15:06** — «Bắt đầu», trả lời câu «Bắt đầu chạy giai đoạn 2 theo cơ chế này?»: năm câu
+> A1–A5 theo khuyến nghị, kèm cơ chế chạy (sổ làm nguồn sự thật, chuông hằng ngày, điểm dừng liệt kê trước). Phiên giữ đợt
+> viết tệp này 19/11/2026. Chủ kho đặt tên giai đoạn («chuyển nhà
 > giai đoạn 2») và bảo rà soát, phân tích, đề xuất kế hoạch; mọi thứ còn lại trong tệp này là chữ của máy.
 > Giai đoạn 1 = `KE-HOACH.md` mục 12 tới ngày cắt 18/11 (thẻ `v3.0.0`, `c16d25db`). Đang ở đâu: `TRANG-THAI.md`.
 > Tệp này công khai: không chép chi tiết nội bộ của kho riêng tư vào đây.
