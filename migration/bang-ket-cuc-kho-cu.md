@@ -1,4 +1,4 @@
-> Bảng do một tác tử nền của phiên giữ đợt soạn 19/11/2026, chỉ đọc (việc II.0 (4) của `KE-HOACH-GIAI-DOAN-2.md`). Là ĐỀ XUẤT, chờ chủ kho duyệt; chưa mục nào được đóng hay chuyển.
+> Bảng do một tác tử nền của phiên giữ đợt soạn 19/11/2026 (việc II.0 (4) của `KE-HOACH-GIAI-DOAN-2.md`). **Chủ kho duyệt 19/11** («Duyệt theo đề xuất»); đã thi hành cùng ngày — kết quả từng mục ở `TRANG-THAI.md`, dòng II.3 (e). Sáu mục «dựng lại» thành vấn đề ở kho mới thay vì mở vòng trong giai đoạn 2.
 
 # Bảng kết cục đề xuất — 5 PR và 26 vấn đề mở ở kho cũ
 
