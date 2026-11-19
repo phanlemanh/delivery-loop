@@ -1,4 +1,4 @@
-# Hạt giống — hai việc giai đoạn 2 đo ra mà không làm trong đợt
+# Hạt giống — các việc giai đoạn 2 đo ra mà không làm trong đợt
 
 **Ngày:** 19/11/2026 · **Trạng thái:** hạt giống (SỔ, chưa là ô) · ghi theo `KE-HOACH-GIAI-DOAN-2.md` mục 5 và việc II.0 (5),
 kế hoạch chủ kho duyệt 19/11. Không mở vòng, không tạo ô. Khi đợt đóng, tệp dời sang `docs/plans/` cùng PR đóng đợt.
@@ -33,3 +33,17 @@ Cả ba là đổi hành vi của engine, nên giai đoạn 2 không làm (A2: k
 màu của kit không dùng chung một nguồn; nghiệm đúng tầng là một bộ đọc màu dùng chung cho thước độ phủ và ô `gate`. Giới hạn
 thứ ba thuộc họ «tệp sinh nằm ngoài git» của DL1 (`hat-giong-sau-goi-dl-ba-kho.md`). **Ngưỡng mở:** một kho tiêu thụ của kit
 bị lượt chấm đỏ vì một trong ba điều này, hoặc chủ kho gọi tên cùng DL1.
+
+## 3. Ba chỗ engine 3.0 vấp ở vòng chuyển kho đầu tiên (Quỹ hàng, 19/11)
+
+Phiên của vòng báo; phiên giữ đợt chưa dựng lại từng ca. Cả ba là hành vi engine, nên giai đoạn 2 không sửa (A2).
+
+| Chỗ | Điều thấy | Vòng đã đi vòng qua bằng |
+|---|---|---|
+| bộ sinh tham số chấm `s4-args` | lấy nhánh `main` CỤC BỘ làm gốc so; bản kéo chậm `origin` thì chặn oan | truyền `--diff-base` tường minh |
+| `pr-san-sang` | từ chối mở PR vì `LO-TRINH.html` tự vẽ lại sau lượt chấm | mở PR tay |
+| quét bí mật của kho | nhận nhầm mã băm trong tệp tham số chấm là khoá bí mật | để tệp tham số ngoài kho |
+
+Chỗ thứ nhất cùng họ với giới hạn đã ghi của `loop-health` (đọc lịch sử của HEAD bản kéo, không của `--at`): bộ đo của kit
+tin bản kéo cục bộ là nhánh chính. **Ngưỡng mở:** cùng chỗ vấp lại ở một kho thứ hai (crm là lần đo kế), hoặc ≥ 1 lượt chấm đỏ
+vì nó.

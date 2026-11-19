@@ -169,6 +169,33 @@ test('(d2) độ nhạy K3: đổi KIT_TAG về v2.39.0 trên bản sao sạch �
   assert.equal(r.ket, 'KẾT: CHƯA (1 điểm)');
 });
 
+test('(d4) độ nhạy K3: workflow kéo kit gọi $CLAUDE_PLUGIN_ROOT/<plugin anh em>/ (bố cục phẳng cũ) → K3 đỏ; --soan vá thành ../<tên mới>/', () => {
+  const dich = banSao(MOC.sach);
+  const xanh = phaiXanh(['--kho', dich], 'bản sao sạch');
+  const tep = `${THU_MUC_WORKFLOW}/ci.yml`;
+  // Đặc hiệu trước: đường của chính plugin acceptance-gate và đường đã đúng bố cục mới thì IM.
+  const dung = '      - run: node "$CLAUDE_PLUGIN_ROOT/scripts/a.mjs" && node "$CLAUDE_PLUGIN_ROOT/../feature-loop/scripts/b.mjs"\n';
+  sua(dich, tep, chu => `${chu}${dung}`);
+  phaiXanh(['--kho', dich], 'đường đúng bố cục 3.0');
+
+  const cu = '      - run: node "$CLAUDE_PLUGIN_ROOT/feature-loop/scripts/repin-lane.mjs" && node "${CLAUDE_PLUGIN_ROOT}/dieu-phoi/scripts/x.mjs"\n';
+  const sau = sua(dich, tep, chu => `${chu}${cu}`);
+  const so = soDongCo(sau, 'repin-lane.mjs');
+  const r = chay(['--kho', dich]);
+  assert.equal(r.ma, 1);
+  assert.equal(r.k.K3, `CHƯA — ${tep}:${so} gọi «$CLAUDE_PLUGIN_ROOT/feature-loop/» theo bố cục cũ, cần «$CLAUDE_PLUGIN_ROOT/../feature-loop/»; `
+    + `${tep}:${so} gọi «\${CLAUDE_PLUGIN_ROOT}/dieu-phoi/» theo bố cục cũ, cần «\${CLAUDE_PLUGIN_ROOT}/../dispatch/»`);
+  assert.deepEqual({ ...r.k, K3: xanh.k.K3 }, xanh.k, 'chỉ K3 được đổi');
+
+  const soan = chay(['--kho', dich, '--soan']);
+  assert.equal(soan.ma, 0, soan.loi);
+  const tepVa = path.join(thuMucTam('ban-va-goc'), 'de-xuat.patch');
+  fs.writeFileSync(tepVa, soan.ra);
+  execFileSync('git', ['-C', dich, 'apply', '--include', tep, tepVa]);
+  assert.ok(doc(dich, tep).includes('"$CLAUDE_PLUGIN_ROOT/../feature-loop/scripts/repin-lane.mjs" && node "${CLAUDE_PLUGIN_ROOT}/../dispatch/scripts/x.mjs"'));
+  phaiXanh(['--kho', dich], 'sau khi áp bản vá');
+});
+
 test('(d3) độ nhạy K5: thêm một dòng nhắc dieu-phoi:mo-dot vào tệp sống → K5 đỏ, nêu tệp:dòng', () => {
   const dich = banSao(MOC.sach);
   const xanh = phaiXanh(['--kho', dich], 'bản sao sạch');

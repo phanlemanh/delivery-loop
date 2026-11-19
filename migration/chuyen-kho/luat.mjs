@@ -28,6 +28,16 @@ const TEP_KIEM = /\.(?:test|spec)\.[a-z]+$/i;
 const THU_MUC_KIEM = ['tests', 'test', '__tests__'];
 const KHOA_CHO_CU = new RegExp(`[A-Za-z][\\w-]*@${CHO_CU}(?![\\w-])`, 'g');
 
+/** Thư mục plugin anh em của acceptance-gate, tên cũ lẫn tên mới → tên mới. Ở bố cục 3.0 chúng nằm cạnh, không nằm dưới. */
+export function anhEm(bang) {
+  const moi = PLUGIN_MOI.filter(p => p !== 'acceptance-gate');
+  return { ...Object.fromEntries(moi.map(p => [p, p])), ...(bang?.plugin ?? {}) };
+}
+
+/** Mẫu bắt «$CLAUDE_PLUGIN_ROOT/<anh em>/» hoặc «${CLAUDE_PLUGIN_ROOT}/<anh em>/»: nhóm 1 là biến, nhóm 2 là tên thư mục. */
+export const mauGocAnhEm = bang =>
+  new RegExp(`(\\$\\{?CLAUDE_PLUGIN_ROOT\\}?)/(${Object.keys(anhEm(bang)).map(thoat).join('|')})/`, 'g');
+
 const hien = v => (v === undefined ? 'không có dòng' : `= ${JSON.stringify(v)}`);
 const thoat = s => s.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
 const dong = (ma, dat, lyDo) => ({ ma, dat, lyDo });
@@ -77,8 +87,9 @@ function timGocPlugin(cacDong) {
 }
 
 /** Mọi chỗ chưa đạt của MỘT workflow kéo kit, và phần mô tả khi nó đạt. */
-function xetWorkflow({ tep, noiDung }) {
+function xetWorkflow({ tep, noiDung }, bang) {
   const cacDong = noiDung.split('\n');
+  const doi = anhEm(bang);
   const ghim = timGhim(cacDong);
   const goc = timGocPlugin(cacDong);
   const loi = cacDong.flatMap((d, i) => (d.includes(CHO_CU) ? [`${tep}:${i + 1} còn «${CHO_CU}»`] : []));
@@ -88,6 +99,11 @@ function xetWorkflow({ tep, noiDung }) {
   for (const g of goc) {
     if (!g.giaTri.endsWith(GOC_PLUGIN)) loi.push(`${tep}:${g.so} CLAUDE_PLUGIN_ROOT = ${g.giaTri}, cần …${GOC_PLUGIN}`);
   }
+  cacDong.forEach((d, i) => {
+    for (const m of d.matchAll(mauGocAnhEm(bang))) {
+      loi.push(`${tep}:${i + 1} gọi «${m[1]}/${m[2]}/» theo bố cục cũ, cần «${m[1]}/../${doi[m[2]]}/»`);
+    }
+  });
   const taGoc = goc.length > 0 ? `CLAUDE_PLUGIN_ROOT ${goc.map(g => g.giaTri).join(', ')}` : 'không đặt CLAUDE_PLUGIN_ROOT';
   return { loi, ta: `${tep}: kéo ${KHO_MOI}, ${ghim.map(g => `${g.ten} ${g.giaTri}`).join(', ')}, ${taGoc}` };
 }
@@ -95,12 +111,12 @@ function xetWorkflow({ tep, noiDung }) {
 export const keoKit = noiDung => KEO_KIT.test(noiDung);
 
 /** workflow: [{ tep, noiDung }] — mọi tệp dưới .github/workflows. */
-export function kiemK3(workflow) {
+export function kiemK3(workflow, bang) {
   const keo = workflow.filter(w => keoKit(w.noiDung));
   if (keo.length === 0) {
     return dong('K3', true, `không có workflow kéo kit (đã đọc ${workflow.length} tệp dưới ${THU_MUC_WORKFLOW}) — ghi chú: không có gì để kiểm`);
   }
-  const xet = keo.map(xetWorkflow);
+  const xet = keo.map(w => xetWorkflow(w, bang));
   const loi = xet.flatMap(x => x.loi);
   return loi.length > 0 ? dong('K3', false, loi.join('; ')) : dong('K3', true, xet.map(x => x.ta).join('; '));
 }

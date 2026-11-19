@@ -126,7 +126,7 @@ export function kiemCay(cay, bang) {
   return [
     kiemK1(caiDat),
     kiemK2(caiDat, bang),
-    kiemK3(docWorkflow(cay)),
+    kiemK3(docWorkflow(cay), bang),
     kiemK4(docNhieu(cay, coKhoaCu)),
     kiemK5(docNhieu(cay, tenCuSong), bang, coTenCu.length - tenCuSong.length),
   ];

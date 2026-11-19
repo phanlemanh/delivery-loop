@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { CHO_CU, CHO_MOI, GOC_PLUGIN, KHO_MOI, KHUON_TAG_MOI, PLUGIN_MOI, TAG_DE_XUAT, pluginCu } from './luat.mjs';
+import { CHO_CU, CHO_MOI, GOC_PLUGIN, KHO_MOI, KHUON_TAG_MOI, PLUGIN_MOI, TAG_DE_XUAT, anhEm, mauGocAnhEm, pluginCu } from './luat.mjs';
 
 const DONG_GHIM = /^(\s*(?:-\s*)?KIT_(?:TAG|REF)\s*[:=]\s*["']?)([^"'\s#]+)/;
 const GOC_DAT_BANG = /(CLAUDE_PLUGIN_ROOT=["']?)([^"'\s]+)/;
@@ -40,15 +40,18 @@ export function soanCaiDat(caiDat, bang) {
   };
 }
 
-function soanDong(d) {
+function soanDong(d, bang) {
   const doiCho = d.replaceAll(CHO_CU, CHO_MOI);
   const doiTag = doiCho.replace(DONG_GHIM, (ca, dau, giaTri) => (KHUON_TAG_MOI.test(giaTri) ? ca : `${dau}${TAG_DE_XUAT}`));
-  return doiTag.replace(GOC_DAT_BANG, (ca, dau, giaTri) => (giaTri.endsWith(GOC_PLUGIN) ? ca : `${dau}${giaTri}${GOC_PLUGIN}`));
+  const doiGoc = doiTag.replace(GOC_DAT_BANG, (ca, dau, giaTri) => (giaTri.endsWith(GOC_PLUGIN) ? ca : `${dau}${giaTri}${GOC_PLUGIN}`));
+  const doi = anhEm(bang);
+  return doiGoc.replace(mauGocAnhEm(bang), (ca, bien, ten) => `${bien}/../${doi[ten]}/`);
 }
 
-/** Workflow đề xuất: đổi kho kéo, nâng dòng ghim lên TAG_DE_XUAT, trỏ CLAUDE_PLUGIN_ROOT vào plugins/acceptance-gate. */
-export function soanWorkflow(noiDung) {
-  return noiDung.split('\n').map(soanDong).join('\n');
+/** Workflow đề xuất: đổi kho kéo, nâng dòng ghim lên TAG_DE_XUAT, trỏ CLAUDE_PLUGIN_ROOT vào plugins/acceptance-gate,
+ *  và đường «$CLAUDE_PLUGIN_ROOT/<plugin anh em>/» của bố cục phẳng cũ thành «…/../<tên mới>/». */
+export function soanWorkflow(noiDung, bang) {
+  return noiDung.split('\n').map(d => soanDong(d, bang)).join('\n');
 }
 
 /** Diff hợp nhất giữa hai nội dung của MỘT tệp, tiêu đề mang đường dẫn trong kho đích. Giống nhau thì trả chuỗi rỗng. */
@@ -79,6 +82,6 @@ export function soanBanVa({ tepCaiDat, chuCaiDat, workflow }, bang) {
   const moi = `${JSON.stringify(soanCaiDat(JSON.parse(chuCaiDat), bang), null, 2)}\n`;
   const luuY = laJsonChuan(chuCaiDat) ? '' : ' — lưu ý: tệp gốc không ở dạng JSON thụt 2 dấu cách, bản vá kèm cả đổi định dạng';
   const khoiCaiDat = { nhan: `K1+K2: ${tepCaiDat}${luuY}`, diff: banVa(tepCaiDat, chuCaiDat, moi) };
-  const khoiWorkflow = workflow.map(w => ({ nhan: `K3: ${w.tep}`, diff: banVa(w.tep, w.noiDung, soanWorkflow(w.noiDung)) }));
+  const khoiWorkflow = workflow.map(w => ({ nhan: `K3: ${w.tep}`, diff: banVa(w.tep, w.noiDung, soanWorkflow(w.noiDung, bang)) }));
   return [khoiCaiDat, ...khoiWorkflow];
 }
