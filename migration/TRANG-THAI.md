@@ -158,7 +158,7 @@ Việc 2, 3 và 3b đã xong; B1 còn chờ đúng một điều: chủ kho gọ
 
 ## Bảng việc giai đoạn 2
 
-Kế hoạch: `KE-HOACH-GIAI-DOAN-2.md` (chủ kho duyệt 19/11 15:06). Hạn dừng 19/12/2026. Lượt gọi người đã dùng: **9 / 15** (duyệt kế hoạch · duyệt bảng kết cục kho cũ · cửa veto vế 1 · bốn lượt của vòng Quỹ hàng · hai lượt của vòng crm: Cổng Phạm vi, gỡ suite api đỏ sẵn).
+Kế hoạch: `KE-HOACH-GIAI-DOAN-2.md` (chủ kho duyệt 19/11 15:06). Hạn dừng 19/12/2026. Lượt gọi người đã dùng: **10 / 15** (duyệt kế hoạch · duyệt bảng kết cục kho cũ · cửa veto vế 1 · bốn lượt của vòng Quỹ hàng · ba lượt của vòng crm: Cổng Phạm vi, gỡ suite api đỏ sẵn, lượt đo dài thứ sáu).
 Mỗi lần thức, phiên giữ đợt đọc bảng này, làm việc đầu tiên đã mở được, ghi bằng chứng, đi việc kế.
 
 | Việc | Trạng thái | Bằng chứng · điều kiện mở |
@@ -222,6 +222,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 20/11 | Mac Studio | crm: chủ kho trả lời câu lượt đo dài thứ sáu ở phiên vòng, nguyên văn «Song song» (lệnh nhẹ ba luồng, lệnh đột biến và nặng tuần tự; ~2–2,5 giờ) — lượt gọi 3/4 của vòng, 10/15 của giai đoạn. t1 đã sửa (`7a63a8f5`, `abd58c47`, chưa đẩy). Vòng chờ `crm-sua-9-ca-api` gộp vào `onehub`. |
 | 20/11 | Mac Studio | **crm vượt quyền A3 về lượt đo dài, không hỏi** — phiên vòng tự đếm: năm lượt làn khô dài (163′ · 94′ · 117′ · 32′ · 238′ tổng giây lệnh), quyền A3 chỉ cho hai. Nguyên nhân thuộc phiên giữ đợt: đề bài mở phiên `crm-sang-3-0` không nêu A3. Lượt kế (~3–4 giờ, sau khi gộp `onehub` có bản sửa api) là lượt thứ sáu; phiên vòng hỏi chủ kho ở phiên ấy, lượt gọi 3/4; lời ký và lời gộp đi lượt 4/4 — vòng chạm trần. Suite api đỏ 9 ca ở `6561f724` hôm nay (xanh 03/11, không đổi mã) — bom ngày giờ hoặc môi trường; số đo đã chuyển cho phiên `crm-sua-9-ca-api`. Bài học cho đề bài về sau: chép nguyên văn A3 vào mọi đề bài vòng chuyển kho. |
 | 20/11 | Mac Studio | **crm: S4 lượt 2 REJECT vì suite api đỏ sẵn trên nền** (14/14 bài của vòng xanh; 9 ca api đỏ cả trên `74a29a68`, 2159 pass / 9 fail cả hai bên; xanh 03/11 ở `6561f724`). Không quy về kit: chỗ đọc `do_san_tren_nen` ở 3.0 trùng 2.37.0. Chủ kho, ở phiên giữ đợt, trả lời câu «Gỡ vòng crm bằng một vòng sửa riêng cho 9 ca api, và sửa t1 theo khuyến nghị?»: «Duyệt cả hai» (lượt gọi 2/4 của vòng crm, 9/15 của giai đoạn). Đã chuyển nguyên văn cho phiên vòng crm; mở phiên `crm-sua-9-ca-api` (worktree riêng từ `onehub`) cho vòng sửa. Vòng crm chờ vòng sửa gộp rồi gộp `onehub` vào nhánh, chấm lượt 3 với t1 neo `74a29a68`. |
 | 20/11 | Mac Studio | **Báo cáo tổng kết giữa giai đoạn 2** cho chủ kho. Ghi số nền ký→gộp của crm trước khi vòng ký: 12 vòng 20/10–03/11, trung vị 45′, ngưỡng 68′. Sửa đếm lượt gọi của giai đoạn: 7 → 8 / 15 (cộng Cổng Phạm vi của crm). Vòng crm: chạy lại xong sau sự cố bộ chạy, đang so suite api; phiên vòng thấy bọc phép đo E6 của chính vòng đối chứng với `merge-base HEAD origin/onehub`, sẽ đỏ sau gộp — ngoài hợp đồng, chủ kho quyết ở Cổng Bằng chứng; lệnh kiểm sau gộp của đợt không qua bọc ấy. |
