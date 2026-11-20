@@ -158,7 +158,7 @@ Việc 2, 3 và 3b đã xong; B1 còn chờ đúng một điều: chủ kho gọ
 
 ## Bảng việc giai đoạn 2
 
-Kế hoạch: `KE-HOACH-GIAI-DOAN-2.md` (chủ kho duyệt 19/11 15:06). Hạn dừng 19/12/2026. Lượt gọi người đã dùng: **8 / 15** (duyệt kế hoạch · duyệt bảng kết cục kho cũ · cửa veto vế 1 · bốn lượt của vòng Quỹ hàng · Cổng Phạm vi của vòng crm).
+Kế hoạch: `KE-HOACH-GIAI-DOAN-2.md` (chủ kho duyệt 19/11 15:06). Hạn dừng 19/12/2026. Lượt gọi người đã dùng: **9 / 15** (duyệt kế hoạch · duyệt bảng kết cục kho cũ · cửa veto vế 1 · bốn lượt của vòng Quỹ hàng · hai lượt của vòng crm: Cổng Phạm vi, gỡ suite api đỏ sẵn).
 Mỗi lần thức, phiên giữ đợt đọc bảng này, làm việc đầu tiên đã mở được, ghi bằng chứng, đi việc kế.
 
 | Việc | Trạng thái | Bằng chứng · điều kiện mở |
@@ -222,6 +222,7 @@ chưa đổi thì nó không làm gì.
 
 | Ngày | Máy | Việc |
 |---|---|---|
+| 20/11 | Mac Studio | **crm: S4 lượt 2 REJECT vì suite api đỏ sẵn trên nền** (14/14 bài của vòng xanh; 9 ca api đỏ cả trên `74a29a68`, 2159 pass / 9 fail cả hai bên; xanh 03/11 ở `6561f724`). Không quy về kit: chỗ đọc `do_san_tren_nen` ở 3.0 trùng 2.37.0. Chủ kho, ở phiên giữ đợt, trả lời câu «Gỡ vòng crm bằng một vòng sửa riêng cho 9 ca api, và sửa t1 theo khuyến nghị?»: «Duyệt cả hai» (lượt gọi 2/4 của vòng crm, 9/15 của giai đoạn). Đã chuyển nguyên văn cho phiên vòng crm; mở phiên `crm-sua-9-ca-api` (worktree riêng từ `onehub`) cho vòng sửa. Vòng crm chờ vòng sửa gộp rồi gộp `onehub` vào nhánh, chấm lượt 3 với t1 neo `74a29a68`. |
 | 20/11 | Mac Studio | **Báo cáo tổng kết giữa giai đoạn 2** cho chủ kho. Ghi số nền ký→gộp của crm trước khi vòng ký: 12 vòng 20/10–03/11, trung vị 45′, ngưỡng 68′. Sửa đếm lượt gọi của giai đoạn: 7 → 8 / 15 (cộng Cổng Phạm vi của crm). Vòng crm: chạy lại xong sau sự cố bộ chạy, đang so suite api; phiên vòng thấy bọc phép đo E6 của chính vòng đối chứng với `merge-base HEAD origin/onehub`, sẽ đỏ sau gộp — ngoài hợp đồng, chủ kho quyết ở Cổng Bằng chứng; lệnh kiểm sau gộp của đợt không qua bọc ấy. |
 | 20/11 | Mac Studio | **crm qua Cổng Phạm vi** — chủ kho gõ lời duyệt ở phiên vòng (kèm duyệt kế hoạch); phiên vòng đã tách năm commit sạch, chạy khô lại 157 bài ở tip cuối (~80′), chưa đẩy origin. Lệnh cài sáu plugin cho checkout chính crm thất bại lần đầu vì phiên vòng in ký tự `＠` khổ rộng; không gì đổi (checkout `onehub` sạch), chủ kho chạy lại bản `@` thường. |
 | 20/11 | Mac Studio | **crm trình Cổng Phạm vi** (lượt gọi người 1/4 của vòng). Số phiên vòng khai, phiên giữ đợt chưa đo lại: công cụ kiểm chuyển kho ĐẠT trên bản sửa, cây chưa sửa CHƯA cả K1–K5 · 366/366 hồ sơ cùng phán quyết trên lưới 2.37, 2.39.0, 3.0.0 · chạy khô 157 bài của các hồ sơ đã ký mà vòng chạm: 35 đỏ sẵn, 14 chỉ đỏ khi còn là nhánh, 1 đỏ vì vòng (đưa lên Hỏi-4, khuyến nghị khai giới hạn có tên, không ghim lại hồ sơ nào). Bốn câu Hỏi-1..4 có khuyến nghị. Phiên giữ đợt chuyển lại dòng duyệt và lệnh cài sáu plugin cho chủ kho; lời duyệt gõ ở phiên vòng. |
