@@ -1,4 +1,4 @@
-# Đề bài vòng «DL1 + P179» — soạn 21/11/2026, chưa có phiên nào chạy
+# Đề bài vòng «DL1 + P179» — soạn 21/11/2026, phiên `dl1-p179` mở cùng ngày
 
 Chủ kho duyệt mở vòng này ngày 21/11 («Đổi theo đề xuất», `KE-HOACH-12-MUC-REPO-STANDARDS.md` mục 8). Phiên giữ đợt chưa
 mở được phiên cho nó: ứng dụng chỉ cho mở phiên ở thư mục khác khi chủ kho tự bảo mở phiên. Tệp này giữ nguyên đề bài để
