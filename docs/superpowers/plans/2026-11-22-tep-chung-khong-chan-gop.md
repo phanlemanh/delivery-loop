@@ -13,6 +13,8 @@ gọi từ móc `PostToolUse` của kho kit.
 **Tech Stack:** Node 24 (ESM + CJS), bash, `node:test` + TAP, git (`merge-tree --write-tree`, `hash-object`, `mktree`,
 `commit-tree`).
 
+**Duyệt Gate 1.5:** Phan Le Manh, 22/11 («Duyệt kế hoạch»).
+
 **Spec:** `docs/superpowers/specs/2026-11-21-tep-chung-khong-chan-gop-design.md` · hợp đồng
 `_acceptance/tep-chung-khong-chan-gop/contract.md` · eval `_acceptance/tep-chung-khong-chan-gop/evals.yaml`.
 
