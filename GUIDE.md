@@ -1894,6 +1894,15 @@ node <kit>/plugins/feature-loop/scripts/giu-tuoi.mjs --root . --tu <sha đầu k
   VIOLATION, thẻ và bản đồ hiện nhãn và không bao giờ in «ĐẠT» cạnh nó. Lệch vế nào → đỏ như cũ, kèm
   câu nêu vế hỏng. Khoá tắt: lưới, thẻ, bản đồ và lượt ghim lại cho đầu ra như trước bản này (đo trên
   bộ hồ sơ thật của các kho có trên máy — `tests/scripts/ho-so-da-ky-giu-tuoi-cac-kho.mjs`).
+- **Lời gộp trong câu ký — kho tự bật:** `feature_loop.gop_theo_loi_ky: true` trong
+  `_acceptance/config.yaml` (chỉ `true` là bật; vắng, `false` hay giá trị khác = tắt). Khi bật, thẻ
+  Cổng Bằng chứng của hồ sơ chờ chữ ký người in sẵn `gộp: khi CI xanh` ngay trước `ký hay trả: ___`;
+  người dán dòng và gõ chữ ký, hoặc sửa ô thành `gộp: chưa` để ký mà chưa gộp. Lệnh ký chép trọn câu
+  vào sổ; vòng chạy ngoài đợt thì máy gộp bằng `dieu-phoi.mjs gop <số PR> --theo-loi --slug <slug>
+  --cho-ci 30` khi mọi check của PR xanh — commit gộp, đúng commit đã kiểm, không tự gộp của GitHub.
+  Cần gói `dispatch` cài cho kho; chưa cài thì lời gộp chỉ được ghi, việc gộp vẫn của người. Kho có
+  check không bắt buộc hay đỏ thì máy không gộp và báo một dòng. Khoá tắt: thẻ và hành vi như trước bản
+  này từng byte (ADR 0029; hồ sơ `loi-gop-trong-cau-ky`).
 - **Giới hạn:** nhãn chỉ áp cho eval — suite chung đỏ vẫn chặn mọi vòng. Tồn đọng không được ghim
   (cần một vòng dọn riêng của kho). Quy về PR theo `paths` cộng một lần chạy lại ở đầu khoảng, không
   chia đôi; eval không khai `paths` thì mọi gộp có mã trong khoảng là ứng viên, bảng ghi chú «eval

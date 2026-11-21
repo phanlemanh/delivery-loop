@@ -1330,6 +1330,11 @@ feature_loop:
     # số trong plugins/acceptance-gate/.claude-plugin/plugin.json ở HEAD khác gốc vòng; vòng thường in một dòng «BỎ QUA», < 1 s.
     # Bản cài của cây sẽ gắn tag hỏng → lượt chấm mốc đỏ → không cắt số.
     - executors.test.kiem_ban_cai_moc
+  # Lời gộp trong câu ký (hồ sơ loi-gop-trong-cau-ky, ADR 0029): chủ kho bật cho CHÍNH kho kit ở Cổng Phạm vi 21/11
+  # (Hỏi-2). Thẻ Cổng Bằng chứng của hồ sơ chờ chữ ký người in sẵn «gộp: khi CI xanh»; câu ký mang lời gộp thì máy gộp
+  # bằng `node plugins/dispatch/scripts/dieu-phoi.mjs gop <số PR> --theo-loi --slug <slug> --cho-ci 30`. Gỡ dòng dưới
+  # (hay đổi thành false) là tắt: thẻ và hành vi về như trước từng byte.
+  gop_theo_loi_ky: true
 # Ổ cắm lộ trình của chính kit (hồ sơ trang-lo-trinh-doc-mot-phut; bật ở chiến dịch ghim lại 2.25.0 —
 # hẹn với owner 08/10). Khối chan_troi trong tệp là trường tự do, trang không hiện.
 lo_trinh:
