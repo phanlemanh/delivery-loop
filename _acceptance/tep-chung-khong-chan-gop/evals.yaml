@@ -1,6 +1,6 @@
 schema_version: 1
 feature_slug: tep-chung-khong-chan-gop
-# Mười eval, mười lệnh. Theo luật lệnh hồ sơ của chính vòng này: lệnh chấm là TỆP trong thư mục hồ sơ
+# Mười một eval, mười một lệnh. Theo luật lệnh hồ sơ của chính vòng này: lệnh chấm là TỆP trong thư mục hồ sơ
 # (`rang/chay.sh <nhóm>`), không có khoá nào trong _acceptance/config.yaml. `chay.sh` chạy đúng các ca node:test mang
 # tiền tố của nhóm, ghim số ca qua («# pass n», ma trận viết trước), «# fail 0» và dòng «ok» của từng ca theo tên —
 # phán quyết không lấy từ mã thoát. Kho thử, hồ sơ thử, bản sao sổ do mã của ca sinh trong lượt; mỗi ca có đối chứng
@@ -130,6 +130,23 @@ evals:
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
     paths: ["tools/so-gioi-han.mjs", ".claude/settings.json", "tests/plugins/run-tests.sh", "tests/scripts/tcg-so-gioi-han.test.mjs"]
 
+  - id: E11
+    criterion: AC-11
+    executor: script
+    cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-11
+    expected: >
+      Kho git thật + origin trần dựng trong lượt, khoá bật, `nhanh_ve: ban-do`. Ca TCG-11-day: lệnh đẩy chạy trên đầu nhánh
+      chính → `git ls-tree -r origin/ban-do` liệt đúng hai tệp PRODUCT-MAP.md, LO-TRINH.html; mỗi tệp bằng từng byte đầu ra
+      `product-map.mjs --root .` vẽ tại chỗ từ cùng commit (ghi vào thư mục tạm khác, so); `git rev-parse main` và
+      `git status --porcelain` không đổi trước/sau. Ca TCG-11-lai: chạy lại, nguồn không đổi → sha của origin/ban-do không
+      đổi, stdout có một dòng nói không đẩy vì view không đổi. Ca TCG-11-doi: đổi status một hồ sơ, commit, chạy → đỉnh
+      mới, PRODUCT-MAP.md trên nhánh view khác bản trước. Ca TCG-11-khoa: ma trận ba hàng — `nhanh_ve` vắng · rỗng · trùng
+      nhánh mặc định (`main`) → thoát 2 chứa «ban_do.nhanh_ve», origin không có ref mới. Ca TCG-11-vang: kho bật không khai
+      `nhanh_ve` → `--check` thoát 0 và stdout có đúng một dòng chứa «mất nguồn»; kho khai `nhanh_ve` → không dòng ấy. Ca
+      TCG-11-guide: khối `BAN-DO-NHANH-VE` rút từ GUIDE.md chứa đúng lệnh `--day-nhanh-ve`.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/product-map.mjs", "plugins/acceptance-gate/lib/workspace-record.cjs", "GUIDE.md", "tests/scripts/tcg-ban-do.test.mjs"]
+
   - id: E10
     criterion: AC-10
     executor: script
@@ -139,7 +156,8 @@ evals:
       «TCG-10-<tên>», mũi tiêm khớp đúng một lần (khác → «mui tiem truot»), ca đích chạy trên bản sao phải ĐỎ: bo-kiem-chi-muc
       → TCG-3-1 · bo-kiem-ignore → TCG-3-3 · tat-di-nhanh-moi → TCG-1 · khoa-sai-la-tat → TCG-5-dang · them-vo-dieu-kien →
       TCG-4-bat · quet-tra-da-xoa → TCG-5-bat · quet-doc-khoa-rieng → TCG-5-dang · bo-so-goc → TCG-8-2 · ghi-de-hang-cu →
-      TCG-9-them · them-khi-du → TCG-9-lai · dem-nham-slug → TCG-9-slug · moc-moi-tep → TCG-9-moc. Ca đích vẫn xanh trên bản đã tiêm → «phep do mu». Ba nhát không phải vật (im-chu-thich,
+      TCG-9-them · them-khi-du → TCG-9-lai · dem-nham-slug → TCG-9-slug · moc-moi-tep → TCG-9-moc · day-khi-khong-doi →
+      TCG-11-lai · day-nhanh-mac-dinh → TCG-11-khoa. Ca đích vẫn xanh trên bản đã tiêm → «phep do mu». Ba nhát không phải vật (im-chu-thich,
       im-tai-lieu, im-ho-so-rong) → mọi ca đích vẫn XANH. Thiếu dòng «ok … - TCG-10-» của một nhát là đỏ.
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
     paths: ["plugins/acceptance-gate/scripts/**", "plugins/acceptance-gate/lib/**", "plugins/acceptance-gate/commands/**", "plugins/feature-loop/scripts/s4-args.mjs", "plugins/dispatch/scripts/nguon-hang.mjs", "tools/so-gioi-han.mjs", ".claude/settings.json", "tests/scripts/tcg-mutants.test.mjs"]

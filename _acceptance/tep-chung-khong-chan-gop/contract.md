@@ -86,11 +86,19 @@ Thuật ngữ:
   móc rút từ `.claude/settings.json` của cây đang kiểm (sự kiện `PostToolUse`, `matcher` khớp cả `Write` lẫn `Edit`),
   nhận JSON đầu vào mang `tool_input.file_path` tuyệt đối: tệp là `_acceptance/<slug>/review-findings.md` → gọi bộ sinh
   cho đúng slug ấy và trả `additionalContext` nêu số hàng thêm; tệp khác → không đổi sổ, không in gì.
+- AC-11: Given kho thử bật có `ban_do.nhanh_ve: ban-do` và một origin trần, When chạy lệnh đẩy nhánh view
+  (`product-map.mjs --root . --day-nhanh-ve`) trên đầu nhánh chính, Then origin có nhánh `ban-do` mà đỉnh là một commit
+  chỉ chứa hai view, mỗi tệp bằng từng byte bản vẽ tại chỗ từ nguồn của commit ấy, và nhánh chính cùng cây làm việc
+  không đổi byte nào; chạy lại khi nguồn không đổi → không đẩy commit mới (in một dòng nói vì sao); đổi nguồn rồi chạy →
+  đỉnh mới mang view mới; khoá `nhanh_ve` vắng, rỗng hay trùng tên nhánh mặc định → thoát 2 gọi tên khoá, không đẩy gì.
+  Và kho bật mà không khai `nhanh_ve` → `--check` vẫn thoát 0 nhưng in thêm đúng một dòng cờ vàng nói bên đọc trang qua
+  git (forge, bản chụp) sẽ mất nguồn; khối job sau gộp ở `GUIDE.md` (khối `BAN-DO-NHANH-VE`) gọi đúng lệnh đẩy này.
 - AC-10: Given bản sao trọn `plugins/acceptance-gate/{scripts,lib,commands,skills}`, `plugins/feature-loop/scripts` và
   `tools/` trong thư mục tạm, When lần lượt tiêm từng nhát — `--check` bật bỏ kiểm chỉ mục · bỏ kiểm `.gitignore` · kho
   không bật mà đi nhánh mới · khoá sai coi như tắt · khối lệnh vẽ lại đưa view vào chỉ mục vô điều kiện · bộ quét trả
   `da-xoa` khi bật · bộ quét đọc khoá bằng mẫu riêng thay vì bộ đọc của lib · s4-args bỏ so gốc vòng (cảnh báo khoá cũ) ·
-  bộ sinh ghi đè hàng cũ · bộ sinh thêm hàng khi đã đủ · bộ sinh đếm nhầm slug · móc chạy cho mọi tệp — Then mỗi nhát làm đúng ca của nó đỏ với thông điệp ghim, sau khi ca ấy đã xanh trên bản sao chưa
+  bộ sinh ghi đè hàng cũ · bộ sinh thêm hàng khi đã đủ · bộ sinh đếm nhầm slug · móc chạy cho mọi tệp · lệnh đẩy đẩy
+  cả khi view không đổi · lệnh đẩy ghi vào nhánh mặc định — Then mỗi nhát làm đúng ca của nó đỏ với thông điệp ghim, sau khi ca ấy đã xanh trên bản sao chưa
   tiêm; và ba nhát không phải vật — chú thích vào `product-map.mjs` · sửa chữ một tệp `.md` của gói · thêm một hồ sơ thử
   không mục known-limits — không làm ca nào đỏ.
 
@@ -100,8 +108,11 @@ Thuật ngữ:
   `feature_loop.gop_theo_loi_ky`, `feature_loop.ngoai_n_tu_dinh_tuyen`] → AC-1, AC-2, AC-3
 - Trục B — trạng thái hai view trong git khi bật: rời git đúng | còn trong chỉ mục (từng tệp) | không bị bỏ qua | vắng
   trên đĩa | vẽ tại chỗ [thước CE: ba tín hiệu của `mapTracked` — config · chỉ mục · lịch sử xoá] → AC-2, AC-3, AC-5
-- Trục C — bên dùng view: `--check` ở CI | bốn lệnh cổng | thẻ `/start` | gộp nhánh (máy và forge) | bảng điều phối (để
-  ngoài, giới hạn khai) [thước CE: `git grep` hai tên tệp trong `plugins/`] → AC-2, AC-4, AC-5, AC-6
+- Trục C — bên dùng view: `--check` ở CI | bốn lệnh cổng | thẻ `/start` | gộp nhánh (máy và forge) | bảng điều phối |
+  bên đọc NGOÀI kit qua git/forge [thước CE: `git grep` hai tên tệp và khối `lo-trinh-du-lieu` trong `plugins/` của kit
+  VÀ trên nhánh chính ba kho tiêu thụ, đọc 21/11: chỉ `crm-onehub` có bên đọc bằng mã — tính năng Lộ trình đọc tệp qua
+  GitHub App và workflow bản chụp bắn khi tệp đổi trên `onehub`; Inventory và Quỹ hàng chỉ có tài liệu nhắc tên] →
+  AC-2, AC-4, AC-5, AC-6, AC-11
 - Trục D — nơi lệnh kiểm của eval sống: khoá `config:` cũ | khoá `config:` mới chỉ một hồ sơ | khoá mới dùng chung |
   đường dẫn tệp trong hồ sơ [thước CE: 2565 dòng `cmd` của kho kit, 16 dòng không `config:`] → AC-7, AC-8
 - Trục E — sổ giới hạn so với hồ sơ: thiếu hàng | đủ | dư | hồ sơ không mục | ghi tệp khác review-findings [thước CE: năm
@@ -116,13 +127,14 @@ Thuật ngữ:
 - Bật `ban_do.ngoai_git` ở bất kỳ kho nào, kể cả kho kit (Hỏi-3); cài lên kho tiêu thụ; cắt thẻ hay bản phát hành.
 - Dời khối `executors.script` đang có của kho nào ra thư mục hồ sơ.
 - Bảng điều phối (`plugins/dispatch/scripts/nguon-hang.mjs`) tự vẽ trang tại chỗ — vòng chỉ thêm cờ vàng (AC-5).
-- Lối «máy mở PR vẽ lại sau mỗi lần gộp» cho kho muốn giữ hai view trên web — nếu chủ kho chọn nó ở Hỏi-1, hợp đồng soạn
-  lại trước khi duyệt.
+- Lối «máy mở PR vẽ lại sau mỗi lần gộp» (Hỏi-1 lối b) — chủ kho chọn nó thì hợp đồng soạn lại trước khi duyệt; chọn lối a
+  thì AC-11 bị gỡ.
+- Sửa bên đọc của crm (trường nhánh nguồn, trigger workflow bản chụp) — việc của kho crm khi nó bật khoá.
 - Hai view mỗi hàng một dòng (hạt giống 30/10); DL2.
 
 ## Notes
 
-- Ca đo: `tests/scripts/tcg-ban-do.test.mjs` (AC-1…AC-6), `tests/scripts/tcg-lenh-ho-so.test.mjs` (AC-7, AC-8),
+- Ca đo: `tests/scripts/tcg-ban-do.test.mjs` (AC-1…AC-6, AC-11), `tests/scripts/tcg-lenh-ho-so.test.mjs` (AC-7, AC-8),
   `tests/scripts/tcg-so-gioi-han.test.mjs` (AC-9), `tests/scripts/tcg-mutants.test.mjs` (AC-10). Lệnh chấm theo luật mới:
   `_acceptance/tep-chung-khong-chan-gop/rang/chay.sh <nhóm>` — không thêm khoá nào vào `_acceptance/config.yaml`.
 - Bảng dự báo năm dòng số của luật (c), cho kho bật:
@@ -137,4 +149,11 @@ Thuật ngữ:
 
   Điều kiện tin cậy: đường phán quyết (tìm lỗi → phản bác trong hợp đồng → REJECT) không đổi thành phần — vòng này không
   chạm nó; P179 vẫn là cùng một ca với cùng quan hệ ≥, chỉ thêm dòng gợi lệnh.
+- Cảnh báo cho ghi chú phát hành của mốc mang vòng này (chép nguyên ý): kho có bên đọc trang lộ trình qua git hay forge
+  (21/11: `crm-onehub` — tính năng Lộ trình, workflow bản chụp) mà bật `ban_do.ngoai_git` thì PHẢI khai `ban_do.nhanh_ve`,
+  dán job sau gộp, và trỏ bên đọc sang nhánh view trong CÙNG PR bật; không thì trang Lộ trình mất nguồn. `--check` in cờ
+  vàng khi kho bật mà không khai nhánh view (AC-11).
+- Dự đoán đoạn gộp ngược ở forge cho Inventory khi bật (ước, không đo lại): không bộ gộp riêng thì forge thấy 134 trên
+  168 lần có xung đột; hai view rời git thì phần còn lại ngang số «có bộ gộp riêng» tại máy, khoảng 63, phần lớn ở
+  `_acceptance/config.yaml` — phần ấy chỉ giảm dần khi vòng mới viết lệnh theo luật lệnh hồ sơ.
 - Việc ngoài phạm vi thấy trên đường: ghi hạt giống có dòng `Gốc:`, không làm trong vòng.

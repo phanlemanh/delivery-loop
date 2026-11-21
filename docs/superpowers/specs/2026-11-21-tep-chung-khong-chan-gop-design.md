@@ -31,10 +31,23 @@ cần thì vẽ tại chỗ (bốn lệnh cổng vẫn vẽ lại như hôm nay,
 còn xung đột văn bản ở máy lẫn ở forge, và lối gộp không-trùng-tệp của điều phối mở lại.
 
 Vì sao không «vẽ lại trên nhánh chính sau khi gộp» theo đúng chữ của nguồn: nhánh chính của Inventory có ruleset đòi PR,
-không ai được vượt — máy không commit thẳng được. Lối còn lại là máy mở một PR vẽ lại sau mỗi lần gộp: nó SỐNG và giữ được
-hai view trên web, nhưng mỗi lần gộp thêm một PR và một lượt CI (Inventory ~30 PR trong năm ngày), và hai lần gộp sát
-nhau thì chính các PR vẽ lại xung đột nhau. Đây là đánh đổi giá trị — **Hỏi-1** ở Cổng Phạm vi, máy khuyên rời git: bản
-trên nhánh chính luôn là bản vẽ từ nguồn của nhánh chính, vì nó được vẽ lúc đọc.
+không ai được vượt — máy không commit thẳng được. Ba lối còn sống, so theo bốn trục (**Hỏi-1** ở Cổng Phạm vi):
+
+| Lối | PR còn xung đột ở hai view? | Bên đọc ngoài kho qua git còn sống? | Thêm CI mỗi lần gộp | Kho phải sửa gì |
+|---|---|---|---|---|
+| a — rời git, chỉ vẽ tại chỗ | không | **không** (crm: trang Lộ trình mất nguồn, workflow bản chụp không bắn) | 0 | `.gitignore` · `git rm --cached` · khoá |
+| b — máy mở PR vẽ lại sau mỗi lần gộp | PR thường: không; các PR vẽ lại xung đột nhau khi hai lần gộp sát nhau | có | một PR + một lượt CI đầy đủ (Inventory ~30 trong năm ngày) | một workflow mở PR; người hay điều phối gộp PR ấy |
+| **c — rời git + nhánh view** (khuyên) | không | có, sau khi trỏ sang nhánh view | một job ngắn, không chạy bộ kiểm | như a, thêm `ban_do.nhanh_ve` và dán một khối job vào workflow; kho có bên đọc ngoài đổi trường nhánh của bên đọc |
+
+Lối c: kho khai `ban_do.nhanh_ve: <nhánh>` thì `product-map.mjs --root . --day-nhanh-ve` (job sau gộp trên nhánh chính
+gọi) vẽ hai view từ đầu nhánh chính và đẩy chúng thành một commit lên nhánh ấy — dựng bằng `git hash-object`/`mktree`/
+`commit-tree`, không đổi nhánh chính hay cây làm việc, view không đổi thì không đẩy. Ruleset của Inventory chỉ khoá nhánh
+mặc định, nên nhánh view đẩy được. Kho không có bên đọc ngoài thì bỏ job — thành lối a. Kho bật mà không khai nhánh view
+thì `--check` in một dòng cờ vàng.
+
+Bên đọc ngoài kho (đọc 21/11 trên nhánh chính ba kho tiêu thụ): chỉ `crm-onehub` có bên đọc bằng mã — tính năng Lộ trình
+đọc `LO-TRINH.html` qua GitHub App theo trường kho · nhánh · đường tệp, và workflow bản chụp bắn khi tệp đổi trên nhánh
+chính. Inventory và Quỹ hàng chỉ có tài liệu nhắc tên. Ghi chú phát hành của mốc phải cảnh báo điều này (hợp đồng, Notes).
 
 Hành vi theo khoá:
 
@@ -92,7 +105,7 @@ dẫn tệp (sửa đúng tầng — không đổi bộ đọc nào) · bảng �
 18/10) · K10 để ngoài · không tách P179 thành vòng riêng (10 tiêu chí, trong khoảng mục tiêu).
 
 Câu chỉ người có:
-- **Hỏi-1 — rời git hay PR vẽ lại sau gộp** (mục 2.1). Khuyên rời git.
+- **Hỏi-1 — lối a, b hay c** (bảng ở mục 2.1). Khuyên c.
 - **Hỏi-2 — Node của tác tử chấm.** Lệnh không đặt PATH ở máy này ra `v26.7.0`; kho ghim 24 và bộ chạy ca tự so `.nvmrc`
   nên lượt chấm sẽ BLOCKED như hai vòng trước. Khuyên: cho thêm đường bản sao `~/dev/delivery-loop-main/` vào hàm bọc
   Node 24 trong hồ sơ shell của chủ kho, gỡ sau khi PR gộp (tiền lệ vòng `loi-gop-trong-cau-ky`). Lối khác: chủ kho tự

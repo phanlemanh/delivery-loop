@@ -2,7 +2,7 @@
 
 | Điểm | Đếm | Hình |
 |---|---|---|
-| Hỏi-1 — hai view rời git ở kho bật, hay máy mở PR vẽ lại sau mỗi lần gộp | 5 bước nối tiếp, 2 nhánh rẽ (kho bật? · forge thấy xung đột?) | cần hình: `hai-view-pr-den-gop` |
+| Hỏi-1 — lối a (rời git), b (PR vẽ lại sau gộp) hay c (rời git + nhánh view) | 5 bước nối tiếp, 2 nhánh rẽ (kho bật? · forge thấy xung đột?) | cần hình: `hai-view-pr-den-gop` — hình vẽ làn «hôm nay» và làn «kho bật» (lối a); lối c là lối a thêm một job sau gộp đẩy hai view sang nhánh riêng, lối b không vẽ — so ba lối bằng bảng bốn cột ở thiết kế mục 2.1 |
 | Hỏi-3 — kho kit có tự bật khoá trong vòng này | 1 bước, 2 nhánh rẽ (bật · chưa bật) | dùng chung hình trên: nhánh rẽ «kho bật?» |
 | Hỏi-2 — Node 24 cho tác tử chấm | 1 bước, 0 nhánh trong luồng (ba lối là ba câu trả lời) | dưới ngưỡng: 1 bước, 0 nhánh |
 | Mười lựa chọn máy đã quyết ở bước thiết kế (sổ S1) | mỗi dòng 1 bước, 0 nhánh | dưới ngưỡng: bảng trên thẻ là đủ |
