@@ -87,6 +87,11 @@ chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, D
   `_acceptance/config.yaml` 30 lần (17 lần là tệp duy nhất) — đúng mục K2. Giới hạn: con số là số lần phải gỡ tay tại
   máy, không phải số lần gộp ngược; GitHub không chạy driver; sau mỗi lần driver giữ bản của nhánh phải vẽ lại rồi
   commit. Số của Repo Standards cho cùng cửa sổ là 138 và 66 — lệch vì mốc đếm khác (bản kéo `f2a49b49`, cách lấy ngày).
+- **ĐÍNH CHÍNH 21/11 (phiên vòng `roadmap-merge-driver` của Inventory tìm ra, phiên giữ đợt chưa dựng lại):** (1) kho ấy
+  ĐÃ tự đặt driver — `make setup` chạy script `prepare` đặt `merge.generated-file.driver`; câu «kho không tự mang cấu
+  hình» ở trên và ở đề bài của phiên giữ đợt là sai, chỉ bản kéo chưa chạy `make setup` mới thiếu. (2) Git đọc
+  `.gitattributes` của nhánh đang đứng, nên các PR mở TRƯỚC khi dòng mới vào nhánh chính vẫn xung đột ở lần gộp đầu;
+  con số «còn 63» là trạng thái ổn định, không đúng cho tuần đầu sau khi gộp.
 - **Ngưỡng mở:** một kho thứ hai khai nửa chừng, hoặc chủ kho gọi tên cùng DL1.
 
 ### 4.2 Ô `gate` đỏ cả khi chỉ đang chờ (K4)
