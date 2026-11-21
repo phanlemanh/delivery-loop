@@ -82,3 +82,27 @@ Cách đếm từng dòng:
 Quan sát ghi lại, không phải việc của đợt: hồ sơ của vòng ghi hai hồ sơ đã ký của Inventory đỏ sẵn trên nhánh chính
 (`tat-plugin-cho-cu` E1, `upgrade-repo-setup-0-9-0` «rules-kept»). Đó là việc của kho ấy, theo dõi ở lượt ghim lại kế.
 
+## Hai vòng kế trên kit 3.0 (đo 21/11 09:10, chuông hằng ngày)
+
+`nguong-thuc-te.mjs cua-so --tu 47d52b06 --den 8e0a91c9` (nhánh chính Inventory tại `8e0a91c9`, `KIT_TAG v3.0.0`): 3 vòng
+đo được. Ngưỡng ở trên không sửa. Chỉ đo ký → gộp; các dòng khác của hai vòng này chưa đếm.
+
+| Vòng | PR | Ký → gộp | Ngưỡng 51′ | Nguyên nhân khi vượt |
+|---|---|--:|---|---|
+| `split-log-ledger` | #92 | 50′ | đạt | — |
+| `upgrade-repo-setup-0-10-1` | #93 | **89′** | **vượt** | xem dưới |
+| `commit-msg-kit-subjects` | #94 | 46′ | đạt | — |
+
+PR #93, đọc từ GitHub: ký 03:38Z · lượt CI đầu trên commit chữ ký ĐỎ sau 5′ ở job `conventional-commits` («Check every
+commit the branch would add») và job gộp `check` · lượt CI chạy lại 03:48Z → xanh 04:25Z (37′) · gộp 05:07Z. Tách 89′:
+khoảng 10′ vì lượt CI đỏ đầu, 37′ một lượt CI trọn, **42′ chờ người bấm gộp sau khi CI đã xanh**.
+
+- Lượt CI đỏ: phép kiểm tiêu đề commit mà bản `repo-setup` 0.10.1 vừa đưa vào từ chối tiêu đề commit do kit ghi. Kho ấy
+  sửa ở PR #94 («accept the commit subjects the acceptance kit writes»). Đây là chỗ hai công cụ gặp nhau, không phải thay
+  đổi của kit 3.0; phiên giữ đợt CHƯA kiểm kit 2.x có ghi cùng dạng tiêu đề hay không.
+- 42′ chờ gộp: cùng chỗ thiếu thiết kế mà vòng «lời gộp trong câu ký» đang chữa (thẻ không mang lời gộp). Chỗ thiếu này
+  có từ trước 3.0, nên không quy về kit MỚI.
+
+Kết: vế 2 không đổi sang đỏ theo luật đã khai («nguyên nhân thuộc kit mới thì vế đỏ»), nhưng dòng ký → gộp nay là 2 đạt
+trên 3 vòng, không còn là «đạt» trọn. PR #95 (`upgrade-repo-setup-0-10-2`) và #97 đã gộp nhưng bộ đo không tính thành vòng
+ở cửa sổ này; chưa tìm hiểu vì sao.
