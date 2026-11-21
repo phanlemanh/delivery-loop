@@ -12,6 +12,11 @@
 // merge-base là base CI ĐÃ thấy hoặc cũ hơn (CI của PR chạy trên đầu nhánh hay trên bản gộp thử lúc đẩy, đều chứa
 // merge-base), nên tập «tệp vào nhánh chính từ base» chỉ có thể rộng hơn cái CI chưa thấy — phép so dư về phía an toàn.
 // Lệnh gộp luôn `--merge --match-head-commit <sha>`, KHÔNG `--auto`: đầu nhánh đổi sau lúc xét thì gh từ chối.
+//
+// Lối vào thứ hai của CHÍNH lệnh này — `gop <số PR> --theo-loi --slug <slug>` (hồ sơ loi-gop-trong-cau-ky): vòng chạy
+// ngoài đợt, không khoá merge, không `tu_merge`; quyền gộp đến từ LỜI người đã gõ trong câu ký Cổng Bằng chứng, ghi
+// thành một dòng sổ cùng commit với chữ ký. Lệnh vẫn qua `xetGop` rồi mới đọc sáu vế của lời ký trên ĐẦU NHÁNH của PR
+// (`xetLoiKy`), và vẫn chỉ MỘT chỗ gọi `gh pr merge` (`bamGop`). Lệnh không cờ giữ nguyên hành vi trong đợt.
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -78,12 +83,212 @@ export function xetGop({ io, cfg, pr, slug }) {
   return { duong: 'khong-trung', sha, tep_pr: tepPr.length, tep_chinh: tepChinh.size, ly_do: `không tệp nào trùng (${tepPr.length} tệp của PR · ${tepChinh.size} tệp vào nhánh chính qua ${tien} commit) — gộp ngay, không chạy lại CI; lưới: CI trên nhánh chính sau gộp` };
 }
 
+// ── Lời gộp trong câu ký (hồ sơ loi-gop-trong-cau-ky) ───────────────────────────────────────────────────────────
+// Danh sách ĐÓNG các dạng lời gộp người gõ, chữ thường. Bản gốc là khối luật «danh sách đóng lời gộp» trong bản luật
+// ngôn ngữ mặt người của gói nghiệm thu; gói điều phối tự đứng được nên giữ bản chép này, ca GL-5a so nó với khối luật.
+export const DANG_LOI_GOP = {
+  gop: ['gộp: khi ci xanh', 'gộp khi ci xanh', 'gộp: khi xanh', 'gộp khi xanh'],
+  chua: ['gộp: chưa', 'chưa gộp'],
+};
+const TIEN_TO_O_KY = /^ký hay trả\s*:\s*/;
+const VE_KY = /^ký(\s*:.*)?(\s*,\s*phút\s*\d+)?$/;
+const chuanVe = (s) => s.trim().replace(/\s+/g, ' ').toLowerCase();
+function loiCuaVe(ve) {
+  if (DANG_LOI_GOP.gop.includes(ve)) return 'gop';
+  if (DANG_LOI_GOP.chua.includes(ve)) return 'chua-gop';
+  const than = ve.replace(TIEN_TO_O_KY, '');
+  if (than.startsWith('trả lại')) return 'tra-lai';
+  if (VE_KY.test(than)) return 'chu-ky';
+  return null;
+}
+
+// Đọc MỘT câu người gõ: chuẩn hoá NFC, tách vế bằng `;`, bỏ vế rỗng, không phân biệt hoa thường. Dạng ngoài danh sách
+// không thuộc lối nào — máy không đoán. Có lời gộp ⇔ có vế gộp · không vế chưa-gộp · có vế ký · không vế trả lại.
+export function docCau(cau) {
+  const loi = String(cau ?? '').normalize('NFC').split(';').map(chuanVe).filter(Boolean).map(loiCuaVe);
+  if (loi.includes('tra-lai')) return { co_loi_gop: false, ly_do: 'câu ghi là trả lại' };
+  if (!loi.includes('chu-ky')) return { co_loi_gop: false, ly_do: 'câu ghi không mang chữ ký' };
+  if (!loi.includes('gop') || loi.includes('chua-gop')) return { co_loi_gop: false, ly_do: 'câu ghi không mang lời gộp' };
+  return { co_loi_gop: true, ly_do: null };
+}
+
+// Đọc sổ quyết định: dòng CUỐI có `stage: gate2` mang khoá `loi_gop`, và chỉ dòng ấy — sổ chỉ thêm nên dòng sau thay
+// dòng trước; dòng cuối không đạt thì KHÔNG lùi về dòng cũ hơn. Dòng JSON hỏng bỏ qua. `co` là kết cục sau khi đọc lại
+// CHÍNH câu ghi trong dòng (không tin ô `decision` của phiên đã ghi dòng).
+export function docLoiGop(soText) {
+  let cuoi = null;
+  for (const d of String(soText ?? '').split(/\r?\n/)) {
+    if (!d.trim()) continue;
+    let o;
+    try {
+      o = JSON.parse(d);
+    } catch {
+      continue;
+    }
+    if (o !== null && typeof o === 'object' && o.stage === 'gate2' && Object.hasOwn(o, 'loi_gop')) cuoi = o;
+  }
+  if (!cuoi) return { co: false, ly_do: 'không có dòng lời gộp trong sổ', id: null, cau: null };
+  const id = typeof cuoi.id === 'string' ? cuoi.id : null;
+  const cau = cuoi.loi_gop?.cau;
+  if (typeof cau !== 'string') return { co: false, ly_do: 'dòng lời gộp cuối không mang câu', id, cau: null };
+  const kq = docCau(cau);
+  return { co: kq.co_loi_gop, ly_do: kq.ly_do ?? 'câu ghi mang lời gộp', id, cau };
+}
+
+// Khoá kho `feature_loop.gop_theo_loi_ky`: đọc theo dòng (gói không nạp bộ đọc YAML). CHỈ `true` trần, hoặc `true` kèm
+// chú thích đuôi, là bật; vắng, `false`, `"true"`, `True`, `yes`… là tắt — cùng phán quyết với bộ dựng thẻ. Khoá phải là
+// con TRỰC TIẾP của `feature_loop`.
+function khoaGopTheoLoi(text) {
+  const dong = String(text ?? '').split(/\r?\n/);
+  const i = dong.findIndex((d) => /^feature_loop:\s*(#.*)?$/.test(d));
+  if (i < 0) return false;
+  let thut = null;
+  for (let j = i + 1; j < dong.length; j++) {
+    const d = dong[j];
+    if (!d.trim() || /^\s*#/.test(d)) continue;
+    if (/^\S/.test(d)) break;
+    const lui = d.length - d.trimStart().length;
+    thut ??= lui;
+    if (lui !== thut) continue;
+    const m = /^\s+gop_theo_loi_ky:(.*)$/.exec(d);
+    if (m) return /^\s+true(\s+#.*)?\s*$/.test(m[1]);
+  }
+  return false;
+}
+
+// Dòng `human_signoff` có chữ trong frontmatter của báo cáo bằng chứng (khoá ở cột 0, bỏ chú thích đuôi và cặp nháy).
+// Trả NGUYÊN dòng — nó là mũi tìm của `git log -S` ở vế «cùng commit» — hoặc null khi không có chữ ký.
+function dongChuKy(text) {
+  const dong = String(text ?? '').split(/\r?\n/);
+  const dau = dong.findIndex((d) => d.trim() !== '');
+  if (dau < 0 || !/^---\s*$/.test(dong[dau])) return null;
+  for (let j = dau + 1; j < dong.length && !/^---\s*$/.test(dong[j]); j++) {
+    const m = /^human_signoff[ \t]*[:=](.*)$/i.exec(dong[j]);
+    if (!m) continue;
+    const v = m[1].replace(/^\s*#.*$/, '').replace(/\s+#.*$/, '').trim().replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1').trim();
+    return v ? dong[j].trimEnd() : null;
+  }
+  return null;
+}
+
+// Sáu vế của lời ký, đọc TRÊN ĐẦU NHÁNH của PR (`git show <sha>:…`), không đọc cây làm việc. Thiếu vế nào thì trả tên
+// vế ấy. Phần tử đầu của DA_THONG là trạng thái hồ sơ do NGƯỜI ký; hồ sơ máy đã thông không có câu người gõ nên không
+// có lời gộp (ca GL-6b giữ cả hai chiều).
+const DA_KY_NGUOI = DA_THONG[0];
+export function xetLoiKy({ io, sha, slug }) {
+  const doc = (tep) => {
+    try {
+      return io.chay('git', ['show', `${sha}:${tep}`]);
+    } catch {
+      return null;
+    }
+  };
+  const khong = (ly_do) => ({ duoc: false, ly_do });
+  const hs = `_acceptance/${slug}`;
+  if (!khoaGopTheoLoi(doc('_acceptance/config.yaml'))) return khong('kho chưa bật feature_loop.gop_theo_loi_ky trên đầu nhánh');
+  const st = trangThaiHopDong(doc(`${hs}/contract.md`) ?? '');
+  if (st !== DA_KY_NGUOI) return khong(`hồ sơ ${slug} trên đầu PR ở «${st ?? 'không có'}» — lời gộp chỉ có ở hồ sơ đã ký`);
+  const chuKy = dongChuKy(doc(`${hs}/evidence-report.md`));
+  if (!chuKy) return khong('báo cáo bằng chứng trên đầu PR không có chữ ký người');
+  const loi = docLoiGop(doc(`${hs}/decisions.jsonl`));
+  if (!loi.co) return khong(loi.ly_do);
+  // Dòng lời gộp phải SINH CÙNG COMMIT với chữ ký hiện hành: hồ sơ chấm lại rồi ký lại mà lần ký mới không ghi dòng
+  // nào thì dòng của lần ký cũ hết hiệu lực. `git log -S` trả commit gần nhất đổi số lần chuỗi có mặt trong tệp.
+  // Không lần được lịch sử (git lỗi) thì coi như không cùng commit — chiều an toàn.
+  const sinh = (mui, tep) => {
+    try {
+      return io.chay('git', ['log', '-1', '--format=%H', `-S${mui}`, sha, '--', tep]).trim();
+    } catch {
+      return '';
+    }
+  };
+  const cDong = loi.id ? sinh(`"${loi.id}"`, `${hs}/decisions.jsonl`) : '';
+  const cKy = sinh(chuKy, `${hs}/evidence-report.md`);
+  if (!cDong || cDong !== cKy) return khong('dòng lời gộp không sinh cùng commit với chữ ký hiện hành');
+  return { duoc: true, ly_do: `lời gộp trong câu ký (dòng ${loi.id}, cùng commit chữ ký ${cKy.slice(0, 7)})` };
+}
+
+// Check ĐỎ HẲN trên đầu nhánh: `CheckRun` đã xong mà kết luận không thuộc xanh, `StatusContext` ở FAILURE/ERROR. Check
+// còn chạy hay còn xếp hàng không tính — chờ thêm thì có thể xanh; đỏ hẳn thì chờ vô ích.
+export function ciDo(rollup) {
+  if (!Array.isArray(rollup)) return [];
+  const doHan = [];
+  for (const c of rollup) {
+    const ten = c.name ?? c.context ?? '?';
+    if (c.state !== undefined) {
+      if (c.state === 'FAILURE' || c.state === 'ERROR') doHan.push(ten);
+    } else if (c.status === 'COMPLETED' && !KET_LUAN_XANH.has(c.conclusion)) doHan.push(ten);
+  }
+  return doHan;
+}
+
+// Nhịp hỏi lại trạng thái check khi lệnh tự chờ CI: 30 giây, đổi bằng biến môi trường (ca rút ngắn).
+const NHIP_CHO_MS = 30_000;
+const nhipCho = () => {
+  const n = Number(process.env.DIEU_PHOI_NHIP_CHO_MS);
+  return Number.isFinite(n) && n > 0 ? n : NHIP_CHO_MS;
+};
+const nguDongBo = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+
+// Lối theo lời ký: bốn điều kiện của `xetGop` (không cấu hình đợt nên không có lối nhanh «không trùng tệp»), rồi sáu vế
+// của lời ký trên đúng sha vừa xét. `gh`/`git` lỗi → ném một dòng.
+// Chờ CI là việc của LỆNH (`choCi` phút, cờ `--cho-ci`): check còn chạy và còn giờ → ngủ một nhịp rồi hỏi lại — mỗi lượt
+// lấy đầu nhánh MỚI, nên các vế và lệnh gộp theo đúng sha của lượt xanh; một check đỏ hẳn → chặn ngay, không hỏi lại;
+// hết giờ → lối chờ CI (mã thoát 4). `xetGop` không trả bảng check, nên lệnh nghe lại chính câu trả lời `gh pr view`.
+const dongDauLoi = (e) => String(e?.stderr ?? '').split('\n').map((x) => x.trim()).find(Boolean) ?? String(e?.message ?? e).split('\n')[0];
+function xetTheoLoi({ io, pr, slug, choCi, ngu }) {
+  const han = Date.now() + choCi * 60_000;
+  let xem = '';
+  const ioNghe = {
+    chay: (cmd, args) => {
+      const ra = io.chay(cmd, args);
+      if (cmd === 'gh' && args[0] === 'pr' && args[1] === 'view') xem = ra;
+      return ra;
+    },
+  };
+  for (;;) {
+    let kq;
+    let doHan = [];
+    try {
+      kq = xetGop({ io: ioNghe, cfg: {}, pr, slug });
+      if (kq.duong === 'cho-ci') doHan = ciDo(JSON.parse(xem).statusCheckRollup);
+    } catch (e) {
+      throw new Error(`gop: không xét được PR #${pr} — ${dongDauLoi(e)}`);
+    }
+    if (kq.duong === 'cho-ci') {
+      if (doHan.length) return { duong: 'chan', sha: kq.sha, ly_do: `CI đỏ trên đầu nhánh — ${doHan.join(', ')}` };
+      if (!(choCi > 0)) return kq;
+      if (Date.now() >= han) return { ...kq, ly_do: `hết ${choCi} phút chờ CI — ${kq.ly_do}` };
+      ngu(nhipCho());
+      continue;
+    }
+    if (!GOP_DUOC.includes(kq.duong)) return kq;
+    const loi = xetLoiKy({ io, sha: kq.sha, slug });
+    return loi.duoc ? { ...kq, ly_do: `${kq.ly_do} · ${loi.ly_do}` } : { duong: 'chan', sha: kq.sha, ly_do: loi.ly_do };
+  }
+}
+
+// Chỗ DUY NHẤT gọi `gh pr merge` — cả lệnh trong đợt lẫn lối theo lời ký đi qua đây.
+function bamGop(io, pr, kq, xet) {
+  const gopNgay = !xet && GOP_DUOC.includes(kq.duong);
+  if (gopNgay) io.chay('gh', ['pr', 'merge', String(pr), '--merge', '--match-head-commit', kq.sha]);
+  return gopNgay;
+}
+
 const IO_THAT = (cwd) => ({ chay: (cmd, args) => execFileSync(cmd, args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 120_000 }) });
 
 // Lệnh `gop <số PR>`: thợ giữ khoá merge, đợt cho tự gộp. `--xet` chỉ in quyết định (giám sát, người) — không gộp,
 // không đòi khoá. Mỗi lần chạy ghi một sự kiện `gop` (lệnh đếm đọc).
-export function gop(cwd, pr, { slug = null, xet = false, io = IO_THAT(cwd) } = {}) {
+// `theoLoi` (cờ `--theo-loi`): lối ngoài đợt theo lời gộp trong câu ký — không đòi đợt, khoá merge hay `tu_merge`, bắt
+// buộc `slug`, không ghi sự kiện đợt. `choCi` (cờ `--cho-ci <phút>`): lệnh tự chờ CI; `ngu(ms)` thay được trong ca.
+export function gop(cwd, pr, { slug = null, xet = false, io = IO_THAT(cwd), theoLoi = false, choCi = 0, ngu = nguDongBo } = {}) {
   if (!/^\d+$/.test(String(pr ?? ''))) throw new Error('gop: dùng `gop <số PR> [--slug <slug>] [--xet]`');
+  if (theoLoi) {
+    if (!slug) throw new Error('gop: --theo-loi đòi --slug <slug>');
+    if (typeof choCi !== 'number' || !Number.isFinite(choCi) || choCi < 0) throw new Error('gop: --cho-ci <phút> phải là số không âm');
+    const kq = xetTheoLoi({ io, pr, slug, choCi, ngu });
+    return { ...kq, da_gop: bamGop(io, pr, kq, xet), nha_merge: false };
+  }
   const thuMuc = timThuMucDot(cwd);
   if (!thuMuc) throw new Error('gop: không có đợt nào đang chạy');
   const cfg = docCauHinh(thuMuc);
@@ -97,8 +302,7 @@ export function gop(cwd, pr, { slug = null, xet = false, io = IO_THAT(cwd) } = {
   const s = slug ?? (chu?.phien === day ? chu?.slug : null);
   if (!s) throw new Error('gop: không suy được slug hồ sơ — ghi --slug <slug>');
   const kq = xetGop({ io, cfg, pr, slug: s });
-  const gopNgay = !xet && GOP_DUOC.includes(kq.duong);
-  if (gopNgay) io.chay('gh', ['pr', 'merge', String(pr), '--merge', '--match-head-commit', kq.sha]);
+  const gopNgay = bamGop(io, pr, kq, xet);
   // Gộp xong thì khoá merge hết việc (#477 lỗi 3c): nhả ngay, không để treo tới hết hạn thuê. Chỉ nhả khoá của CHÍNH
   // dãy — lối không gộp đã đòi chu.phien === day ở trên.
   const nhaMerge = gopNgay && chu?.phien === day;
