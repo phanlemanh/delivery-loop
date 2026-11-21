@@ -1,6 +1,7 @@
 # Kế hoạch thực hiện 12 mục Repo Standards gửi (K1–K12)
 
-> **Trạng thái: ĐỀ XUẤT — chưa ai duyệt.** Viết 21/11/2026 14:05, phiên giữ đợt, Mac Studio, theo lời chủ kho: «Phân tích
+> **Trạng thái: CHỦ KHO DUYỆT 21/11/2026 («Duyệt» — nhận cả ba khuyến nghị Q1–Q3 và bốn việc máy đi theo khuyến nghị).**
+> Tiến độ từng bước ghi ở `TRANG-THAI.md`. Viết 21/11/2026 14:05, phiên giữ đợt, Mac Studio, theo lời chủ kho: «Phân tích
 > và đánh giá sau đó cập nhật từ đó đưa thành kế hoạch thực hiện trình tôi.» Tệp này không mở vòng nào, không tạo ô nào,
 > không đổi kế hoạch giai đoạn 2 đã duyệt. Hình kèm: `figures/ke-hoach-12-muc.svg` (chiếu của bảng mục 4, không phải nguồn).
 
