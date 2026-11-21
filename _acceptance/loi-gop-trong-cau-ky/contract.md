@@ -5,7 +5,7 @@ slug: loi-gop-trong-cau-ky
 owner: phanlemanh@gmail.com
 risk_tier: T2      # gate-card.js, commands/signoff.md, human-facing-language.md, dispatch/scripts/gop.mjs + dieu-phoi.mjs, feature-loop SKILL, tests — không khớp t3_paths
 surfaces: [cli]
-status: approved
+status: implemented
 design_doc: docs/superpowers/specs/2026-11-21-loi-gop-trong-cau-ky-design.md
 approved_by: Phan Le Manh
 approved_at: 2026-11-21
