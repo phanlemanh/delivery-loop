@@ -97,19 +97,26 @@ Ba điều rút ra từ cả bảng:
 | K9 → làn nhẹ | sau 0.6 mà một vòng nâng công cụ vẫn đi trọn hạng nặng | CỘNG |
 | K11 → DL4, DL6 | Repo Standards có bản đồ phạm vi dùng thật; mỗi gói một ADR | CỘNG |
 
-## 4. Bảng chiếu (nguồn của hình)
+## 4. Bảng chiếu (nguồn của hình) — bản sau khi đổi thứ tự 21/11
 
-| Đợt | Mục | Tóm tắt |
+| Cột | Mục | Tóm tắt |
 |---|---|---|
-| Đợt 0 · 21/11 → 02/12 | K8 | Inventory đã khai; kit thêm một đoạn tài liệu |
-| Đợt 0 | K1 nửa đầu | đo phát lại, rồi một dòng ở Inventory |
-| Đợt 0 | K6 | Inventory quyết phạm vi quét |
-| Đợt 0 | K9 | Inventory quyết nhịp nâng công cụ |
-| Đợt 0 | K11 | trả lời hai câu cho Repo Standards |
-| Đợt 0 | K12 | xong |
-| Đợt 1 · mốc 3.1 · từ 02/12 | — | «lời gộp» + vá chữ ký giữ chỗ; đo K3, K4, K5 |
-| Đợt 2 · một vòng kit sau 3.1 | K1 nửa sau, K2, K10 | DL1 + P179 |
-| Chờ ngưỡng | K3, K4, K7, K5, K6, K9, K11 | DL2 · DL3 · mã đo · thư viện thước · làn nhẹ · DL4, DL6 |
+| Đợt 0 · xong 21/11 | K8 | Inventory khai commit gộp; tài liệu kit đã gộp |
+| Đợt 0 · xong | K1 nửa đầu | một dòng gộp ở Inventory, đã gộp |
+| Đợt 0 · xong | K6 | bốn cảnh báo tự đóng |
+| Đợt 0 · xong | K9 | quyết định nhịp nâng đã ghi |
+| Đợt 0 · xong | K11 | Repo Standards đã dùng hai câu trả lời |
+| Đợt 0 · xong | K12 | PR #15, ký → gộp 7′21″ |
+| Đang làm · từ 21/11 | DL1 | K1 nửa sau, K2, K10: tệp sinh và tệp chung thôi chặn gộp |
+| Đang làm | P179 | sổ giới hạn thôi đốt lượt chấm |
+| Đang làm | bản vá | chữ ký giữ chỗ của lệnh gộp |
+| Mốc chung · từ 02/12 | — | một mốc mang DL1, P179, bản vá, «lời gộp»; mỗi kho cài một lần |
+| Mốc chung | đo | K3 còn lại · K4 đếm · K5 tách, trên năm vòng đầu |
+| Sau mốc | K3 → DL2 | bằng chứng hoá cũ sau khi gộp nhánh chính — vòng kế |
+| Chờ ngưỡng | K4, K7 → DL3 | chờ tầng CI của Repo Standards |
+| Chờ ngưỡng | K5 → mã đo | nếu đếm tay không tách được |
+| Chờ ngưỡng | K6, K9 phần kit | thư viện thước · làn nhẹ |
+| Chờ ngưỡng | K11 → DL4, DL6 | mỗi gói một ADR |
 
 ## 5. Hai câu trả lời đề xuất cho K11
 
@@ -141,3 +148,22 @@ Trả lời một chữ «Duyệt» là nhận cả ba khuyến nghị; khác đ
 - **Chưa đo, nói thẳng:** số của Repo Standards chưa được đo lại, trừ cột «Đo lại 21/11» · lượt phát lại 0.3 chưa chạy ·
   Quỹ hàng chưa kiểm cho K8 · K3 và K5 mới có một mẫu · các ngưỡng mở là đề xuất của máy.
 - **Không làm trong kế hoạch này:** mở vòng kit trước 02/12 · đổi mặc định của kho nào · sửa Inventory từ phiên giữ đợt.
+
+## 8. Đổi thứ tự — chủ kho quyết 21/11 («Đổi theo đề xuất»)
+
+Lời chủ kho trước đó: việc gộp theo lời không quan trọng vì chủ kho chạy kit bằng phiên điều phối, vốn đã gộp được;
+điều chủ kho quan tâm là các bản sửa rút ngắn đoạn bắt đầu → gộp, mà chúng lại nằm sau mốc 3.1. Mục 3 ở trên («Bốn
+đợt») vì thế hết hiệu lực từ Đợt 1 trở đi; thứ tự mới:
+
+1. **Vòng DL1 + P179 mở ngay**, không chờ 02/12 — làm ra bản sửa không làm nhiễu cửa sổ quan sát mốc 3.0, cài mới làm
+   nhiễu. Đề bài: `de-bai-dl1-p179.md`.
+2. **Vòng đang chạy thu về đúng bản vá chữ ký giữ chỗ**, không cắt thẻ riêng (phiên `moc-3-1`).
+3. **Một mốc duy nhất quanh 02/12** mang DL1, P179, bản vá và «lời gộp»: mỗi kho cài một lần, ghim lại một lần.
+4. **DL2 là vòng kế sau mốc ấy** (K3). Trước đây DL2 «chờ ngưỡng»; nay có chỗ trong hàng, vẫn cần chủ kho gọi tên.
+
+Luật chiều rộng (b) — «giữa hai mốc một kho nhận, tối đa một vòng sửa kit» — chủ kho nới cho đúng hai việc có tên:
+«DL1 + P179» và «bản vá chữ ký giữ chỗ». Không việc nào khác được đi theo lối nới này.
+
+Chỗ phiên giữ đợt đánh giá sai, ghi lại: xếp «lời gộp» lên trước vì coi lời gộp tách khỏi lời ký là chỗ đau chính;
+với cách chủ kho làm việc thì không phải. Số lượt gọi người ước cho ba vòng: 6–8.
+

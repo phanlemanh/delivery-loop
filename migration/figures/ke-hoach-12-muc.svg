@@ -1,84 +1,79 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1105 560" width="1105" height="560" font-family="-apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
-<title>12 mục Repo Standards xếp vào bốn đợt</title>
+<title>12 mục Repo Standards — thứ tự sau khi đổi ngày 21/11</title>
 <rect width="1105" height="560" fill="#FFFFFF"/>
-<text x="20" y="30" font-size="17" font-weight="700" fill="#1F2328">12 mục Repo Standards gửi → bốn đợt</text>
-<text x="20" y="50" font-size="12" fill="#57606A">Phác 21/11/2026 · chiếu của bảng mục 4 trong KE-HOACH-12-MUC-REPO-STANDARDS.md · đề xuất, chưa duyệt</text>
+<text x="20" y="30" font-size="17" font-weight="700" fill="#1F2328">12 mục Repo Standards — thứ tự sau khi đổi ngày 21/11</text>
+<text x="20" y="50" font-size="12" fill="#57606A">Phác · chiếu của bảng mục 4 trong KE-HOACH-12-MUC-REPO-STANDARDS.md · chủ kho duyệt «Đổi theo đề xuất»</text>
 <rect x="20" y="66" width="255" height="432" rx="10" fill="#FAFAF8" stroke="#D0D7DE"/>
-<text x="34" y="90" font-size="14.5" font-weight="700" fill="#1F2328">Đợt 0 · 21/11 → 02/12</text>
+<text x="34" y="90" font-size="14.5" font-weight="700" fill="#1F2328">Đợt 0 · xong 21/11</text>
 <text x="34" y="107" font-size="11.5" fill="#57606A">Không đổi engine kit</text>
 <text x="282.5" y="94" font-size="16" text-anchor="middle" fill="#57606A">→</text>
-<rect x="32" y="120" width="231" height="52" rx="7" fill="#E8F1FB" stroke="#2F6FB7" stroke-width="1.3"/>
+<rect x="32" y="120" width="231" height="52" rx="7" fill="#E6F4EA" stroke="#2E7D4F" stroke-width="1.3"/>
 <text x="42" y="141" font-size="12.5" font-weight="600" fill="#1F2328">K8 · cách gộp</text>
-<text x="42" y="159" font-size="11.5" fill="#3D444D">Inventory đã khai; kit thêm tài liệu</text>
-<rect x="32" y="181" width="231" height="52" rx="7" fill="#E8F1FB" stroke="#2F6FB7" stroke-width="1.3"/>
+<text x="42" y="159" font-size="11.5" fill="#3D444D">Inventory đã khai; tài liệu đã gộp</text>
+<rect x="32" y="181" width="231" height="52" rx="7" fill="#E6F4EA" stroke="#2E7D4F" stroke-width="1.3"/>
 <text x="42" y="202" font-size="12.5" font-weight="600" fill="#1F2328">K1 nửa đầu · tệp lộ trình</text>
-<text x="42" y="220" font-size="11.5" fill="#3D444D">đo phát lại, rồi 1 dòng ở Inventory</text>
-<rect x="32" y="242" width="231" height="52" rx="7" fill="#E8F1FB" stroke="#2F6FB7" stroke-width="1.3"/>
+<text x="42" y="220" font-size="11.5" fill="#3D444D">một dòng gộp ở Inventory</text>
+<rect x="32" y="242" width="231" height="52" rx="7" fill="#E6F4EA" stroke="#2E7D4F" stroke-width="1.3"/>
 <text x="42" y="263" font-size="12.5" font-weight="600" fill="#1F2328">K6 · thước bị CodeQL báo</text>
-<text x="42" y="281" font-size="11.5" fill="#3D444D">Inventory quyết phạm vi quét</text>
-<rect x="32" y="303" width="231" height="52" rx="7" fill="#E8F1FB" stroke="#2F6FB7" stroke-width="1.3"/>
-<text x="42" y="324" font-size="12.5" font-weight="600" fill="#1F2328">K9 · nâng công cụ đi hạng nặng</text>
-<text x="42" y="342" font-size="11.5" fill="#3D444D">Inventory quyết nhịp nâng</text>
-<rect x="32" y="364" width="231" height="52" rx="7" fill="#E8F1FB" stroke="#2F6FB7" stroke-width="1.3"/>
+<text x="42" y="281" font-size="11.5" fill="#3D444D">bốn cảnh báo tự đóng</text>
+<rect x="32" y="303" width="231" height="52" rx="7" fill="#E6F4EA" stroke="#2E7D4F" stroke-width="1.3"/>
+<text x="42" y="324" font-size="12.5" font-weight="600" fill="#1F2328">K9 · nhịp nâng công cụ</text>
+<text x="42" y="342" font-size="11.5" fill="#3D444D">quyết định đã ghi</text>
+<rect x="32" y="364" width="231" height="52" rx="7" fill="#E6F4EA" stroke="#2E7D4F" stroke-width="1.3"/>
 <text x="42" y="385" font-size="12.5" font-weight="600" fill="#1F2328">K11 · hai câu của Repo Standards</text>
-<text x="42" y="403" font-size="11.5" fill="#3D444D">trả lời, không làm</text>
+<text x="42" y="403" font-size="11.5" fill="#3D444D">đã trả lời, đã dùng</text>
 <rect x="32" y="425" width="231" height="52" rx="7" fill="#E6F4EA" stroke="#2E7D4F" stroke-width="1.3"/>
 <text x="42" y="446" font-size="12.5" font-weight="600" fill="#1F2328">K12 · số cho «lời gộp»</text>
-<text x="42" y="464" font-size="11.5" fill="#3D444D">xong — PR #15, ký→gộp 7′21″</text>
+<text x="42" y="464" font-size="11.5" fill="#3D444D">PR #15, ký→gộp 7′21″</text>
 <rect x="290" y="66" width="255" height="432" rx="10" fill="#FAFAF8" stroke="#D0D7DE"/>
-<text x="304" y="90" font-size="14.5" font-weight="700" fill="#1F2328">Đợt 1 · mốc 3.1.0</text>
-<text x="304" y="107" font-size="11.5" fill="#57606A">từ 02/12 · Inventory nhận</text>
+<text x="304" y="90" font-size="14.5" font-weight="700" fill="#1F2328">Đang làm · từ 21/11</text>
+<text x="304" y="107" font-size="11.5" fill="#57606A">Ba việc kit, chưa cài lên kho nào</text>
 <text x="552.5" y="94" font-size="16" text-anchor="middle" fill="#57606A">→</text>
 <rect x="302" y="120" width="231" height="52" rx="7" fill="#FFF3DC" stroke="#B7791F" stroke-width="1.3"/>
-<text x="312" y="141" font-size="12.5" font-weight="600" fill="#1F2328">«Lời gộp» + vá chữ ký giữ chỗ</text>
-<text x="312" y="159" font-size="11.5" fill="#3D444D">đi trong chính vòng mốc</text>
-<rect x="302" y="181" width="231" height="52" rx="7" fill="#FFFFFF" stroke="#B7791F" stroke-width="1.3" stroke-dasharray="5 4"/>
-<text x="312" y="202" font-size="12.5" font-weight="600" fill="#1F2328">Đo trên 5 vòng đầu</text>
-<text x="312" y="220" font-size="11.5" fill="#3D444D">K3 còn lại · K4 đếm · K5 tách</text>
+<text x="312" y="141" font-size="12.5" font-weight="600" fill="#1F2328">DL1 · K1 nửa sau, K2, K10</text>
+<text x="312" y="159" font-size="11.5" fill="#3D444D">tệp sinh, tệp chung thôi chặn gộp</text>
+<rect x="302" y="181" width="231" height="52" rx="7" fill="#FFF3DC" stroke="#B7791F" stroke-width="1.3"/>
+<text x="312" y="202" font-size="12.5" font-weight="600" fill="#1F2328">P179 · sổ giới hạn</text>
+<text x="312" y="220" font-size="11.5" fill="#3D444D">thôi đốt lượt chấm</text>
+<rect x="302" y="242" width="231" height="52" rx="7" fill="#FFF3DC" stroke="#B7791F" stroke-width="1.3"/>
+<text x="312" y="263" font-size="12.5" font-weight="600" fill="#1F2328">Bản vá chữ ký giữ chỗ</text>
+<text x="312" y="281" font-size="11.5" fill="#3D444D">của lệnh gộp theo lời</text>
 <rect x="560" y="66" width="255" height="432" rx="10" fill="#FAFAF8" stroke="#D0D7DE"/>
-<text x="574" y="90" font-size="14.5" font-weight="700" fill="#1F2328">Đợt 2 · một vòng kit sau 3.1</text>
-<text x="574" y="107" font-size="11.5" fill="#57606A">DL1 + P179 · chủ kho gọi tên</text>
+<text x="574" y="90" font-size="14.5" font-weight="700" fill="#1F2328">Mốc chung · từ 02/12</text>
+<text x="574" y="107" font-size="11.5" fill="#57606A">Mỗi kho cài một lần</text>
 <rect x="572" y="120" width="231" height="52" rx="7" fill="#FFF3DC" stroke="#B7791F" stroke-width="1.3"/>
-<text x="582" y="141" font-size="12.5" font-weight="600" fill="#1F2328">K1 nửa sau</text>
-<text x="582" y="159" font-size="11.5" fill="#3D444D">PR thôi ghi tệp sinh</text>
-<rect x="572" y="181" width="231" height="52" rx="7" fill="#FFF3DC" stroke="#B7791F" stroke-width="1.3"/>
-<text x="582" y="202" font-size="12.5" font-weight="600" fill="#1F2328">K2 · config.yaml dùng chung</text>
-<text x="582" y="220" font-size="11.5" fill="#3D444D">lệnh của hồ sơ về hồ sơ ấy</text>
+<text x="582" y="141" font-size="12.5" font-weight="600" fill="#1F2328">Một mốc mang cả bốn</text>
+<text x="582" y="159" font-size="11.5" fill="#3D444D">DL1 · P179 · bản vá · «lời gộp»</text>
+<rect x="572" y="181" width="231" height="52" rx="7" fill="#FFFFFF" stroke="#B7791F" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="582" y="202" font-size="12.5" font-weight="600" fill="#1F2328">Đo trên 5 vòng đầu</text>
+<text x="582" y="220" font-size="11.5" fill="#3D444D">K3 còn lại · K4 đếm · K5 tách</text>
 <rect x="572" y="242" width="231" height="52" rx="7" fill="#FFF3DC" stroke="#B7791F" stroke-width="1.3"/>
-<text x="582" y="263" font-size="12.5" font-weight="600" fill="#1F2328">K10 · sổ ngoài git</text>
-<text x="582" y="281" font-size="11.5" fill="#3D444D">đọc đúng bậc sàn thiết kế</text>
-<rect x="572" y="303" width="231" height="52" rx="7" fill="#FFF3DC" stroke="#B7791F" stroke-width="1.3"/>
-<text x="582" y="324" font-size="12.5" font-weight="600" fill="#1F2328">P179 · sổ giới hạn thiếu hàng</text>
-<text x="582" y="342" font-size="11.5" fill="#3D444D">bản vá hẹp</text>
+<text x="582" y="263" font-size="12.5" font-weight="600" fill="#1F2328">Vòng kế: K3 → DL2</text>
+<text x="582" y="281" font-size="11.5" fill="#3D444D">bằng chứng cũ sau khi gộp nhánh chính</text>
 <rect x="830" y="66" width="255" height="432" rx="10" fill="#FAFAF8" stroke="#D0D7DE"/>
 <text x="844" y="90" font-size="14.5" font-weight="700" fill="#1F2328">Chờ ngưỡng</text>
 <text x="844" y="107" font-size="11.5" fill="#57606A">chưa xếp lịch</text>
 <rect x="842" y="120" width="231" height="52" rx="7" fill="#F2F2F0" stroke="#8A8A85" stroke-width="1.3" stroke-dasharray="5 4"/>
-<text x="852" y="141" font-size="12.5" font-weight="600" fill="#1F2328">K3 → DL2</text>
-<text x="852" y="159" font-size="11.5" fill="#3D444D">nếu ≥ 1/3 vòng còn ghim lại sau ký</text>
+<text x="852" y="141" font-size="12.5" font-weight="600" fill="#1F2328">K4, K7 → DL3</text>
+<text x="852" y="159" font-size="11.5" fill="#3D444D">chờ tầng CI của Repo Standards</text>
 <rect x="842" y="181" width="231" height="52" rx="7" fill="#F2F2F0" stroke="#8A8A85" stroke-width="1.3" stroke-dasharray="5 4"/>
-<text x="852" y="202" font-size="12.5" font-weight="600" fill="#1F2328">K4, K7 → DL3</text>
-<text x="852" y="220" font-size="11.5" fill="#3D444D">chờ tầng CI của Repo Standards</text>
+<text x="852" y="202" font-size="12.5" font-weight="600" fill="#1F2328">K5 → mã đo</text>
+<text x="852" y="220" font-size="11.5" fill="#3D444D">nếu đếm tay không tách được</text>
 <rect x="842" y="242" width="231" height="52" rx="7" fill="#F2F2F0" stroke="#8A8A85" stroke-width="1.3" stroke-dasharray="5 4"/>
-<text x="852" y="263" font-size="12.5" font-weight="600" fill="#1F2328">K5 → mã đo</text>
-<text x="852" y="281" font-size="11.5" fill="#3D444D">nếu đếm tay không tách được</text>
+<text x="852" y="263" font-size="12.5" font-weight="600" fill="#1F2328">K6 → thư viện thước</text>
+<text x="852" y="281" font-size="11.5" fill="#3D444D">ngưỡng luật (a): đang 1/2</text>
 <rect x="842" y="303" width="231" height="52" rx="7" fill="#F2F2F0" stroke="#8A8A85" stroke-width="1.3" stroke-dasharray="5 4"/>
-<text x="852" y="324" font-size="12.5" font-weight="600" fill="#1F2328">K6 → thư viện thước</text>
-<text x="852" y="342" font-size="11.5" fill="#3D444D">ngưỡng luật (a): đang 1/2</text>
+<text x="852" y="324" font-size="12.5" font-weight="600" fill="#1F2328">K9 → làn nhẹ</text>
+<text x="852" y="342" font-size="11.5" fill="#3D444D">nếu nhát của kho không đủ</text>
 <rect x="842" y="364" width="231" height="52" rx="7" fill="#F2F2F0" stroke="#8A8A85" stroke-width="1.3" stroke-dasharray="5 4"/>
-<text x="852" y="385" font-size="12.5" font-weight="600" fill="#1F2328">K9 → làn nhẹ</text>
-<text x="852" y="403" font-size="11.5" fill="#3D444D">nếu nhát của kho không đủ</text>
-<rect x="842" y="425" width="231" height="52" rx="7" fill="#F2F2F0" stroke="#8A8A85" stroke-width="1.3" stroke-dasharray="5 4"/>
-<text x="852" y="446" font-size="12.5" font-weight="600" fill="#1F2328">K11 → DL4, DL6</text>
-<text x="852" y="464" font-size="11.5" fill="#3D444D">mỗi gói một ADR</text>
-<rect x="20" y="516" width="18" height="14" rx="3" fill="#E8F1FB" stroke="#2F6FB7" stroke-width="1.3"/>
-<text x="45" y="528" font-size="11.5" fill="#3D444D">việc của kho tiêu thụ, không đổi kit</text>
-<rect x="290.4" y="516" width="18" height="14" rx="3" fill="#E6F4EA" stroke="#2E7D4F" stroke-width="1.3"/>
-<text x="315.4" y="528" font-size="11.5" fill="#3D444D">đã xong</text>
-<rect x="375.2" y="516" width="18" height="14" rx="3" fill="#FFF3DC" stroke="#B7791F" stroke-width="1.3"/>
-<text x="400.2" y="528" font-size="11.5" fill="#3D444D">việc của kit</text>
-<rect x="492.0" y="516" width="18" height="14" rx="3" fill="#FFFFFF" stroke="#B7791F" stroke-width="1.3" stroke-dasharray="5 4"/>
-<text x="517.0" y="528" font-size="11.5" fill="#3D444D">đo, không sửa</text>
-<rect x="615.2" y="516" width="18" height="14" rx="3" fill="#F2F2F0" stroke="#8A8A85" stroke-width="1.3" stroke-dasharray="5 4"/>
-<text x="640.2" y="528" font-size="11.5" fill="#3D444D">chờ ngưỡng</text>
+<text x="852" y="385" font-size="12.5" font-weight="600" fill="#1F2328">K11 → DL4, DL6</text>
+<text x="852" y="403" font-size="11.5" fill="#3D444D">mỗi gói một ADR</text>
+<rect x="20" y="516" width="18" height="14" rx="3" fill="#E6F4EA" stroke="#2E7D4F" stroke-width="1.3"/>
+<text x="45" y="528" font-size="11.5" fill="#3D444D">đã xong</text>
+<rect x="104.80000000000001" y="516" width="18" height="14" rx="3" fill="#FFF3DC" stroke="#B7791F" stroke-width="1.3"/>
+<text x="129.8" y="528" font-size="11.5" fill="#3D444D">việc của kit</text>
+<rect x="221.60000000000002" y="516" width="18" height="14" rx="3" fill="#FFFFFF" stroke="#B7791F" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="246.60000000000002" y="528" font-size="11.5" fill="#3D444D">đo, không sửa</text>
+<rect x="344.8" y="516" width="18" height="14" rx="3" fill="#F2F2F0" stroke="#8A8A85" stroke-width="1.3" stroke-dasharray="5 4"/>
+<text x="369.8" y="528" font-size="11.5" fill="#3D444D">chờ ngưỡng</text>
 </svg>
