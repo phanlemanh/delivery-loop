@@ -48,6 +48,15 @@ Chỗ thứ nhất cùng họ với giới hạn đã ghi của `loop-health` (�
 tin bản kéo cục bộ là nhánh chính. **Ngưỡng mở:** cùng chỗ vấp lại ở một kho thứ hai (crm là lần đo kế), hoặc ≥ 1 lượt chấm đỏ
 vì nó.
 
+**Chỗ thứ tư, ở crm (21/11), phiên của vòng báo, phiên giữ đợt đọc AC-8 của hợp đồng vòng ấy.** Lượt phân loại ghim lại
+ở tip `25053cbd` ra bốn eval đỏ mà hợp đồng chưa khai. Ba eval của ba hồ sơ đã ký chạy lưới trước-gộp trên TOÀN kho,
+nên chúng đỏ theo trạng thái của chính hồ sơ đang dở của vòng (phán quyết REJECT của lượt chấm trước), và chỉ xanh khi
+vòng đạt — trong khi vòng muốn đạt lại phải phân loại xong chúng: vòng tròn. Eval thứ tư đòi một lượt CI trên GitHub
+cho commit của nhánh, nên đỏ trên bản gộp thử không có trên GitHub. Lớp chung: **eval của hồ sơ đã ký đo trạng thái
+của nhánh hay của vòng đang chạy, không đo vật**. Kit 3.0 không có lớp nào cho chúng trong làn ghim lại; lối ra hôm nay
+là một dòng giới hạn viết tay trong hợp đồng, tốn một lượt gọi người. Cùng họ DL2. **Ngưỡng mở:** vòng chuyển hay
+ghim lại thứ hai phải khai tay cùng lớp eval này, hoặc chủ kho gọi tên cùng DL2.
+
 ## 4. Sáu mục từ bản đối chiếu với Repo Standards chưa có chỗ trong kế hoạch (21/11)
 
 Chủ kho bảo ghi 21/11: «Ghi năm mục chưa có chỗ thành hạt giống», rồi «Thêm phần CodeQL của K6 thành mục 4.6». Nguồn số đo: `phanlemanh/repo-standards`, nhánh chính,
