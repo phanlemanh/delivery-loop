@@ -42,6 +42,8 @@ kia không nói: ai đã quyết gì, luật làm việc của đợt, và các 
     mốc 3.0** (một vòng thật ở Quỹ hàng gộp được trên kit 3.0 · năm dòng số không xấu đi do kit mới · chủ kho ghi
     `da-cham-boi-thuc-te` sau cửa sổ 14 ngày, có đường lùi). Đợt chỉ ĐÓNG khi đủ ba vế; crm không là điều kiện đóng đợt.
     Con số ngưỡng là máy đề xuất, chủ kho đổi được ở Cổng Phạm vi mốc 3.0.
+    **Sửa 21/11:** chữ «có đường lùi» ở trên hết hiệu lực — chủ kho quyết «Chỉ sửa đi lên và không lùi»; xem
+    `KE-HOACH-GIAI-DOAN-2.md` mục 9.
 
 ## Chủ kho CHƯA quyết (đừng tự quyết)
 

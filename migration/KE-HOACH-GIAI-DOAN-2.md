@@ -176,7 +176,11 @@ bảo thêm 19/11; dựng ở II.0 sau khi kế hoạch được duyệt).
 
 - **Không có vòng sản phẩm nào ở Inventory trước 02/12.** Vế 1 trượt, II.2 bị chặn theo. Lưới: tới 02/12 chưa có vòng thì
   trình chủ kho hai lối — chờ tiếp, hoặc cho Quỹ hàng chuyển trước và làm kho chứng minh.
-- **Vòng thật đỏ vì kit mới.** Đường lùi đã có: Inventory bật lại chợ cũ và đảo commit cài; II.2 dừng tới khi rõ nguyên nhân.
+- **Vòng thật đỏ vì kit mới.** ~~Đường lùi đã có: Inventory bật lại chợ cũ và đảo commit cài; II.2 dừng tới khi rõ nguyên nhân.~~
+  **Chủ kho sửa 21/11:** «Chỉ sửa đi lên và không lùi. Nên bỏ hướng lùi». Từ nay KHÔNG có đường quay về chợ cũ hay kit 2.x.
+  Lỗi do việc chuyển nhà gây ra: ghi nhận (vế tương ứng đỏ, vào dòng hiệu chuẩn), rồi vá đi lên bằng bản 3.0.x cắt từ
+  thẻ `v3.0.0`, chỉ chứa nhát sửa; kho bị chặn ghim lại riêng phần bị ảnh hưởng. Bản vá lỗi loại này là sửa vật sai hợp
+  đồng, phiên giữ đợt đọc là không tính vào suất «một vòng sửa kit giữa hai mốc» (chủ kho bác được).
 - **Vòng chuyển kho chạm lượt gọi thứ tư.** Dừng ở đó, trình chủ kho, không đi lượt thứ năm bằng lời giao.
 - **Kho cũ có commit mới.** Dừng, hỏi chủ kho (luật đã có ở `TRANG-THAI.md`).
 - **Máy làm vòng chưa cài chợ mới.** Phiên ở kho đã chuyển sẽ không có kit; II.0 (3) kiểm trước.
