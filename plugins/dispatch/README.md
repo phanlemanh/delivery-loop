@@ -260,6 +260,14 @@ CI theo lệ của kho, chạy lại · 1 = chặn (PR nháp, hồ sơ chưa ký
 `hang-moi`) theo mục «Cách xin tài nguyên» của `LUAT.md` của đợt. Yêu cầu `can-nguoi` chưa trả lời hiện ở danh
 sách chờ người của bảng đợt và được lệnh đếm tính một lần.
 
+**Gộp theo lời ký, ngoài đợt** (hồ sơ `loi-gop-trong-cau-ky`, ADR 0029): `dieu-phoi.mjs gop <số PR> --theo-loi --slug <s>
+[--cho-ci <phút>]` là lối vào thứ hai của CÙNG lệnh gộp, cho vòng chạy ngoài một đợt. Nó không đòi đợt, khoá `merge` hay
+`tu_merge`; quyền đến từ lời người đã gõ ở Cổng Bằng chứng. Lệnh đọc trên đầu nhánh của PR và đòi đủ sáu vế — kho khai
+`feature_loop.gop_theo_loi_ky: true` · hồ sơ đã ký (hồ sơ máy đã thông bị từ chối) · báo cáo có chữ ký · sổ có dòng
+`loi_gop` · chính câu người gõ đọc lại ra lời gộp · dòng ấy sinh cùng commit với chữ ký hiện hành — rồi gộp bằng đúng
+lệnh trên. `--cho-ci` cho lệnh tự chờ: xanh thì gộp, một check đỏ hẳn thì thoát 1 ngay, hết giờ thì thoát 4. Lối nhanh
+«không trùng tệp» không áp ngoài đợt. Lệnh `gop` không cờ giữ nguyên mọi điều ở đoạn trên.
+
 ## Giao tiếp giữa các phiên (lệnh `tin`)
 
 Hồ sơ `vong-mo-co-chu-giu` (GT1). Mỗi yêu cầu giữa các phiên — giám sát với thợ trong đợt, máy với máy trên kênh issue

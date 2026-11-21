@@ -270,6 +270,15 @@ _Avoid_: sign (đó là Gate 2), duyệt tự động.
 commit một lượt; trách nhiệm đọc ở forge. Viết liền.
 _Avoid_: sign-off, approval (đó là Gate 1).
 
+**Lời gộp**:
+Vế của câu ký Cổng Bằng chứng nói PR có được gộp sau chữ ký không — «gộp: khi CI xanh» hoặc «gộp: chưa» (danh sách
+đóng `GATE-ONESHOT-GOP`). Chỉ có ở kho khai `feature_loop.gop_theo_loi_ky: true`: thẻ điền sẵn ô gộp như một dòng báo,
+lệnh ký chép nguyên văn trọn câu người gõ thành một dòng sổ `loi_gop` cùng commit với chữ ký, và lệnh gộp của gói điều
+phối (`gop --theo-loi`) tự đọc lại câu ấy trên đầu nhánh của PR rồi mới gộp. Lời gộp không có chữ ký trong cùng câu thì
+vô nghĩa; hồ sơ máy đã thông không có lời gộp (ADR 0029).
+_Avoid_: «tự gộp» (đó là `--auto` của GitHub, kit không dùng); coi ô điền sẵn là chữ quyết máy viết hộ; đoán lời gộp
+từ câu gõ ngoài danh sách đóng.
+
 **Máy đã thông** (`machine-cleared`):
 Trạng thái KẾT của làn V: máy qua Cổng Bằng chứng bằng sáu điều kiện xanh-sạch,
 KHÔNG có chữ ký người; cửa veto vẫn mở theo `veto_state`. Lưới trước-merge coi

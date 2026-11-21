@@ -1,0 +1,92 @@
+---
+schema_version: 1
+slug: loi-gop-trong-cau-ky
+feature: Lời gộp đi cùng lời ký trong một câu ở Cổng Bằng chứng — ô gộp điền sẵn «gộp khi CI xanh», máy gộp theo lời người đã gõ bằng lệnh gộp sẵn có khi CI xanh; kho không bật thì thẻ và hành vi giữ nguyên
+owner: phanlemanh@gmail.com
+stage: decided                # discovery | decided | archived
+decision: build               # build | iterate | park | kill — người ký Cổng 0 điền
+decided_by: Phan Le Manh
+decided_at: 2026-11-21T02:04:10Z   # chủ kho gõ «làm» ở phiên của vòng, trả lời dòng «ngưỡng: theo đề xuất; làm hay xếp lại: ___»
+prototype:
+  base_commit:     # điểm cắt nhánh proto khỏi nhánh chính — guard diffBase khi keep
+  disposition:     # keep | archive
+---
+
+## Vấn đề & ai gặp
+
+Chủ kho mở vòng 21/11 ở phiên giữ đợt chuyển nhà, nguyên văn: «Mở ngay, vòng riêng và phiên riêng» — sau hai câu «Sửa
+ngay vì nó đang đi ngược với north star của kit?» và «Đó là lỗi kit hay lỗi repo tiêu thụ?». Lời ấy mở vòng và dùng suất
+vòng meta duy nhất trước mốc kế (luật chiều rộng (b) của `CLAUDE.md`); nó không thay Cổng Đáng này.
+
+Gốc: delivery-loop/_acceptance/ky-den-gop — hồ sơ ấy ký ý định «đoạn ký → gộp có thước và có chủ máy» (23/10). Chủ máy
+mới chỉ có TRONG một đợt chạy: lệnh gộp của gói điều phối đòi khoá merge của dãy và `tu_merge` của đợt. Vòng chạy ngoài
+đợt thì lệnh ký vẫn ghi «người approve / bấm merge PR», thẻ Cổng Bằng chứng chỉ có ô «ký hay trả», và đuôi tự do của câu
+ký được chép nguyên văn vào sổ quyết định mà không ai hành động theo.
+
+Người gặp: chủ kho, ở mọi vòng chạy ngoài đợt của mọi kho tiêu thụ. Đo ở đợt chuyển nhà 19–21/11 (sổ
+`migration/TRANG-THAI.md`, nhánh `chuyen-nha`), 2 trên 3 vòng:
+
+- Vòng của kho tiêu thụ thứ hai (19/11): CI xanh trên commit chữ ký sau 10′, PR chờ lời gộp thêm 45′; ký → gộp 54′ so
+  với ngưỡng 11′ của kho ấy; lời gộp là lượt gọi người thứ tư (đích 3).
+- PR #621 của `crm-onehub` (20–21/11): chủ kho dán nguyên dòng mẫu của thẻ, điền «ký», lời gộp rơi mất; vòng lên 4 lượt
+  gọi so với trần T2 là 3. Lần này đề bài đã dặn «lời gộp cùng lời ký» sau lần đầu — dặn bằng lời không chặn được lần hai.
+- Vòng còn lại (Inventory, 19/11): ký → gộp 50′, sát ngưỡng 51′ của kho ấy một phút.
+
+Đích của kit từ 23/10 là GỘP ĐƯỢC. Lượt gọi người và giờ máy sau chữ ký tính vào chính vòng đó; một câu hỏi riêng «cho gộp
+khi CI xanh?» mà ba lần được trả lời cùng một chữ là trạm thu phí, không phải điểm quyết định.
+
+Vật đã có, vòng này nối lại chứ không dựng mới: bốn điều kiện gộp đã thành mã ở `plugins/dispatch/scripts/gop.mjs` (hồ sơ
+đã thông trên đầu nhánh · CI xanh trên đúng đầu nhánh · điều kiện merge-base · `gh pr merge --merge --match-head-commit`,
+không `--auto`); thước `ky_den_gop` ở `plugins/dispatch/scripts/do-gop.mjs`; bước PR sẵn sàng lúc trình thẻ.
+
+## Giả định chốt sinh tử
+
+| # | Giả định | Nếu sai thì | Phép thử rẻ nhất | Trạng thái |
+|---|---|---|---|---|
+| 1 | Câu «ký rồi có gộp khi CI xanh không» gần như chỉ có một lối ra sống, nên ô điền sẵn là đủ, không cần câu hỏi mới | Ô điền sẵn thành lần gộp ngoài ý người ký | Đếm lời gộp của ba vòng 19–21/11 | Đã thử: 3/3 là «gộp khi xanh» (mẫu ba phần tử, cùng một người) |
+| 2 | Lời người đã gõ, ghi trong sổ quyết định trên đầu nhánh, đủ làm quyền cho máy gộp ngoài đợt — thay cho khoá merge và `tu_merge` | Máy gộp vào nhánh chính mà không lần được về lời ai | Đối kháng ở bước thiết kế + một ADR | Chưa thử |
+| 3 | Lệnh gộp sẵn có dùng được cho vòng ngoài đợt mà không viết đường gộp thứ hai | Hai đường gộp trôi khỏi nhau | Đọc mã: phần xét (`xetGop`) thuần, chỉ vỏ lệnh đòi đợt | Đã đọc: phần xét dùng lại được; vỏ lệnh cần một lối vào theo lời |
+| 4 | Kho không bật thì thẻ, dòng lệnh và hành vi không đổi một byte | Mọi kho trả giá cho sự cố của hai kho | Vi phân thẻ trên hồ sơ thật của kho này | Chưa thử |
+| 5 | Dòng điền sẵn không phải máy viết hộ chữ quyết (ADR 0002): chữ «Ký» vẫn do người gõ, ô gộp là khuyến nghị người sửa được | Máy vòng qua khoá cổng người | Đối kháng ở bước thiết kế, soi cùng ranh với dòng «Treo: phê hết» | Chưa thử |
+
+## Ngưỡng chết / ngưỡng UAT
+
+- Câu hỏi phép đo trả lời: ở kho đã bật, lời gộp có còn tách khỏi lời ký không, và đoạn chờ người sau khi CI đã xanh — «ô bắt buộc xanh → gộp» — có rút ngắn so với nền của chính kho ấy không?
+- Kết quả nào là SỐNG: trong N vòng ký đầu tiên ở các kho đã bật (N ≥ 3, tính trong 21 ngày từ lần cài đầu), 0 vòng tốn một lượt gọi người riêng cho việc gộp, và «ô bắt buộc xanh → gộp» trung vị không quá một nửa nền của kho (Inventory: nền 22′ trên 63 hồ sơ 10–20/11, ngưỡng 11′). Đoạn ký → gộp trọn chỉ ghi làm bối cảnh, không là ngưỡng: phần ký → ô bắt buộc xanh do commit và lần gộp ngược sau chữ ký quyết, thuộc việc khác. Đếm bằng `gh` trên PR của cửa sổ theo cách đo của báo cáo nguồn và sổ quyết định của vòng; không dựng thước mới trong kit. N = 0 thì thước vô hiệu, không đọc thành «đạt».
+- Kết quả nào là CHẾT: một lần máy gộp mà câu người gõ không mang lời gộp — tắt khoá ngay, bất kể các số khác; hoặc ≥ 2 trên N vòng vẫn phải xin lời gộp riêng dù câu ký đã mang ô gộp.
+- Timebox: cửa sổ 21 ngày từ lần cài đầu ở một kho bật khoá; ngày cài là quyết định riêng của chủ kho, không sớm hơn 02/12/2026.
+
+## Kết quả prototype
+
+Không dựng prototype — vật là chữ trên thẻ và một lối vào của lệnh gộp, đo được thẳng trên vật ở lượt chấm.
+
+## Nguồn ngoài & phạm vi kế thừa
+
+| Món vật liệu | Nguồn (đường dẫn/tên gói) | Phân loại | Kế thừa? | Người ký |
+|---|---|---|---|---|
+| Sổ đợt chuyển nhà (số đo 19–21/11, lời chủ kho) | `migration/TRANG-THAI.md` trên nhánh `chuyen-nha` của kho này | triết-lý/logic | có — chỉ số đo và lời trích | — |
+| Thiết kế ký → gộp | `docs/superpowers/specs/2026-10-23-ky-den-gop-design.md` | triết-lý/logic | có — bốn điều kiện gộp, «không làm hàng gộp tự động» | — |
+| Báo cáo đo quyết → gộp 20/11 (63 hồ sơ của `onehub-inventory` tại `f2a49b49`: ký → gộp trung vị 1,15 giờ; ô bắt buộc xanh → gộp trung vị 0,36 giờ) | `phanlemanh/repo-standards`, `docs/reports/2026-11-20-decision-to-merge-trace.md` | triết-lý/logic | có — chỉ số nền và cách tách đoạn; số đã đối chiếu với tệp nguồn, lệnh đo chưa chạy lại ở vòng này | — |
+
+## Cổng 0
+
+- **decision = build.** Căn cứ: chủ kho gõ «làm» ở Cổng Đáng 21/11; lời gộp tách khỏi lời ký ở 2 trên 3 vòng của đợt 19–21/11.
+- **disposition = không áp dụng.** Căn cứ: không có prototype.
+- **Ngưỡng UAT chốt cùng lúc ký:** theo đề xuất của máy, chủ kho không sửa ô nào — xem mục «Ngưỡng chết / ngưỡng UAT».
+
+## Thước đo thành công → ứng viên criterion
+
+- Thẻ Cổng Bằng chứng của kho đã bật in ô gộp điền sẵn trong dòng lệnh; ô «ký hay trả» vẫn trống.
+- Câu ký mang lời gộp → một dòng sổ máy đọc được; câu ký vắng lời gộp → hành vi như hôm nay.
+- Máy gộp bằng lệnh gộp sẵn có, chỉ khi dòng sổ ấy nằm trên đầu nhánh và bốn điều kiện đạt; không lời thì lệnh từ chối trước mọi lời gọi gộp.
+- Kho không bật: thẻ và dòng lệnh giống hệt bản trước vòng, đo bằng vi phân trên hồ sơ thật.
+- Số ký → gộp và số lượt gọi của vòng đọc được bằng thước đã có (`ky_den_gop`), không dựng thước mới.
+
+## Out of scope từ khám phá
+
+- Hàng gộp tự động và tự gộp của GitHub (`--auto`) — thiết kế 23/10 đã bác; lệnh gộp giữ `--match-head-commit`.
+- Bật mặc định cho mọi kho — luật 26/09: bật thêm theo lựa chọn trước, đổi mặc định sau.
+- Hồ sơ máy đã thông không có chữ ký người (làn V) — không có câu người gõ thì không có lời gộp; việc ấy ghi hạt giống nếu số đo đòi.
+- Máy tự phát ngôn «Ký», hay gộp khi câu ký không mang lời gộp.
+- Cắt thẻ, phát hành, cài lên kho tiêu thụ — quyết định riêng của chủ kho.
+- Bốn việc thấy trên đường của đợt chuyển nhà (DL1 · P179 · lượt chấm đọc nhãn «đỏ sẵn trên nền» · `main` thiếu dòng tắt plugin chợ cũ).

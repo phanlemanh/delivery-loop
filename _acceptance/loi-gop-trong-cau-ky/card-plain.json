@@ -1,0 +1,40 @@
+{
+  "feature_plain": "Ở kho đã bật, người ký Cổng Bằng chứng dán một dòng có sẵn lời gộp, gõ chữ ký, và máy gộp PR khi CI xanh — không còn câu hỏi riêng «cho gộp chưa?».",
+  "will_do": [
+    { "id": "AC-1", "p": "Sẽ in sẵn «gộp: khi CI xanh» ngay trước ô «ký hay trả: ___» trên dòng lệnh của thẻ ở kho đã bật; ô ký vẫn để trống cho người gõ." },
+    { "id": "AC-3", "p": "Sẽ chỉ in ô gộp cho hồ sơ đang chờ chữ ký người; hồ sơ đã ký, hồ sơ máy tự đi tiếp, thẻ không ký được và hồ sơ đã khép giữ nguyên thẻ cũ." },
+    { "id": "AC-4", "p": "Sẽ khai một danh sách đóng các cách gõ lời gộp và chữ ký ở một chỗ, để thẻ, lệnh ký và lệnh gộp cùng hiểu một nghĩa." },
+    { "id": "AC-6", "p": "Sẽ để máy gộp PR bằng commit gộp, đúng commit đã kiểm, khi đủ sáu điều: kho bật, hồ sơ đã ký, báo cáo có chữ ký, sổ có lời gộp, chính câu người gõ đọc lại ra lời gộp, và lời ấy thuộc đúng lần ký hiện hành." },
+    { "id": "AC-7", "p": "Sẽ giữ nguyên cách gộp trong một đợt chạy: lệnh gộp không mang cờ mới vẫn đòi đợt và khoá gộp như trước." },
+    { "id": "AC-8", "p": "Sẽ để chính lệnh gộp tự chờ CI: xanh thì gộp, đỏ thì báo ngay một dòng, quá giờ thì dừng — cùng một dòng lệnh ở lệnh ký và ở bước giao của vòng." },
+    { "id": "AC-9", "p": "Sẽ chứng mỗi phép đo mới biết đỏ: phá từng chỗ trong bản sao thì đúng ca của nó đỏ, còn chạm thứ không phải vật thì không ca nào kêu." }
+  ],
+  "wont_do": [
+    { "id": "AC-2", "p": "Sẽ KHÔNG đổi một byte nào trên thẻ của kho không bật — so từng byte với bản trước vòng, trên hồ sơ thử và mọi hồ sơ thật của kho này." },
+    { "id": "AC-5", "p": "Chặn máy gộp khi câu người gõ không đủ cả chữ ký lẫn lời gộp: «gộp: chưa», câu trả lại, câu gõ kiểu lạ, hay lời gộp của một lần ký cũ đều không dẫn tới gộp." },
+    { "id": "OOS-1", "p": "Sẽ KHÔNG làm hàng gộp tự động, không bật tự gộp của GitHub." },
+    { "id": "OOS-2", "p": "Sẽ KHÔNG bật mặc định cho kho nào, không cài lên kho tiêu thụ, không cắt bản phát hành." },
+    { "id": "OOS-3", "p": "Sẽ KHÔNG gộp cho hồ sơ máy tự thông không có chữ ký người — ở đó không có câu nào của người để làm theo." },
+    { "id": "OOS-4", "p": "Sẽ KHÔNG đổi luật gộp trong một đợt chạy; trong đợt, lời gộp được ghi lại nhưng luật của đợt quyết." },
+    { "id": "OOS-5", "p": "Sẽ KHÔNG đưa lối gộp nhanh «không trùng tệp» ra ngoài đợt." },
+    { "id": "OOS-6", "p": "Sẽ KHÔNG đoán lời gộp từ câu gõ ngoài danh sách đóng." },
+    { "id": "OOS-7", "p": "Sẽ KHÔNG làm bốn việc khác thấy trên đường của đợt chuyển nhà; chúng ở lại sổ của đợt ấy." }
+  ],
+  "scope_plain": "Vòng chỉ làm lời gộp trong câu ký cho vòng chạy ngoài đợt; bảy việc dưới đây để ngoài.",
+  "coverage_plain": [
+    { "i": 0, "p": "Trạng thái hồ sơ lúc dựng thẻ: đã phủ đủ sáu trạng thái — chờ ký thì có ô gộp (AC-1, ô gộp trên thẻ), năm trạng thái còn lại thì không (AC-3, không mời gộp sai chỗ). Thước «đủ» là ba nhánh sẵn có của bộ dựng thẻ." },
+    { "i": 1, "p": "Khoá của kho: đã phủ bốn giá trị — vắng, tắt, bật, giá trị lạ (AC-1 và AC-2, kho không bật giữ nguyên). Thước «đủ» là các khoá bật-theo-lựa-chọn kit đã có." },
+    { "i": 2, "p": "Câu người gõ: đã phủ tám kiểu, từ giữ ô điền sẵn tới gõ kiểu lạ (AC-4 danh sách đóng, AC-5 đọc lại câu). Thước «đủ» là ba câu thật của đợt 19–21/11." },
+    { "i": 3, "p": "Điều kiện lúc gộp: đã phủ mười tình huống, từ đủ điều kiện tới CI đỏ và lời gộp của lần ký cũ (AC-6 sáu điều, AC-7 đường trong đợt, AC-8 chờ CI). Thước «đủ» là bốn điều kiện gộp của vòng ký-đến-gộp." },
+    { "i": 4, "p": "Đối chiếu ngành: cách làm khớp hai tiền lệ có tên — lời duyệt mang lời gộp (Bors) và gộp đúng commit đã kiểm (hàng gộp của GitHub)." },
+    { "i": 5, "p": "Ba điều áp cho mọi ô: kho không bật không đổi (AC-2), đường trong đợt không đổi (AC-7), mỗi phép đo biết đỏ và biết im (AC-9)." },
+    { "i": 6, "p": "Để sau: câu gõ liền bằng dấu phẩy («ký, gộp khi xanh») — máy không đoán, người gõ lại theo nhãn. Không bao giờ: tự gộp của GitHub, gộp cho hồ sơ máy tự thông." }
+  ],
+  "gap_probe_plain": [
+    { "i": 0, "p": "Nặng nhất: ký lại với «chưa gộp» mà lời gộp của lần ký trước vẫn còn hiệu lực, máy sẽ gộp trái lời vừa gõ. Đã sửa: mọi lần ký ở kho bật đều ghi lại trọn câu, và máy chỉ nhận lời gộp sinh cùng lúc với chữ ký hiện hành." },
+    { "i": 1, "p": "Phép đo dùng một câu ký tự ghép, không phải câu người thật gõ khi điền ô của dòng thẻ; máy có thể từ chối mọi lần ký thật. Đã sửa: phép đo lấy trọn dòng thẻ in ra và thử mọi cách gõ chữ ký trong danh sách đóng." },
+    { "i": 2, "p": "Sáu cách gõ lời gộp chỉ được đo trong tài liệu, chưa đi qua bên đọc; cách gõ ngắn «gộp khi xanh» có thể bị từ chối, và câu vừa gộp vừa «chưa gộp» có thể bị gộp. Đã sửa: mỗi cách gõ đi qua bên đọc, và «chưa gộp» luôn thắng." },
+    { "i": 3, "p": "Việc chờ CI chỉ là lời dặn; phiên có thể thử ba lần trong một phút rồi bỏ, việc gộp lại về tay người. Đã sửa: chính lệnh gộp tự chờ, và hợp đồng có thêm thước cho ngưỡng chết thứ hai." },
+    { "i": 4, "p": "Phép so «kho không bật không đổi» có thể bỏ sót một thay đổi nằm ở thư viện dùng chung của bộ dựng thẻ. Đã sửa: phép so tính mọi thay đổi của vòng ở gói nghiệm thu và đòi bản được so đúng là cây đang kiểm." }
+  ]
+}
