@@ -6,6 +6,7 @@
 // Ca DP2-08 round-trip so cả hai bản chép với bản gốc của kit trên cùng tệp.
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 // Slug suy TẤT ĐỊNH từ câu giao: bỏ dấu, đ→d, chữ thường, ký tự khác chữ-số thành «-», sáu từ đầu.
 export function suySlug(cauGiao) {
@@ -169,6 +170,11 @@ export function docNhomKeHoach(gocKho) {
   try {
     html = fs.readFileSync(path.join(gocKho, 'LO-TRINH.html'), 'utf8');
   } catch {
+    // Kho để trang ngoài git (`ban_do.ngoai_git`, hồ sơ tep-chung-khong-chan-gop): trang vắng ở bản kéo này là
+    // chưa vẽ, không phải không có — nói một dòng. Hỏi git về chính tệp, không đọc khoá: gói này không mang bộ
+    // đọc khoá thứ tư. Kho không bỏ qua trang thì im như cũ.
+    if (spawnSync('git', ['-C', gocKho, 'check-ignore', '-q', '--', 'LO-TRINH.html']).status === 0)
+      process.stderr.write(`nguon-hang: trang lộ trình chưa vẽ ở bản kéo này (kho để nó ngoài git) — vẽ: node <gói acceptance-gate>/scripts/product-map.mjs --root ${gocKho}\n`);
     return new Map();
   }
   const { duLieu } = docDuLieu(html);
