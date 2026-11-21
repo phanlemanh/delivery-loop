@@ -294,10 +294,11 @@ test('GL-6b ma trận sáu vế — bỏ từng vế trên đầu nhánh: 0 lờ
 
 test('GL-6c sáu cách viết khoá kho: chỉ `true` và `true` kèm chú thích đuôi là bật; vắng và mọi cách viết khác là tắt', () => {
   const a = khoLoi({ khoa: null });
+  // Hàng đầu là kho dựng sẵn (khoá vắng); mỗi hàng sau là một commit đổi đúng dòng khoá trên đầu nhánh.
   const VIET = [
+    [null, false],
     ['true', true],
     ['true  # bật 21/11', true],
-    [null, false],
     ['false', false],
     ['"true"', false],
     ['True', false],
