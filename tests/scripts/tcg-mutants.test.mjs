@@ -24,7 +24,7 @@ for (const d of readdirSync(path.join(KIT, '_acceptance'))) {
   if (existsSync(f)) { mkdirSync(path.join(BS, '_acceptance', d), { recursive: true }); cpSync(f, path.join(BS, '_acceptance', d, 'review-findings.md')); }
 }
 
-const TEP_CA = { 'TCG-1': 'tcg-ban-do', 'TCG-3': 'tcg-ban-do', 'TCG-4': 'tcg-ban-do', 'TCG-5': 'tcg-ban-do', 'TCG-8': 'tcg-lenh-ho-so', 'TCG-9': 'tcg-so-gioi-han' };
+const TEP_CA = { 'TCG-1': 'tcg-ban-do', 'TCG-3': 'tcg-ban-do', 'TCG-4': 'tcg-ban-do', 'TCG-5': 'tcg-ban-do', 'TCG-8': 'tcg-lenh-ho-so', 'TCG-9': 'tcg-so-gioi-han', 'TCG-11': 'tcg-ban-do' };
 const tepCua = ca => TEP_CA[ca.match(/^TCG-\d+/)[0]];
 // Tiến trình con không được thừa hưởng NODE_TEST_CONTEXT của bộ chạy cha (khi có, `node --test` con không in TAP).
 const ENV_CON = (() => { const e = { ...process.env, TCG_GOC: BS, TCG_GIT_GOC: KIT }; delete e.NODE_TEST_CONTEXT; return e; })();
@@ -58,6 +58,8 @@ const NHAT = [
   ['them-khi-du', 'tools/so-gioi-han.mjs', 'if (thieu <= 0) return', 'if (thieu < 0) return', 'TCG-9-lai'],
   ['dem-nham-slug', 'tools/so-gioi-han.mjs', 'const cua = hangs.filter(c => c[1] === slug);', 'const cua = hangs.filter(c => c[1].startsWith(slug));', 'TCG-9-slug'],
   ['moc-moi-tep', 'tools/so-gioi-han.mjs', 'review-findings\\.md$/); if (!m) return;', '[\\w.-]+$/); if (!m) return;', 'TCG-9-moc'],
+  ['day-khi-khong-doi', PM, '=== cay) return { code: 0', '=== cay && false) return { code: 0', 'TCG-11-lai'],
+  ['day-nhanh-mac-dinh', PM, 'if (bd.nhanhVe === macDinh) return { code: 2', 'if (false) return { code: 2', 'TCG-11-khoa'],
 ];
 const DICH = [...new Set(NHAT.map(n => n[4]))];
 

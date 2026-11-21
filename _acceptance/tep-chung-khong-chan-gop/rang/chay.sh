@@ -19,7 +19,7 @@ case "$NHOM" in
   TCG-7)  TEP=tcg-lenh-ho-so;  CA="TCG-7-luat TCG-7-duong" ;;
   TCG-8)  TEP=tcg-lenh-ho-so;  CA="TCG-8-1 TCG-8-2 TCG-8-3 TCG-8-4" ;;
   TCG-9)  TEP=tcg-so-gioi-han; CA="TCG-9-them TCG-9-slug TCG-9-lai TCG-9-rong TCG-9-moc TCG-9-p179" ;;
-  TCG-10) TEP=tcg-mutants;     CA="TCG-10-M0 TCG-10-bo-kiem-chi-muc TCG-10-bo-kiem-ignore TCG-10-tat-di-nhanh-moi TCG-10-khoa-sai-la-tat TCG-10-them-vo-dieu-kien TCG-10-quet-tra-da-xoa TCG-10-quet-doc-khoa-rieng TCG-10-bo-so-goc TCG-10-ghi-de-hang-cu TCG-10-them-khi-du TCG-10-dem-nham-slug TCG-10-moc-moi-tep TCG-10-im-chu-thich TCG-10-im-tai-lieu TCG-10-im-ho-so-rong" ;;
+  TCG-10) TEP=tcg-mutants;     CA="TCG-10-M0 TCG-10-bo-kiem-chi-muc TCG-10-bo-kiem-ignore TCG-10-tat-di-nhanh-moi TCG-10-khoa-sai-la-tat TCG-10-them-vo-dieu-kien TCG-10-quet-tra-da-xoa TCG-10-quet-doc-khoa-rieng TCG-10-bo-so-goc TCG-10-ghi-de-hang-cu TCG-10-them-khi-du TCG-10-dem-nham-slug TCG-10-moc-moi-tep TCG-10-day-khi-khong-doi TCG-10-day-nhanh-mac-dinh TCG-10-im-chu-thich TCG-10-im-tai-lieu TCG-10-im-ho-so-rong" ;;
   TCG-11) TEP=tcg-ban-do;      CA="TCG-11-day TCG-11-lai TCG-11-doi TCG-11-khoa TCG-11-vang TCG-11-guide" ;;
   *) echo "chay.sh: nhóm lạ «$NHOM» — TCG-1 … TCG-11" >&2; exit 2 ;;
 esac

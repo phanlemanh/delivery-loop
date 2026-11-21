@@ -94,8 +94,8 @@ evals:
       Ca TCG-7-luat: khối LENH-HO-SO rút được ở đúng ba tệp, ba bản trùng từng ký tự; ba tệp không còn câu «cmd PHẢI là
       `config:` ref» / «cmd MUST be a `config:` ref» dạng bắt mọi lệnh (grep trên cây đang kiểm, in dòng nếu còn). Ca
       TCG-7-duong: hồ sơ thử có E1 khai `cmd: bash _acceptance/<slug>/rang/do.sh` → s4-args thoát 0, tệp args có eval E1
-      với `cmd` đúng nguyên văn và không khoá `ref`; báo cáo thử `verifier:` = đường dẫn ấy qua `evaluateEvidence` không
-      vi phạm (đối chứng: `verifier:` trỏ tệp không có → vi phạm «neither config:<key> nor a script path»); repin-lane
+      với `cmd` đúng nguyên văn và không khoá `ref`; `verifier:` = đường dẫn ấy qua `isAuthenticVerifier` (hàm
+      `evaluateEvidence` gọi cho mọi verifier) trả ok (đối chứng: `verifier:` trỏ tệp không có → «verifier script not found»); repin-lane
       `--write` trên kho thử ghi dòng repin có `evals_exit.E1 = 0`.
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
     paths: ["plugins/feature-loop/skills/feature-loop/SKILL.md", "plugins/acceptance-gate/skills/acceptance/SKILL.md", "plugins/acceptance-gate/skills/acceptance/references/eval-executors.md", "plugins/feature-loop/scripts/s4-args.mjs", "plugins/feature-loop/scripts/repin-lane.mjs", "tests/scripts/tcg-lenh-ho-so.test.mjs"]
@@ -152,7 +152,7 @@ evals:
     executor: script
     cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-10
     expected: >
-      Ca TCG-10-M0: bản sao chưa tiêm chạy các ca đích xanh (đối chứng dương). Mười hai nhát, mỗi nhát một ca
+      Ca TCG-10-M0: bản sao chưa tiêm chạy các ca đích xanh (đối chứng dương). Mười bốn nhát, mỗi nhát một ca
       «TCG-10-<tên>», mũi tiêm khớp đúng một lần (khác → «mui tiem truot»), ca đích chạy trên bản sao phải ĐỎ: bo-kiem-chi-muc
       → TCG-3-1 · bo-kiem-ignore → TCG-3-3 · tat-di-nhanh-moi → TCG-1 · khoa-sai-la-tat → TCG-5-dang · them-vo-dieu-kien →
       TCG-4-bat · quet-tra-da-xoa → TCG-5-bat · quet-doc-khoa-rieng → TCG-5-dang · bo-so-goc → TCG-8-2 · ghi-de-hang-cu →
