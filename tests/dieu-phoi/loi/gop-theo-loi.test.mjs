@@ -8,11 +8,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DANG_LOI_GOP, docCau, docLoiGop, gop, maThoatGop } from '../../../plugins/dispatch/scripts/gop.mjs';
+import { ciDo, DANG_LOI_GOP, docCau, docLoiGop, gop, maThoatGop } from '../../../plugins/dispatch/scripts/gop.mjs';
 
 const GOC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const TEP_LUAT = 'plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md';
 const TEP_KY = 'plugins/acceptance-gate/commands/signoff.md';
+const TEP_VONG = 'plugins/feature-loop/skills/feature-loop/SKILL.md';
 const LENH = path.join(GOC, 'plugins', 'dispatch', 'scripts', 'dieu-phoi.mjs');
 // Trạng thái ký người dựng bằng ghép chuỗi: tệp ca không mang chuỗi ấy viết liền (lưới RT13).
 const DA_KY = ['signed', 'off'].join('-');
@@ -118,16 +119,20 @@ function khoLoi({ khoa = 'true', trangThai = DA_KY, chuKy = 'Manh Phan 2026-11-2
 
 const XANH = [{ __typename: 'CheckRun', name: 'gate', status: 'COMPLETED', conclusion: 'SUCCESS' }, { __typename: 'StatusContext', context: 'ci/x', state: 'SUCCESS' }];
 const xemPr = (sha, { rollup = XANH, them = {} } = {}) => JSON.stringify({ number: 7, state: 'OPEN', isDraft: false, mergeable: 'MERGEABLE', headRefOid: sha, headRefName: 'feat', baseRefName: 'main', statusCheckRollup: rollup, ...them });
-// `gh` giả trong tiến trình: trả JSON của `gh pr view`, ghi lại mọi lời gọi.
+const DANG_CHAY = [{ __typename: 'CheckRun', name: 'gate', status: 'COMPLETED', conclusion: 'SUCCESS' }, { __typename: 'CheckRun', name: 'build', status: 'IN_PROGRESS' }];
+const DO_HAN = [{ __typename: 'CheckRun', name: 'gate', status: 'COMPLETED', conclusion: 'FAILURE' }, { __typename: 'CheckRun', name: 'build', status: 'IN_PROGRESS' }];
+// `gh` giả trong tiến trình: trả JSON của `gh pr view`, ghi lại mọi lời gọi. `o` là hàm → nhận số thứ tự lượt hỏi (từ 1).
 function ioCua(k, sha, o = {}) {
   const goiGh = [];
+  const xem = () => goiGh.filter((x) => x[0] === 'pr' && x[1] === 'view');
   return {
     goiGh,
+    xem,
     merge: () => goiGh.filter((x) => x[0] === 'pr' && x[1] === 'merge'),
     chay: (cmd, args) => {
       if (cmd !== 'gh') return execFileSync(cmd, args, { cwd: k, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
       goiGh.push(args);
-      if (args[0] === 'pr' && args[1] === 'view') return xemPr(sha, o);
+      if (args[0] === 'pr' && args[1] === 'view') return xemPr(sha, typeof o === 'function' ? o(xem().length) : o);
       return '';
     },
   };
@@ -425,4 +430,143 @@ test('GL-7 lệnh gop KHÔNG cờ --theo-loi ở nơi không có đợt → «kh
   // Đối chứng dương: cùng kho, có cờ → gộp.
   const co = theoLoi(a);
   assert.equal(co.kq.da_gop, true, co.kq.ly_do);
+});
+
+// ── GL-8: khối dòng lệnh ở thân lệnh ký và mục S5; lệnh tự chờ CI ───────────────────────────────────────────────
+
+test('GL-8a khối GOP-THEO-LOI-KY hai nơi trùng nhau sau khi chuẩn hoá chỗ trỏ gói feature-loop, mang cờ --cho-ci; khối GOP-THEO-LOI-THOAT hai nơi trùng từng ký tự, đủ ba mã', () => {
+  const [ky, vong] = [TEP_KY, TEP_VONG].map((tep) => rutKhoi(tep, 'GOP-THEO-LOI-KY'));
+  assert.deepEqual([ky.length, vong.length], [1, 1], 'khối dòng lệnh phải đúng một dòng ở mỗi nơi');
+  const DAU = '«bộ giải»';
+  const chuan = (s) => s.replace('"<feature-loop>/scripts/resolve-plugin.mjs"', DAU).replace('"$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs"', DAU);
+  assert.ok(chuan(ky[0]).includes(DAU) && chuan(vong[0]).includes(DAU), 'không thấy chỗ trỏ gói feature-loop để chuẩn hoá');
+  assert.notEqual(ky[0], vong[0], 'tiền đề: hai bản khác nhau ở chỗ trỏ gói');
+  assert.equal(chuan(ky[0]), chuan(vong[0]));
+  assert.match(vong[0], /dieu-phoi\.mjs" gop <số PR> --theo-loi --slug <slug> --cho-ci \d+$/);
+  const [thoatKy, thoatVong] = [TEP_KY, TEP_VONG].map((tep) => rutKhoi(tep, 'GOP-THEO-LOI-THOAT'));
+  assert.deepEqual(thoatKy, thoatVong);
+  assert.deepEqual(thoatVong.map((d) => d.slice(0, 3)), ['0 →', '4 →', '1 →']);
+  assert.match(thoatVong[1], /vẫn 4/);
+});
+
+// Chạy ĐÚNG dòng lệnh rút từ khối của SKILL bằng shell, trong kho thử: gói điều phối giải về một bản «đã cài» chép từ cây
+// đang kiểm (HOME giả), `gh` giả đứng đầu PATH, nhịp hỏi lại rút còn 50 ms.
+let nhaGia = null;
+function chayKhoi(a, gh, doi = (s) => s) {
+  if (!nhaGia) {
+    nhaGia = tam('dp-nha-');
+    fs.cpSync(path.join(GOC, 'plugins', 'dispatch'), path.join(nhaGia, '.claude', 'plugins', 'cache', 'delivery-loop', 'dispatch', '9.9.9'), { recursive: true });
+  }
+  const [khuon] = rutKhoi(TEP_VONG, 'GOP-THEO-LOI-KY');
+  const lenh = doi(khuon.replace('<số PR>', '7').replace('<slug>', 's'));
+  assert.doesNotMatch(lenh, /<số PR>|<slug>/);
+  const env = { ...ENV, HOME: nhaGia, WORKFLOWS_DIR: path.join(GOC, 'plugins', 'feature-loop', 'workflows'), PATH: `${gh.bin}:${path.dirname(process.execPath)}:${process.env.PATH}`, GH_GIA_DIR: gh.d, DIEU_PHOI_NHIP_CHO_MS: '50' };
+  return spawnSync('bash', ['-c', lenh], { cwd: a.k, encoding: 'utf8', timeout: 90_000, env });
+}
+
+test('GL-8b dòng lệnh rút từ khối S5 chạy thật: check đang chạy hai lượt rồi xanh → 0 lời gọi merge trước lượt xanh, đúng một lời gọi sau đó trên sha của lượt xanh, thoát 0; đối chứng: đầu nhánh không có dòng lời gộp → thoát 1', () => {
+  const a = khoLoi({ sau: (k) => { ghi(k, 'apps/web/khac.ts', 'x\n'); chot(k, 'sua vat sau ky'); } });
+  const shaCu = git(a.k, 'rev-parse', 'HEAD~1');
+  const gh = ghGia();
+  // Đầu nhánh đổi giữa lúc chờ: lượt 1 còn ở commit chữ ký, lượt 2 và 3 ở commit mới.
+  gh.dat('view-1.json', xemPr(shaCu, { rollup: DANG_CHAY }));
+  gh.dat('view-2.json', xemPr(a.sha, { rollup: DANG_CHAY }));
+  gh.dat('view-cuoi.json', xemPr(a.sha));
+  const r = chayKhoi(a, gh);
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /^gop #7: moi-nhat · đã gộp — /);
+  const goi = gh.goi();
+  assert.deepEqual(goi.map((x) => x.split(' ').slice(0, 2).join(' ')), ['pr view', 'pr view', 'pr view', 'pr merge'], goi.join('\n'));
+  assert.equal(goi[3], `pr merge 7 --merge --match-head-commit ${a.sha}`);
+  assert.ok(!goi.join(' ').includes('--auto'));
+  // Đối chứng: cùng dòng lệnh, check xanh, nhưng đầu nhánh không có dòng lời gộp.
+  const b = khoLoi({ coDong: false });
+  const ghB = ghGia();
+  ghB.dat('view-cuoi.json', xemPr(b.sha));
+  const rb = chayKhoi(b, ghB);
+  assert.equal(rb.status, 1, rb.stdout + rb.stderr);
+  assert.match(rb.stdout, /^gop #7: chan — không có dòng lời gộp trong sổ$/m);
+  assert.equal(ghB.merge().length, 0);
+});
+
+test('GL-8c check đỏ hẳn → thoát 1 với «CI đỏ», đúng MỘT lượt hỏi trạng thái (không hỏi lại), 0 lời gọi merge', () => {
+  const a = khoLoi();
+  const gh = ghGia();
+  gh.dat('view-cuoi.json', xemPr(a.sha, { rollup: DO_HAN }));
+  const r = chayKhoi(a, gh);
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+  assert.match(r.stdout, /^gop #7: chan — CI đỏ trên đầu nhánh — gate$/m);
+  assert.equal(gh.xem().length, 1, gh.goi().join('\n'));
+  assert.equal(gh.merge().length, 0);
+});
+
+test('GL-8d check còn chạy tới hết giờ chờ → thoát 4, 0 lời gọi merge', () => {
+  const a = khoLoi();
+  const gh = ghGia();
+  gh.dat('view-cuoi.json', xemPr(a.sha, { rollup: DANG_CHAY }));
+  // Giờ chờ của khối là 30 phút; ca rút nó còn 0,005 phút (0,3 giây) — phần còn lại của dòng lệnh giữ nguyên.
+  const r = chayKhoi(a, gh, (s) => {
+    assert.match(s, / --cho-ci 30$/);
+    return s.replace(/ --cho-ci 30$/, ' --cho-ci 0.005');
+  });
+  assert.equal(r.status, 4, r.stdout + r.stderr);
+  assert.match(r.stdout, /^gop #7: cho-ci — hết 0\.005 phút chờ CI — check chưa xanh — build: IN_PROGRESS$/m);
+  assert.ok(gh.xem().length >= 1);
+  assert.equal(gh.merge().length, 0);
+});
+
+test('GL-8e vòng chờ trong tiến trình: nhịp ngủ, không cờ thì không chờ, đỏ hẳn thì không hỏi lại, hết giờ thì thôi; bảng check đỏ hẳn', () => {
+  assert.deepEqual(
+    ciDo([
+      { name: 'a', status: 'COMPLETED', conclusion: 'SUCCESS' },
+      { name: 'b', status: 'COMPLETED', conclusion: 'FAILURE' },
+      { name: 'c', status: 'IN_PROGRESS' },
+      { name: 'd', status: 'COMPLETED', conclusion: 'CANCELLED' },
+      { name: 'e', status: 'COMPLETED', conclusion: 'SKIPPED' },
+      { name: 'f', status: 'COMPLETED', conclusion: 'NEUTRAL' },
+      { name: 'g', status: 'QUEUED' },
+      { context: 'h', state: 'PENDING' },
+      { context: 'i', state: 'FAILURE' },
+      { context: 'k', state: 'ERROR' },
+      { context: 'l', state: 'SUCCESS' },
+    ]),
+    ['b', 'd', 'i', 'k'],
+  );
+  assert.deepEqual([ciDo([]), ciDo(undefined)], [[], []]);
+  const a = khoLoi();
+  const nhipCu = process.env.DIEU_PHOI_NHIP_CHO_MS;
+  delete process.env.DIEU_PHOI_NHIP_CHO_MS;
+  try {
+    const chay = (rollupLuot, them) => {
+      const io = ioCua(a.k, a.sha, (n) => ({ rollup: rollupLuot(n) }));
+      const ngu = [];
+      const kq = gop(a.k, '7', { io, theoLoi: true, slug: 's', ngu: (ms) => ngu.push(ms), ...them });
+      return { kq, io, ngu };
+    };
+    // Hai lượt đang chạy rồi xanh: ngủ đúng hai nhịp mặc định, gộp một lần.
+    const xanhSau = chay((n) => (n <= 2 ? DANG_CHAY : XANH), { choCi: 30 });
+    assert.equal(xanhSau.kq.da_gop, true, xanhSau.kq.ly_do);
+    assert.deepEqual(xanhSau.ngu, [30_000, 30_000]);
+    assert.deepEqual([xanhSau.io.xem().length, xanhSau.io.merge().length], [3, 1]);
+    process.env.DIEU_PHOI_NHIP_CHO_MS = '7';
+    assert.deepEqual(chay((n) => (n <= 1 ? DANG_CHAY : XANH), { choCi: 30 }).ngu, [7]);
+    delete process.env.DIEU_PHOI_NHIP_CHO_MS;
+    // Không cờ --cho-ci: check còn chạy → lối chờ CI ngay, không ngủ, không gộp.
+    const khongCho = chay(() => DANG_CHAY, {});
+    assert.deepEqual([khongCho.kq.duong, maThoatGop(khongCho.kq), khongCho.ngu.length, khongCho.io.xem().length, khongCho.io.merge().length], ['cho-ci', 4, 0, 1, 0]);
+    // Đỏ hẳn: chặn ngay kể cả khi không cờ; không hỏi lại khi có cờ.
+    for (const them of [{}, { choCi: 30 }]) {
+      const doH = chay(() => DO_HAN, them);
+      assert.deepEqual([doH.kq.duong, maThoatGop(doH.kq), doH.ngu.length, doH.io.xem().length, doH.io.merge().length], ['chan', 1, 0, 1, 0]);
+      assert.equal(doH.kq.ly_do, 'CI đỏ trên đầu nhánh — gate');
+    }
+    // Hết giờ: giờ chờ gần bằng không, check còn chạy mãi.
+    const hetGio = chay(() => DANG_CHAY, { choCi: 1e-9 });
+    assert.deepEqual([hetGio.kq.duong, maThoatGop(hetGio.kq), hetGio.io.merge().length], ['cho-ci', 4, 0]);
+    assert.match(hetGio.kq.ly_do, /^hết 1e-9 phút chờ CI — check chưa xanh — build: IN_PROGRESS$/);
+    for (const choCi of [-1, Number.NaN, '30']) assert.throws(() => gop(a.k, '7', { io: ioCua(a.k, a.sha), theoLoi: true, slug: 's', choCi }), /--cho-ci <phút> phải là số không âm/);
+  } finally {
+    if (nhipCu === undefined) delete process.env.DIEU_PHOI_NHIP_CHO_MS;
+    else process.env.DIEU_PHOI_NHIP_CHO_MS = nhipCu;
+  }
 });
