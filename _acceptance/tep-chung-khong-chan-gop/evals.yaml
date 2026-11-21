@@ -1,0 +1,145 @@
+schema_version: 1
+feature_slug: tep-chung-khong-chan-gop
+# Mười eval, mười lệnh. Theo luật lệnh hồ sơ của chính vòng này: lệnh chấm là TỆP trong thư mục hồ sơ
+# (`rang/chay.sh <nhóm>`), không có khoá nào trong _acceptance/config.yaml. `chay.sh` chạy đúng các ca node:test mang
+# tiền tố của nhóm, ghim số ca qua («# pass n», ma trận viết trước), «# fail 0» và dòng «ok» của từng ca theo tên —
+# phán quyết không lấy từ mã thoát. Kho thử, hồ sơ thử, bản sao sổ do mã của ca sinh trong lượt; mỗi ca có đối chứng
+# dương trên cây thật và nhát tiêm chứng mũi tiêm trúng trước khi chấm.
+evals:
+  - id: E1
+    criterion: AC-1
+    executor: script
+    cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-1
+    expected: >
+      Ca TCG-1 xanh: bản trước vòng (`git archive` trọn plugins/acceptance-gate tại merge-base với origin/main, sha in ra)
+      và cây đang kiểm cho cùng tệp vẽ, stdout, stderr, mã thoát và khoá `map` của bộ quét trên kho thử khoá vắng và
+      `ngoai_git: false`, ba tình huống `--check` (khớp · lệch · đã xoá). Merge-base trùng HEAD → «FAIL: TCG-1 khong co ban
+      truoc vong» (không xanh giả). Đối chứng đặc hiệu TCG-1-bat: kho thử BẬT phải khác giữa hai bản. Chiều đỏ: nhát
+      `tat-di-nhanh-moi` (ở E10) làm TCG-1 đỏ «lech byte» kèm tên tình huống.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/product-map.mjs", "plugins/acceptance-gate/scripts/start-scan.mjs", "plugins/acceptance-gate/lib/workspace-record.cjs", "tests/scripts/tcg-ban-do.test.mjs"]
+
+  - id: E2
+    criterion: AC-2
+    executor: script
+    cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-2
+    expected: >
+      Ba ca TCG-2a/b/c xanh trên kho thử bật, hai view rời git đúng: sửa trạng thái hồ sơ không vẽ lại · xoá hai tệp · vẽ
+      lại tại chỗ → `--check` thoát 0, stdout có đúng một dòng chứa «vẽ tại chỗ, ngoài git», không có «lệch», không có
+      «đã bị xoá». Đối chứng: cùng thao tác (a) trên kho KHÔNG bật → `--check` thoát 1 «lệch» (chứng ca đo thấy lệch).
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/product-map.mjs", "plugins/acceptance-gate/lib/workspace-record.cjs", "tests/scripts/tcg-ban-do.test.mjs"]
+
+  - id: E3
+    criterion: AC-3
+    executor: script
+    cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-3
+    expected: >
+      Ma trận viết trước bốn ca TCG-3-1…TCG-3-4 (số assert = 4): PRODUCT-MAP.md trong chỉ mục → thoát 1, stderr chứa
+      «git rm --cached -- PRODUCT-MAP.md» · LO-TRINH.html trong chỉ mục → thoát 1 «git rm --cached -- LO-TRINH.html» ·
+      view không bị bỏ qua → thoát 1 nêu dòng `.gitignore` cần thêm · tệp lộ trình hỏng → đỏ cùng thông điệp bộ vẽ như kho
+      không bật (so chuỗi với lần chạy kho không bật). Chiều đỏ: nhát `bo-kiem-chi-muc`, `bo-kiem-ignore` (E10) làm đúng
+      ca TCG-3 tương ứng đỏ. Khoá sai chấm ở E5.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/product-map.mjs", "plugins/acceptance-gate/lib/workspace-record.cjs", "tests/scripts/tcg-ban-do.test.mjs"]
+
+  - id: E4
+    criterion: AC-4
+    executor: script
+    cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-4
+    expected: >
+      Ca TCG-4-mot-ban: rút khối lệnh vẽ lại từ bốn tệp (approve, signoff, observed, uat-session) — đúng bốn bản, trùng
+      nhau từng ký tự, và khối không chứa chuỗi «ngoai_git» (nó hỏi `git check-ignore`, không đọc khoá); thiếu một tệp
+      hoặc một bản khác → đỏ gọi tên tệp. Ca TCG-4-bat: chạy khối rút được (AG = gói của cây
+      đang kiểm) trong kho thử bật → thoát 0, hai tệp có trên đĩa, `git diff --cached --name-only` không chứa view nào. Ca
+      TCG-4-tat: kho không bật → thoát 0, chỉ mục có đủ hai view. Chiều đỏ: nhát `them-vo-dieu-kien` (E10) → TCG-4-bat đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/commands/approve.md", "plugins/acceptance-gate/commands/signoff.md", "plugins/acceptance-gate/commands/observed.md", "plugins/acceptance-gate/skills/uat-session/SKILL.md", "tests/scripts/tcg-ban-do.test.mjs"]
+
+  - id: E5
+    criterion: AC-5
+    executor: script
+    cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-5
+    expected: >
+      Ca TCG-5-dang: ma trận viết trước sáu dạng khoá (trần · có nháy · có chú thích cuối dòng · thụt dưới khối khác
+      `ban_do` · `yes` · vắng) × ba bên đọc (hàm đọc khoá của lib/workspace-record.cjs · `product-map --check` · start-scan)
+      → 18 assert, phán quyết mong đợi viết trước: bật · bật · bật · tắt · sai · tắt; ba bên trùng nhau ở từng dạng; dạng
+      sai → `--check` thoát 2 chứa «ban_do.ngoai_git». Ca TCG-5-bat: start-scan trên kho thử bật, view vắng → `map.state` =
+      «ve-tai-cho», `map.label` bằng `MAP_LABELS['ve-tai-cho']` require từ lib (khác nhãn `da-xoa`); `--check` cùng kho in
+      đúng nhãn ấy. Ca TCG-5-dieu-phoi: `docNhomKeHoach` của gói điều phối trên kho bật, trang vắng → stderr đúng một dòng
+      chứa «product-map.mjs»; kho không bật, trang vắng → stderr rỗng. Ca TCG-5-cu: kho không bật, PRODUCT-MAP.md commit
+      rồi `git rm` + commit → `map.state` = «da-xoa». Chiều đỏ: nhát `quet-tra-da-xoa`, `quet-doc-khoa-rieng`,
+      `khoa-sai-la-tat` (E10) → TCG-5-bat / TCG-5-dang đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/start-scan.mjs", "plugins/acceptance-gate/scripts/product-map.mjs", "plugins/acceptance-gate/lib/workspace-record.cjs", "plugins/dispatch/scripts/nguon-hang.mjs", "tests/scripts/tcg-ban-do.test.mjs"]
+
+  - id: E6
+    criterion: AC-6
+    executor: script
+    cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-6
+    expected: >
+      Kho git thật dựng trong lượt (không khai `merge=` trong .gitattributes, không đặt merge driver), gốc có hai view đã
+      vẽ (kho không bật) hoặc đã rời git (kho bật); hai nhánh đổi `status` của hai hồ sơ khác nhau, chạy khối lệnh vẽ lại
+      rút từ approve.md, commit. Ca TCG-6-bat: `git merge-tree --write-tree` thoát 0, không dòng xung đột. Ca TCG-6-tat:
+      thoát 1 và danh sách xung đột chứa đúng PRODUCT-MAP.md VÀ LO-TRINH.html (chiều đỏ của phép đo). Kho thử không có
+      tệp lộ trình → ca đỏ «tien de» (không xanh giả vì thiếu trang).
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/product-map.mjs", "plugins/acceptance-gate/commands/approve.md", "tests/scripts/tcg-ban-do.test.mjs"]
+
+  - id: E7
+    criterion: AC-7
+    executor: script
+    cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-7
+    expected: >
+      Ca TCG-7-luat: khối LENH-HO-SO rút được ở đúng ba tệp, ba bản trùng từng ký tự; ba tệp không còn câu «cmd PHẢI là
+      `config:` ref» / «cmd MUST be a `config:` ref» dạng bắt mọi lệnh (grep trên cây đang kiểm, in dòng nếu còn). Ca
+      TCG-7-duong: hồ sơ thử có E1 khai `cmd: bash _acceptance/<slug>/rang/do.sh` → s4-args thoát 0, tệp args có eval E1
+      với `cmd` đúng nguyên văn và không khoá `ref`; báo cáo thử `verifier:` = đường dẫn ấy qua `evaluateEvidence` không
+      vi phạm (đối chứng: `verifier:` trỏ tệp không có → vi phạm «neither config:<key> nor a script path»); repin-lane
+      `--write` trên kho thử ghi dòng repin có `evals_exit.E1 = 0`.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/feature-loop/skills/feature-loop/SKILL.md", "plugins/acceptance-gate/skills/acceptance/SKILL.md", "plugins/acceptance-gate/skills/acceptance/references/eval-executors.md", "plugins/feature-loop/scripts/s4-args.mjs", "plugins/feature-loop/scripts/repin-lane.mjs", "tests/scripts/tcg-lenh-ho-so.test.mjs"]
+
+  - id: E8
+    criterion: AC-8
+    executor: script
+    cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-8
+    expected: >
+      Ma trận viết trước bốn ca TCG-8-1…4 trên kho thử có gốc vòng là commit cũ: khoá mới chỉ hồ sơ này dùng → stderr có
+      ĐÚNG MỘT dòng chứa «cảnh báo», tên eval và tên khoá · khoá có từ gốc vòng → 0 dòng cảnh báo · khoá mới hai hồ sơ dùng
+      → 0 dòng · eval bằng đường dẫn tệp → 0 dòng; cả bốn s4-args thoát 0 và tệp args tồn tại. Chiều đỏ: nhát
+      `bo-so-goc` (E10) → TCG-8-2 đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/feature-loop/scripts/s4-args.mjs", "tests/scripts/tcg-lenh-ho-so.test.mjs"]
+
+  - id: E9
+    criterion: AC-9
+    executor: script
+    cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-9
+    expected: >
+      Ca TCG-9-them: gốc tạm có bản sao `_acceptance/` + sổ, đưa về trạng thái khớp (số hàng = số mục, đo trong lượt, không
+      hằng nào rút từ sổ thật); thêm hồ sơ thử k=3 mục known-limits, h=1 hàng sẵn có. Khối P179 rút nguyên văn từ
+      tests/plugins/run-tests.sh, chạy với ROOT = gốc tạm: TRƯỚC bộ sinh → đỏ, stderr chứa «quan he >= vo» và
+      «tools/so-gioi-han.mjs»; SAU `--write` → số hàng = số hàng đo ngay trước + 2, phần đầu sổ bằng bản trước từng byte,
+      P179 in «P179 DUONG-OK» trên CÙNG gốc tạm. Ca TCG-9-slug: hai hồ sơ thử tên gần nhau (`a` và `a-b`) — bộ sinh cho `a`
+      không đếm hàng của `a-b`. Ca TCG-9-lai: chạy lần hai → sổ không đổi byte. Ca TCG-9-rong: hồ sơ không mục → sổ không
+      đổi. Ca TCG-9-moc: móc rút từ `.claude/settings.json` của cây đang kiểm — sự kiện `PostToolUse`, `matcher` khớp cả
+      «Write» lẫn «Edit» (thử bằng RegExp của chính matcher); JSON đầu vào mang `tool_input.file_path` TUYỆT ĐỐI tới
+      review-findings.md của hồ sơ thử và `cwd` = gốc tạm → sổ thêm hàng, stdout là JSON có
+      `hookSpecificOutput.additionalContext` nêu số hàng; `file_path` là tệp khác → sổ không đổi, stdout rỗng.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["tools/so-gioi-han.mjs", ".claude/settings.json", "tests/plugins/run-tests.sh", "tests/scripts/tcg-so-gioi-han.test.mjs"]
+
+  - id: E10
+    criterion: AC-10
+    executor: script
+    cmd: bash _acceptance/tep-chung-khong-chan-gop/rang/chay.sh TCG-10
+    expected: >
+      Ca TCG-10-M0: bản sao chưa tiêm chạy các ca đích xanh (đối chứng dương). Mười hai nhát, mỗi nhát một ca
+      «TCG-10-<tên>», mũi tiêm khớp đúng một lần (khác → «mui tiem truot»), ca đích chạy trên bản sao phải ĐỎ: bo-kiem-chi-muc
+      → TCG-3-1 · bo-kiem-ignore → TCG-3-3 · tat-di-nhanh-moi → TCG-1 · khoa-sai-la-tat → TCG-5-dang · them-vo-dieu-kien →
+      TCG-4-bat · quet-tra-da-xoa → TCG-5-bat · quet-doc-khoa-rieng → TCG-5-dang · bo-so-goc → TCG-8-2 · ghi-de-hang-cu →
+      TCG-9-them · them-khi-du → TCG-9-lai · dem-nham-slug → TCG-9-slug · moc-moi-tep → TCG-9-moc. Ca đích vẫn xanh trên bản đã tiêm → «phep do mu». Ba nhát không phải vật (im-chu-thich,
+      im-tai-lieu, im-ho-so-rong) → mọi ca đích vẫn XANH. Thiếu dòng «ok … - TCG-10-» của một nhát là đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/**", "plugins/acceptance-gate/lib/**", "plugins/acceptance-gate/commands/**", "plugins/feature-loop/scripts/s4-args.mjs", "plugins/dispatch/scripts/nguon-hang.mjs", "tools/so-gioi-han.mjs", ".claude/settings.json", "tests/scripts/tcg-mutants.test.mjs"]

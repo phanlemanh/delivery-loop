@@ -1,0 +1,40 @@
+{
+  "feature_plain": "PR ở kho dùng kit thôi vấp xung đột ở ba tệp mà mọi PR cùng chạm (bản đồ sản phẩm, trang lộ trình, tệp cấu hình chung), và lượt chấm ở kho kit thôi bị đánh trượt vì sổ giới hạn thiếu hàng.",
+  "will_do": [
+    {"id": "AC-2", "p": "Sẽ để kho đã bật kiểm bản đồ xanh dù hồ sơ đổi mà không vẽ lại — vì hai trang nay được vẽ tại chỗ, không nằm trong git."},
+    {"id": "AC-3", "p": "Sẽ báo đỏ, kèm đúng lệnh gỡ, khi kho đã bật mà hai trang còn trong git, chưa được bỏ qua, hoặc nguồn hỏng không vẽ được."},
+    {"id": "AC-4", "p": "Sẽ để bốn lệnh cổng (duyệt, ký, quan sát, nghiệm thu) vẽ lại tại chỗ mà không đưa hai trang vào commit ở kho đã bật; kho chưa bật vẫn như cũ."},
+    {"id": "AC-5", "p": "Sẽ cho thẻ khởi động, bước kiểm bản đồ và bảng điều phối hiểu cùng một nghĩa của khoá bật dù khoá viết kiểu nào, và gọi trạng thái «vẽ tại chỗ» thay vì «đã bị xoá»."},
+    {"id": "AC-6", "p": "Sẽ chứng bằng hai nhánh thật: kho đã bật gộp không xung đột; kho chưa bật vẫn xung đột ở hai trang như hôm nay."},
+    {"id": "AC-7", "p": "Sẽ dạy máy của mọi vòng đặt lệnh kiểm riêng của hồ sơ thành tệp trong thư mục hồ sơ, và chứng đường ấy chấm, ghim lại được trọn."},
+    {"id": "AC-8", "p": "Sẽ nhắc bằng một dòng vàng khi một vòng vẫn thêm lệnh riêng của mình vào tệp cấu hình chung — chỉ nhắc, không chặn."},
+    {"id": "AC-9", "p": "Sẽ tự thêm hàng vào sổ giới hạn ngay khi lượt chấm ghi mục «ghi giới hạn», để lượt chấm kế không đỏ vì thiếu hàng."},
+    {"id": "AC-10", "p": "Sẽ chứng từng phép đo biết đỏ khi vật bị phá, và im khi chỉ chạm chú thích, tài liệu hay một hồ sơ thử rỗng."}
+  ],
+  "wont_do": [
+    {"id": "AC-1", "p": "Sẽ KHÔNG đổi một byte nào ở kho chưa bật khoá: bản đồ, trang, bước kiểm và thẻ khởi động y như trước vòng."},
+    {"id": "OOS-1", "p": "KHÔNG sửa chỗ đọc bậc sàn thiết kế khi sổ thành phần nằm ngoài git — nó làm thước lỏng chứ không làm vòng chậm."},
+    {"id": "OOS-2", "p": "KHÔNG bật khoá ở kho nào trong vòng này, kể cả kho kit (Hỏi-3); không cài lên kho tiêu thụ, không cắt bản phát hành."},
+    {"id": "OOS-3", "p": "KHÔNG dời các lệnh kiểm đang có trong tệp cấu hình chung của kho nào — chỉ hồ sơ mới viết theo luật mới."},
+    {"id": "OOS-4", "p": "KHÔNG để bảng điều phối tự vẽ trang lộ trình — nó chỉ báo một dòng vàng khi trang chưa vẽ."},
+    {"id": "OOS-5", "p": "KHÔNG làm lối «máy mở PR vẽ lại sau mỗi lần gộp» — nếu anh chọn lối ấy ở Hỏi-1, hợp đồng soạn lại trước khi duyệt."},
+    {"id": "OOS-6", "p": "KHÔNG đổi hai trang thành mỗi hàng một dòng cho kho chưa bật; KHÔNG làm việc bằng chứng hoá cũ sau gộp (vòng kế)."}
+  ],
+  "scope_plain": "Sáu thứ cố ý để ngoài vòng:",
+  "coverage_plain": [
+    {"i": 0, "p": "Khoá của kho ở cả bốn dạng — vắng, tắt, bật, viết sai — đều có tiêu chí (AC-1 không đổi gì, AC-2 xanh khi bật, AC-3 đỏ đúng chỗ)."},
+    {"i": 1, "p": "Mọi trạng thái của hai trang khi kho bật — ngoài git đúng, còn trong git, chưa bỏ qua, vắng, vẽ tại chỗ — đều có ca (AC-2, AC-3, AC-5)."},
+    {"i": 2, "p": "Mọi bên dùng hai trang — bước kiểm ở CI, bốn lệnh cổng, thẻ khởi động, lúc gộp nhánh, bảng điều phối — đều có tiêu chí (AC-2, AC-4, AC-5, AC-6)."},
+    {"i": 3, "p": "Bốn chỗ lệnh kiểm có thể sống — khoá cũ, khoá mới riêng một hồ sơ, khoá mới dùng chung, tệp trong hồ sơ — đều có ca (AC-7, AC-8)."},
+    {"i": 4, "p": "Sổ giới hạn so với hồ sơ — thiếu, đủ, dư, hồ sơ không mục, ghi tệp khác — đều có ca (AC-9)."},
+    {"i": 5, "p": "Hai lưới đi ngang mọi ô: kho chưa bật không đổi byte (AC-1), và mọi phép đo có chiều đỏ lẫn chiều im (AC-10)."},
+    {"i": 6, "p": "Để sau: trang mỗi hàng một dòng, bảng điều phối tự vẽ. Không bao giờ: máy commit thẳng lên nhánh chính, hay mở PR vẽ lại sau mỗi lần gộp (trừ khi anh chọn ở Hỏi-1)."}
+  ],
+  "gap_probe_plain": [
+    {"i": 0, "p": "Máy từng ghi hai lựa chọn là «chỉ một lối» trong khi lối kia chỉ đắt hơn — lối mở PR vẽ lại giữ được hai trang trên web. Đã sửa: lựa chọn ấy thành câu hỏi Hỏi-1 có giá từng lối; bảng điều phối đổi thành một dòng cờ vàng."},
+    {"i": 1, "p": "Căn cứ của luật đặt lệnh kiểm vào hồ sơ từng trích một mảnh câu trong sổ ý tưởng, không phải luật đã khai. Đã sửa: trích luật «sửa đúng tầng trước» của kho và nêu giá lối kia (đổi năm bộ đọc, có lõi)."},
+    {"i": 2, "p": "Một phép đo từng ghim số hàng của sổ thật, nên chính lượt chấm thêm hàng sẽ làm nó đỏ oan. Đã sửa: đo quan hệ trên bản sao, không ghim số."},
+    {"i": 3, "p": "Phép đo sổ giới hạn từng có thể xanh sẵn mà không chứng gì, và chưa thử móc có thật sự bắt lệnh ghi tệp không. Đã sửa: đỏ trước, xanh sau trên cùng bản sao; thử móc với đúng bộ lọc và đường dẫn đầy đủ."},
+    {"i": 4, "p": "Chưa có gì buộc các bên đọc khoá bật hiểu cùng một nghĩa khi khoá viết khác kiểu (có nháy, có chú thích). Đã sửa: ma trận sáu dạng khoá qua ba bên đọc; lệnh cổng thôi đọc khoá, hỏi thẳng git."}
+  ]
+}
