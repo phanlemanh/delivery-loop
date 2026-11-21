@@ -13,7 +13,7 @@ import { execFileSync, spawnSync, execFile } from 'node:child_process';
 import { mkdtempSync, writeFileSync, readFileSync, readdirSync, existsSync, cpSync, appendFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -220,6 +220,102 @@ function kiemP192(gc, lawPath) {
 }
 CA['LG-AC4-p192'] = gc => kiemP192(gc, LAW);
 
+// ── vòng khép thẻ → dòng sổ → bên đọc (AC-5) ────────────────────────────────
+// Bên đọc là bản THẬT của gói điều phối (đường suy từ vị trí tệp này); ô gộp lấy từ dòng lệnh thẻ vừa dựng; dạng vế
+// ký và dạng lời gộp RÚT từ khối GATE-ONESHOT-GOP; khuôn dòng sổ RÚT từ khối LOI-GOP-GATE2-LINE của signoff.md.
+const GOP = await import(pathToFileURL(path.join(KIT, 'plugins', 'dispatch', 'scripts', 'gop.mjs')).href);
+const TEN_LENH_KY = '/acceptance-gate:signoff fx ';
+const DIEN = { '<tên>': 'Manh Phan', '<ngày>': '2026-11-21', '<lý do>': 'chưa đạt' };
+function dangCuaKhoi(law) {
+  const k = khoi(law, 'GATE-ONESHOT-GOP');
+  if (k == null) throw new Error('GATE-ONESHOT-GOP rut rong');
+  return k.split('\n').map(l => l.trim().match(/^(.+?) → (gộp|chưa-gộp|chữ-ký|trả-lại)$/)).filter(Boolean)
+    .map(m => ({ dang: Object.entries(DIEN).reduce((s, [a, b]) => s.split(a).join(b), m[1]), loi: m[2] }));
+}
+function khuonDong(signoff) {
+  const k = khoi(signoff, 'LOI-GOP-GATE2-LINE');
+  if (k == null) throw new Error('LOI-GOP-GATE2-LINE rut rong');
+  const giua = k.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('```'));
+  if (giua.length !== 1) throw new Error(`LOI-GOP-GATE2-LINE co ${giua.length} dong chu (can 1)`);
+  return giua[0];
+}
+let _n = 0;
+// Một dòng sổ điền từ khuôn — câu đi qua JSON.stringify (không ghép chuỗi tay) rồi cả dòng qua JSON.parse.
+function dongSo(signoff, cau) {
+  _n += 1;
+  const giua = khuonDong(signoff).replace('<ISO>', '2026-11-21T03:00:00Z').replace('<gộp khi CI xanh | chưa gộp>', 'gộp khi CI xanh')
+    .replace('<tên>', 'Manh Phan').replace('"<trọn câu người gõ sau tên lệnh và tên hồ sơ, nguyên văn, một dòng>"', JSON.stringify(cau));
+  const dong = `{"id":"d-20261121T030000Z-${_n}",${giua}}`;
+  JSON.parse(dong);
+  return dong;
+}
+const so = (signoff, ...cauHoacDong) => cauHoacDong.map(x => (typeof x === 'string' ? dongSo(signoff, x) : x.tho)).join('\n') + '\n';
+function vongKhep(gc, signoff) {
+  const s = []; const t = the(canh('gate2-loi-gop'), gc);
+  if (!songSot(t, s)) return s;
+  const one = String(t.j.one_shot || '');
+  if (!one.startsWith(TEN_LENH_KY)) return [`one_shot khong mo dau «${TEN_LENH_KY}»: ${one}`];
+  // Ô người tự chấm khác (mục judgment `E9: ___`) điền «Đạt» như người thật làm; chỉ ô «ký hay trả» còn trống.
+  const than = one.slice(TEN_LENH_KY.length).split('; ').map(v => (v.endsWith(': ___') && !v.startsWith(`${NHAN_KY}:`) ? v.replace(/___$/, 'Đạt') : v)).join('; ');
+  if (than.split('___').length !== 2 || !than.endsWith(O_KY)) return [`one_shot can dung mot o ___ o cuoi («${O_KY}»): ${one}`];
+  const ky = dangCuaKhoi(readFileSync(LAW, 'utf8')).filter(d => d.loi === 'chữ-ký' || d.loi === 'trả-lại');
+  let n = 0;
+  for (const { dang, loi: lo } of ky) {
+    // Hai cách người điền thật: thay cả ô «ký hay trả: ___», hoặc chỉ thay «___» (dạng đã mang tiền tố thì bỏ cách hai).
+    const cacCau = [than.replace(O_KY, () => dang)];
+    if (!dang.toLowerCase().startsWith(`${NHAN_KY}:`)) cacCau.push(than.replace('___', () => dang));
+    for (const cau of cacCau) {
+      n += 1;
+      const r = GOP.docLoiGop(so(signoff, cau));
+      const mong = lo === 'chữ-ký';
+      if (r.co !== mong) s.push(`cau «${cau}» (dang «${dang}» → ${lo}): ${mong ? 'khong ra co loi gop' : 'ra co loi gop'} (ly do: ${r.ly_do})`);
+    }
+  }
+  if (ky.length !== 5) s.push(`khoi luat co ${ky.length} dang ve ky (can 5)`);
+  if (n < ky.length) s.push(`so cau thu ${n} < so dang ve ky ${ky.length}`);
+  return s;
+}
+CA['LG-AC5-vong-khep'] = gc => vongKhep(gc, readFileSync(SIGNOFF, 'utf8'));
+CA['LG-AC5-dang'] = () => {
+  const s = []; const sg = readFileSync(SIGNOFF, 'utf8');
+  const gop = dangCuaKhoi(readFileSync(LAW, 'utf8')).filter(d => d.loi === 'gộp' || d.loi === 'chưa-gộp');
+  let n = 0;
+  for (const { dang, loi: lo } of gop) {
+    n += 1;
+    const r = GOP.docLoiGop(so(sg, `${dang}; Ký`));
+    if (r.co !== (lo === 'gộp')) s.push(`dang «${dang}» (→ ${lo}) qua ben doc ra co=${r.co} (ly do: ${r.ly_do})`);
+  }
+  if (n !== 6) s.push(`so dang loi gop rut duoc ${n} != 6`);
+  const r7 = GOP.docLoiGop(so(sg, `${O_GOP}; chưa gộp; Ký`));
+  if (r7.co) s.push('hang 7: cau co ca «gộp: khi CI xanh» lan «chưa gộp» ma ben doc ra co loi gop (chua-gop phai thang)');
+  return s;
+};
+// Ma trận sổ viết trước — [tên hàng, dựng sổ, kết cục mong, cụm ghim của lý do khi «không»]; số assert = số hàng.
+const MA_TRAN_SO = [
+  ['vang ve gop', sg => so(sg, 'Ký'), false, 'không mang lời gộp'],
+  ['co ve gop khong co ve ky', sg => so(sg, O_GOP), false, 'không mang chữ ký'],
+  ['dong chua sau thay dong gop truoc', sg => so(sg, `${O_GOP}; Ký`, 'gộp: chưa; Ký'), false, 'không mang lời gộp'],
+  ['dong gop sau thay dong chua truoc', sg => so(sg, 'gộp: chưa; Ký', `${O_GOP}; Ký`), true, null],
+  ['dong cuoi hong khoa cau khong lui', sg => so(sg, `${O_GOP}; Ký`, { tho: JSON.stringify({ id: 'd-x-9', stage: 'gate2', loi_gop: {} }) }), false, 'không mang câu'],
+  ['dong JSON hong xen giua', sg => so(sg, 'gộp: chưa; Ký', { tho: '{"id":"d-hong", "stage":"gate2", "loi_gop":' }, `${O_GOP}; Ký`), true, null],
+  ['so rong', () => '', false, 'không có dòng lời gộp'],
+  ['dang ngoai danh sach', sg => so(sg, 'gộp nhé; Ký'), false, 'không mang lời gộp'],
+  ['HOA va thua khoang trang', sg => so(sg, '  GỘP:   KHI CI XANH ;  KÝ  '), true, null],
+  ['hai dau cham phay lien', sg => so(sg, 'gộp khi xanh;; Ký'), true, null],
+  ['Unicode roi NFD', sg => so(sg, 'gộp khi xanh; Ký'.normalize('NFD')), true, null],
+];
+CA['LG-AC5-ma-tran'] = () => {
+  const s = []; const sg = readFileSync(SIGNOFF, 'utf8'); let n = 0;
+  for (const [ten, dung, mong, cum] of MA_TRAN_SO) {
+    n += 1;
+    const r = GOP.docLoiGop(dung(sg));
+    if (r.co !== mong) s.push(`hang «${ten}»: co=${r.co}, can ${mong} (ly do: ${r.ly_do})`);
+    else if (!mong && !String(r.ly_do).includes(cum)) s.push(`hang «${ten}»: ly do «${r.ly_do}» khong chua «${cum}»`);
+  }
+  if (n !== MA_TRAN_SO.length) s.push(`so hang chay ${n} != ${MA_TRAN_SO.length}`);
+  return s;
+};
+
 // ── chiều im (LG-AC2-im) ────────────────────────────────────────────────────
 // Trạng thái «đã ký» của hồ sơ vòng: dựng bằng join để tệp ca không viết liền chuỗi trạng thái ký người.
 const DA_KY = new Set([['signed', 'off'].join('-'), ['machine', 'cleared'].join('-'), ['da', 'cham', 'boi', 'thuc', 'te'].join('-')]);
@@ -361,9 +457,31 @@ const DOT_BIEN_IM = [
 ];
 
 // ── chạy ────────────────────────────────────────────────────────────────────
-for (const ten of ['LG-AC1-bat', 'LG-AC3-khong-moi', 'LG-AC4-luat', 'LG-AC4-p192']) {
+for (const ten of ['LG-AC1-bat', 'LG-AC3-khong-moi', 'LG-AC4-luat', 'LG-AC4-p192', 'LG-AC5-vong-khep', 'LG-AC5-dang', 'LG-AC5-ma-tran']) {
   if (!want(ten)) continue;
   try { const s = tren(ten); if (s.length) bad(ten, s.join(' ; ')); else ok(ten); } catch (e) { bad(ten, loi(e)); }
+}
+// Nhát của vòng khép: thẻ in ô gộp lệch dạng (bản sao gate-card.js) · khuôn dòng sổ đổi khoá (bản sao signoff.md).
+if (want('LG-dot-bien-o-the-lech')) {
+  const name = 'LG-dot-bien-o-the-lech'; const cum = 'khong ra co loi gop';
+  try {
+    doiChungDuong(['LG-AC5-vong-khep']);
+    const d = banSao(); tiem(path.join(d, GC_REL), "const GIA_TRI_GOP = 'khi CI xanh';", "const GIA_TRI_GOP = 'khi xanh rồi';");
+    const s = vongKhep(path.join(d, GC_REL), readFileSync(SIGNOFF, 'utf8'));
+    if (!s.length) bad(name, 'LG-AC5-vong-khep van XANH khi the in o gop lech dang — phep do mu');
+    else if (!s.some(x => x.includes(cum))) bad(name, `LG-AC5-vong-khep do nhung sai thong diep (can «${cum}»): ${s.join(' ; ')}`);
+    else ok(name, `— LG-AC5-vong-khep xanh tren cay that, do dung «${cum}» khi the in «gộp: khi xanh rồi»`);
+  } catch (e) { bad(name, loi(e)); }
+}
+if (want('LG-dot-bien-khuon-lech')) {
+  const name = 'LG-dot-bien-khuon-lech'; const cum = 'không có dòng lời gộp';
+  try {
+    doiChungDuong(['LG-AC5-vong-khep']);
+    const s = vongKhep(GC, tiemChu(readFileSync(SIGNOFF, 'utf8'), '"loi_gop":{"cau"', '"loi_gop_x":{"cau"', 'signoff.md'));
+    if (!s.length) bad(name, 'LG-AC5-vong-khep van XANH khi khuon dong so doi khoa — phep do mu');
+    else if (!s.some(x => x.includes(cum))) bad(name, `LG-AC5-vong-khep do nhung sai thong diep (can «${cum}»): ${s.join(' ; ')}`);
+    else ok(name, `— LG-AC5-vong-khep xanh tren cay that, do dung «${cum}» khi khuon ghi «loi_gop_x»`);
+  } catch (e) { bad(name, loi(e)); }
 }
 for (const [ten, kim, thay, cacCa, cum] of DOT_BIEN_THE) {
   const name = `LG-dot-bien-${ten}`; if (!want(name)) continue;
