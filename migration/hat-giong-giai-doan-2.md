@@ -142,3 +142,21 @@ chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, D
   thì phải mở lại ô `khuon-rang-dung-chung` hoặc đặt một ô mới có neo.
 - **Ngưỡng mở:** ngưỡng (a) đủ (thêm một lượt chấm sai do phép-đo-tự-dối trước mốc kế), hoặc cảnh báo cùng luật xuất hiện
   ở kho tiêu thụ thứ hai, hoặc chủ kho gọi tên.
+
+## 5. Của kho crm, không phải của kit: suite api xanh ở mọi thứ tự tệp (21/11)
+
+Chủ kho đồng ý giữ làm hạt giống 21/11 («Đồng ý cả ba đề xuất còn treo»). Hạt giống này thuộc kho `crm-onehub`. Ở chặng
+II.4 nó KHÔNG chuyển vào `docs/plans/` của kit (kit là engine, không chứa việc sản phẩm của kho tiêu thụ); nó được trao
+cho kho crm, cách trao do chủ kho quyết lúc đóng đợt.
+
+**Đo được ở PR #621 của crm (gộp 20/11 tại `5e2c0b39d`).** Chín ca api đỏ trên nền có ba gốc: bom giờ trong mã test ·
+bốn chỗ rò trạng thái giữa các tệp test, chỉ lộ ra theo thứ tự tệp của CI Linux (máy Mac chạy thứ tự khác nên xanh) ·
+một hồi quy 27 ca do chính lần sửa đầu. PR #621 sửa đủ để suite xanh ở thứ tự tệp của CI (2171 đạt · 18 bỏ qua · 0 đỏ
+trên commit gộp). Nó không chứng minh suite xanh ở MỌI thứ tự tệp: còn chỗ rò nào chưa lộ thì chưa ai đo.
+
+**Nhát sửa đúng tầng (việc của kho crm).** Một phép đo chạy suite api ở vài thứ tự tệp khác nhau (xáo có hạt giống ghi
+lại được), cộng cách ly trạng thái giữa các tệp. Chiều đỏ: gỡ một nhát cách ly của PR #621 → phép đo đỏ ở ít nhất một
+thứ tự. Chiều im: đổi một tệp tài liệu → phép đo không đổi.
+
+**Ngưỡng mở.** Suite api của crm đỏ thêm một lần trên CI mà xanh trên máy làm việc, hoặc chủ kho đưa nó vào lộ trình
+của kho ấy.
