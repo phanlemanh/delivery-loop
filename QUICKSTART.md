@@ -98,6 +98,10 @@ Chỉ copy mỗi `pre-merge-check.sh` là repo âm thầm **mất lớp re-check
 đã commit (chống report bị sửa tay sau hook). Job chạy trên `push` (không phải
 PR) cần thêm `--no-t1-escape` — xem GUIDE §5.3.
 
+**Cách gộp:** kho gộp PR bằng commit gộp (merge commit), không squash — bộ đo ký → gộp và lệnh gộp
+của gói điều phối cần nó. Kho dùng `repo-setup` từ 0.10.3 khai `merge_method: merge` trong
+`governance/autonomy.yaml` — xem GUIDE §5.3.
+
 **Repo có web UI:** chạy thêm `npm i -D jsdom` — design gate chạy chế độ DOM
 cần jsdom; thiếu nó mọi eval design sẽ ra `BLOCKED`. Ngoài ra skill
 **ux-ui-craft** tự kích hoạt khi task chạm UI (không cần gọi, không cần setup):
