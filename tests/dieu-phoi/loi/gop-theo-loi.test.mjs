@@ -19,6 +19,14 @@ const LENH = path.join(GOC, 'plugins', 'dispatch', 'scripts', 'dieu-phoi.mjs');
 const DA_KY = ['signed', 'off'].join('-');
 const MAY_THONG = 'machine-cleared';
 
+// Gói điều phối tự đứng được: bước CI của gói chạy thư mục ca này trên một bản sao CHỈ có gói điều phối (ca DP1-03 của
+// hồ sơ dieu-phoi-dong-goi-loi). Ở đó không có thân lệnh ký, khối luật hay mục S5 để rút: năm ca cần chúng không đăng ký
+// (in một dòng báo, không «skip»), và kho thử dùng dòng sổ tối thiểu bên đọc cần. Ở cây kit — thấy một trong hai gói kia —
+// thì LUÔN rút từ tệp thật: tệp hay marker vắng là đỏ, và ca LGM-M0 của bộ nhát tiêm đòi đủ số ca.
+const CO_KIT = ['acceptance-gate', 'feature-loop'].some((g) => fs.existsSync(path.join(GOC, 'plugins', g)));
+const caKit = CO_KIT ? test : (ten) => console.log(`${ten.split(' ')[0]}: không đăng ký — bản sao này chỉ có gói điều phối`);
+const KHUON_TOI_THIEU = '"type":"revisit","stage":"gate2","at":"<ISO>","decision":"lời gộp trong câu ký: <gộp khi CI xanh | chưa gộp>","decided_by":"<tên>","loi_gop":{"cau":"<trọn câu người gõ>"}';
+
 const tam = (dau = 'dp-gtl-') => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), dau)));
 const git = (cwd, ...a) => execFileSync('git', a, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const ghi = (kho, tep, noi) => {
@@ -53,7 +61,7 @@ function khoiLuat() {
 const trongChuoi = (s) => JSON.stringify(s).slice(1, -1);
 // `quyet` là cách phiên ghi dòng HIỂU câu (ô `decision`) — mặc định «gộp khi CI xanh» kể cả khi câu không mang lời gộp,
 // để ca thấy bên đọc đọc lại CÂU chứ không tin ô ấy.
-function dongLoiGop(cau, { n = 3, luc = '2026-11-21T10:15:00Z', quyet = 'gộp khi CI xanh', khuon = rutKhoi(TEP_KY, 'LOI-GOP-GATE2-LINE') } = {}) {
+function dongLoiGop(cau, { n = 3, luc = '2026-11-21T10:15:00Z', quyet = 'gộp khi CI xanh', khuon = CO_KIT ? rutKhoi(TEP_KY, 'LOI-GOP-GATE2-LINE') : [KHUON_TOI_THIEU] } = {}) {
   assert.equal(khuon.length, 1, 'khuôn dòng sổ phải đúng một dòng');
   const giua = khuon[0]
     .replace('<ISO>', () => luc)
@@ -180,7 +188,7 @@ const ENV = Object.fromEntries(Object.entries(process.env).filter(([k]) => k !==
 
 // ── GL-5: bên đọc ───────────────────────────────────────────────────────────────────────────────────────────────
 
-test('GL-5a mỗi dạng của khối luật GATE-ONESHOT-GOP đi qua bên đọc ra đúng lối khối ghi; hằng bên đọc đúng sáu dạng lời gộp', () => {
+caKit('GL-5a mỗi dạng của khối luật GATE-ONESHOT-GOP đi qua bên đọc ra đúng lối khối ghi; hằng bên đọc đúng sáu dạng lời gộp', () => {
   const { dang, dinhNghia } = khoiLuat();
   assert.equal(dang.length, 11, `khối luật phải có mười một dạng, rút được ${dang.length}`);
   assert.deepEqual(dang.map((d) => d.loi), ['gộp', 'gộp', 'gộp', 'gộp', 'chưa-gộp', 'chưa-gộp', 'chữ-ký', 'chữ-ký', 'chữ-ký', 'chữ-ký', 'trả-lại']);
@@ -434,7 +442,7 @@ test('GL-7 lệnh gop KHÔNG cờ --theo-loi ở nơi không có đợt → «kh
 
 // ── GL-8: khối dòng lệnh ở thân lệnh ký và mục S5; lệnh tự chờ CI ───────────────────────────────────────────────
 
-test('GL-8a khối GOP-THEO-LOI-KY hai nơi trùng nhau sau khi chuẩn hoá chỗ trỏ gói feature-loop, mang cờ --cho-ci; khối GOP-THEO-LOI-THOAT hai nơi trùng từng ký tự, đủ ba mã', () => {
+caKit('GL-8a khối GOP-THEO-LOI-KY hai nơi trùng nhau sau khi chuẩn hoá chỗ trỏ gói feature-loop, mang cờ --cho-ci; khối GOP-THEO-LOI-THOAT hai nơi trùng từng ký tự, đủ ba mã', () => {
   const [ky, vong] = [TEP_KY, TEP_VONG].map((tep) => rutKhoi(tep, 'GOP-THEO-LOI-KY'));
   assert.deepEqual([ky.length, vong.length], [1, 1], 'khối dòng lệnh phải đúng một dòng ở mỗi nơi');
   const DAU = '«bộ giải»';
@@ -464,7 +472,7 @@ function chayKhoi(a, gh, doi = (s) => s) {
   return spawnSync('bash', ['-c', lenh], { cwd: a.k, encoding: 'utf8', timeout: 90_000, env });
 }
 
-test('GL-8b dòng lệnh rút từ khối S5 chạy thật: check đang chạy hai lượt rồi xanh → 0 lời gọi merge trước lượt xanh, đúng một lời gọi sau đó trên sha của lượt xanh, thoát 0; đối chứng: đầu nhánh không có dòng lời gộp → thoát 1', () => {
+caKit('GL-8b dòng lệnh rút từ khối S5 chạy thật: check đang chạy hai lượt rồi xanh → 0 lời gọi merge trước lượt xanh, đúng một lời gọi sau đó trên sha của lượt xanh, thoát 0; đối chứng: đầu nhánh không có dòng lời gộp → thoát 1', () => {
   const a = khoLoi({ sau: (k) => { ghi(k, 'apps/web/khac.ts', 'x\n'); chot(k, 'sua vat sau ky'); } });
   const shaCu = git(a.k, 'rev-parse', 'HEAD~1');
   const gh = ghGia();
@@ -489,7 +497,7 @@ test('GL-8b dòng lệnh rút từ khối S5 chạy thật: check đang chạy h
   assert.equal(ghB.merge().length, 0);
 });
 
-test('GL-8c check đỏ hẳn → thoát 1 với «CI đỏ», đúng MỘT lượt hỏi trạng thái (không hỏi lại), 0 lời gọi merge', () => {
+caKit('GL-8c check đỏ hẳn → thoát 1 với «CI đỏ», đúng MỘT lượt hỏi trạng thái (không hỏi lại), 0 lời gọi merge', () => {
   const a = khoLoi();
   const gh = ghGia();
   gh.dat('view-cuoi.json', xemPr(a.sha, { rollup: DO_HAN }));
@@ -500,7 +508,7 @@ test('GL-8c check đỏ hẳn → thoát 1 với «CI đỏ», đúng MỘT lư�
   assert.equal(gh.merge().length, 0);
 });
 
-test('GL-8d check còn chạy tới hết giờ chờ → thoát 4, 0 lời gọi merge', () => {
+caKit('GL-8d check còn chạy tới hết giờ chờ → thoát 4, 0 lời gọi merge', () => {
   const a = khoLoi();
   const gh = ghGia();
   gh.dat('view-cuoi.json', xemPr(a.sha, { rollup: DANG_CHAY }));
