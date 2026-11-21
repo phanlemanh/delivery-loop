@@ -65,14 +65,16 @@ const nhanVeTaiCho = () => req(WR_PATH).MAP_LABELS['ve-tai-cho'];
 const quet = r => { const x = chay(SCAN, ['--root', r], r); assert.equal(x.status, 0, `start-scan thoát ${x.status}: ${x.stderr}`); return JSON.parse(x.stdout.trim().split('\n').pop()); };
 
 // ── AC-1 — kho không bật không đổi byte so với bản trước vòng ──────────────────────────────────────────────────
+// Lịch sử git hỏi ở kho thật: bản sao đã tiêm của tcg-mutants không phải kho git, nên nó truyền TCG_GIT_GOC.
+const GIT_GOC = process.env.TCG_GIT_GOC ? path.resolve(process.env.TCG_GIT_GOC) : GOC;
 function banTruoc() {
   let ref = null;
-  for (const b of ['origin/main', 'main']) { const x = gitThu(GOC, 'rev-parse', '--verify', '-q', b); if (x.status === 0) { ref = b; break; } }
+  for (const b of ['origin/main', 'main']) { const x = gitThu(GIT_GOC, 'rev-parse', '--verify', '-q', b); if (x.status === 0) { ref = b; break; } }
   if (!ref) return { loi: 'khong tim duoc nhanh chinh (origin/main, main)' };
-  const mb = git(GOC, 'merge-base', 'HEAD', ref);
-  if (mb === git(GOC, 'rev-parse', 'HEAD')) return { loi: 'khong co ban truoc vong' };
+  const mb = git(GIT_GOC, 'merge-base', 'HEAD', ref);
+  if (mb === git(GIT_GOC, 'rev-parse', 'HEAD')) return { loi: 'khong co ban truoc vong' };
   const d = path.join(TMP, 'truoc'); mkdirSync(d, { recursive: true });
-  execFileSync('bash', ['-c', `git -C "$1" archive "$2" plugins/acceptance-gate | tar -x -C "$3"`, 'x', GOC, mb, d]);
+  execFileSync('bash', ['-c', `git -C "$1" archive "$2" plugins/acceptance-gate | tar -x -C "$3"`, 'x', GIT_GOC, mb, d]);
   return { sha: mb, pm: path.join(d, 'plugins', 'acceptance-gate', 'scripts', 'product-map.mjs'), scan: path.join(d, 'plugins', 'acceptance-gate', 'scripts', 'start-scan.mjs') };
 }
 // Một lượt đo: chạy trọn kịch bản (ghi · --check khớp · lệch · đã xoá · bộ quét) bằng MỘT bản, trên một kho dựng mới.

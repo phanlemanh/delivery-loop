@@ -90,7 +90,8 @@ test('TCG-9-moc moc rut tu settings bat dung tep review-findings', () => {
   const r2 = gocKhop(); hoSo(r2, 'tcg-thu', [muc('một')]); const h2 = dongSo(r2);
   const b = goi({ tool_name: 'Edit', cwd: r2, tool_input: { file_path: '_acceptance/tcg-thu/review-findings.md' } }, r2);
   assert.equal(b.status, 0, b.stderr); assert.equal(dongSo(r2), h2 + 1, 'duong tuong doi theo cwd khong duoc nhan');
-  const c0 = readFileSync(path.join(r2, SO), 'utf8');
-  const c = goi({ tool_name: 'Write', cwd: r2, tool_input: { file_path: path.join(r2, '_acceptance', 'tcg-thu', 'contract.md') } }, r2);
-  assert.equal(c.status, 0); assert.equal(c.stdout, ''); assert.equal(readFileSync(path.join(r2, SO), 'utf8'), c0);
+  // Tệp khác trên một gốc CÒN THIẾU hàng: móc phải im — gốc đã đủ hàng thì móc chạy nhầm cũng không đổi gì.
+  const r3 = gocKhop(); hoSo(r3, 'tcg-thu', [muc('một'), muc('hai')]); const c0 = readFileSync(path.join(r3, SO), 'utf8');
+  const c = goi({ tool_name: 'Write', cwd: r3, tool_input: { file_path: path.join(r3, '_acceptance', 'tcg-thu', 'contract.md') } }, r3);
+  assert.equal(c.status, 0); assert.equal(c.stdout, ''); assert.equal(readFileSync(path.join(r3, SO), 'utf8'), c0);
 });
