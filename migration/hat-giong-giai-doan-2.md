@@ -92,6 +92,8 @@ chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, D
   hình» ở trên và ở đề bài của phiên giữ đợt là sai, chỉ bản kéo chưa chạy `make setup` mới thiếu. (2) Git đọc
   `.gitattributes` của nhánh đang đứng, nên các PR mở TRƯỚC khi dòng mới vào nhánh chính vẫn xung đột ở lần gộp đầu;
   con số «còn 63» là trạng thái ổn định, không đúng cho tuần đầu sau khi gộp.
+- **ĐÃ SỬA Ở KHO 21/11:** PR #100 của Inventory gộp tại `636ecae0`; `.gitattributes` trên nhánh chính nay có
+  `LO-TRINH.html merge=generated-file`. Thước còn nợ: số lần xung đột ở tệp ấy trong 7 ngày sau (đọc lại 28/11).
 - **Ngưỡng mở:** một kho thứ hai khai nửa chừng, hoặc chủ kho gọi tên cùng DL1.
 
 ### 4.2 Ô `gate` đỏ cả khi chỉ đang chờ (K4)
@@ -181,6 +183,9 @@ chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, D
   tệp theo từng lệnh, dừng khi cây bẩn) để vòng nhập vào thay vì viết lại. Là CỘNG, và chạm đúng trần của luật (a) — mở
   thì phải mở lại ô `khuon-rang-dung-chung` hoặc đặt một ô mới có neo.
 - **Đo lại 21/11 14:05:** vẫn bốn cảnh báo mở (9, 12, 15, 16), chưa có cái thứ năm; ngưỡng (a) đang ở 1 trên 2.
+- **ĐÃ SỬA Ở KHO 21/11:** PR #100 của Inventory đưa `_acceptance/**/rang/**` ra khỏi phạm vi quét; lần quét trên
+  `636ecae0` tự đóng cả bốn cảnh báo (trạng thái `fixed` 09:19:58Z, không ai đóng tay — đọc lại bằng `gh api`). Kho ấy
+  còn một cảnh báo mở khác luật, có từ trước. Phần thư viện chung của kit vẫn là hạt giống.
 - **Ngưỡng mở:** ngưỡng (a) đủ (thêm một lượt chấm sai do phép-đo-tự-dối trước mốc kế), hoặc cảnh báo cùng luật xuất hiện
   ở kho tiêu thụ thứ hai, hoặc chủ kho gọi tên.
 
