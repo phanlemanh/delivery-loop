@@ -67,6 +67,9 @@ chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, D
   đồng bộ của app từng từ chối driver này một lần.
 - **Phần của kit, nếu mở:** lệnh khởi tạo hay hướng dẫn nâng bản báo khi kho khai nửa chừng (một trong hai tệp sinh). Là
   CỘNG nhỏ; cùng họ DL1 — DL1 gỡ gốc bằng cách PR thôi ghi tệp sinh.
+- **Đo lại 21/11 14:05:** trên đầu PR #98 của Inventory (`6484a2d5`, đang mở) `.gitattributes` vẫn chưa có dòng cho
+  `LO-TRINH.html`. Chưa ai đo dòng ấy bớt được bao nhiêu trong 66 lần gộp từ 14/11; hướng dẫn của kit tự khai driver chỉ
+  chạy ở máy đã cấu hình, GitHub không chạy. Kế hoạch: `KE-HOACH-12-MUC-REPO-STANDARDS.md` bước 0.3–0.4.
 - **Ngưỡng mở:** một kho thứ hai khai nửa chừng, hoặc chủ kho gọi tên cùng DL1.
 
 ### 4.2 Ô `gate` đỏ cả khi chỉ đang chờ (K4)
@@ -80,6 +83,9 @@ chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, D
 - **Cân trên mọi kho:** khoá nhánh chính của các kho đòi `gate` xanh mới gộp. «Chờ» vẫn phải chặn gộp, nên lời giải không
   thể là đổi «chờ» thành xanh; nó cần một trạng thái thứ ba hoặc một ô riêng. Chạm cách kho khai check bắt buộc — đổi mặc
   định là mọi kho trả giá. Cùng tầng với DL3 (ô bằng chứng mang tên khác `gate`).
+- **Đo lại 21/11:** lần thứ ba trong đợt — PR #15 của kho kit, job `gate` đỏ với đúng một vi phạm «verdict PASS but
+  human_signoff is empty (Gate 2 pending)». Dòng log đã gọi tên lý do; chỉ màu ô không phân biệt. Chưa đếm được lần nào
+  máy hay người hành động sai vì màu ấy.
 - **Ngưỡng mở:** chủ kho gọi tên cùng DL3, hoặc ≥ 1 lần máy hay người hành động sai vì đọc ô đỏ-chờ thành hỏng (sửa mã,
   chạy lại lượt chấm, bỏ PR).
 
@@ -93,6 +99,8 @@ chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, D
 - **Đo trước khi cộng:** mốc này có thể đã suy được từ lịch sử — commit ghi phán quyết PASS của lượt chấm cuối là lúc thẻ
   trình được. Nếu suy được thì chỉ cần bộ đo đọc thêm một mốc đã có, không thêm trường nào vào hồ sơ («kit render, không
   soạn»).
+- **Đo lại 21/11:** suy được từ lịch sử, một mẫu — PR #15 của kho kit: commit phán quyết PASS `c8164925` 11:55:57 →
+  commit chữ ký `b41b6a31` 12:22:44 = 26′47″ chờ người, không cần trường mới nào trong hồ sơ.
 - **Ngưỡng mở:** hồ sơ mốc kế không tách được chờ-người khỏi chuẩn-bị bằng hai mốc đã có (commit phán quyết PASS → commit
   chữ ký), hoặc chủ kho gọi tên.
 
@@ -106,6 +114,12 @@ chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, D
   không nói.
 - **Việc, theo tầng:** (1) mỗi kho dùng kit khai `merge_method: merge` khi nâng `repo-setup` — việc của kho ấy; (2) một
   dòng trong hướng dẫn của kit — tài liệu, hạng T1.
+- **HẠN ĐÃ TỚI 21/11, và đã được xử lý đúng tầng ở Inventory:** PR 58 gộp 01:20Z, `repo-setup` 0.10.3 phát hành 02:54Z.
+  Ghi chú phát hành của bản ấy tự khai: bản nâng thêm `merge_method: squash`, kho gộp bằng commit gộp phải đặt `merge`
+  trong cùng PR, không thì lượt `github_setup.py --apply` kế đặt kho về chỉ gộp dồn. PR #98 của Inventory (mở 03:53Z,
+  hồ sơ `upgrade-repo-setup-0-10-3` đã ký) khai `merge_method: merge` ở dòng 36 của `governance/autonomy.yaml` — đọc
+  lại trên đầu PR `6484a2d5`; chưa gộp lúc đo. Kho khác: `crm-onehub` không dùng `repo-setup`; kho kit ở `repo-setup`
+  0.5.0 bậc starter, không có `governance/`; Quỹ hàng chưa đo. Còn lại của kit: một đoạn tài liệu (T1).
 - **Ngưỡng mở, theo ngày:** TRƯỚC khi kho dùng kit đầu tiên nâng lên bản `repo-setup` có `merge_method`. Quá hạn mà chưa
   ghi thì dấu hiệu là dòng `chua_do` của bộ đo ký→gộp tăng ở kho ấy.
 
@@ -118,6 +132,10 @@ chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, D
 - **Sửa đúng tầng trước:** kho ấy khai lại glob hạng cho các tệp mà công cụ ghi, nếu chủ kho thấy chúng không phải hành vi.
 - **Cùng họ:** hạt giống #470 (`hat-giong-tu-kho-cu.md`) — PR chỉ sửa tệp kiểm bị chặn, dạng «trạm thu phí». Nếu mở ở kit
   thì là CỘNG: một lối nhẹ cho thay đổi có lệnh tái tạo được (chạy lại công cụ ra đúng diff).
+- **NGƯỠNG ĐÃ ĐỦ, đo lại 21/11:** Inventory có bốn vòng nâng `repo-setup` trong ba ngày, hạng đọc từ hợp đồng:
+  0.9.0 T3 · 0.10.1 T2 · 0.10.2 T3 · 0.10.3 T3 (PR #98 đang mở). Bốn bản phát hành của công cụ trong 19–21/11 kéo bốn
+  vòng trọn hồ sơ. Nhát đúng tầng rẻ nhất chưa thử: kho ấy nâng theo MỐC thay vì theo từng bản vá (cùng nguyên tắc với
+  «ghim lại theo release» của kit).
 - **Ngưỡng mở:** lần thứ hai một bản nâng công cụ máy móc đi trọn T3 ở bất kỳ kho nào, hoặc chủ kho gọi tên cùng #470.
 
 ### 4.6 Thước của hồ sơ bị CodeQL báo, mỗi hồ sơ tự viết một bản (K6) — chủ kho bảo thêm 21/11
@@ -140,6 +158,7 @@ chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, D
 - **Phần của kit, nếu mở:** một thư viện nhỏ giao kèm plugin cho thước của hồ sơ (chạy lệnh an toàn, lưu và hoàn nguyên
   tệp theo từng lệnh, dừng khi cây bẩn) để vòng nhập vào thay vì viết lại. Là CỘNG, và chạm đúng trần của luật (a) — mở
   thì phải mở lại ô `khuon-rang-dung-chung` hoặc đặt một ô mới có neo.
+- **Đo lại 21/11 14:05:** vẫn bốn cảnh báo mở (9, 12, 15, 16), chưa có cái thứ năm; ngưỡng (a) đang ở 1 trên 2.
 - **Ngưỡng mở:** ngưỡng (a) đủ (thêm một lượt chấm sai do phép-đo-tự-dối trước mốc kế), hoặc cảnh báo cùng luật xuất hiện
   ở kho tiêu thụ thứ hai, hoặc chủ kho gọi tên.
 
