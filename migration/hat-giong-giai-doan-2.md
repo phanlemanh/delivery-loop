@@ -70,6 +70,14 @@ chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, D
 - **Đo lại 21/11 14:05:** trên đầu PR #98 của Inventory (`6484a2d5`, đang mở) `.gitattributes` vẫn chưa có dòng cho
   `LO-TRINH.html`. Chưa ai đo dòng ấy bớt được bao nhiêu trong 66 lần gộp từ 14/11; hướng dẫn của kit tự khai driver chỉ
   chạy ở máy đã cấu hình, GitHub không chạy. Kế hoạch: `KE-HOACH-12-MUC-REPO-STANDARDS.md` bước 0.3–0.4.
+- **ĐO PHÁT LẠI 21/11 (bước 0.3 của kế hoạch 12 mục), chỉ đọc, bản sao Inventory tại `8e0a91c9`:** mọi lần gộp nhánh
+  chính vào nhánh PR, phát lại bằng `git merge-tree`, ba lượt. Từ 10/11 (168 lần gộp ngược): không driver 136 lần có
+  xung đột · như hôm nay (driver + dòng `PRODUCT-MAP.md`) 134, trong đó 126 dính `LO-TRINH.html` · thêm dòng
+  `LO-TRINH.html` còn **63** — 71 lần thành sạch. Từ 14/11 (75 lần): 49 · 48 · **28**. Đối chứng dương: `PRODUCT-MAP.md`
+  từ 90 về 0 khi có driver, nên phép phát lại có chạy driver. Phần còn lại lớn nhất sau dòng này:
+  `_acceptance/config.yaml` 30 lần (17 lần là tệp duy nhất) — đúng mục K2. Giới hạn: con số là số lần phải gỡ tay tại
+  máy, không phải số lần gộp ngược; GitHub không chạy driver; sau mỗi lần driver giữ bản của nhánh phải vẽ lại rồi
+  commit. Số của Repo Standards cho cùng cửa sổ là 138 và 66 — lệch vì mốc đếm khác (bản kéo `f2a49b49`, cách lấy ngày).
 - **Ngưỡng mở:** một kho thứ hai khai nửa chừng, hoặc chủ kho gọi tên cùng DL1.
 
 ### 4.2 Ô `gate` đỏ cả khi chỉ đang chờ (K4)
