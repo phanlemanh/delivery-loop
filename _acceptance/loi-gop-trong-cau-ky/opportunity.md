@@ -3,10 +3,10 @@ schema_version: 1
 slug: loi-gop-trong-cau-ky
 feature: Lời gộp đi cùng lời ký trong một câu ở Cổng Bằng chứng — ô gộp điền sẵn «gộp khi CI xanh», máy gộp theo lời người đã gõ bằng lệnh gộp sẵn có khi CI xanh; kho không bật thì thẻ và hành vi giữ nguyên
 owner: phanlemanh@gmail.com
-stage: discovery              # discovery | decided | archived
-decision:                     # build | iterate | park | kill — người ký Cổng 0 điền
-decided_by:
-decided_at:                   # ISO UTC
+stage: decided                # discovery | decided | archived
+decision: build               # build | iterate | park | kill — người ký Cổng 0 điền
+decided_by: Phan Le Manh
+decided_at: 2026-11-21T02:04:10Z   # chủ kho gõ «làm» ở phiên của vòng, trả lời dòng «ngưỡng: theo đề xuất; làm hay xếp lại: ___»
 prototype:
   base_commit:     # điểm cắt nhánh proto khỏi nhánh chính — guard diffBase khi keep
   disposition:     # keep | archive
@@ -51,10 +51,10 @@ không `--auto`); thước `ky_den_gop` ở `plugins/dispatch/scripts/do-gop.mjs
 
 ## Ngưỡng chết / ngưỡng UAT
 
-- Câu hỏi phép đo trả lời: [đề xuất] ở kho đã bật, lời gộp có còn tách khỏi lời ký không, và đoạn chờ người sau khi CI đã xanh — «ô bắt buộc xanh → gộp» — có rút ngắn so với nền của chính kho ấy không?
-- Kết quả nào là SỐNG: [đề xuất] trong N vòng ký đầu tiên ở các kho đã bật (N ≥ 3, tính trong 21 ngày từ lần cài đầu), 0 vòng tốn một lượt gọi người riêng cho việc gộp, và «ô bắt buộc xanh → gộp» trung vị không quá một nửa nền của kho (Inventory: nền 22′ trên 63 hồ sơ 10–20/11, ngưỡng 11′). Đoạn ký → gộp trọn chỉ ghi làm bối cảnh, không là ngưỡng: phần ký → ô bắt buộc xanh do commit và lần gộp ngược sau chữ ký quyết, thuộc việc khác. Đếm bằng `gh` trên PR của cửa sổ theo cách đo của báo cáo nguồn và sổ quyết định của vòng; không dựng thước mới trong kit. N = 0 thì thước vô hiệu, không đọc thành «đạt».
-- Kết quả nào là CHẾT: [đề xuất] một lần máy gộp mà câu người gõ không mang lời gộp — tắt khoá ngay, bất kể các số khác; hoặc ≥ 2 trên N vòng vẫn phải xin lời gộp riêng dù câu ký đã mang ô gộp.
-- Timebox: [đề xuất] cửa sổ 21 ngày từ lần cài đầu ở một kho bật khoá; ngày cài là quyết định riêng của chủ kho, không sớm hơn 02/12/2026.
+- Câu hỏi phép đo trả lời: ở kho đã bật, lời gộp có còn tách khỏi lời ký không, và đoạn chờ người sau khi CI đã xanh — «ô bắt buộc xanh → gộp» — có rút ngắn so với nền của chính kho ấy không?
+- Kết quả nào là SỐNG: trong N vòng ký đầu tiên ở các kho đã bật (N ≥ 3, tính trong 21 ngày từ lần cài đầu), 0 vòng tốn một lượt gọi người riêng cho việc gộp, và «ô bắt buộc xanh → gộp» trung vị không quá một nửa nền của kho (Inventory: nền 22′ trên 63 hồ sơ 10–20/11, ngưỡng 11′). Đoạn ký → gộp trọn chỉ ghi làm bối cảnh, không là ngưỡng: phần ký → ô bắt buộc xanh do commit và lần gộp ngược sau chữ ký quyết, thuộc việc khác. Đếm bằng `gh` trên PR của cửa sổ theo cách đo của báo cáo nguồn và sổ quyết định của vòng; không dựng thước mới trong kit. N = 0 thì thước vô hiệu, không đọc thành «đạt».
+- Kết quả nào là CHẾT: một lần máy gộp mà câu người gõ không mang lời gộp — tắt khoá ngay, bất kể các số khác; hoặc ≥ 2 trên N vòng vẫn phải xin lời gộp riêng dù câu ký đã mang ô gộp.
+- Timebox: cửa sổ 21 ngày từ lần cài đầu ở một kho bật khoá; ngày cài là quyết định riêng của chủ kho, không sớm hơn 02/12/2026.
 
 ## Kết quả prototype
 
@@ -70,9 +70,9 @@ Không dựng prototype — vật là chữ trên thẻ và một lối vào c�
 
 ## Cổng 0
 
-- **decision = …** Căn cứ: …
-- **disposition = …** Căn cứ: không có prototype.
-- **Ngưỡng UAT chốt cùng lúc ký:** …
+- **decision = build.** Căn cứ: chủ kho gõ «làm» ở Cổng Đáng 21/11; lời gộp tách khỏi lời ký ở 2 trên 3 vòng của đợt 19–21/11.
+- **disposition = không áp dụng.** Căn cứ: không có prototype.
+- **Ngưỡng UAT chốt cùng lúc ký:** theo đề xuất của máy, chủ kho không sửa ô nào — xem mục «Ngưỡng chết / ngưỡng UAT».
 
 ## Thước đo thành công → ứng viên criterion
 
