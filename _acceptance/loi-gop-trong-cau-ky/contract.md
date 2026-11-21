@@ -5,7 +5,7 @@ slug: loi-gop-trong-cau-ky
 owner: phanlemanh@gmail.com
 risk_tier: T2      # gate-card.js, commands/signoff.md, human-facing-language.md, dispatch/scripts/gop.mjs + dieu-phoi.mjs, feature-loop SKILL, tests — không khớp t3_paths
 surfaces: [cli]
-status: verified
+status: signed-off
 design_doc: docs/superpowers/specs/2026-11-21-loi-gop-trong-cau-ky-design.md
 approved_by: Phan Le Manh
 approved_at: 2026-11-21
@@ -163,3 +163,9 @@ Thuật ngữ:
   chạm nó.
 - Giới hạn khai trước (thiết kế mục «Giới hạn khai trước»): lệnh gộp đòi mọi check của PR xanh kể cả check không bắt buộc;
   phiên kết thúc trước khi CI xanh thì việc gộp chờ vòng được mở lại; lời gộp do lệnh ký ghi hộ, cùng mô hình tin với chữ ký.
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-21:
+  - Ngoài-1: kho viết khoá bật theo một cách YAML hợp lệ nhưng lạ (khoảng trắng quanh dấu hai chấm…) thì thẻ vẫn in ô gộp mà lệnh gộp từ chối — người ký gộp tay một lần, viết lại khoá trần là hết.
+  - Ngoài-3: cùng lớp với Ngoài-1 — thẻ hứa gộp khi CI xanh, lệnh gộp báo «kho chưa bật»; thêm một lần gộp tay ở kho có cấu hình viết lạ.
+  - Ngoài-5: bộ ca so thẻ và lệnh gộp bằng hai danh sách cách viết khoá viết tay riêng, không có phép so chung, nên lệch kiểu Ngoài-1 có thể lọt mà vẫn xanh.
+- Ngoài-2 và Ngoài-4 (lệnh gộp coi chữ ký giữ chỗ «pending»/«TBD» là đã ký) — chủ kho chọn «mở hợp đồng mới» ở Cổng Bằng chứng 2026-11-21; ghi hạt giống `docs/plans/2026-11-21-hat-giong-chu-ky-giu-cho-o-lenh-gop.md`, không tạo ô.
+- Thấy trên đường, ngoài phạm vi (ghi hạt giống, không làm): `docs/plans/2026-11-21-hat-giong-nlvh-dau-commit-va-chu-thich-cau-hinh.md`.

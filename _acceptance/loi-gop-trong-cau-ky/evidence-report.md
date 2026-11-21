@@ -8,7 +8,7 @@ verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
 verified_commit: a2dcc7b383c5ccf06a65ee665a4497bd2e385b0a
-human_signoff:
+human_signoff: Phan Le Manh 2026-11-21
 ---
 
 # Evidence Report: loi-gop-trong-cau-ky
