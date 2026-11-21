@@ -208,6 +208,10 @@ executors:
     # Hồ sơ ky-den-gop: năm tệp ca «C-», «I-», «DG-», «H-», «KDG-M» (lịch biết tệp · gộp không chạy lại CI · đo ký → gộp ·
     # PR sẵn sàng lúc trình thẻ · chiều đỏ trong bộ kiểm), cùng khuôn một dòng của dieu_phoi_tin_gd. Thiếu dòng ghim là ĐỎ.
     dieu_phoi_ky_den_gop: "bash -c 'set -o pipefail; node --test --test-reporter=tap \"tests/dieu-phoi/loi/trung-tep.test.mjs\" \"tests/dieu-phoi/loi/gop.test.mjs\" \"tests/dieu-phoi/loi/do-gop.test.mjs\" \"tests/workflows/pr-san-sang.test.mjs\" \"tests/dieu-phoi/ky-den-gop-mutants.test.mjs\" 2>&1 | grep -E \"^ *(not )?ok [0-9]+ - (C|I|DG|H|KDG)-|^ *not ok|^#   |^# (pass|fail|skipped|todo) \" | paste -sd\"|\" -'"
+    # Hồ sơ loi-gop-trong-cau-ky (21/11, T2): lối vào «theo lời ký» của lệnh gộp — «GL-» (bên đọc, lối vào, khối S5) chạy cùng
+    # bộ «I-» đã ký của ky-den-gop (đường trong đợt không đổi); «LGM-» là nhát tiêm trên bản sao. Thiếu dòng ghim là ĐỎ.
+    dieu_phoi_loi_gop: "bash -c 'set -o pipefail; node --test --test-reporter=tap \"tests/dieu-phoi/loi/gop-theo-loi.test.mjs\" \"tests/dieu-phoi/loi/gop.test.mjs\" 2>&1 | grep -E \"^ *(not )?ok [0-9]+ - (GL|I)-|^ *not ok|^#   |^# (pass|fail|skipped|todo) \" | paste -sd\"|\" -'"
+    dieu_phoi_loi_gop_mutants: "bash -c 'set -o pipefail; node --test --test-reporter=tap \"tests/dieu-phoi/loi-gop-mutants.test.mjs\" 2>&1 | grep -E \"^ *(not )?ok [0-9]+ - LGM-|^ *not ok|^#   |^# (pass|fail|skipped|todo) \" | paste -sd\"|\" -'"
     # Hồ sơ vung-giao-viec-tu-cat-luot: CV-… (răng phủ cắt lượt, tệp .test.mjs — cũng chạy trong mảnh mjs của suite) và
     # VG-… (gói đợt, thêm hàng, phát lại, khai vùng ở Cổng Phạm vi, vi phân bản gốc — node --test, CI chạy cùng tests/dieu-phoi).
     cat_luot_vung: node tests/scripts/cat-luot-vung.test.mjs
@@ -860,6 +864,12 @@ executors:
     # P192 là khối viết thẳng (không qua run()) nên ONLY_BLOCK không lọc được nó — ca NL-AC5-p192
     # chạy NGUYÊN VĂN bộ kiểm P192 rút từ run-tests.sh (S4-r1).
     nlvh_luat: "bash -c 'NLVH_CASES=NL-AC5-luat,NL-AC5-p192,NL-dot-bien-luat-de-yen,NL-dot-bien-luat-go-marker,NL-dot-bien-slots-cu node tests/scripts/nlvh-the.test.mjs'"
+    # Hồ sơ loi-gop-trong-cau-ky (21/11, T2): ô gộp điền sẵn trên thẻ Cổng Bằng chứng của kho bật.
+    # Mỗi lệnh một nhóm ca của tests/scripts/lgck-the.test.mjs; ca gọi tên mà không chạy → thoát ≠ 0.
+    lgck_the: "bash -c 'LGCK_CASES=LG-AC1-bat,LG-AC3-khong-moi,LG-dot-bien-in-khi-tat,LG-dot-bien-ve-o-hoi,LG-dot-bien-da-ky,LG-dot-bien-dien-chu-ky,LG-im-chu-thich node tests/scripts/lgck-the.test.mjs'"
+    lgck_im: "bash -c 'LGCK_CASES=LG-AC2-im,LG-dot-bien-lech-khi-tat,LG-dot-bien-lech-qua-lib node tests/scripts/lgck-the.test.mjs'"
+    lgck_luat: "bash -c 'LGCK_CASES=LG-AC4-luat,LG-AC4-p192,LG-dot-bien-luat-sai-loi,LG-dot-bien-luat-go-marker,LG-dot-bien-slots-go node tests/scripts/lgck-the.test.mjs'"
+    lgck_vong_khep: "bash -c 'LGCK_CASES=LG-AC5-vong-khep,LG-AC5-dang,LG-AC5-ma-tran,LG-dot-bien-o-the-lech,LG-dot-bien-khuon-lech node tests/scripts/lgck-the.test.mjs'"
     rel2200_cua_so: bash _acceptance/release-2-39-0/cua-so.sh 7f45f37d thuoc-biet-truoc-khong-phan-duoc luot-cham-ghi-vao-cay
     rel2200_dd_giu: git diff --exit-code --stat 7f45f37d HEAD -- diagram-design
     # Mốc 2.21.0 (03/10): mốc = commit gắn tag v2.20.0. diagram-design ĐỔI trong cửa sổ (2.7.0 → 2.7.1,

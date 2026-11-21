@@ -1,0 +1,168 @@
+schema_version: 1
+feature_slug: loi-gop-trong-cau-ky
+# Sáu lệnh, mười eval (eval chung lệnh chạy một lần). Bốn lệnh `lgck_*` chạy mỗi lệnh MỘT nhóm ca của
+# tests/scripts/lgck-the.test.mjs; hai lệnh `dieu_phoi_loi_gop*` chạy các tệp node:test của gói điều phối.
+# Hồ sơ thử do mã sinh: kịch bản bash của tests/plugins/fixtures/viec-cua-anh-scenarios.sh (thẻ) và kho git thật dựng
+# trong lượt với `gh` giả (lệnh gộp). Mỗi ca chạy trên cây thật (đối chứng dương) và trên bản sao đã tiêm MỘT nhát (thay
+# nguyên văn đúng một chỗ, chứng mũi tiêm trúng trước khi chấm). Ca gọi tên mà không in PASS/FAIL → tệp thoát khác 0 với
+# «ca không chạy: <tên>»; lệnh node:test thiếu dòng ghim của một ca là đỏ.
+evals:
+  - id: E1
+    criterion: AC-1
+    executor: script
+    cmd: config:executors.script.lgck_the
+    expected: >
+      Ca LG-AC1-bat xanh trên kịch bản gate2-4loai với cấu hình kho bật (khoá ghi thêm vào config.yaml của hồ sơ thử):
+      `one_shot` và dòng lệnh HTML chứa «gộp: khi CI xanh; ký hay trả: ___» liền nhau theo đúng thứ tự; `routing.bao` chứa
+      «gộp»; `routing.hoi` không chứa «gộp» và chứa «ký hay trả»; dòng «Trả lời mẫu» không chứa «gộp»; khối việc-của-anh
+      chứa câu sửa ô thành «chưa». Đối chứng tiền đề: cùng hồ sơ thử khi kho không bật → không có «gộp» ở cả HTML lẫn
+      extract. Chiều đỏ: nhát `ve-o-hoi` → «FAIL: LG-AC1-bat» kèm «routing.hoi»; nhát `dien-chu-ky` → «FAIL: LG-AC1-bat»
+      kèm «ky hay tra khong con ___».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/gate-card.js", "tests/scripts/lgck-the.test.mjs", "tests/plugins/fixtures/viec-cua-anh-scenarios.sh"]
+
+  - id: E2
+    criterion: AC-2
+    executor: script
+    cmd: config:executors.script.lgck_im
+    expected: >
+      Ca LG-AC2-im xanh: hai bản `git archive` trọn `plugins/acceptance-gate` — TRƯỚC ở cha của commit ĐẦU, SAU ở commit
+      CUỐI trong các commit có dấu «(loi-gop-trong-cau-ky)» chạm `plugins/acceptance-gate/` (BẤT KỲ tệp nào, kể cả `lib/`;
+      hai sha là đầu ra `git log --grep` và được in ra) — dựng thẻ (HTML + extract) trên các kịch bản gate1-draft ·
+      gate2-4loai · gate2-may-di-tiep · gate2-pass-thuan-may · gate2-luat với ba dạng kho không bật (khoá vắng · `false` ·
+      giá trị lạ) VÀ trên mọi hồ sơ thật của kho này qua một bản sao `_acceptance/` có khoá bị gỡ khỏi config.yaml: mọi
+      thẻ bằng nhau từng byte. In số hồ sơ thật đã so và tên hồ sơ bản cũ không dựng được. Khi hồ sơ của vòng trong cây
+      đang kiểm chưa ở trạng thái đã ký: bản SAU phải bằng cây đang kiểm trên `plugins/acceptance-gate/` (git diff rỗng),
+      lệch → «FAIL: LG-AC2-im» kèm «ban SAU khac cay dang kiem». Đối chứng đặc hiệu: kịch bản gate2-4loai của kho BẬT phải
+      KHÁC giữa hai bản, và phần khác đúng là ô gộp (chứng phép so nhìn thấy thay đổi của vòng). Không tìm được commit
+      (bản sao nông) → «FAIL: LG-AC2-im» có tên. Chiều đỏ: nhát `lech-khi-tat` trên bản SAU (đổi «Ký duyệt» thành «Ký»
+      trong gate-card.js) → «FAIL: LG-AC2-im» kèm «gate2-4loai»; nhát `lech-qua-lib` trên bản SAU (sửa MỘT tệp `lib/` làm
+      đổi thẻ kho không bật, không chạm gate-card.js) → «FAIL: LG-AC2-im» kèm tên kịch bản.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/gate-card.js", "plugins/acceptance-gate/lib/**", "tests/scripts/lgck-the.test.mjs"]
+
+  - id: E3
+    criterion: AC-3
+    executor: script
+    cmd: config:executors.script.lgck_the
+    expected: >
+      Ca LG-AC3-khong-moi xanh với ma trận viết trước bốn hàng (số assert = số hàng), kho bật ở cả bốn: (1) gate2-4loai +
+      `human_signoff` đã điền · (2) gate2-may-di-tiep · (3) gate2-4loai với verdict REJECT · (4) gate2-may-di-tiep + dòng
+      sổ `type: nghi`. Mỗi hàng: HTML và extract không chứa «gộp: », `routing.bao` không chứa «gộp», và cả hai đầu ra bằng
+      từng byte đầu ra của CÙNG hồ sơ thử khi kho không bật. Chiều đỏ: nhát `da-ky` (bỏ vế chưa-có-chữ-ký) → «FAIL:
+      LG-AC3-khong-moi» kèm «hang 1»; nhát `in-khi-tat` (bỏ vế đọc khoá) → «FAIL: LG-AC1-bat» kèm «tien de».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/gate-card.js", "tests/scripts/lgck-the.test.mjs"]
+
+  - id: E4
+    criterion: AC-4
+    executor: script
+    cmd: config:executors.script.lgck_luat
+    expected: >
+      Ca LG-AC4-luat xanh: khối GATE-ONESHOT-SLOTS có dòng «g2 gộp»; khối GATE-ONESHOT-GOP có đúng mười một dạng viết
+      trước (số assert = 11: sáu dạng lời gộp, năm dạng vế ký), mỗi dạng đúng MỘT dòng và đúng lối; signoff.md trỏ
+      «GATE-ONESHOT-GOP» và mang khối LOI-GOP-GATE2-LINE có khoá `loi_gop`. Ca LG-AC4-p192 xanh: bộ kiểm P192 rút nguyên
+      văn từ heredoc P192JS của tests/plugins/run-tests.sh chạy trên năm thẻ cây này dựng (bốn thẻ cũ + thẻ gate2-4loai
+      của kho bật) in «ONESHOT-RT-NGUOC». Chiều đỏ: nhát `luat-sai-loi` (đổi lối của «gộp: chưa» thành gộp) → «FAIL:
+      LG-AC4-luat» kèm «dang «gộp: chưa»»; `luat-go-marker` → kèm «GATE-ONESHOT-GOP rut rong»; `slots-go` (gỡ «g2 gộp»
+      khỏi bản sao luật) → «FAIL: LG-AC4-p192» kèm «nhan khong khop SLOTS: gộp».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md", "plugins/acceptance-gate/commands/signoff.md", "plugins/acceptance-gate/scripts/gate-card.js", "tests/plugins/run-tests.sh", "tests/scripts/lgck-the.test.mjs"]
+
+  - id: E5
+    criterion: AC-5
+    executor: script
+    cmd: config:executors.script.lgck_vong_khep
+    expected: >
+      Ca LG-AC5-vong-khep xanh: lấy TRỌN `one_shot` của thẻ kho bật vừa dựng (không viết tay), bỏ tên lệnh và tên hồ sơ,
+      thay `___` lần lượt bằng TỪNG dạng vế ký rút từ khối GATE-ONESHOT-GOP (chỗ trống `<tên>`, `<ngày>`, `<lý do>` điền
+      giá trị thử), điền câu vào khuôn dòng sổ RÚT từ khối LOI-GOP-GATE2-LINE của signoff.md, dòng qua JSON.parse, rồi bên
+      đọc của plugins/dispatch/scripts/gop.mjs: mỗi dạng lối chữ-ký → «có lời gộp»; dạng trả-lại → không (số assert = số
+      dạng vế ký rút được, năm). Ca LG-AC5-dang xanh: mỗi dòng dạng lời gộp RÚT từ khối luật ghép «; Ký» đi qua bên đọc ra
+      đúng lối khối ghi (số assert = 6); hàng thứ bảy: câu có cả «gộp: khi CI xanh» và «chưa gộp» → không. Ca
+      LG-AC5-ma-tran xanh với tám hàng sổ viết trước (số assert = 8): vắng vế gộp → không · có vế gộp không có vế ký →
+      không, thông điệp chứa «không mang chữ ký» · dòng «chưa» sau thay dòng gộp trước → không · dòng gộp sau thay dòng
+      «chưa» trước → có · dòng cuối hỏng khoá `cau` thì KHÔNG lùi về dòng gộp cũ hơn → không · dòng JSON hỏng xen giữa →
+      vẫn đọc dòng hợp lệ cuối · sổ rỗng → không, «không có dòng lời gộp» · dạng ngoài danh sách «gộp nhé» → không, «không
+      mang lời gộp». Chiều đỏ: nhát `o-the-lech` (thẻ in «gộp: khi xanh rồi») → «FAIL: LG-AC5-vong-khep»; nhát `khuon-lech`
+      (khuôn dòng sổ đổi khoá `loi_gop` thành `loi_gop_x`) → «FAIL: LG-AC5-vong-khep» kèm «không có dòng lời gộp».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/gate-card.js", "plugins/acceptance-gate/commands/signoff.md", "plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md", "plugins/dispatch/scripts/gop.mjs", "tests/scripts/lgck-the.test.mjs"]
+
+  - id: E6
+    criterion: AC-6
+    executor: test
+    cmd: config:executors.test.dieu_phoi_loi_gop
+    expected: >
+      Các ca «GL-6…» xanh trên kho git thật dựng trong lượt (origin trần + bản kéo, nhánh PR mang hợp đồng đã ký, báo cáo
+      có chữ ký, dòng lời gộp điền từ khuôn của signoff.md và ghi CÙNG commit với chữ ký, config.yaml kho bật) với `gh`
+      giả ghi lại lời gọi: ca đủ → đúng MỘT lời gọi «pr merge <n> --merge --match-head-commit <sha>», không có «--auto»,
+      mã thoát 0. Ma trận viết trước sáu hàng bỏ từng vế trên đầu nhánh (khoá kho tắt · hợp đồng máy đã thông · chữ ký
+      rỗng · không dòng lời gộp · câu ghi không mang lời gộp · dòng lời gộp ghi ở commit khác commit chữ ký): mỗi hàng 0
+      lời gọi merge, mã thoát 1, thông điệp gọi tên đúng vế (số assert = 6). Ký hai lần, lần hai «gộp: chưa; Ký» ghi dòng
+      mới cùng commit chữ ký mới → 0 lời gọi merge, thông điệp «không mang lời gộp». Chấm lại rồi ký lại (giá trị
+      human_signoff mới ở commit mới) mà không ghi dòng mới → 0 lời gọi merge, thông điệp «không sinh cùng commit với chữ
+      ký». `--xet` → 0 lời gọi merge. Cây làm việc bị sửa khác đầu nhánh (xoá dòng lời gộp chưa commit) → vẫn gộp: lệnh đọc
+      đầu nhánh. Dòng ghim «ok … - GL-6» có mặt cho từng ca; thiếu là đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/dispatch/scripts/gop.mjs", "plugins/dispatch/scripts/dieu-phoi.mjs", "tests/dieu-phoi/loi/gop-theo-loi.test.mjs"]
+
+  - id: E7
+    criterion: AC-7
+    executor: test
+    cmd: config:executors.test.dieu_phoi_loi_gop
+    expected: >
+      Bảy ca «I-» đã ký của tests/dieu-phoi/loi/gop.test.mjs xanh nguyên (dòng ghim «ok … - I-» đủ bảy). Ca «GL-7»: kho thử
+      của E6 có đủ dòng lời gộp nhưng lệnh `gop <số PR>` KHÔNG cờ `--theo-loi` ở nơi không có đợt → ném «không có đợt nào
+      đang chạy», `gh` giả không nhận lời gọi nào. Chiều đỏ ở E10: nhát `khong-co-bo-doi-dot`.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/dispatch/scripts/gop.mjs", "tests/dieu-phoi/loi/gop.test.mjs", "tests/dieu-phoi/loi/gop-theo-loi.test.mjs"]
+
+  - id: E8
+    criterion: AC-8
+    executor: test
+    cmd: config:executors.test.dieu_phoi_loi_gop
+    expected: >
+      Ca «GL-8a»: khối GOP-THEO-LOI-KY rút từ signoff.md và từ SKILL feature-loop trùng nhau sau khi thay chỗ trỏ gói
+      feature-loop của mỗi bản bằng một dấu chung, và mang cờ «--cho-ci»; khối GOP-THEO-LOI-THOAT hai nơi trùng từng ký tự,
+      có đủ ba dòng mở đầu «0 →», «4 →», «1 →», và dòng «4 →» chứa «vẫn 4». Ca «GL-8b»: dòng lệnh RÚT từ khối của SKILL,
+      thay `<số PR>` và `<slug>`, chạy bằng shell trong kho thử của E6 (biến môi trường trỏ gói điều phối về cây đang
+      kiểm, `gh` giả đứng đầu PATH, nhịp hỏi lại rút ngắn qua biến môi trường) với `gh` giả trả «check đang chạy» ở hai
+      lượt hỏi đầu rồi «xanh»: sổ lời gọi của `gh` giả cho thấy 0 lời gọi merge trước lượt xanh và đúng một lời gọi sau
+      đó, mã thoát 0. Ca «GL-8c»: check đỏ hẳn → mã thoát 1, thông điệp chứa «CI đỏ», đúng MỘT lượt hỏi trạng thái (không
+      hỏi lại), 0 lời gọi merge. Ca «GL-8d»: check còn chạy tới hết giờ chờ → mã thoát 4, 0 lời gọi merge. Đối chứng trên
+      cùng kho thử: cùng dòng lệnh khi đầu nhánh không có dòng lời gộp → mã thoát 1, 0 lời gọi merge.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/commands/signoff.md", "plugins/feature-loop/skills/feature-loop/SKILL.md", "plugins/dispatch/scripts/gop.mjs", "plugins/dispatch/scripts/dieu-phoi.mjs", "tests/dieu-phoi/loi/gop-theo-loi.test.mjs"]
+
+  - id: E9
+    criterion: AC-9
+    executor: script
+    cmd: config:executors.script.lgck_the
+    expected: >
+      Bốn nhát thẻ, mỗi nhát trên bản sao trọn `plugins/acceptance-gate/{scripts,lib,skills,commands}`, mũi tiêm khớp đúng
+      một lần (khớp 0 hay nhiều lần → «mui tiem truot»), ca đích đã xanh trên cây thật trước đó: `in-khi-tat` →
+      LG-AC1-bat đỏ «tien de»; `ve-o-hoi` → LG-AC1-bat đỏ «routing.hoi»; `da-ky` → LG-AC3-khong-moi đỏ «hang 1»;
+      `dien-chu-ky` → LG-AC1-bat đỏ «ky hay tra khong con ___». Ca nào vẫn xanh trên bản đã tiêm → «phep do mu». Chiều im
+      (LG-im-chu-thich): bản sao thêm một dòng chú thích vào gate-card.js → LG-AC1-bat và LG-AC3-khong-moi vẫn xanh. Nhát
+      thứ năm của thẻ (`lech-qua-lib`, một tệp `lib/` đổi thẻ kho không bật) chấm ở E2.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/acceptance-gate/scripts/gate-card.js", "tests/scripts/lgck-the.test.mjs"]
+
+  - id: E10
+    criterion: AC-9
+    executor: test
+    cmd: config:executors.test.dieu_phoi_loi_gop_mutants
+    expected: >
+      Ca «LGM-M0»: bản sao trọn `plugins/dispatch/scripts` CHƯA tiêm chạy bộ «GL-» xanh (đối chứng dương). Mười bốn nhát,
+      mỗi nhát một ca «LGM-<tên>», mũi tiêm khớp đúng một lần, bộ «GL-» chạy trên bản sao phải ĐỎ ở đúng ca ghim:
+      `dong-dau` (bên đọc lấy dòng đầu) · `lui-dong-cu` (dòng cuối không đạt thì lùi về dòng cũ) · `bo-doc-lai-cau` ·
+      `chi-ky-tran` (chỉ nhận vế ký trần «Ký») · `thieu-mot-dang` (gỡ «gộp khi xanh» khỏi hằng bên đọc) ·
+      `bo-chua-gop-thang` · `bo-buoc-chu-ky` (bỏ phép buộc cùng commit) · `bo-khoa-kho` · `nhan-may-thong` · `bo-chu-ky` ·
+      `doc-cay-lam-viec` · `them-auto` · `gop-khi-dang-chay` (gộp khi check còn chạy) · `khong-co-bo-doi-dot` (lệnh không cờ
+      thôi đòi đợt). Bộ «GL-» có ca đọc khối luật thật cho bên đọc (mỗi dạng của GATE-ONESHOT-GOP qua bên đọc) nên nhát
+      `thieu-mot-dang` và `chi-ky-tran` có ca để đỏ. Ba nhát không phải vật — `im-dong-so-thuong` (thêm dòng sổ `fix` không
+      mang `loi_gop` vào hồ sơ thử) · `im-chu-thich` (thêm chú thích vào gop.mjs) · `im-tai-lieu` (sửa chữ một tệp `.md`
+      của gói) — bộ «GL-» vẫn XANH. Thiếu dòng ghim «ok … - LGM-» là đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+    paths: ["plugins/dispatch/scripts/gop.mjs", "plugins/dispatch/scripts/dieu-phoi.mjs", "tests/dieu-phoi/loi-gop-mutants.test.mjs", "tests/dieu-phoi/loi/gop-theo-loi.test.mjs"]
