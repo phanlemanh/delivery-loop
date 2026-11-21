@@ -48,12 +48,12 @@ Chỗ thứ nhất cùng họ với giới hạn đã ghi của `loop-health` (�
 tin bản kéo cục bộ là nhánh chính. **Ngưỡng mở:** cùng chỗ vấp lại ở một kho thứ hai (crm là lần đo kế), hoặc ≥ 1 lượt chấm đỏ
 vì nó.
 
-## 4. Năm mục từ bản đối chiếu với Repo Standards chưa có chỗ trong kế hoạch (21/11)
+## 4. Sáu mục từ bản đối chiếu với Repo Standards chưa có chỗ trong kế hoạch (21/11)
 
-Chủ kho bảo ghi 21/11: «Ghi năm mục chưa có chỗ thành hạt giống». Nguồn số đo: `phanlemanh/repo-standards`, nhánh chính,
+Chủ kho bảo ghi 21/11: «Ghi năm mục chưa có chỗ thành hạt giống», rồi «Thêm phần CodeQL của K6 thành mục 4.6». Nguồn số đo: `phanlemanh/repo-standards`, nhánh chính,
 `docs/reports/2026-11-20-decision-to-merge-trace.md` — đo chỉ-đọc trên `onehub-inventory` tại `f2a49b49`, 63 hồ sơ đã ký và
 đã gộp trong 10–20/11, 524 lượt CI. Phiên giữ đợt KHÔNG đo lại các số ấy, trừ chỗ ghi «đọc lại». Mã K là mã của bản đối
-chiếu. Bảy mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, DL4, DL6, mục 2 của tệp này, ô `khuon-rang-dung-chung`).
+chiếu. Các mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, DL4, DL6, mục 2 của tệp này).
 
 ### 4.1 Lệnh cài không khai và không kiểm dòng gộp cho tệp sinh (K1, nửa đầu)
 
@@ -120,6 +120,25 @@ chiếu. Bảy mục còn lại của bản ấy đã có chỗ (DL1, DL2, DL3, 
   thì là CỘNG: một lối nhẹ cho thay đổi có lệnh tái tạo được (chạy lại công cụ ra đúng diff).
 - **Ngưỡng mở:** lần thứ hai một bản nâng công cụ máy móc đi trọn T3 ở bất kỳ kho nào, hoặc chủ kho gọi tên cùng #470.
 
-**Chưa ghi, nói thẳng:** phần CodeQL của K6 — bốn cảnh báo `js/shell-command-injection-from-environment` ở
-`_acceptance/<slug>/rang/lib.mjs` của bốn hồ sơ Inventory — không nằm trong năm mục này. Ô `khuon-rang-dung-chung` (dừng
-30/08) nhắm thước tự dối, không nhắm cảnh báo ấy.
+### 4.6 Thước của hồ sơ bị CodeQL báo, mỗi hồ sơ tự viết một bản (K6) — chủ kho bảo thêm 21/11
+
+- **Điều đo được, đọc lại 21/11 bằng `gh api`:** Inventory có 4 cảnh báo đang mở trên nhánh chính, cùng luật
+  `js/shell-command-injection-from-environment`, ở `_acceptance/<slug>/rang/lib.mjs` của bốn hồ sơ: số 9
+  (`upgrade-repo-setup-0-9-0`), 12 (`upgrade-repo-setup-0-10-1`), 15 (`commit-msg-kit-subjects`), 16
+  (`upgrade-repo-setup-0-10-2`). Nhánh chính kho ấy có 7 hồ sơ mang `rang/lib.mjs`; bốn hồ sơ bị báo là bốn hồ sơ mới nhất
+  (19–20/11) — nhịp hiện tại là mỗi vòng mới thêm một cảnh báo.
+- **Kit hôm nay:** thước của hồ sơ (`rang/`) do máy của từng vòng viết tay; plugin không giao thư viện nào cho việc «chạy
+  một lệnh rồi so kết quả». Ô `khuon-rang-dung-chung` (chủ kho cho dừng 30/08) nhắm việc thước tự dối, không nhắm cảnh báo
+  này, và luật chiều rộng (a) đang giữ trần «bộ đo được máy kiểm một tầng».
+- **Cùng lớp, đo trong đợt này:** vòng chuyển crm và vòng sửa PR #621 có bốn lỗi ở thước và bộ chạy viết tay của chính
+  vòng — thước neo sai mốc (t1) · phép đo CI thiếu `filter=all` nên chốt không bao giờ bắn (t3, một lượt chấm REJECT) · bộ
+  chạy giết lệnh làm rỗng `package.json` · bộ chạy song song đè bản lưu (một lượt đo dài ~1,5 giờ thành rác). Ca t3 là
+  một phép đo tự dối trên vòng ở kho tiêu thụ: đếm 1 cho ngưỡng (a) «≥ 2 lượt chấm sai do phép-đo-tự-dối giữa hai release».
+- **Sửa đúng tầng trước, không đổi kit:** (1) vòng viết thước gọi lệnh bằng mảng đối số thay vì ghép chuỗi lệnh từ biến
+  môi trường; (2) hoặc kho ấy quyết thư mục `_acceptance/**/rang/**` có thuộc phạm vi quét CodeQL hay không — thước chỉ
+  chạy lúc chấm, không giao cho người dùng. Cả hai là việc của kho.
+- **Phần của kit, nếu mở:** một thư viện nhỏ giao kèm plugin cho thước của hồ sơ (chạy lệnh an toàn, lưu và hoàn nguyên
+  tệp theo từng lệnh, dừng khi cây bẩn) để vòng nhập vào thay vì viết lại. Là CỘNG, và chạm đúng trần của luật (a) — mở
+  thì phải mở lại ô `khuon-rang-dung-chung` hoặc đặt một ô mới có neo.
+- **Ngưỡng mở:** ngưỡng (a) đủ (thêm một lượt chấm sai do phép-đo-tự-dối trước mốc kế), hoặc cảnh báo cùng luật xuất hiện
+  ở kho tiêu thụ thứ hai, hoặc chủ kho gọi tên.
