@@ -1206,6 +1206,13 @@ các ca do lỗi thêm một dòng `::warning` lên PR. Chế độ luôn thoát
 thoát 2 — vì bước phân loại đỏ là test bị bỏ. Giới hạn đã biết: `git diff` bọc tên tệp có dấu, nên cổng (và chế độ)
 coi tệp ấy ngoài T1 — chạy đủ (hạt giống `docs/plans/2026-10-11-hat-giong-ba-ngu-nghia-glob-t1-skip.md`).
 
+**Cách gộp của kho: commit gộp.** Bật «Allow merge commits» cho kho và gộp PR bằng commit gộp, không gộp dồn
+(squash). Hai chỗ của kit dựa vào nó: bộ đo ký → gộp (`plugins/dispatch/scripts/do-gop.mjs`) đọc commit gộp mang chữ
+ký — vòng gộp dồn không có lúc ký riêng nên không đo được; và lệnh gộp của gói điều phối luôn gộp bằng `--merge`, kho
+chỉ cho gộp dồn thì `gh` từ chối. Kho dùng một công cụ dựng kho có khoá cách gộp thì khai commit gộp ở chính khoá ấy.
+Ví dụ `repo-setup` từ 0.10.3: đặt `merge_method: merge` trong `governance/autonomy.yaml` ngay trong PR nâng bản, vì
+bản nâng tự thêm `merge_method: squash` cho kho chưa khai và lượt áp cài đặt GitHub kế tiếp sẽ đặt kho về gộp dồn.
+
 ### Sổ luật-đã-chạy (acceptance-gate 1.22.0+)
 
 `pre-merge-check.sh` chỉ in `clean` khi CHỨNG MINH được rằng các luật đã chạy:
