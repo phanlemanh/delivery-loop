@@ -5,8 +5,10 @@ slug: tep-chung-khong-chan-gop
 owner: phanlemanh@gmail.com
 risk_tier: T3      # plugins/acceptance-gate/lib/workspace-record.cjs (bảng nhãn chung của bản đồ) khớp t3_paths
 surfaces: [cli]
-status: draft
+status: approved
 design_doc: docs/superpowers/specs/2026-11-21-tep-chung-khong-chan-gop-design.md
+approved_by: Phan Le Manh
+approved_at: 2026-11-22
 ---
 
 # Acceptance Contract: tep-chung-khong-chan-gop
@@ -72,7 +74,7 @@ Thuật ngữ:
   `plugins/acceptance-gate/skills/acceptance/SKILL.md` và `plugins/acceptance-gate/skills/acceptance/references/eval-executors.md`,
   Then ba bản trùng nhau từng ký tự, và không tệp nào trong ba còn câu bắt mọi `cmd` phải là `config:`; và hồ sơ thử có
   eval khai `cmd` bằng đường dẫn tệp trong thư mục hồ sơ đi trọn đường: `s4-args.mjs` sinh tệp args mang đúng lệnh ấy
-  (không `ref`) · lớp L2 (`evaluateEvidence`) nhận báo cáo có `verifier:` là đường dẫn ấy không vi phạm · làn ghim lại
+  (không `ref`) · lớp L2 (`evaluateEvidence`) nhận báo cáo có `verifier:` là đường dẫn ấy không vi phạm · lệnh ghim lại
   (`repin-lane.mjs --write`) chạy lệnh ấy và ghi `evals_exit` cho eval đó.
 - AC-8: Given hồ sơ thử với gốc vòng là một commit cũ, When `s4-args.mjs` chạy, Then ma trận viết trước bốn hàng — khoá
   `config:` thêm sau gốc vòng và chỉ hồ sơ này dùng → đúng một dòng cảnh báo trên stderr gọi tên eval và khoá, kèm câu
@@ -81,7 +83,7 @@ Thuật ngữ:
 - AC-9: Given gốc tạm có bản sao `_acceptance/` và sổ ở trạng thái KHỚP (số hàng = số mục), rồi thêm một hồ sơ thử có k
   mục `Đề xuất: known-limits` và h < k hàng sẵn có, When chạy khối P179 rút nguyên văn từ `tests/plugins/run-tests.sh`
   TRƯỚC rồi SAU bộ sinh hàng sổ `--write`, Then trước: P179 đỏ «quan he >= vo» và thông điệp chứa lệnh của bộ sinh; sau:
-  sổ dài thêm đúng k − h hàng so với số hàng đo ngay trước lần chạy, mọi hàng cũ giữ từng byte, mỗi hàng mới qua bất biến
+  sổ dài thêm đúng k − h hàng so với số hàng đo ngay trước lần chạy, mọi hàng cũ giữ từng byte, mỗi hàng mới qua luật
   hàng của P179, và P179 xanh trên CÙNG gốc tạm; chạy lần hai không đổi byte nào; hồ sơ không có mục → sổ không đổi. Và
   móc rút từ `.claude/settings.json` của cây đang kiểm (sự kiện `PostToolUse`, `matcher` khớp cả `Write` lẫn `Edit`),
   nhận JSON đầu vào mang `tool_input.file_path` tuyệt đối: tệp là `_acceptance/<slug>/review-findings.md` → gọi bộ sinh
