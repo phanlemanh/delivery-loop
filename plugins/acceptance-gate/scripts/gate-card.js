@@ -1266,8 +1266,30 @@ if (decsProvisional.length) { oneParts.push('Treo: phê hết'); routingBao.push
 // không ghi byte nào cho nó), không phải lời chấp thuận viết hộ — nên nó là dòng BÁO như Treo;
 // người chỉ gõ khi kéo lại (hồ sơ nhan-lan-v-theo-huong).
 const NHAN_LAN_V = 'đi tiếp hay kéo lại';
+// Hồ sơ ĐÃ KHÉP — vị từ tính Ở ĐÂY (dời lên từ sau khối câu gộp, không đổi nghĩa) vì ô gộp bên dưới
+// cần nó; lời giải thích vị từ nằm ở khối «Hồ sơ ĐÃ KHÉP» ngay dưới chỗ dùng cũ.
+const DA_KHEP = daKhepTu(scanHit);
+// Lời gộp trong câu ký (hồ sơ loi-gop-trong-cau-ky): kho khai `feature_loop.gop_theo_loi_ky: true` thì
+// thẻ của hồ sơ ĐANG CHỜ chữ ký người in sẵn ô `gộp: khi CI xanh` ngay trước ô «ký hay trả». Ô là dòng
+// BÁO như «Treo: phê hết»: nó chỉ có hiệu lực khi CHÍNH câu ấy mang chữ «Ký» do người gõ (ADR 0002 — ranh
+// ở ai phát ngôn cuối); người sửa thành «chưa» nếu muốn ký mà chưa gộp. Không in ở hồ sơ máy-đi-trước
+// (không có câu ký), hồ sơ đã có chữ ký, thẻ không ký được, hồ sơ đã khép. Hai hằng dưới là bản của THẺ
+// trong danh sách đóng `GATE-ONESHOT-GOP`; ca vòng-khép của tests/scripts/lgck-the.test.mjs giữ nó khớp
+// với khối luật và với bên đọc của lệnh gộp.
+const NHAN_GOP = 'gộp';
+const GIA_TRI_GOP = 'khi CI xanh';
+// Bật ⇔ khoá viết TRẦN `true` (được kèm chú thích đuôi). `resolveConfigKey` bóc nháy nên `"true"` cũng
+// đọc ra `true`; vế thứ hai đòi chính dòng khoá viết trần, để thẻ và bên đọc của lệnh gộp cùng một phán
+// quyết trên mọi cách viết — thẻ in ô gộp mà lệnh gộp từ chối thì người gõ lời gộp vô ích.
+const cfgGop = read(path.join(root, '_acceptance', 'config.yaml'));
+const KHO_BAT_GOP = evidenceCore.resolveConfigKey(cfgGop, 'feature_loop.gop_theo_loi_ky') === 'true'
+  && /^[ \t]+gop_theo_loi_ky[ \t]*:[ \t]*true(?:[ \t]+#.*)?[ \t]*\r?$/m.test(cfgGop);
+const GOP_THEO_LOI = KHO_BAT_GOP && approvable && !MAY_DI_TIEP && !DA_KHEP && !evidenceCore.chuKyThat(report).signed;
 if (MAY_DI_TIEP) { oneParts.push(`${NHAN_LAN_V}: đi tiếp`); routingBao.push(NHAN_LAN_V); }
-else { oneParts.push('ký hay trả: ___'); routingHoi.push('ký hay trả'); }   // chữ quyết luôn của người
+else {
+  if (GOP_THEO_LOI) { oneParts.push(`${NHAN_GOP}: ${GIA_TRI_GOP}`); routingBao.push(NHAN_GOP); }
+  oneParts.push('ký hay trả: ___'); routingHoi.push('ký hay trả');   // chữ quyết luôn của người
+}
 // Thẻ KHÔNG-ký-được (REJECT/BLOCKED) không có câu gộp: mời ký ở đó là mời trên
 // một thẻ đang đỏ — đúng thứ audit 01/09 gọi tên.
 // Thẻ KHÔNG-ký-được (REJECT/BLOCKED): HTML in «không cần làm gì», nên routing
@@ -1282,7 +1304,6 @@ const cm = chotMay(dir);
 // Vế thực tế hỏi KHOÁ đầu ra `thucTe` của bộ quét — khác null CHỈ khi dòng quan sát đủ vế (vị từ
 // hoSoDaKhep, AC-1). Suy từ tên ô `da-cham-thuc-te` là sai: bộ quét xếp MỌI hồ sơ status ấy vào ô
 // đó, kể cả khi dòng vắng/thiếu vế (Ngoài-5/7 lượt chấm 2 — thẻ giấu câu hỏi, lưới vẫn chặn).
-const DA_KHEP = daKhepTu(scanHit);
 const DA_KHEP_VI = NGHI ? 'đã nghỉ' : 'đã chấm bởi thực tế';
 const oneShotG2 = approvable && !DA_KHEP ? `${ONE_SHOT_CMD_SIGNOFF} ${slug} ${oneParts.join('; ')}` : null;
 if (!approvable) { routingHoi.length = 0; routingBao.length = 0; }
@@ -1581,6 +1602,8 @@ if (DA_KHEP) {
   if (MAY_DI_TIEP) {
     ymItems.push(`<b>Máy đã đi tiếp — không cần trả lời</b> — ${esc(chuMDT().viecKe)}; muốn dừng: sửa ô cuối của dòng lệnh thành «${NHAN_LAN_V}: kéo lại: nêu lý do» (hoặc gõ «kéo lại: nêu lý do»).`);
   } else {
+    // Ô gộp là dòng BÁO (điền sẵn ở dòng lệnh) nên KHÔNG vào dòng mẫu — cùng lệ với cắt/hoãn và Treo.
+    if (GOP_THEO_LOI) ymItems.push(`<b>Gộp — máy đã điền «${GIA_TRI_GOP}»</b> — làm gì: ký xong máy gộp PR khi mọi check xanh; ở đâu: trả lời trong phiên đang trình thẻ; trả lời dạng: sửa ô «${NHAN_GOP}» trong dòng lệnh thành «chưa» nếu anh muốn ký mà chưa gộp.`);
     ymItems.push(`<b>Ký hay trả</b> — làm gì: sau khi trả lời các mục trên, chốt hồ sơ; ở đâu: trả lời trong phiên đang trình thẻ; trả lời dạng: «Ký» hoặc «Trả lại: nêu lý do».`);
     ymSlots.push('ký hay trả: ___');
   }

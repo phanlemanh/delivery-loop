@@ -9,7 +9,7 @@
 #
 # Dùng: source file này rồi gọi  vca_scenario <tên> <thư mục workspace>
 # Tên kịch bản: gate1-draft · gate1-approved · gate2-4loai · gate2-pass-thuan-may · gate2-may-di-tiep
-#               · gate2-reject · gate2-blocked · gate2-weird · gate2-luat
+#               · gate2-reject · gate2-blocked · gate2-weird · gate2-luat · gate2-loi-gop
 # Mỗi lần gọi ghi đè trọn `<ws>/_acceptance/fx/` nên các kịch bản không rò sang nhau.
 
 vca_scenario() {
@@ -200,6 +200,14 @@ EOF
       printf '## SP-1 · Luật mẫu của kho thử\n\n- Mức: thường\n- Chủ luật: Chủ A\n' > "$ws/PRODUCT-INVARIANTS.md"
       local vc; vc="$(sed -n 's/^verified_commit:[[:space:]]*//p' "$d/evidence-report.md" 2>/dev/null | head -1)"
       printf '{"ban":"x","base":"b","den":"%s","sua_tep_luat":{"may":["m"],"nguoi":[]},"cham":[{"ma":"SP-1","tep":"a.ts","dong":1,"chu":"x"}]}\n' "$vc" > "$d/luat-cham.json"
+      ;;
+    gate2-loi-gop)
+      # Lời gộp trong câu ký (loi-gop-trong-cau-ky): gate2-4loai ở kho ĐÃ BẬT khoá `feature_loop.gop_theo_loi_ky`
+      # — thẻ Cổng 2 in ô báo «gộp: khi CI xanh» ngay trước ô hỏi «ký hay trả». Khoá là một phần của kịch bản nên
+      # config.yaml của hồ sơ thử bị GHI ĐÈ (khác gate2-may-di-tiep, chỉ ghi khi vắng); ca muốn kho không bật thì
+      # sửa dòng khoá của chính tệp này.
+      vca_scenario gate2-4loai "$ws" || return $?
+      printf 'schema_version: 1\nenforcement: strict\nrisk_tiers:\n  t1_skip_globs:\n    - "docs/**"\n  t3_paths:\n    - "lib/**"\nsignoff:\n  required_for: [T2, T3]\n  approvers: ["t"]\nfeature_loop:\n  gop_theo_loi_ky: true\n' > "$ws/_acceptance/config.yaml"
       ;;
     *)
       echo "vca_scenario: khong biet kich ban '$name'" >&2; return 2 ;;

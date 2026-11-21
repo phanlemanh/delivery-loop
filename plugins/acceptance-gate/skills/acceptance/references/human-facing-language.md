@@ -325,6 +325,7 @@ g2 Ngoài-<số>
 g2 <mã eval>
 g2 cắt/hoãn
 g2 Treo
+g2 gộp
 g2 ký hay trả
 g2 đi tiếp hay kéo lại
 g2 SP-<số>

@@ -172,7 +172,8 @@ function kiemLuat(law, signoff) {
 }
 CA['NL-AC5-luat'] = () => kiemLuat(readFileSync(LAW, 'utf8'), readFileSync(SIGNOFF, 'utf8'));
 // Round-trip thẻ↔SLOTS: chạy NGUYÊN VĂN bộ kiểm của P192 (rút từ heredoc P192JS trong
-// tests/plugins/run-tests.sh — một nguồn) trên ba thẻ cây này dựng. KHÔNG gọi run-tests.sh bằng
+// tests/plugins/run-tests.sh — một nguồn) trên các thẻ cây này dựng (thẻ thứ năm, gate2-loi-gop của kho bật
+// lời gộp, thêm ở hồ sơ loi-gop-trong-cau-ky để dòng SLOTS `g2 gộp` có thẻ render). KHÔNG gọi run-tests.sh bằng
 // ONLY_BLOCK: P192 là khối viết thẳng, không đi qua run(), nên bộ lọc không khớp khối nào và
 // suite thoát 1 dù P192 xanh (S4-r1 của hồ sơ này).
 function kiemP192(gc, lawPath) {
@@ -181,7 +182,7 @@ function kiemP192(gc, lawPath) {
   if (!m) return ['khong rut duoc checker P192 tu tests/plugins/run-tests.sh'];
   const d = mkdtempSync(path.join(TMP, 'p192-'));
   const chk = path.join(d, 'check-rt.js'); writeFileSync(chk, m[1]);
-  const the3 = [['gate1-draft', '1', 'card-g1.html'], ['gate2-4loai', '2', 'card-g2.html'], ['gate2-may-di-tiep', '2', 'card-g2v.html'], ['gate2-luat', '2', 'card-g2l.html']].map(([sc, g, f]) => {
+  const the3 = [['gate1-draft', '1', 'card-g1.html'], ['gate2-4loai', '2', 'card-g2.html'], ['gate2-may-di-tiep', '2', 'card-g2v.html'], ['gate2-luat', '2', 'card-g2l.html'], ['gate2-loi-gop', '2', 'card-g2g.html']].map(([sc, g, f]) => {
     const h = spawnSync(process.execPath, [gc, '--root', canh(sc), '--slug', 'fx', '--gate', g], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
     const p = path.join(d, f); writeFileSync(p, h.stdout || ''); return p;
   });
