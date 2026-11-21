@@ -51,8 +51,8 @@ không `--auto`); thước `ky_den_gop` ở `plugins/dispatch/scripts/do-gop.mjs
 
 ## Ngưỡng chết / ngưỡng UAT
 
-- Câu hỏi phép đo trả lời: [đề xuất] ở kho đã bật, lời gộp có còn tách khỏi lời ký không, và đoạn ký → gộp có về dưới ngưỡng nền của chính kho ấy không?
-- Kết quả nào là SỐNG: [đề xuất] trong N vòng ký đầu tiên ở các kho đã bật (N ≥ 3, tính trong 21 ngày từ lần cài đầu), 0 vòng tốn một lượt gọi người riêng cho việc gộp, và ký → gộp trung vị không vượt ngưỡng nền của kho (Inventory 51′ · crm 68′); đếm từ lịch sử nhánh chính và sổ quyết định của vòng. N = 0 thì thước vô hiệu, không đọc thành «đạt».
+- Câu hỏi phép đo trả lời: [đề xuất] ở kho đã bật, lời gộp có còn tách khỏi lời ký không, và đoạn chờ người sau khi CI đã xanh — «ô bắt buộc xanh → gộp» — có rút ngắn so với nền của chính kho ấy không?
+- Kết quả nào là SỐNG: [đề xuất] trong N vòng ký đầu tiên ở các kho đã bật (N ≥ 3, tính trong 21 ngày từ lần cài đầu), 0 vòng tốn một lượt gọi người riêng cho việc gộp, và «ô bắt buộc xanh → gộp» trung vị không quá một nửa nền của kho (Inventory: nền 22′ trên 63 hồ sơ 10–20/11, ngưỡng 11′). Đoạn ký → gộp trọn chỉ ghi làm bối cảnh, không là ngưỡng: phần ký → ô bắt buộc xanh do commit và lần gộp ngược sau chữ ký quyết, thuộc việc khác. Đếm bằng `gh` trên PR của cửa sổ theo cách đo của báo cáo nguồn và sổ quyết định của vòng; không dựng thước mới trong kit. N = 0 thì thước vô hiệu, không đọc thành «đạt».
 - Kết quả nào là CHẾT: [đề xuất] một lần máy gộp mà câu người gõ không mang lời gộp — tắt khoá ngay, bất kể các số khác; hoặc ≥ 2 trên N vòng vẫn phải xin lời gộp riêng dù câu ký đã mang ô gộp.
 - Timebox: [đề xuất] cửa sổ 21 ngày từ lần cài đầu ở một kho bật khoá; ngày cài là quyết định riêng của chủ kho, không sớm hơn 02/12/2026.
 
@@ -66,6 +66,7 @@ Không dựng prototype — vật là chữ trên thẻ và một lối vào c�
 |---|---|---|---|---|
 | Sổ đợt chuyển nhà (số đo 19–21/11, lời chủ kho) | `migration/TRANG-THAI.md` trên nhánh `chuyen-nha` của kho này | triết-lý/logic | có — chỉ số đo và lời trích | — |
 | Thiết kế ký → gộp | `docs/superpowers/specs/2026-10-23-ky-den-gop-design.md` | triết-lý/logic | có — bốn điều kiện gộp, «không làm hàng gộp tự động» | — |
+| Báo cáo đo quyết → gộp 20/11 (63 hồ sơ của `onehub-inventory` tại `f2a49b49`: ký → gộp trung vị 1,15 giờ; ô bắt buộc xanh → gộp trung vị 0,36 giờ) | `phanlemanh/repo-standards`, `docs/reports/2026-11-20-decision-to-merge-trace.md` | triết-lý/logic | có — chỉ số nền và cách tách đoạn; số đã đối chiếu với tệp nguồn, lệnh đo chưa chạy lại ở vòng này | — |
 
 ## Cổng 0
 
