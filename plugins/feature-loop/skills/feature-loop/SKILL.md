@@ -576,7 +576,7 @@ gộp được trước chữ ký: lưới trước-gộp đòi hồ sơ đã k�
 
 🎨 S4 có WARN fidelity-skip → nêu lên ĐẦU gói Gate 2, không nén vào phần "máy đã lo". **(CT1)** ghi lane hiện tại (D0/D1) + các entry descope lane vào gói Gate 2.
 
-User: điền `human_override: <tên> <ngày>` cho từng UNCERTAIN (T3: MỌI judgment item), nâng PENDING-JUDGMENT → PASS nếu đồng ý, điền `human_signoff`. Xong: set contract `status: signed-off`, rồi commit các edit Gate-2 này — MỘT lượt, không cần tách khỏi thân báo cáo (nghi thức tách đã gỡ, ADR 0012); evidence máy-viết đã commit từ cuối S4. Ai chịu trách nhiệm đọc ở forge: người approve / bấm merge PR; pre-merge in một dòng «chữ ký mới trong diff» để chỗ đó không vô hình. Human để lại ghi chú revisit/đảo-ngược → append 1 entry `stage:"gate2"`; signoff đồng thời là phê chuẩn khối provisional mà card đã trình riêng.
+User: điền `human_override: <tên> <ngày>` cho từng UNCERTAIN (T3: MỌI judgment item), nâng PENDING-JUDGMENT → PASS nếu đồng ý, điền `human_signoff`. Xong: set contract `status: signed-off`, rồi commit các edit Gate-2 này — MỘT lượt, không cần tách khỏi thân báo cáo (nghi thức tách đã gỡ, ADR 0012); evidence máy-viết đã commit từ cuối S4. Ai chịu trách nhiệm đọc ở forge: người approve / bấm merge PR; pre-merge in một dòng «chữ ký mới trong diff» để chỗ đó không vô hình. Human để lại ghi chú revisit/đảo-ngược → append 1 entry `stage:"gate2"`; signoff đồng thời là phê chuẩn khối provisional mà card đã trình riêng. Kho bật `feature_loop.gop_theo_loi_ky` thì dòng lệnh thẻ đã mang ô `gộp: khi CI xanh` — chép đúng như thẻ in, không tự thêm hay bớt ô ấy; câu ký mang lời gộp thì S5 gộp theo lời (khối `GOP-THEO-LOI-KY`).
 
 ## S5 — SHIP
 
@@ -590,6 +590,27 @@ giá trị hợp lệ: `pr` · `merge` · `branch` · `ask`
 (`merge` gộp thẳng khi repo cho phép · `branch` đẩy nhánh không mở PR · `ask` bày ba lối như
 cũ). Việc BẤM MERGE vẫn là của người — khó-đảo.
 <!-- S5-SHIP-DEFAULT>>> -->
+
+**Gộp theo lời ký (hồ sơ loi-gop-trong-cau-ky) — ngoại lệ có lời người của câu «bấm merge là của người».** Kho khai
+`feature_loop.gop_theo_loi_ky: true` thì dòng lệnh ký của thẻ Cổng Bằng chứng đã mang ô `gộp: khi CI xanh`, và lệnh ký ghi
+trọn câu người gõ thành một dòng sổ `loi_gop` cùng commit chữ ký. Hồ sơ `signed-off` có dòng ấy mang lời gộp, vòng chạy
+NGOÀI đợt → sau khi commit chữ ký đã lên PR, chạy đúng dòng lệnh dưới ở chế độ NỀN (chính lệnh chờ CI; phiên không tự hỏi
+lại) rồi làm theo bảng mã thoát. Lệnh là chỗ DUY NHẤT gộp: nó đọc trên đầu nhánh của PR và tự đọc lại câu người gõ; câu
+không mang lời gộp thì nó từ chối, máy không gộp. Kho tự host kit: `DP=plugins/dispatch`. Vòng trong đợt: khối TRONG-DOT
+thắng như cũ. Bộ giải thoát 1 (gói điều phối chưa cài) → một dòng «gói điều phối chưa cài — lời gộp đã ghi trong sổ; bấm
+gộp là của người», không chặn. Resume vào `signed-off` mà PR còn mở và sổ có dòng lời gộp → chạy lại khối này.
+<!-- <<<GOP-THEO-LOI-KY -->
+```
+DP=$(node "$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs" --plugin dispatch --require scripts/dieu-phoi.mjs) && node "$DP/scripts/dieu-phoi.mjs" gop <số PR> --theo-loi --slug <slug> --cho-ci 30
+```
+<!-- GOP-THEO-LOI-KY>>> -->
+<!-- <<<GOP-THEO-LOI-THOAT -->
+```
+0 → đã gộp: báo một dòng (số PR, commit gộp); vòng đóng
+4 → chưa gộp được lúc này (hết giờ chờ CI, hoặc nhánh chính đã tiến): gộp nhánh chính vào nhánh theo lệ của kho nếu lệnh bảo thế, rồi chạy lại MỘT lần; vẫn 4 → báo một dòng và dừng, việc gộp về tay người
+1 → không gộp (thiếu một vế, CI đỏ, PR không mở): in nguyên dòng lý do; việc gộp về tay người như trước vòng
+```
+<!-- GOP-THEO-LOI-THOAT>>> -->
 
 PR đã sẵn sàng từ bước PR-SAN-SANG ở Cổng 2 → đẩy commit chữ ký lên đúng PR ấy, không mở PR mới. Chưa có PR: invoke `superpowers:finishing-a-development-branch` → PR theo quy trình repo (không push thẳng nhánh chính nếu repo cấm). Update doc trạng thái của repo nếu có. CI pre-merge check của acceptance-gate kit (`scripts/pre-merge-check.sh`) là chốt chặn độc lập — không bypass; repo CHƯA wire nó vào CI → cảnh báo user rõ ràng (gate không enforce trước merge, xem README của kit cách wire).
 

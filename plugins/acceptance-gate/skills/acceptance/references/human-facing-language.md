@@ -349,6 +349,29 @@ kéo-lại = ghi `veto_state: da-veto` vào contract + một dòng sổ `type: v
 đi-tiếp = không ghi gì; in «cửa veto vẫn mở»
 <!-- GATE-ONESHOT-LAN-V>>> -->
 
+Lời gộp trong câu ký (hồ sơ loi-gop-trong-cau-ky) — chỉ ở kho khai `feature_loop.gop_theo_loi_ky: true`. Thẻ Cổng 2
+của hồ sơ chờ chữ ký người in sẵn ô `gộp: khi CI xanh` ngay trước ô «ký hay trả»; ô là dòng BÁO, người chỉ sửa khi
+muốn ký mà chưa gộp. Khối dưới là danh sách ĐÓNG các dạng người gõ, mỗi dạng dẫn tới đúng MỘT lối; thân lệnh signoff
+trỏ khối này, bộ dựng thẻ và lệnh gộp của gói điều phối giữ bản hằng của riêng mình và được ca vòng-khép giữ khớp. So
+theo từng vế của câu (tách bằng `;`): chuẩn hoá Unicode NFC, bỏ khoảng trắng đầu cuối, không phân biệt hoa thường; vế
+ký được mang tiền tố `ký hay trả:` (người điền ô của dòng thẻ) và đuôi `, phút <số>`. Dạng ngoài danh sách KHÔNG phải
+lời gộp — máy không đoán, vì hiểu sai một lời gộp thì đắt và khó đảo; nó được chép vào sổ như mọi đuôi tự do.
+
+<!-- <<<GATE-ONESHOT-GOP -->
+gộp: khi CI xanh → gộp
+gộp khi CI xanh → gộp
+gộp: khi xanh → gộp
+gộp khi xanh → gộp
+gộp: chưa → chưa-gộp
+chưa gộp → chưa-gộp
+Ký → chữ-ký
+Ký: <tên> → chữ-ký
+Ký: <tên> <ngày> → chữ-ký
+ký hay trả: Ký → chữ-ký
+Trả lại: <lý do> → trả-lại
+có-lời-gộp = có ít nhất một vế lối gộp · không có vế lối chưa-gộp · có một vế lối chữ-ký · không có vế lối trả-lại
+<!-- GATE-ONESHOT-GOP>>> -->
+
 Câu dưới đây là bản gốc DUY NHẤT của điều khoản một-lượt-gõ. Mười hai thân
 lệnh cổng người chép nguyên văn, không tự diễn đạt; số bản phải có của từng
 site khai ở manifest ngay dưới — thêm/bớt site hay bản chép là quyết định

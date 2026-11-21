@@ -47,6 +47,21 @@ chỉ khai QUYẾT ĐỊNH; danh tính và ngày là điều máy biết:
   một gạch known-limits vào `## Notes` của hợp đồng.
 - «Tệp luật: <đã tách / lý do>» → vòng có commit máy sửa tệp luật của kho (cờ đỏ trên thẻ);
   người xác nhận đã tách thay đổi luật thành commit riêng của chủ kho, ghi một dòng sổ `gate2`.
+- «gộp: khi CI xanh» hoặc «gộp: chưa» → lời gộp đi cùng lời ký (hồ sơ loi-gop-trong-cau-ky). CHỈ ở kho khai
+  `feature_loop.gop_theo_loi_ky: true` trong `_acceptance/config.yaml`; thẻ của kho ấy đã điền sẵn «gộp: khi CI xanh»
+  ngay trước ô «ký hay trả». Dạng nào là lời gộp, dạng nào là chưa gộp, dạng nào là vế ký: đọc khối `GATE-ONESHOT-GOP`
+  của bản luật ngôn ngữ mặt người — danh sách ĐÓNG, máy không đoán dạng ngoài danh sách (dạng lạ chép vào sổ như mọi
+  đuôi tự do, không dẫn tới gộp). Kho bật: MỌI câu có chữ ký — mang lời gộp, «gộp: chưa», hay vắng hẳn nhãn — ghi ở
+  bước 7a đúng MỘT dòng sổ theo khuôn `LOI-GOP-GATE2-LINE` dưới đây, mang nguyên văn TRỌN câu người gõ (mọi vế, kể cả
+  vế ký), và dòng ấy đi CÙNG commit với chữ ký ở bước 7c. Lệnh gộp không tin cách hiểu của phiên: nó đọc lại chính
+  câu ấy trên đầu nhánh của PR, và chỉ nhận dòng sinh cùng commit với chữ ký hiện hành — chép lệch câu, hay ghi dòng ở
+  một commit khác, thì máy không gộp. Kho không bật, hay câu «Trả lại»: không ghi dòng ấy, hành vi như trước. Id theo
+  khối `DEC-ID-RECIPE` của SKILL feature-loop, dòng giữa là:
+<!-- <<<LOI-GOP-GATE2-LINE -->
+```
+"type":"revisit","stage":"gate2","at":"<ISO>","decision":"lời gộp trong câu ký: <gộp khi CI xanh | chưa gộp>","why":"Người gõ ở Cổng Bằng chứng; máy chép nguyên văn câu.","cost_if_wrong":"Chép lệch câu thì máy không gộp, hoặc gộp ngoài ý người ký; đảo bằng một commit hoàn lại trên nhánh chính.","decided_by":"<tên>","loi_gop":{"cau":"<trọn câu người gõ sau tên lệnh và tên hồ sơ, nguyên văn, một dòng>"}
+```
+<!-- LOI-GOP-GATE2-LINE>>> -->
 - Chỗ trống «ký hay trả»: `Ký[: <tên> [<ngày>]]` →
   `human_signoff` + verdict upgrade (chỉ khi mọi override đã điền) +
   contract `status: signed-off`; hoặc
@@ -225,7 +240,10 @@ Steps:
    cũng qua. Sau khi người phát ngôn, ghi các dòng thuộc về người trong
    `evidence-report.md` (`human_signoff`, `human_override`, the verdict
    upgrade, `bypass_ack`) + contract `status: signed-off`, và `PRODUCT-MAP.md`
-   ONLY if step 6 actually regenerated it.
+   ONLY if step 6 actually regenerated it. Kho khai `feature_loop.gop_theo_loi_ky: true`
+   → ghi luôn ở đây dòng sổ lời gộp theo khuôn `LOI-GOP-GATE2-LINE` (một dòng cho
+   mỗi câu có chữ ký), để nó đứng trước làn 7b và đi cùng commit chữ ký ở 7c — thêm
+   ` _acceptance/<slug>/decisions.jsonl` vào `git add` của 7c.
 
    **7a-bis — bản ghi mốc ĐỊNH TUYẾN (chỉ kho TỰ HOST kit). ĐỨNG SAU 7a, KHÔNG
    trước.** Cùng lớp với bản đồ và cùng lý do (ADR 0019 nới ADR 0007): ca LM20 chỉ
@@ -323,6 +341,32 @@ AG="${AG:-${CLAUDE_PLUGIN_ROOT}}" && PMAP=scripts/product-map.mjs && { [ -f "$PM
    khi giao còn một cổng nữa — phiên nghiệm thu:
    `/acceptance-gate:uat-session <slug>`.» Không có `opportunity.md` → «không hồ
    sơ cơ hội nên ship thẳng, vòng đóng.»
+
+   **Gộp theo lời ký (hồ sơ loi-gop-trong-cau-ky).** Dòng lời gộp vừa ghi ở 7a mang lời
+   gộp (câu người gõ có vế lối «gộp» của khối `GATE-ONESHOT-GOP`) và vòng chạy NGOÀI một
+   đợt điều phối → máy không dừng ở «bấm merge là của người»: đẩy commit chữ ký lên PR của
+   vòng (chưa có PR thì mở theo quy trình kho), rồi chạy đúng dòng lệnh của khối dưới ở chế
+   độ NỀN — chính lệnh chờ CI, phiên không tự hỏi lại. `<feature-loop>` giải như ở bước 7b;
+   kho tự host kit: `DP=plugins/dispatch`. Lệnh là chỗ DUY NHẤT gộp: nó đọc trên đầu nhánh
+   của PR, đòi kho bật, hồ sơ đã ký, báo cáo có chữ ký, dòng lời gộp cuối của sổ đọc lại ra
+   lời gộp và sinh cùng commit với chữ ký, CI xanh trên đúng đầu nhánh — rồi gộp bằng commit
+   gộp, đúng commit đã kiểm, không bật tự gộp của GitHub. Vòng chạy TRONG đợt: luật của đợt
+   quyết việc gộp như cũ; lời gộp chỉ được ghi. Gói điều phối chưa cài (bộ giải thoát 1) →
+   in đúng một dòng «gói điều phối chưa cài — lời gộp đã ghi trong sổ; bấm gộp là của
+   người», không chặn.
+
+<!-- <<<GOP-THEO-LOI-KY -->
+```
+DP=$(node "<feature-loop>/scripts/resolve-plugin.mjs" --plugin dispatch --require scripts/dieu-phoi.mjs) && node "$DP/scripts/dieu-phoi.mjs" gop <số PR> --theo-loi --slug <slug> --cho-ci 30
+```
+<!-- GOP-THEO-LOI-KY>>> -->
+<!-- <<<GOP-THEO-LOI-THOAT -->
+```
+0 → đã gộp: báo một dòng (số PR, commit gộp); vòng đóng
+4 → chưa gộp được lúc này (hết giờ chờ CI, hoặc nhánh chính đã tiến): gộp nhánh chính vào nhánh theo lệ của kho nếu lệnh bảo thế, rồi chạy lại MỘT lần; vẫn 4 → báo một dòng và dừng, việc gộp về tay người
+1 → không gộp (thiếu một vế, CI đỏ, PR không mở): in nguyên dòng lý do; việc gộp về tay người như trước vòng
+```
+<!-- GOP-THEO-LOI-THOAT>>> -->
 
 Never:
 - invent a verdict, or guess a name/date beyond the identity ladder
