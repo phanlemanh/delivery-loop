@@ -6,7 +6,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, cpSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, cpSync, rmSync, realpathSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -78,7 +78,9 @@ function banTruoc() {
 // Một lượt đo: chạy trọn kịch bản (ghi · --check khớp · lệch · đã xoá · bộ quét) bằng MỘT bản, trên một kho dựng mới.
 function luot(pmFile, scanFile, khoa, ten) {
   const r = kho({ khoa, pmFile, ten });
-  const chuan = s => String(s).split(r).join('<KHO>').split(path.dirname(path.dirname(pmFile))).join('<AG>');
+  const ag = path.dirname(path.dirname(pmFile));
+  const thay = [[realpathSync(ag), '<AG>'], [ag, '<AG>'], [realpathSync(r), '<KHO>'], [r, '<KHO>']];
+  const chuan = s => thay.reduce((x, [tu, den]) => x.split(tu).join(den), String(s));
   const ra = {};
   const ghi = chay(pmFile, ['--root', r], r);
   ra.ghi = [ghi.status, chuan(ghi.stdout), chuan(ghi.stderr), ...VIEWS.map(v => readFileSync(path.join(r, v), 'utf8'))];
