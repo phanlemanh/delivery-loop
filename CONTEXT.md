@@ -110,7 +110,9 @@ _Avoid_: «giả lập UAT» (máy không phán giá trị), test log, hồ sơ 
 View máy sinh `PRODUCT-MAP.md` ở gốc repo — vẽ từ hồ sơ xưởng bởi
 `product-map.mjs`, kiểm bằng `--check` (view phải khớp hồ sơ). Trạng
 thái vắng mặt phân biệt "đã xoá" với "chưa bật" theo bảng nhãn chung trong
-`lib/workspace-record.cjs`.
+`lib/workspace-record.cjs`. Kho khai `ban_do.ngoai_git: true` thì bản đồ và trang lộ trình **vẽ tại chỗ**, không
+được git theo dõi (trạng thái `ve-tai-cho`); khai thêm `ban_do.nhanh_ve` thì một job sau gộp đẩy hai view lên
+**nhánh view** cho bên đọc qua git (hồ sơ `tep-chung-khong-chan-gop`).
 _Avoid_: roadmap, dashboard; sửa tay (nó là view, sửa hồ sơ rồi vẽ lại).
 
 **Lộ trình**:
