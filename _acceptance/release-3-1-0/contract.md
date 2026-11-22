@@ -5,9 +5,11 @@ slug: release-3-1-0
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: 5 tệp khai + câu khớp-phiên-bản của GUIDE + CHANGELOG + hồ sơ mốc + bản đồ — KHÔNG dính t3_paths
 surfaces: [cli]
-status: draft
+status: implemented
 approved_by:
 approved_at:
+veto_state: mo
+veto_opened_at: 2026-11-22T10:55:00Z
 ---
 
 # Acceptance Contract: release-3-1-0
