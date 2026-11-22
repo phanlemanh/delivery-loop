@@ -48,7 +48,7 @@ const SCAN = 'plugins/acceptance-gate/scripts/start-scan.mjs';
 const NHAT = [
   ['bo-kiem-chi-muc', PM, 'if (theoDoi.status === 0) { loi.push(', 'if (false) { loi.push(', 'TCG-3-1', 'không hỏi được git về PRODUCT-MAP.md'],
   ['bo-kiem-ignore', PM, "if (gitRc(root, ['check-ignore', '-q', '--', v]).status !== 0) loi.push(", 'if (false) loi.push(', 'TCG-3-3', 'vẽ tại chỗ, ngoài git'],
-  ['tat-di-nhanh-moi', PM, 'if (check && bd.ngoaiGit) {', 'if (check && (bd.ngoaiGit || true)) {', 'TCG-1', 'lech byte'],
+  ['tat-di-nhanh-moi', PM, 'if (check && bd.ngoaiGit) {', 'if (check && (bd.ngoaiGit || true)) {', 'TCG-1', 'lech byte: khoa vang, tinh huong khop (so voi moc ghim 50840764d39b317d02eb4d881917bd128d67c86f — vong doi dau ra co chu dich thi doi MOC_TRUOC_VONG ve goc cua vong do)'],
   ['khoa-sai-la-tat', WR, 'loi: `ban_do.ngoai_git phải là true hoặc false', 'loi: null, x: `ban_do.ngoai_git phải là true hoặc false', 'TCG-5-dang', 'lib, dang yes'],
   ['them-vo-dieu-kien', 'plugins/acceptance-gate/commands/approve.md', 'if [ -f "$f" ] && ! git check-ignore -q -- "$f"; then', 'if [ -f "$f" ]; then', 'TCG-4-bat', 'paths are ignored'],
   ['quet-tra-da-xoa', SCAN, 'ngoaiGit: bd.ngoaiGit, khoaSai', 'ngoaiGit: false, khoaSai', 'TCG-5-bat', 'da-xoa'],

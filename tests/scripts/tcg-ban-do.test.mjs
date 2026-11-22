@@ -67,12 +67,15 @@ const quet = r => { const x = chay(SCAN, ['--root', r], r); assert.equal(x.statu
 // ── AC-1 — kho không bật không đổi byte so với bản trước vòng ──────────────────────────────────────────────────
 // Lịch sử git hỏi ở kho thật: bản sao đã tiêm của tcg-mutants không phải kho git, nên nó truyền TCG_GIT_GOC.
 const GIT_GOC = process.env.TCG_GIT_GOC ? path.resolve(process.env.TCG_GIT_GOC) : GOC;
+// Bản trước vòng = commit CỐ ĐỊNH: nhánh chính ngay trước vòng tep-chung-khong-chan-gop (cha thứ nhất của commit gộp PR
+// #17, 56bb22b1). Không suy từ trạng thái nhánh: merge-base HEAD origin/main trùng HEAD trên nhánh chính và đã chứa vòng
+// trên mọi nhánh PR mở sau gộp (hồ sơ tcg1-ghim-moc-truoc-vong). Vòng sau đổi CÓ CHỦ ĐÍCH đầu ra product-map/start-scan
+// cho kho không bật thì TCG-1 đỏ «lech byte» — vòng ấy dời hằng này về gốc của chính nó (tiền lệ ho-so-da-ky-giu-tuoi).
+const MOC_TRUOC_VONG = '50840764d39b317d02eb4d881917bd128d67c86f';
 function banTruoc() {
-  let ref = null;
-  for (const b of ['origin/main', 'main']) { const x = gitThu(GIT_GOC, 'rev-parse', '--verify', '-q', b); if (x.status === 0) { ref = b; break; } }
-  if (!ref) return { loi: 'khong tim duoc nhanh chinh (origin/main, main)' };
-  const mb = git(GIT_GOC, 'merge-base', 'HEAD', ref);
-  if (mb === git(GIT_GOC, 'rev-parse', 'HEAD')) return { loi: 'khong co ban truoc vong' };
+  const mb = MOC_TRUOC_VONG;
+  if (gitThu(GIT_GOC, 'cat-file', '-e', `${mb}^{commit}`).status !== 0) return { loi: `khong co commit moc ${mb} — kho clone nong? chay git fetch --unshallow` };
+  if (gitThu(GIT_GOC, 'merge-base', '--is-ancestor', mb, 'HEAD').status !== 0) return { loi: `moc ${mb} khong phai to tien cua HEAD` };
   const d = path.join(TMP, 'truoc'); mkdirSync(d, { recursive: true });
   execFileSync('bash', ['-c', `git -C "$1" archive "$2" plugins/acceptance-gate | tar -x -C "$3"`, 'x', GIT_GOC, mb, d]);
   return { sha: mb, pm: path.join(d, 'plugins', 'acceptance-gate', 'scripts', 'product-map.mjs'), scan: path.join(d, 'plugins', 'acceptance-gate', 'scripts', 'start-scan.mjs') };
@@ -98,7 +101,7 @@ test('TCG-1 kho khong bat khong doi byte so ban truoc vong', () => {
   const t = banTruoc(); assert.ok(!t.loi, `FAIL: TCG-1 ${t.loi}`);
   for (const [nhan, khoa] of [['vang', ''], ['false', 'ban_do:\n  ngoai_git: false\n']]) {
     const a = luot(t.pm, t.scan, khoa, `t1-${nhan}-truoc/kho`); const b = luot(PM, SCAN, khoa, `t1-${nhan}-sau/kho`);
-    for (const k of Object.keys(a)) assert.deepEqual(b[k], a[k], `lech byte: khoa ${nhan}, tinh huong ${k}`);
+    for (const k of Object.keys(a)) assert.deepEqual(b[k], a[k], `lech byte: khoa ${nhan}, tinh huong ${k} (so voi moc ghim ${t.sha} — vong doi dau ra co chu dich thi doi MOC_TRUOC_VONG ve goc cua vong do)`);
   }
 });
 test('TCG-1-bat kho bat phai khac giua hai ban', () => {
