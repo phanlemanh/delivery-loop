@@ -79,7 +79,7 @@ vào nhánh, trả lời một dòng là đủ. Mỗi lần đẩy `chuyen-nha` 
 
 | Khi | Việc | Ai quyết |
 |---|---|---|
-| Ngay | Nhánh chính kit đỏ → mở vòng sửa | chủ kho bảo mở phiên |
+| ~~Ngay~~ | ~~Nhánh chính kit đỏ → mở vòng sửa~~ — **xong 22/11**: `main` xanh ở `a2198fcf` (PR #22) | — |
 | Ngay | Mở lại vòng bản vá chữ ký giữ chỗ (đã có quyết định). Khi mở, hỏi chủ kho có gộp sáu mục Ngoài-6, 7, 8, 12, 13, 14 của `tep-chung-khong-chan-gop/review-findings.md` vào không: kho đầu tiên bật `ban_do.ngoai_git` sẽ vấp chúng | chủ kho bảo mở phiên |
 | Ngay, còn treo | Dòng «Đường lùi» ở `GUIDE.md` §5.4 (trên nhánh chính): mở PR tài liệu bỏ nó, hay giữ. Chủ kho chưa trả lời | chủ kho |
 | Mỗi sáng | Chuông hằng ngày (mục 9) | máy |
