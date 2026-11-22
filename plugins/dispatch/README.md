@@ -260,6 +260,21 @@ CI theo lệ của kho, chạy lại · 1 = chặn (PR nháp, hồ sơ chưa ký
 `hang-moi`) theo mục «Cách xin tài nguyên» của `LUAT.md` của đợt. Yêu cầu `can-nguoi` chưa trả lời hiện ở danh
 sách chờ người của bảng đợt và được lệnh đếm tính một lần.
 
+**Chuyến gộp** (hồ sơ `chuyen-gop`, thí điểm «trợ lý quyết định»): kho khai `"chuyen_gop": {"bat": true,
+"cua_so_phut": 60, "lenh_kiem": "<lệnh kiểm của kho>"}` trong `dieu-phoi.config.json` → thợ giữ khoá `merge` chạy
+`node <thư mục đợt>/loi/dieu-phoi.mjs chuyen <số PR>,<số PR>,…`. Lệnh gom các PR đã đạt bằng chứng (mở, không nháp, CI
+xanh trên đầu nhánh, hồ sơ đã thông, qua cửa proof) vào một chuyến tính từ PR đạt sớm nhất; hết cửa sổ thì dựng chuyến từ
+đỉnh nhánh chính trong một worktree tạm (PR xung đột với phần đứng trước rớt, có tên), chạy `lenh_kiem` MỘT lần trên ngọn
+chuyến, xanh thì gộp cả chuyến theo thứ tự đạt bằng chứng (`gh pr merge --merge --match-head-commit`). Ngọn đỏ thì tách đôi
+tiền tố để tìm PR làm chuyến đỏ, PR ấy rớt, phần còn lại kiểm lại. Mã thoát: 0 đã gộp · 4 chờ tới giờ khởi hành (`--ngay`
+khởi hành luôn) · 1 không PR nào gộp được. `--xet` chỉ in quyết định. Mỗi lần chạy ghi một sự kiện `chuyen`. Vắng khoá =
+tắt; lệnh `gop` từng PR chạy như cũ.
+
+**Cửa proof cho mặc-ký** (cùng hồ sơ): hồ sơ trên đầu PR mang món mặc-ký (dòng máy `"may":"mac-ky"` đi theo khuyến nghị,
+chưa người nào quyết lại, hồ sơ chưa có chữ ký người ở Cổng Bằng chứng) chỉ tự gộp — bằng `gop` hay `chuyen` — khi
+`governance/autonomy.yaml` ở NHÁNH CHÍNH khai `proof.check`, check ấy xanh trên đúng đầu nhánh, và mọi tệp PR đổi ở tầng
+`low` của luật. Thiếu một vế → chặn, nêu đúng vế. Hồ sơ không mang món mặc-ký đi như trước.
+
 **Gộp theo lời ký, ngoài đợt** (hồ sơ `loi-gop-trong-cau-ky`, ADR 0029): `dieu-phoi.mjs gop <số PR> --theo-loi --slug <s>
 [--cho-ci <phút>]` là lối vào thứ hai của CÙNG lệnh gộp, cho vòng chạy ngoài một đợt. Nó không đòi đợt, khoá `merge` hay
 `tu_merge`; quyền đến từ lời người đã gõ ở Cổng Bằng chứng. Lệnh đọc trên đầu nhánh của PR và đòi đủ sáu vế — kho khai
