@@ -308,7 +308,7 @@ check('AC-10 khuon trong SKILL ghi bang writer doc bang reader', () => {
   const slot = khoi('DEC-TRO-LY-SLOT');
   const t = require(MOD);
   // Mỗi dòng của khối là một mảnh JSON nối sau `"cost_if_wrong":…` — điền ô rồi parse, khoá phải đúng tập của mô-đun.
-  const dien = l => l.replace(/<loại câu[^>]*>/, 'chon-cach-lam').replace(/<glob[^>]*>/, 'src/kho/**').replace(/<mã dòng[^>]*>/, 'd-1').replace(/<[^>]+>/g, 'x');
+  const dien = l => l.replace(/<loại câu[^>]*>/, 'chon-cach-lam').replace(/<glob[^>]*>/, 'src/kho/**').replace(/<mã dòng[^>]*>/, 'd-1').replace(/<([a-z-]+)\|[^>]*>/g, '$1').replace(/<[^>]+>/g, 'x');
   const manh = slot.split('\n').filter(l => l.startsWith(',')).map(l => JSON.parse('{' + dien(l).slice(1) + '}'));
   if (manh.length < 4) die(`khối DEC-TRO-LY-SLOT cần ≥4 mảnh, có ${manh.length}`);
   const r = mkKho(); const dot = dotTrong();
