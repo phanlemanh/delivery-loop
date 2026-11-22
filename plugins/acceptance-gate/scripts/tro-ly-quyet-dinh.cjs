@@ -16,6 +16,10 @@
 //   node tro-ly-quyet-dinh.cjs --root <kho> --slug <hồ sơ> [--write] [--json] [--dot <thư mục đợt>]
 //   node tro-ly-quyet-dinh.cjs --root <kho> --slug <hồ sơ> --check        (thoát 2 khi sổ sai lược đồ)
 //   node tro-ly-quyet-dinh.cjs --root <kho> --dem [--json] [--dot <thư mục đợt>]
+//   node tro-ly-quyet-dinh.cjs --root <kho> --slug <hồ sơ> --ghi phu-quyet --ve <mã S1> --nguoi <tên> --lua-chon '<câu>' [--pham-vi lan-nay|tu-nay]
+//   node tro-ly-quyet-dinh.cjs --root <kho> --slug <hồ sơ> --ghi kiem-mau --ket dat|sai --nguoi <tên> [--ve <mã S1>] [--lua-chon '<câu>']
+//   node tro-ly-quyet-dinh.cjs --root <kho> --slug <hồ sơ> --ghi lam-lai --nguon phu-quyet|bo-kiem|khac --lua-chon '<câu>' [--ve <mã S1>] [--stage S4-r<N>]
+//   Thêm --base <gốc nhánh> khi xếp: tệp thật của vòng phải nằm trong vùng đã khai của câu (không thì «vung-lech»).
 // Thoát: 0 ổn · 2 khoá cấu hình sai giá trị hay sổ sai lược đồ · 3 dùng sai lệnh / không đọc được hồ sơ.
 const fs = require('fs');
 const path = require('path');
@@ -49,6 +53,8 @@ const LY_DO = {
   'tat': 'mặc-ký tắt ở kho (tro_ly_quyet_dinh.mac_ky)',
   'kho-dao': 'món khó đảo — luôn hỏi người',
   'luat-san-pham': 'chạm luật sản phẩm bất khả xâm — luôn hỏi người',
+  'tien-ra-ngoai': 'chạm tiền hay thứ gửi ra ngoài kho — luôn hỏi người',
+  'vung-lech': 'diff thật chạm tệp ngoài vùng đã khai của câu — hỏi người',
   'man-hinh': 'hàng màn hình — cổng màn hình chủ kho phải tự trải nghiệm',
   'loai-hang-khong-ro': 'hợp đồng không khai surfaces — không biết hàng backend hay màn hình',
   'loai-la': 'loại câu không có trong danh mục của kit',
@@ -65,7 +71,7 @@ const LY_DO = {
 const KHOA = 'tro_ly_quyet_dinh';
 const MAC_DINH = { mac_ky: false, nguong_hoi: 5, nguong_theo: 100, nguong_lam_lai: 0, kiem_mau_moi: 5, loai_tat: [], khong_bao_gio: [], thang_cap: [], nguoi_quyet: '' };
 const MAN_HINH = new Set(['ui', 'web', 'web-ui', 'mobile']);
-const DA_THONG = new Set(['signed-off', 'machine-cleared']);
+const DA_THONG = new Set(['signed-off', 'machine-cleared', 'da-cham-boi-thuc-te']); // cùng tập với dispatch/scripts/phat-lich.mjs DA_THONG
 const TEP_GIU_QUYEN = 'giu-quyen.txt';
 const TEN_LIEN_KET = 'dieu-phoi-hien-tai'; // cùng chuỗi với feature-loop/scripts/trong-dot.mjs
 
@@ -254,7 +260,14 @@ function thongKe(hsList, cfg, { boSlug = null } = {}) {
 const chonKiemMau = (slug, moi) => parseInt(crypto.createHash('sha256').update(String(slug)).digest('hex').slice(0, 8), 16) % moi === 0;
 
 // ── Xếp các câu chỉ-người của một hồ sơ ──────────────────────────────────────────────────────────────────
-function xetHoSo({ root, slug, dot = null, entries = null, cfg = null }) {
+// Tệp thật của vòng (khi có gốc nhánh): diff gốc…HEAD trừ hồ sơ của chính vòng và tài liệu. Không có gốc → null (chưa so).
+function tepCuaVong(root, slug, base) {
+  if (!base) return null;
+  const r = spawnSync('git', ['-C', root, 'diff', '--name-only', '--no-renames', `${base}...HEAD`], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  if (r.status !== 0) return null;
+  return r.stdout.split('\n').map(x => x.trim()).filter(Boolean).filter(f => !f.startsWith('_acceptance/') && !f.startsWith('docs/'));
+}
+function xetHoSo({ root, slug, dot = null, entries = null, cfg = null, base = null }) {
   cfg = cfg || docCfg(root);
   const hs = docHoSo(root, slug, entries);
   if (!hs) return null;
@@ -263,6 +276,7 @@ function xetHoSo({ root, slug, dot = null, entries = null, cfg = null }) {
   const dotDir = thuMucDot(root, dot);
   const giu = docGiuQuyen(dotDir); const rg = ranhGioiDot(dotDir, slug);
   const high = vungHigh(root);
+  const tepThat = tepCuaVong(root, slug, base);
   const tk = thongKe(danhSachHoSo(root), cfg, { boSlug: slug });
   const row = new Map(tk.rows.map(r => [r.loai, r]));
   const backend = hs.surfaces.length && !hs.surfaces.some(s => MAN_HINH.has(s));
@@ -275,6 +289,7 @@ function xetHoSo({ root, slug, dot = null, entries = null, cfg = null }) {
     const giuKhop = giu.includes(slug) ? slug : chongBatKy(vung, giu.filter(g => g !== slug && /[/*?]/.test(g)));
     if (c.kho_dao !== false) kq = raHoi('kho-dao');
     else if (typeof c.pham_luat === 'string' && c.pham_luat.trim()) kq = raHoi('luat-san-pham');
+    else if (c.tien === true || c.ra_ngoai === true) kq = raHoi('tien-ra-ngoai');
     else if (!hs.surfaces.length) kq = raHoi('loai-hang-khong-ro');
     else if (!backend) kq = raHoi('man-hinh');
     else if (!o.loai) kq = raHoi('loai-la');
@@ -283,6 +298,8 @@ function xetHoSo({ root, slug, dot = null, entries = null, cfg = null }) {
     else if (!vung.length) kq = raHoi('vung-khong-ro');
     else if (high && chongBatKy(vung, high)) kq = raHoi('vung-high', { khop: chongBatKy(vung, high) });
     else if (chongBatKy(vung, cfg.khong_bao_gio)) kq = raHoi('khong-bao-gio', { khop: chongBatKy(vung, cfg.khong_bao_gio) });
+    else if (tepThat && tepThat.some(f => !vung.some(v => core.pathGlobToRe(v).test(f)))) kq = raHoi('vung-lech', { tep: tepThat.filter(f => !vung.some(v => core.pathGlobToRe(v).test(f))).slice(0, 5) });
+    else if (tepThat && high && tepThat.some(f => high.some(g => core.pathGlobToRe(g).test(f)))) kq = raHoi('vung-high', { khop: high.find(g => tepThat.some(f => core.pathGlobToRe(g).test(f))) });
     else {
       const r = row.get(o.loai);
       if (!r.hoi) kq = raHoi('lan-dau-loai');
@@ -302,18 +319,18 @@ function xetHoSo({ root, slug, dot = null, entries = null, cfg = null }) {
 function apSo(entries, ctx) {
   const cfg = docCfg(ctx.root || '.');
   if (!cfg.mac_ky) return null;
-  const x = xetHoSo({ root: ctx.root || '.', slug: ctx.slug, dot: ctx.dot || null, entries, cfg });
+  const x = xetHoSo({ root: ctx.root || '.', slug: ctx.slug, dot: ctx.dot || null, entries, cfg, base: ctx.base || null });
   if (!x) return null;
   return { kiem_mau: x.kiem_mau, kiem_mau_moi: x.kiem_mau_moi, nguoi_quyet: x.nguoi_quyet, dong: new Map(x.dong.map(d => [d.id, d])) };
 }
 
 // ── Bên viết ─────────────────────────────────────────────────────────────────────────────────────────────
-function ghi({ root, slug, dot = null, now = new Date() }) {
+function ghi({ root, slug, dot = null, base = null, now = new Date() }) {
   const cfg = docCfg(root);
   if (!cfg.mac_ky) return { tat: true, ghi: 0 };
   const L = path.join(root, '_acceptance', slug, 'decisions.jsonl');
   const text = fs.readFileSync(L, 'utf8');
-  const x = xetHoSo({ root, slug, dot, cfg });
+  const x = xetHoSo({ root, slug, dot, cfg, base });
   const hs = docHoSo(root, slug); const theoId = new Map(cauCuaHoSo(hs).cau.map(o => [o.id, o]));
   let n = text.split('\n').filter(l => l !== '').length;
   const utc = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
@@ -334,6 +351,39 @@ function ghi({ root, slug, dot = null, now = new Date() }) {
   }
   if (moi.length) fs.appendFileSync(L, (text.endsWith('\n') || !text ? '' : '\n') + moi.map(m => JSON.stringify(m)).join('\n') + '\n');
   return { tat: false, ghi: moi.length, kq: x };
+}
+
+// ── Bên ghi dòng người: phủ quyết · kiểm mẫu · làm lại (máy dịch ý muốn của người thành dòng sổ, người là decided_by) ──
+const LOAI_GHI = ['phu-quyet', 'kiem-mau', 'lam-lai'];
+function ghiNguoi({ root, slug, loai, ve = null, nguoi = '', luaChon = '', phamVi = 'lan-nay', ket = null, nguon = null, stage = null, now = new Date() }) {
+  const loi = m => { const e = new Error(m); e.ma = 2; throw e; };
+  if (!LOAI_GHI.includes(loai)) loi(`--ghi «${loai}» không hợp lệ — dùng ${LOAI_GHI.join(' | ')}`);
+  const L = path.join(root, '_acceptance', slug, 'decisions.jsonl');
+  const text = fs.readFileSync(L, 'utf8'); const E = docSo(text);
+  const dong = ve ? E.find(e => e.id === ve) : null;
+  if (ve && !dong) loi(`--ve «${ve}» không có trong sổ của ${slug}`);
+  if (loai !== 'lam-lai' && !chuoi(nguoi)) loi('--nguoi <tên> bắt buộc — chữ quyết là của người');
+  const n = text.split('\n').filter(l => l !== '').length + 1;
+  const id = `d-${now.toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z')}-${n}`;
+  let e;
+  if (loai === 'phu-quyet') {
+    if (!dong || dong.stage !== 'S1') loi('phủ quyết cần --ve trỏ một dòng S1');
+    if (!PHAM_VI.includes(phamVi)) loi(`--pham-vi «${phamVi}» không thuộc ${PHAM_VI.join(' | ')}`);
+    if (!chuoi(luaChon)) loi('--lua-chon «<lối người chọn>» bắt buộc');
+    e = { id, type: dong.type || 'approach', stage: 'gate1', at: now.toISOString(), decision: chuoi(luaChon), why: `người phủ quyết món mặc-ký ${ve}: ${chuoi(luaChon)}`,
+      cost_if_wrong: chuoi(dong.cost_if_wrong) || 'sai thì phủ quyết lại', supersedes: ve, decided_by: chuoi(nguoi), so_do: SO_DO, pham_vi: phamVi };
+  } else if (loai === 'kiem-mau') {
+    if (!KIEM_MAU.includes(ket)) loi(`--ket «${ket}» không thuộc ${KIEM_MAU.join(' | ')}`);
+    e = Object.assign({ id, type: 'revisit', stage: 'gate2', at: now.toISOString(), decision: `Kiểm mẫu ${ket === 'sai' ? 'ra sai' : 'đạt'}${chuoi(luaChon) ? ': ' + chuoi(luaChon) : ''}`,
+      why: 'người soi đủ bàn giao của hồ sơ được chọn kiểm mẫu', cost_if_wrong: 'sai thì loại câu bị giáng hay giữ cấp oan', so_do: SO_DO, kiem_mau: ket, decided_by: chuoi(nguoi) }, ve ? { ve } : {});
+  } else {
+    if (!NGUON_LAM_LAI.includes(nguon)) loi(`--nguon «${nguon}» không thuộc ${NGUON_LAM_LAI.join(' | ')}`);
+    if (!chuoi(luaChon)) loi('--lua-chon «<cách sửa đã chọn>» bắt buộc');
+    e = Object.assign({ id, type: 'fix', stage: chuoi(stage) || 'S4', at: now.toISOString(), decision: chuoi(luaChon), why: `làm lại — nguồn ${nguon}`,
+      cost_if_wrong: 'sai nguồn thì sổ đếm chặn thăng cấp oan hay để lọt', so_do: SO_DO, nguon_lam_lai: nguon }, ve ? { ve } : {});
+  }
+  fs.appendFileSync(L, (text.endsWith('\n') || !text ? '' : '\n') + JSON.stringify(e) + '\n');
+  return e;
 }
 
 // ── Kiểm lược đồ ─────────────────────────────────────────────────────────────────────────────────────────
@@ -392,14 +442,18 @@ if (require.main === module) {
       if (loi.length) { out(loi.map(l => `tro-ly-quyet-dinh: ${l}\n`).join('')); process.exit(2); }
       out(`${slug} · lược đồ sổ ${SO_DO} · không có dòng sai khuôn\n`); process.exit(0);
     }
+    if (opt('--ghi')) {
+      const e = ghiNguoi({ root, slug, loai: opt('--ghi'), ve: opt('--ve'), nguoi: opt('--nguoi') || '', luaChon: opt('--lua-chon') || '', phamVi: opt('--pham-vi') || 'lan-nay', ket: opt('--ket'), nguon: opt('--nguon'), stage: opt('--stage') });
+      out(`${slug} · đã ghi ${e.id} (${opt('--ghi')})\n`); process.exit(0);
+    }
     if (a.includes('--write')) {
-      const r = ghi({ root, slug, dot });
+      const r = ghi({ root, slug, dot, base: opt('--base') });
       if (r.tat) { out(`${slug} · mặc-ký tắt — không ghi gì (${KHOA}.mac_ky)\n`); process.exit(0); }
       const x = r.kq;
       out(`${slug} · ghi ${r.ghi} dòng máy · mặc-ký ${x.dong.filter(d => d.lop === 'mac-ky').length} · thăng cấp ${x.dong.filter(d => d.lop === 'thang-cap').length} · hỏi người ${x.dong.filter(d => d.lop === 'hoi').length}${x.kiem_mau ? ' · kiểm mẫu: hồ sơ này được chọn' : ''}\n`);
       process.exit(0);
     }
-    const x = xetHoSo({ root, slug, dot });
+    const x = xetHoSo({ root, slug, dot, base: opt('--base') });
     if (json) out(JSON.stringify(x, null, 2) + '\n');
     else {
       out(`${slug} · mặc-ký ${x.bat ? 'bật' : 'tắt'} · mặc-ký ${x.dong.filter(d => d.lop === 'mac-ky').length} · thăng cấp ${x.dong.filter(d => d.lop === 'thang-cap').length} · hỏi người ${x.dong.filter(d => d.lop === 'hoi').length}${x.kiem_mau ? ' · kiểm mẫu' : ''}\n`);
@@ -412,4 +466,4 @@ if (require.main === module) {
   }
 }
 module.exports = { SO_DO, DI_THEO, PHAM_VI, NGUON_LAM_LAI, KIEM_MAU, DAU_MAY, LOAI_CAU, LY_DO, MAC_DINH, TEP_GIU_QUYEN,
-  docCfg, docGiuQuyen, chongVung, chonKiemMau, cauCuaHoSo, thongKe, xetHoSo, apSo, ghi, kiemSo, dem, inDem };
+  LOAI_GHI, ghiNguoi, tepCuaVong, docCfg, docGiuQuyen, chongVung, chonKiemMau, cauCuaHoSo, thongKe, xetHoSo, apSo, ghi, kiemSo, dem, inDem };

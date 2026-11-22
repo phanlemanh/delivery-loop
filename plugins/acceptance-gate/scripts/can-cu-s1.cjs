@@ -151,7 +151,7 @@ function phanLoaiSo(entries, ctx) {
     else if (d.lop === 'da-quyet') out.da_quyet.push(d);
     else out.do.push(d);
   });
-  let tl = null; try { tl = TLQ ? TLQ.apSo(entries, { root: ctx.root || '.', slug: ctx.slug, dot: ctx.dot || null }) : null; } catch (e) { tl = null; out.tlq_loi = String(e && e.message || e).split('\n')[0]; }
+  let tl = null; try { tl = TLQ ? TLQ.apSo(entries, { root: ctx.root || '.', slug: ctx.slug, dot: ctx.dot || null, base: ctx.base || null }) : null; } catch (e) { tl = null; out.tlq_loi = String(e && e.message || e).split('\n')[0]; }
   if (tl) {
     out.mac_ky = []; out.kiem_mau = tl.kiem_mau; out.kiem_mau_moi = tl.kiem_mau_moi;
     out.cau_hoi = out.cau_hoi.filter(d => {

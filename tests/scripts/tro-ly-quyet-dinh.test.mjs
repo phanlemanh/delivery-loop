@@ -55,6 +55,7 @@ const dotTrong = () => { const d = mkdtempSync(path.join(tmpdir(), 'tlq-dot-'));
 const docSo = (r, slug) => readFileSync(path.join(r, `_acceptance/${slug}/decisions.jsonl`), 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l));
 const ghi = (r, slug, dot, them = []) => node(MOD, ['--root', r, '--slug', slug, '--write', '--dot', dot, ...them], r);
 const xep = (r, slug, dot) => { const x = node(MOD, ['--root', r, '--slug', slug, '--json', '--dot', dot], r); if (x.status !== 0) die(`bộ xếp thoát ${x.status}: ${x.stderr}`); return JSON.parse(x.stdout); };
+const ghiNg = (r, slug, ...a) => { const x = node(MOD, ['--root', r, '--slug', slug, '--ghi', ...a], r); if (x.status !== 0) die(`--ghi ${a.join(' ')} thoát ${x.status}: ${x.stderr}`); return x; };
 const lopCua = (kq, id) => (kq.dong.find(d => d.id === id) || {}).lop;
 const lyDoCua = (kq, id) => (kq.dong.find(d => d.id === id) || {}).ly_do;
 
@@ -82,6 +83,17 @@ check('AC-1 check xanh tren so dung khuon, do co ten khi sai', () => {
   eq(y.status, 2, 'sổ sai khuôn phải thoát 2');
   co(y.stdout + y.stderr, 'd-5: mang nguon_lam_lai mà thiếu "so_do":2', 'thông điệp thiếu phiên bản');
   co(y.stdout + y.stderr, 'd-6: pham_vi «mai-mai» không thuộc lan-nay | tu-nay', 'thông điệp giá trị lạ');
+});
+
+check('AC-1 ben ghi dong nguoi doi ten nguoi va gia tri trong tap', () => {
+  const r = mkKho(); hoSo(r, 'h', { dongs: [CN('d-1', 'chon-cach-lam')] });
+  const a = node(MOD, ['--root', r, '--slug', 'h', '--ghi', 'phu-quyet', '--ve', 'd-1', '--lua-chon', 'Khác.'], r);
+  eq(a.status, 2, 'thiếu --nguoi phải thoát 2'); co(a.stderr, '--nguoi <tên> bắt buộc — chữ quyết là của người', 'thông điệp thiếu người');
+  const b = node(MOD, ['--root', r, '--slug', 'h', '--ghi', 'kiem-mau', '--ket', 'hong', '--nguoi', 'Chủ Kho'], r);
+  eq(b.status, 2, 'kết quả lạ thoát 2'); co(b.stderr, '--ket «hong» không thuộc dat | sai', 'thông điệp kết quả lạ');
+  ghiNg(r, 'h', 'kiem-mau', '--ket', 'dat', '--nguoi', 'Chủ Kho');
+  ghiNg(r, 'h', 'lam-lai', '--nguon', 'bo-kiem', '--lua-chon', 'Sửa ca.');
+  eq(node(MOD, ['--root', r, '--slug', 'h', '--check'], r).status, 0, 'dòng do bên ghi sinh qua --check');
 });
 
 // ── AC-2 — mặc-ký đi tiếp ngay, làn V không bị chặn ────────────────────────────────────────────────────
@@ -116,6 +128,8 @@ check('AC-3 mon ngoai dieu kien ve hoi-nguoi voi ly do co ten', () => {
     CN('d-ok', 'chon-cach-lam'),
     CN('d-kd', 'chon-cach-lam', { kho_dao: true }),
     CN('d-pl', 'chon-cach-lam', { pham_luat: 'SP-1' }),
+    CN('d-tien', 'chon-cach-lam', { tien: true }),
+    CN('d-rn', 'chon-cach-lam', { ra_ngoai: true }),
     CN('d-la', 'loai-bia'),
     CN('d-vang', undefined),
     CN('d-tat', 'ten-va-chu'),
@@ -127,7 +141,7 @@ check('AC-3 mon ngoai dieu kien ve hoi-nguoi voi ly do co ten', () => {
   ] });
   eq(ghi(r, 'h', dot).status, 0, '--write');
   const kq = xep(r, 'h', dot);
-  const want = { 'd-ok': ['mac-ky', null], 'd-kd': ['hoi', 'kho-dao'], 'd-pl': ['hoi', 'luat-san-pham'], 'd-la': ['hoi', 'loai-la'], 'd-vang': ['hoi', 'loai-la'],
+  const want = { 'd-ok': ['mac-ky', null], 'd-kd': ['hoi', 'kho-dao'], 'd-pl': ['hoi', 'luat-san-pham'], 'd-tien': ['hoi', 'tien-ra-ngoai'], 'd-rn': ['hoi', 'tien-ra-ngoai'], 'd-la': ['hoi', 'loai-la'], 'd-vang': ['hoi', 'loai-la'],
     'd-tat': ['hoi', 'loai-tat'], 'd-kbg': ['hoi', 'khong-bao-gio'], 'd-high': ['hoi', 'vung-high'], 'd-vkr': ['hoi', 'vung-khong-ro'], 'd-ld': ['hoi', 'lan-dau-loai'], 'd-vm': ['hoi', 'lan-dau-vung'] };
   for (const [id, [lop, ly]] of Object.entries(want)) eq([lopCua(kq, id), lyDoCua(kq, id) ?? null], [lop, ly], `lớp của ${id}`);
   const t = require(MOD);
@@ -135,7 +149,7 @@ check('AC-3 mon ngoai dieu kien ve hoi-nguoi voi ly do co ten', () => {
   eq(t.LY_DO['lan-dau-loai'], 'lần đầu của loại câu này — khởi động lạnh, hỏi người', 'thông điệp khởi động lạnh');
   // Dòng máy chờ-người ghi lý do — sổ đếm đọc được vì sao câu vẫn hỏi.
   const may = docSo(r, 'h').filter(e => e.may === 'mac-ky');
-  eq(may.length, 11, 'mỗi câu một dòng máy');
+  eq(may.length, 13, 'mỗi câu một dòng máy');
   eq(may.find(e => e.ve === 'd-high').di_theo, 'cho-nguoi', 'câu vùng high chờ người');
 });
 check('AC-3 hang man hinh va hop dong khong khai surfaces khong mac-ky', () => {
@@ -146,6 +160,29 @@ check('AC-3 hang man hinh va hop dong khong khai surfaces khong mac-ky', () => {
     const kq = xep(r, 'h', dot);
     eq([lopCua(kq, 'd-1'), lyDoCua(kq, 'd-1')], ['hoi', ly], `surfaces «${surfaces}»`);
   }
+});
+
+check('AC-3 tep that ngoai vung khai hay cham tang high thi ve hoi-nguoi khi co goc nhanh', () => {
+  const r = mkKho(); const dot = dotTrong();
+  ghiTep(r, 'governance/autonomy.yaml', 'version: 1\nhigh:\n  - "**/billing/**"\n');
+  hoSo(r, 'h', { status: 'draft', dongs: [CN('d-1', 'chon-cach-lam')] });
+  git(r, 'add', '-A'); git(r, 'commit', '-qm', 'ho so'); const base = git(r, 'rev-parse', 'HEAD');
+  eq(ghi(r, 'h', dot).status, 0, '--write');
+  const xepB = () => { const x = node(MOD, ['--root', r, '--slug', 'h', '--json', '--dot', dot, '--base', base], r); if (x.status) die(x.stderr); return JSON.parse(x.stdout); };
+  ghiTep(r, 'src/kho/nhap.ts', 'x\n'); git(r, 'add', '-A'); git(r, 'commit', '-qm', 'trong vung');
+  eq(lopCua(xepB(), 'd-1'), 'mac-ky', 'đối chứng dương: diff nằm trong vùng khai');
+  ghiTep(r, 'src/api/billing/thu.ts', 'x\n'); git(r, 'add', '-A'); git(r, 'commit', '-qm', 'ngoai vung');
+  const kq = xepB();
+  eq([lopCua(kq, 'd-1'), lyDoCua(kq, 'd-1')], ['hoi', 'vung-lech'], 'diff chạm tệp ngoài vùng khai');
+  eq(kq.dong[0].tep, ['src/api/billing/thu.ts'], 'nêu tệp lệch');
+  const cc = node(CC, ['--root', r, '--slug', 'h', '--base', base], r);
+  co(cc.stdout, 'h · câu hỏi 1 ·', 'bộ xếp căn cứ (có gốc nhánh) đếm lại thành câu hỏi');
+  // Vùng khai rộng phủ cả tệp tầng high → vẫn hỏi vì tệp thật chạm high.
+  hoSo(r, 'k', { status: 'draft', dongs: [CN('d-2', 'chon-cach-lam', { vung: ['src/**'] })] });
+  hoSo(r, 'cu-src', { status: 'signed-off', dongs: [CN('d-s', 'chon-cach-lam', { vung: ['src/**'] }, '2026-10-02T00:00:00Z')] });
+  ghi(r, 'k', dot);
+  const k = JSON.parse(node(MOD, ['--root', r, '--slug', 'k', '--json', '--dot', dot, '--base', base], r).stdout);
+  eq([lopCua(k, 'd-2'), lyDoCua(k, 'd-2')], ['hoi', 'vung-high'], 'tệp thật tầng high');
 });
 
 // ── AC-4 — giữ-quyền ───────────────────────────────────────────────────────────────────────────────────
@@ -171,10 +208,9 @@ check('AC-4 giu-quyen theo slug va theo vung luon hoi-nguoi ke ca loai da thang 
 function khoDem(cfgThem = '') {
   const r = mkKho({ cfg: CFG_BAT + cfgThem, tienLe: 0 });
   // sua-o-dau: 5 lần, theo cả 5 → đạt ngưỡng mặc định. chon-cach-lam: 5 lần, một lần chủ kho chọn khác. ten-va-chu: 3 lần.
-  for (let i = 1; i <= 5; i++) hoSo(r, `a-${i}`, { status: 'signed-off', dongs: [CN(`d-a${i}`, 'sua-o-dau', {}, `2026-10-1${i}T00:00:00Z`),
-    { id: `d-a${i}-f`, type: 'fix', stage: 'S4-r1', at: `2026-10-1${i}T05:00:00Z`, decision: 'Sửa ca kiểm.', why: 'v', cost_if_wrong: 'x', so_do: 2, nguon_lam_lai: 'bo-kiem', ve: `d-a${i}` }] });
-  for (let i = 1; i <= 5; i++) hoSo(r, `b-${i}`, { status: 'signed-off', dongs: [CN(`d-b${i}`, 'chon-cach-lam', {}, `2026-10-2${i}T00:00:00Z`)].concat(i === 3
-    ? [{ id: 'd-b3-g', type: 'approach', stage: 'gate1', at: '2026-10-23T02:00:00Z', decision: 'Bỏ đường cũ.', why: 'người chọn ở Cổng Phạm vi: bỏ', cost_if_wrong: 'x', supersedes: 'd-b3', decided_by: 'Chủ Kho', so_do: 2, pham_vi: 'tu-nay' }] : []) });
+  // Dòng làm lại và dòng chọn khác đi qua CHÍNH bên ghi (--ghi), không viết tay.
+  for (let i = 1; i <= 5; i++) { hoSo(r, `a-${i}`, { status: 'signed-off', dongs: [CN(`d-a${i}`, 'sua-o-dau', {}, `2026-10-1${i}T00:00:00Z`)] }); ghiNg(r, `a-${i}`, 'lam-lai', '--nguon', 'bo-kiem', '--ve', `d-a${i}`, '--lua-chon', 'Sửa ca kiểm mong manh.', '--stage', 'S4-r1'); }
+  for (let i = 1; i <= 5; i++) { hoSo(r, `b-${i}`, { status: 'signed-off', dongs: [CN(`d-b${i}`, 'chon-cach-lam', {}, `2026-10-2${i}T00:00:00Z`)] }); if (i === 3) ghiNg(r, 'b-3', 'phu-quyet', '--ve', 'd-b3', '--nguoi', 'Chủ Kho', '--lua-chon', 'Bỏ đường cũ.', '--pham-vi', 'tu-nay'); }
   for (let i = 1; i <= 3; i++) hoSo(r, `c-${i}`, { status: 'signed-off', dongs: [CN(`d-c${i}`, 'ten-va-chu', {}, `2026-10-0${i}T00:00:00Z`)] });
   hoSo(r, 'nhap', { status: 'draft', dongs: [CN('d-n', 'ten-va-chu')] }); // chưa trả lời — không vào mẫu số
   return r;
@@ -201,6 +237,17 @@ check('AC-5 nguong la cau hinh cua kho', () => {
   co(x.stderr, 'tro_ly_quyet_dinh.nguong_hoi: «0» không hợp lệ — dùng số nguyên dương', 'thông điệp khoá sai');
 });
 
+check('AC-5 keo va lam lai do phu quyet chan thang cap, lam lai do bo kiem thi khong', () => {
+  const dot = dotTrong();
+  const mk = (them) => { const r = mkKho({ tienLe: 0 }); for (let i = 1; i <= 5; i++) hoSo(r, `a-${i}`, { status: 'signed-off', dongs: [CN(`d-a${i}`, 'sua-o-dau', {}, `2026-10-1${i}T00:00:00Z`)] }); them(r); return JSON.parse(node(MOD, ['--root', r, '--dem', '--json', '--dot', dot], r).stdout); };
+  eq(mk(r => ghiNg(r, 'a-2', 'lam-lai', '--nguon', 'bo-kiem', '--ve', 'd-a2', '--lua-chon', 'Sửa ca mong manh.')).de_nghi_thang_cap, ['sua-o-dau'], 'đối chứng dương: làm lại do bộ kiểm không chặn');
+  eq(mk(r => ghiNg(r, 'a-2', 'lam-lai', '--nguon', 'khac', '--ve', 'd-a2', '--lua-chon', 'Sửa vì lý do khác.')).de_nghi_thang_cap, ['sua-o-dau'], 'làm lại nguồn khác không chặn');
+  eq(mk(r => ghiNg(r, 'a-2', 'lam-lai', '--nguon', 'phu-quyet', '--ve', 'd-a2', '--lua-chon', 'Dựng lại theo lối người chọn.')).de_nghi_thang_cap, [], 'làm lại do phủ quyết chặn');
+  const keo = mk(r => { const d2 = dotTrong(); writeFileSync(path.join(d2, 'giu-quyen.txt'), 'g\n'); hoSo(r, 'g', { status: 'signed-off', dongs: [CN('d-g', 'sua-o-dau', {}, '2026-10-19T00:00:00Z')] }); writeFileSync(path.join(r, '_acceptance/config.yaml'), 'schema_version: 1\n' + CFG_BAT); node(MOD, ['--root', r, '--slug', 'g', '--write', '--dot', d2], r); });
+  eq(keo.loai.find(x => x.loai === 'sua-o-dau').keo, 1, 'một lần kéo được đếm');
+  eq(keo.de_nghi_thang_cap, [], 'một lần kéo trong cửa sổ chặn thăng cấp');
+});
+
 // ── AC-6 — giáng loại ──────────────────────────────────────────────────────────────────────────────────
 check('AC-6 phu quyet trong cua so giang loai da thang cap va ho so chua gop ve cau hoi', () => {
   const r = mkKho({ cfg: CFG_BAT + '  thang_cap: [chon-cach-lam]\n', tienLe: 5 }); const dot = dotTrong();
@@ -210,9 +257,9 @@ check('AC-6 phu quyet trong cua so giang loai da thang cap va ho so chua gop ve 
   // Chủ kho phủ quyết một món mặc-ký ở hồ sơ khác (đã ký) — dòng người thay dòng S1.
   hoSo(r, 'v', { status: 'signed-off', dongs: [CN('d-v', 'chon-cach-lam', {}, '2026-11-05T00:00:00Z')] });
   eq(ghi(r, 'v', dot).status, 0, '--write v');
-  const soV = docSo(r, 'v');
-  soV.push({ id: 'd-v-pq', type: 'approach', stage: 'gate1', at: '2026-11-06T00:00:00Z', decision: 'Bỏ đường cũ.', why: 'người chọn ở Cổng Phạm vi: bỏ', cost_if_wrong: 'x', supersedes: 'd-v', decided_by: 'Chủ Kho', so_do: 2, pham_vi: 'lan-nay' });
-  ghiTep(r, '_acceptance/v/decisions.jsonl', soV.map(x => JSON.stringify(x)).join('\n') + '\n');
+  ghiNg(r, 'v', 'phu-quyet', '--ve', 'd-v', '--nguoi', 'Chủ Kho', '--lua-chon', 'Bỏ đường cũ.');
+  const pq = docSo(r, 'v').pop();
+  eq([pq.supersedes, pq.decided_by, pq.so_do, pq.pham_vi, pq.stage], ['d-v', 'Chủ Kho', 2, 'lan-nay', 'gate1'], 'dòng phủ quyết do bên ghi sinh');
   const kq = xep(r, 'h', dot);
   eq([lopCua(kq, 'd-1'), lyDoCua(kq, 'd-1')], ['hoi', 'loai-bi-giang'], 'hồ sơ chưa gộp về câu hỏi');
   const cc = node(CC, ['--root', r, '--slug', 'h'], r);
@@ -220,14 +267,28 @@ check('AC-6 phu quyet trong cua so giang loai da thang cap va ho so chua gop ve 
   const d = node(MOD, ['--root', r, '--dem', '--dot', dot], r);
   co(d.stdout, 'Bị giáng: chon-cach-lam — hồ sơ chưa ký phải kiểm lại: h', 'danh sách giáng');
 });
+check('AC-6 phu quyet mot mon mac-ky chan mac-ky cua loai chua thang cap toi lan tra loi moi', () => {
+  const r = mkKho({ tienLe: 1 }); const dot = dotTrong();
+  hoSo(r, 'v', { status: 'signed-off', dongs: [CN('d-v', 'chon-cach-lam', {}, '2026-11-05T00:00:00Z')] });
+  ghi(r, 'v', dot);
+  hoSo(r, 'h', { status: 'draft', dongs: [CN('d-1', 'chon-cach-lam', {}, '2026-11-10T00:00:00Z')] });
+  ghi(r, 'h', dot);
+  eq(lopCua(xep(r, 'h', dot), 'd-1'), 'mac-ky', 'đối chứng dương: chưa phủ quyết thì mặc-ký');
+  ghiNg(r, 'v', 'phu-quyet', '--ve', 'd-v', '--nguoi', 'Chủ Kho', '--lua-chon', 'Bỏ đường cũ.');
+  eq([lopCua(xep(r, 'h', dot), 'd-1'), lyDoCua(xep(r, 'h', dot), 'd-1')], ['hoi', 'loai-bi-giang'], 'sau phủ quyết: hỏi người');
+  // Một lần trả lời mới (ghi SAU giờ phủ quyết — bên ghi đóng giờ thật) mở lại đường mặc-ký.
+  hoSo(r, 'moi', { status: 'signed-off', dongs: [CN('d-m', 'chon-cach-lam', {}, '2099-01-01T00:00:00Z')] });
+  eq(lopCua(xep(r, 'h', dot), 'd-1'), 'mac-ky', 'có lần trả lời mới thì mặc-ký lại');
+});
 check('AC-6 kiem mau ra sai cung giang loai', () => {
   const r = mkKho({ cfg: CFG_BAT + '  thang_cap: [chon-cach-lam]\n', tienLe: 5 }); const dot = dotTrong();
   hoSo(r, 'h', { status: 'approved', dongs: [CN('d-1', 'chon-cach-lam', {}, '2026-11-10T00:00:00Z')] });
   ghi(r, 'h', dot);
   eq(lopCua(xep(r, 'h', dot), 'd-1'), 'thang-cap', 'đối chứng dương');
-  const so = docSo(r, 'cu-5');
-  so.push({ id: 'd-km', type: 'revisit', stage: 'gate2', at: '2026-11-07T00:00:00Z', decision: 'Kiểm mẫu ra sai: bàn giao thiếu ca.', why: 'người soi', cost_if_wrong: 'x', so_do: 2, kiem_mau: 'sai', ve: 'd-cu-5', decided_by: 'Chủ Kho' });
-  ghiTep(r, '_acceptance/cu-5/decisions.jsonl', so.map(x => JSON.stringify(x)).join('\n') + '\n');
+  // Đối chứng: kiểm mẫu ĐẠT không giáng.
+  ghiNg(r, 'cu-4', 'kiem-mau', '--ket', 'dat', '--ve', 'd-cu-4', '--nguoi', 'Chủ Kho');
+  eq(lopCua(xep(r, 'h', dot), 'd-1'), 'thang-cap', 'kiểm mẫu đạt giữ cấp');
+  ghiNg(r, 'cu-5', 'kiem-mau', '--ket', 'sai', '--ve', 'd-cu-5', '--nguoi', 'Chủ Kho', '--lua-chon', 'Bàn giao thiếu ca.');
   eq([lopCua(xep(r, 'h', dot), 'd-1'), lyDoCua(xep(r, 'h', dot), 'd-1')], ['hoi', 'loai-bi-giang'], 'kiểm mẫu sai giáng');
 });
 
