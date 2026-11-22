@@ -498,7 +498,8 @@ if (want('KM-8')) {
     // `tri-thuc-template.md` mà các tệp tri thức đọc lúc chạy (crm #565). Gỡ đích danh từng dòng trước khi so,
     // đối chứng là mỗi dòng có mặt đúng một lần; phần còn lại vẫn phải giống từng byte.
     const DONG_SAU = [['gio-may.mjs', /\n[^\n]*\$\{CLAUDE_PLUGIN_ROOT\}\/scripts\/gio-may\.mjs[^\n]*/g], ['chan-lo-trinh.cjs', /\n[^\n]*\$\{CLAUDE_PLUGIN_ROOT\}\/lib\/chan-lo-trinh\.cjs[^\n]*/g], ['do-san-tren-nen.cjs', /\n[^\n]*\$\{CLAUDE_PLUGIN_ROOT\}\/lib\/do-san-tren-nen\.cjs[^\n]*/g],
-      ...['tri-thuc-khoa.cjs', 'tri-thuc-nguon.cjs', 'tri-thuc.mjs', 'tri-thuc-tra.cjs', 'can-cu-s1.cjs', 'luat-san-pham.cjs'].map(f => [f, new RegExp(String.raw`\n[^\n]*\$\{CLAUDE_PLUGIN_ROOT\}\/scripts\/${f.replace(/\./g, '\\.')}\` [^\n]*`, 'g')]),
+      // mac-ky-co-phu-quyet: `tro-ly-quyet-dinh.cjs` mà can-cu-s1.cjs nạp khoan dung trên cùng lối --tra.
+      ...['tri-thuc-khoa.cjs', 'tri-thuc-nguon.cjs', 'tri-thuc.mjs', 'tri-thuc-tra.cjs', 'can-cu-s1.cjs', 'luat-san-pham.cjs', 'tro-ly-quyet-dinh.cjs'].map(f => [f, new RegExp(String.raw`\n[^\n]*\$\{CLAUDE_PLUGIN_ROOT\}\/scripts\/${f.replace(/\./g, '\\.')}\` [^\n]*`, 'g')]),
       ['tri-thuc-template.md', /\n[^\n]*\$\{CLAUDE_PLUGIN_ROOT\}\/skills\/acceptance\/references\/tri-thuc-template\.md` [^\n]*/g],
       // goi-cheo-loi-dieu-phoi: bảng tên `lib/ho-goi.cjs` (chan-lo-trinh.cjs nạp) và `scripts/tim-skill.cjs` (co-hop-dong.cjs,
       // tin-hieu.mjs nạp) là dòng thêm.
