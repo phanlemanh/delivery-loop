@@ -47,7 +47,7 @@ function mkKho({ cfg = CFG_BAT, tienLe = 1, loaiTienLe = 'chon-cach-lam' } = {})
   const r = mkdtempSync(path.join(tmpdir(), 'tlq-'));
   git(r, 'init', '-q'); git(r, 'config', 'user.email', 't@t'); git(r, 'config', 'user.name', 't'); git(r, 'config', 'commit.gpgsign', 'false');
   ghiTep(r, '_acceptance/config.yaml', `schema_version: 1\n${cfg}`);
-  for (let i = 1; i <= tienLe; i++) hoSo(r, `cu-${i}`, { status: 'signed-off', dongs: [CN(`d-cu-${i}`, loaiTienLe, {}, `2026-10-0${i}T00:00:00Z`)] });
+  for (let i = 1; i <= tienLe; i++) hoSo(r, `cu-${i}`, { status: 'machine-cleared', dongs: [CN(`d-cu-${i}`, loaiTienLe, {}, `2026-10-0${i}T00:00:00Z`)] });
   git(r, 'add', '-A'); git(r, 'commit', '-qm', 'goc');
   return r;
 }
@@ -121,7 +121,7 @@ check('AC-2 cau chi-nguoi kho_dao=false o hang backend duoc mac-ky', () => {
 check('AC-3 mon ngoai dieu kien ve hoi-nguoi voi ly do co ten', () => {
   const r = mkKho({ cfg: CFG_BAT + '  loai_tat: [ten-va-chu]\n  khong_bao_gio: ["src/thue/**"]\n', tienLe: 1 });
   // Tiền lệ cho «ten-va-chu» và vùng src/thue, để lý do thấy được là lý do của ca chứ không phải khởi động lạnh.
-  hoSo(r, 'cu-tt', { status: 'signed-off', dongs: [CN('d-tt', 'ten-va-chu', { vung: ['src/thue/**', 'src/kho/**', 'governance/**', 'src/khac/**'] }, '2026-10-05T00:00:00Z')] });
+  hoSo(r, 'cu-tt', { status: 'machine-cleared', dongs: [CN('d-tt', 'ten-va-chu', { vung: ['src/thue/**', 'src/kho/**', 'governance/**', 'src/khac/**'] }, '2026-10-05T00:00:00Z')] });
   ghiTep(r, 'governance/autonomy.yaml', 'version: 1\ndefault: medium\nhigh:\n  - "governance/**"\n  - "**/migrations/**"\n');
   const dot = dotTrong();
   hoSo(r, 'h', { status: 'draft', dongs: [
@@ -179,7 +179,7 @@ check('AC-3 tep that ngoai vung khai hay cham tang high thi ve hoi-nguoi khi co 
   co(cc.stdout, 'h · câu hỏi 1 ·', 'bộ xếp căn cứ (có gốc nhánh) đếm lại thành câu hỏi');
   // Vùng khai rộng phủ cả tệp tầng high → vẫn hỏi vì tệp thật chạm high.
   hoSo(r, 'k', { status: 'draft', dongs: [CN('d-2', 'chon-cach-lam', { vung: ['src/**'] })] });
-  hoSo(r, 'cu-src', { status: 'signed-off', dongs: [CN('d-s', 'chon-cach-lam', { vung: ['src/**'] }, '2026-10-02T00:00:00Z')] });
+  hoSo(r, 'cu-src', { status: 'machine-cleared', dongs: [CN('d-s', 'chon-cach-lam', { vung: ['src/**'] }, '2026-10-02T00:00:00Z')] });
   ghi(r, 'k', dot);
   const k = JSON.parse(node(MOD, ['--root', r, '--slug', 'k', '--json', '--dot', dot, '--base', base], r).stdout);
   eq([lopCua(k, 'd-2'), lyDoCua(k, 'd-2')], ['hoi', 'vung-high'], 'tệp thật tầng high');
@@ -209,9 +209,9 @@ function khoDem(cfgThem = '') {
   const r = mkKho({ cfg: CFG_BAT + cfgThem, tienLe: 0 });
   // sua-o-dau: 5 lần, theo cả 5 → đạt ngưỡng mặc định. chon-cach-lam: 5 lần, một lần chủ kho chọn khác. ten-va-chu: 3 lần.
   // Dòng làm lại và dòng chọn khác đi qua CHÍNH bên ghi (--ghi), không viết tay.
-  for (let i = 1; i <= 5; i++) { hoSo(r, `a-${i}`, { status: 'signed-off', dongs: [CN(`d-a${i}`, 'sua-o-dau', {}, `2026-10-1${i}T00:00:00Z`)] }); ghiNg(r, `a-${i}`, 'lam-lai', '--nguon', 'bo-kiem', '--ve', `d-a${i}`, '--lua-chon', 'Sửa ca kiểm mong manh.', '--stage', 'S4-r1'); }
-  for (let i = 1; i <= 5; i++) { hoSo(r, `b-${i}`, { status: 'signed-off', dongs: [CN(`d-b${i}`, 'chon-cach-lam', {}, `2026-10-2${i}T00:00:00Z`)] }); if (i === 3) ghiNg(r, 'b-3', 'phu-quyet', '--ve', 'd-b3', '--nguoi', 'Chủ Kho', '--lua-chon', 'Bỏ đường cũ.', '--pham-vi', 'tu-nay'); }
-  for (let i = 1; i <= 3; i++) hoSo(r, `c-${i}`, { status: 'signed-off', dongs: [CN(`d-c${i}`, 'ten-va-chu', {}, `2026-10-0${i}T00:00:00Z`)] });
+  for (let i = 1; i <= 5; i++) { hoSo(r, `a-${i}`, { status: 'machine-cleared', dongs: [CN(`d-a${i}`, 'sua-o-dau', {}, `2026-10-1${i}T00:00:00Z`)] }); ghiNg(r, `a-${i}`, 'lam-lai', '--nguon', 'bo-kiem', '--ve', `d-a${i}`, '--lua-chon', 'Sửa ca kiểm mong manh.', '--stage', 'S4-r1'); }
+  for (let i = 1; i <= 5; i++) { hoSo(r, `b-${i}`, { status: 'machine-cleared', dongs: [CN(`d-b${i}`, 'chon-cach-lam', {}, `2026-10-2${i}T00:00:00Z`)] }); if (i === 3) ghiNg(r, 'b-3', 'phu-quyet', '--ve', 'd-b3', '--nguoi', 'Chủ Kho', '--lua-chon', 'Bỏ đường cũ.', '--pham-vi', 'tu-nay'); }
+  for (let i = 1; i <= 3; i++) hoSo(r, `c-${i}`, { status: 'machine-cleared', dongs: [CN(`d-c${i}`, 'ten-va-chu', {}, `2026-10-0${i}T00:00:00Z`)] });
   hoSo(r, 'nhap', { status: 'draft', dongs: [CN('d-n', 'ten-va-chu')] }); // chưa trả lời — không vào mẫu số
   return r;
 }
@@ -239,11 +239,11 @@ check('AC-5 nguong la cau hinh cua kho', () => {
 
 check('AC-5 keo va lam lai do phu quyet chan thang cap, lam lai do bo kiem thi khong', () => {
   const dot = dotTrong();
-  const mk = (them) => { const r = mkKho({ tienLe: 0 }); for (let i = 1; i <= 5; i++) hoSo(r, `a-${i}`, { status: 'signed-off', dongs: [CN(`d-a${i}`, 'sua-o-dau', {}, `2026-10-1${i}T00:00:00Z`)] }); them(r); return JSON.parse(node(MOD, ['--root', r, '--dem', '--json', '--dot', dot], r).stdout); };
+  const mk = (them) => { const r = mkKho({ tienLe: 0 }); for (let i = 1; i <= 5; i++) hoSo(r, `a-${i}`, { status: 'machine-cleared', dongs: [CN(`d-a${i}`, 'sua-o-dau', {}, `2026-10-1${i}T00:00:00Z`)] }); them(r); return JSON.parse(node(MOD, ['--root', r, '--dem', '--json', '--dot', dot], r).stdout); };
   eq(mk(r => ghiNg(r, 'a-2', 'lam-lai', '--nguon', 'bo-kiem', '--ve', 'd-a2', '--lua-chon', 'Sửa ca mong manh.')).de_nghi_thang_cap, ['sua-o-dau'], 'đối chứng dương: làm lại do bộ kiểm không chặn');
   eq(mk(r => ghiNg(r, 'a-2', 'lam-lai', '--nguon', 'khac', '--ve', 'd-a2', '--lua-chon', 'Sửa vì lý do khác.')).de_nghi_thang_cap, ['sua-o-dau'], 'làm lại nguồn khác không chặn');
   eq(mk(r => ghiNg(r, 'a-2', 'lam-lai', '--nguon', 'phu-quyet', '--ve', 'd-a2', '--lua-chon', 'Dựng lại theo lối người chọn.')).de_nghi_thang_cap, [], 'làm lại do phủ quyết chặn');
-  const keo = mk(r => { const d2 = dotTrong(); writeFileSync(path.join(d2, 'giu-quyen.txt'), 'g\n'); hoSo(r, 'g', { status: 'signed-off', dongs: [CN('d-g', 'sua-o-dau', {}, '2026-10-19T00:00:00Z')] }); writeFileSync(path.join(r, '_acceptance/config.yaml'), 'schema_version: 1\n' + CFG_BAT); node(MOD, ['--root', r, '--slug', 'g', '--write', '--dot', d2], r); });
+  const keo = mk(r => { const d2 = dotTrong(); writeFileSync(path.join(d2, 'giu-quyen.txt'), 'g\n'); hoSo(r, 'g', { status: 'machine-cleared', dongs: [CN('d-g', 'sua-o-dau', {}, '2026-10-19T00:00:00Z')] }); writeFileSync(path.join(r, '_acceptance/config.yaml'), 'schema_version: 1\n' + CFG_BAT); node(MOD, ['--root', r, '--slug', 'g', '--write', '--dot', d2], r); });
   eq(keo.loai.find(x => x.loai === 'sua-o-dau').keo, 1, 'một lần kéo được đếm');
   eq(keo.de_nghi_thang_cap, [], 'một lần kéo trong cửa sổ chặn thăng cấp');
 });
@@ -255,7 +255,7 @@ check('AC-6 phu quyet trong cua so giang loai da thang cap va ho so chua gop ve 
   eq(ghi(r, 'h', dot).status, 0, '--write');
   eq(lopCua(xep(r, 'h', dot), 'd-1'), 'thang-cap', 'đối chứng dương: trước phủ quyết là thăng cấp');
   // Chủ kho phủ quyết một món mặc-ký ở hồ sơ khác (đã ký) — dòng người thay dòng S1.
-  hoSo(r, 'v', { status: 'signed-off', dongs: [CN('d-v', 'chon-cach-lam', {}, '2026-11-05T00:00:00Z')] });
+  hoSo(r, 'v', { status: 'machine-cleared', dongs: [CN('d-v', 'chon-cach-lam', {}, '2026-11-05T00:00:00Z')] });
   eq(ghi(r, 'v', dot).status, 0, '--write v');
   ghiNg(r, 'v', 'phu-quyet', '--ve', 'd-v', '--nguoi', 'Chủ Kho', '--lua-chon', 'Bỏ đường cũ.');
   const pq = docSo(r, 'v').pop();
@@ -269,7 +269,7 @@ check('AC-6 phu quyet trong cua so giang loai da thang cap va ho so chua gop ve 
 });
 check('AC-6 phu quyet mot mon mac-ky chan mac-ky cua loai chua thang cap toi lan tra loi moi', () => {
   const r = mkKho({ tienLe: 1 }); const dot = dotTrong();
-  hoSo(r, 'v', { status: 'signed-off', dongs: [CN('d-v', 'chon-cach-lam', {}, '2026-11-05T00:00:00Z')] });
+  hoSo(r, 'v', { status: 'machine-cleared', dongs: [CN('d-v', 'chon-cach-lam', {}, '2026-11-05T00:00:00Z')] });
   ghi(r, 'v', dot);
   hoSo(r, 'h', { status: 'draft', dongs: [CN('d-1', 'chon-cach-lam', {}, '2026-11-10T00:00:00Z')] });
   ghi(r, 'h', dot);
@@ -277,7 +277,7 @@ check('AC-6 phu quyet mot mon mac-ky chan mac-ky cua loai chua thang cap toi lan
   ghiNg(r, 'v', 'phu-quyet', '--ve', 'd-v', '--nguoi', 'Chủ Kho', '--lua-chon', 'Bỏ đường cũ.');
   eq([lopCua(xep(r, 'h', dot), 'd-1'), lyDoCua(xep(r, 'h', dot), 'd-1')], ['hoi', 'loai-bi-giang'], 'sau phủ quyết: hỏi người');
   // Một lần trả lời mới (ghi SAU giờ phủ quyết — bên ghi đóng giờ thật) mở lại đường mặc-ký.
-  hoSo(r, 'moi', { status: 'signed-off', dongs: [CN('d-m', 'chon-cach-lam', {}, '2099-01-01T00:00:00Z')] });
+  hoSo(r, 'moi', { status: 'machine-cleared', dongs: [CN('d-m', 'chon-cach-lam', {}, '2099-01-01T00:00:00Z')] });
   eq(lopCua(xep(r, 'h', dot), 'd-1'), 'mac-ky', 'có lần trả lời mới thì mặc-ký lại');
 });
 check('AC-6 kiem mau ra sai cung giang loai', () => {

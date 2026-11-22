@@ -71,7 +71,8 @@ const LY_DO = {
 const KHOA = 'tro_ly_quyet_dinh';
 const MAC_DINH = { mac_ky: false, nguong_hoi: 5, nguong_theo: 100, nguong_lam_lai: 0, kiem_mau_moi: 5, loai_tat: [], khong_bao_gio: [], thang_cap: [], nguoi_quyet: '' };
 const MAN_HINH = new Set(['ui', 'web', 'web-ui', 'mobile']);
-const DA_THONG = new Set(['signed-off', 'machine-cleared', 'da-cham-boi-thuc-te']); // cùng tập với dispatch/scripts/phat-lich.mjs DA_THONG
+// Hồ sơ «chưa gộp» = còn ở một trạng thái mở của vòng — tập dương, không rẽ theo chữ ký (lưới RT13 của ra-co-ten-lam-va-trao).
+const CON_MO = new Set(['draft', 'approved', 'implemented', 'verified']);
 const TEP_GIU_QUYEN = 'giu-quyen.txt';
 const TEN_LIEN_KET = 'dieu-phoi-hien-tai'; // cùng chuỗi với feature-loop/scripts/trong-dot.mjs
 
@@ -409,7 +410,7 @@ function dem({ root }) {
   const tk = thongKe(hsList, cfg);
   const bi_giang = tk.rows.filter(r => r.trang_thai === 'bị giáng').map(r => ({
     loai: r.loai,
-    ho_so: hsList.filter(hs => !DA_THONG.has(hs.status) && cauCuaHoSo(hs).cau.some(o => o.loai === r.loai && o.mac_ky_ghi && !o.khac)).map(hs => hs.slug),
+    ho_so: hsList.filter(hs => CON_MO.has(hs.status) && cauCuaHoSo(hs).cau.some(o => o.loai === r.loai && o.mac_ky_ghi && !o.khac)).map(hs => hs.slug),
   }));
   return { ho_so: hsList.length, bat: cfg.mac_ky, nguong: { hoi: cfg.nguong_hoi, theo: cfg.nguong_theo, lam_lai: cfg.nguong_lam_lai },
     loai: tk.rows, lam_lai_khong_gan_loai: tk.lamLaiRoi, de_nghi_thang_cap: tk.rows.filter(r => r.trang_thai === 'đạt ngưỡng').map(r => r.loai), bi_giang };
