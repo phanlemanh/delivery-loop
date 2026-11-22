@@ -45,6 +45,14 @@ Cách xưng hô: chủ kho viết tiếng Việt; phiên gọi chủ kho là «a
 
 Lượt gọi người của đợt: **13 / 15**. Còn dự kiến hai lượt: ghi quan sát mốc 3.0, và câu hỏi gộp của II.4.
 
+### 2b. PR #21 — PR đóng đợt, đang NHÁP
+
+Chủ kho bảo «Commit và mở pr» ngày 22/11; phiên cũ mở PR #21 từ `chuyen-nha` vào `main` ở dạng nháp. KHÔNG bỏ nháp, KHÔNG gộp
+trước khi đủ điều kiện II.4 và có lời chủ kho. PR xung đột ở đúng `.claude/rules/chuyen-nha.md` (nhánh chính đã xoá) — để
+nguyên có chủ ý: gộp `main` vào `chuyen-nha` sẽ đổi cây của nhánh sang bố cục mới và đổi plugin phiên ở kho này nạp. Nếu
+ứng dụng gửi sự kiện «xung đột» của Auto-fix cho PR này: đừng tự gỡ, báo chủ kho. Mỗi lần đẩy `chuyen-nha` là PR này
+đổi theo.
+
 ### Kế hoạch 12 mục Repo Standards (`KE-HOACH-12-MUC-REPO-STANDARDS.md`; mục 8 là thứ tự hiện hành)
 
 | Việc | Trạng thái |
@@ -60,7 +68,7 @@ Lượt gọi người của đợt: **13 / 15**. Còn dự kiến hai lượt: 
 
 | Kho | Nhánh chính | Ghi chú |
 |---|---|---|
-| `phanlemanh/delivery-loop` | `56bb22b1` | 0 PR mở; thẻ mới nhất `v3.0.0`; CHƯA có thẻ 3.1 |
+| `phanlemanh/delivery-loop` | `678572f0` (sau PR #18, tài liệu) | thẻ mới nhất `v3.0.0`; CHƯA có thẻ 3.1. PR mở: **#21 nháp** (`chuyen-nha` → `main`, PR đóng đợt, xem mục 2b) · #19 và #20 do phiên KHÁC làm, phiên giữ đợt không theo dõi |
 | `phanlemanh/acceptance-gate-kit` (kho cũ) | `9aafbf4d` | đóng băng. Có commit mới thì dừng, hỏi chủ kho |
 | `phanlemanh/onehub-inventory` | `f41c4935` | kit 3.0.0, repo-setup 0.10.3, `merge_method: merge`, có dòng gộp cho `LO-TRINH.html` |
 | `phanlemanh/crm-onehub` | `4aebb767d` (nhánh `onehub`) | kit 3.0.0. Sản phẩm này ĐỌC `LO-TRINH.html` từ git của các kho sản phẩm |
