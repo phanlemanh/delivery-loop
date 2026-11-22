@@ -11,8 +11,8 @@ flowchart TD
   GD --> XL["Xếp lại sau<br/>24 việc"]
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
   B --> CD["Chờ duyệt phạm vi<br/>chưa có"] --> GP{"Cổng Phạm vi"}
-  GP --> DL["Đang làm<br/>3 việc"] --> GB{"Cổng Bằng chứng"}
-  GB --> DG["Đã giao<br/>160 việc"]
+  GP --> DL["Đang làm<br/>2 việc"] --> GB{"Cổng Bằng chứng"}
+  GB --> DG["Đã giao<br/>161 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>74 việc"] --> GG{"Cổng Giá trị"}
   GG --> NT["Đã nghiệm thu giá trị<br/>7 việc"]
 ```
@@ -46,7 +46,6 @@ flowchart TD
 
 - Cờ qua-timebox cắt ngang cả nhóm «đã xong» — bộ quét gắn cờ cho hồ sơ park/bác, archived và đã có phán quyết giá trị (`co-qua-timebox-nhom-da-xong`)
 - Làn ghim lại gặp lớp acceptance-gate cũ phải dừng có tên (tệp · export · bản cần · lối đi tiếp --ag-root) thay vì TypeError thô đọc thành làn đỏ (`ghim-lai-tren-lop-cu`)
-- Lệnh gộp theo lời của gói điều phối đọc chữ ký bằng vị từ của lõi — chữ ký giữ chỗ («pending», «TBD»…) không còn qua vế chữ ký; gốc lõi đến từ bộ định vị sẵn có của kit (`va-chu-ky-giu-cho-lenh-gop`)
 
 ## Đã giao — chờ phiên nghiệm thu
 
@@ -283,6 +282,7 @@ flowchart TD
 - Thước nhãn-đè-khối cho diagram-design (`thuoc-nhan-de-khoi`)
 - Quy trình Tier B có lối đọc cho kết quả không đo được, kèm phép kiểm máy gắn bên viết với bên đọc (`tier-b-doc-khong-do-duoc`)
 - Luật «lệnh bị công cụ ngắt ≠ lệnh fail» thành MỘT nguồn ở acceptance-gate cho cả đường vòng lặp (workflow nhận qua args) lẫn đường VERIFY độc lập của skill acceptance; đóng bộ đo hành vi bên viết bằng hội đồng phiên sạch (`tool-kill-duong-doc-lap`)
+- Lệnh gộp theo lời của gói điều phối đọc chữ ký bằng vị từ của lõi — chữ ký giữ chỗ («pending», «TBD»…) không còn qua vế chữ ký; gốc lõi đến từ bộ định vị sẵn có của kit (`va-chu-ky-giu-cho-lenh-gop`)
 - Vào có ô, ra có tên — ý khai thác xong có ô máy đọc (stub opportunity.md), bộ quét /start tách «đang cân nhắc» khỏi «chờ Cổng Đáng» theo ngưỡng đã điền, thẻ nói số ý và tuổi; 7 hạt giống kit nhận ô, trạng thái sống một chỗ (`vao-co-o-ra-co-ten`)
 - Đợt 2 «người về biên» — trạng thái veto-có-dấu-vết cho Cổng Phạm vi T2 và Cổng Bằng chứng xanh-sạch thôi mời ký; sửa đồng bộ ba tầng luật-văn-bản + hook chặn-lúc-ghi + lưới trước-merge (`veto-co-dau-vet`) — đã giao — đã nghỉ, giữ sử liệu
 - Gom luật đọc hồ sơ xưởng về một chỗ — mọi bên đọc phải cho cùng một kết luận (`workspace-reader-unification`) · liên quan: product-map-uat-session

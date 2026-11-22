@@ -5,7 +5,7 @@ slug: va-chu-ky-giu-cho-lenh-gop
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: plugins/dispatch/scripts/gop.mjs + dieu-phoi.mjs, khối dòng lệnh ở feature-loop SKILL và commands/signoff.md, ca kiểm của gói điều phối — KHÔNG khớp t3_paths
 surfaces: [cli]
-status: verified
+status: signed-off
 approved_by: Phan Le Manh
 approved_at: 2026-11-22
 ---
@@ -86,3 +86,10 @@ Thuật ngữ:
   của mình, không chạy đua.
 - Kho này đã bật `feature_loop.gop_theo_loi_ky: true` nên thẻ Cổng Bằng chứng của vòng in sẵn `gộp: khi CI xanh`; lệnh gộp
   chạy CHÍNH bản đã vá (kho tự host kit, `DP=plugins/dispatch`).
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-22:
+  - Ngoài-1: Thiếu gói nghiệm thu thì dòng báo của khối gộp theo lời có thể nói nhầm là gói điều phối chưa cài; lệnh vẫn không gộp.
+  - Ngoài-2: Lõi có tệp nhưng nạp lỗi thì thông báo chặn nói «không xuất chuKyThat» thay vì nêu nguyên nhân thật; lệnh vẫn chặn.
+  - Ngoài-3: Nhát tiêm bang-rieng của thước hồ sơ ghim chuỗi «chua-ky-thu», chuỗi ấy cũng hiện khi bộ nạp hỏng — không tách được đỏ đúng với đỏ hạ tầng.
+  - Ngoài-4: README của gói điều phối còn ghi lệnh gộp theo lời không có cờ --loi; làm theo ở bố cục cài thì bị chặn kèm lệnh giải.
+  - Ngoài-5: Nhát tiêm bo-loi của chân duong-loi chỉ đòi GL-8a đỏ, không ghim thông điệp của assert đuôi --loi.
+  - Ngoài-6: Chuỗi grep ở nhát phep-cu và bang-rieng là nhãn ca chứ không phải lý do đỏ.

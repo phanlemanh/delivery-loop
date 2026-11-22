@@ -8,7 +8,7 @@ verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
 verified_commit: 35808675565b8413d344ecf1a1ad973643423eeb
-human_signoff:
+human_signoff: Phan Le Manh 2026-11-22
 ---
 
 # Evidence Report: va-chu-ky-giu-cho-lenh-gop
