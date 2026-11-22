@@ -5,7 +5,7 @@ slug: tep-chung-khong-chan-gop
 owner: phanlemanh@gmail.com
 risk_tier: T3      # plugins/acceptance-gate/lib/workspace-record.cjs (bảng nhãn chung của bản đồ) khớp t3_paths
 surfaces: [cli]
-status: verified
+status: signed-off
 design_doc: docs/superpowers/specs/2026-11-21-tep-chung-khong-chan-gop-design.md
 approved_by: Phan Le Manh
 approved_at: 2026-11-22
@@ -159,4 +159,22 @@ Thuật ngữ:
   168 lần có xung đột; hai view rời git thì phần còn lại ngang số «có bộ gộp riêng» tại máy, khoảng 63, phần lớn ở
   `_acceptance/config.yaml` — phần ấy chỉ giảm dần khi vòng mới viết lệnh theo luật lệnh hồ sơ.
 - Việc ngoài phạm vi thấy trên đường: ghi hạt giống có dòng `Gốc:`, không làm trong vòng —
-  `docs/plans/2026-11-21-hat-giong-dong-giu-co-trai-bo-xep-can-cu.md` (khuôn dòng «giữ cỡ» trái bộ xếp căn cứ).
+  `docs/plans/2026-11-21-hat-giong-dong-giu-co-trai-bo-xep-can-cu.md` (khuôn dòng «giữ cỡ» trái bộ xếp căn cứ) ·
+  `docs/plans/2026-11-22-hat-giong-pr-san-sang-loc-vat-theo-tien-to.md` (bước mở PR trước thẻ coi hàng sổ máy sinh ở
+  `docs/` là vật đổi, trái bộ canh hoá cũ — PR #17 phải mở tay).
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-22:
+  - Ngoài-1: Phép kiểm lối đẩy bản đồ chưa có chiều đỏ cho trường hợp nhánh mặc định của kho không tên main.
+  - Ngoài-2: Nhãn lớp của dòng sổ giới hạn do máy sinh chưa có phép kiểm giữ; đổi sai thì một lượt chấm sau có thể trượt.
+  - Ngoài-3: Cách đọc nhánh mặc định khi máy CI không có thông tin nhánh chưa có ca kiểm dương; hỏng thì trang bản đồ ngừng cập nhật mà bộ kiểm vẫn xanh.
+  - Ngoài-4: Ca kiểm khoá nhánh bản đồ không phân biệt được ba lý do khiến lệnh đẩy dừng lại.
+  - Ngoài-5: Lùi nhãn lớp của dòng sổ về nhãn cũ thì bộ kiểm sổ giới hạn vẫn xanh.
+  - Ngoài-6: Ở kho bật chế độ mới, lời dặn trong hướng dẫn ký còn bảo đưa tệp bản đồ vào lệnh commit; làm theo thì lệnh dừng và phải chạy lại.
+  - Ngoài-7: Thẻ khởi đầu chưa giải thích hai trạng thái bản đồ mới (vẽ tại chỗ, khoá viết sai).
+  - Ngoài-8: Kho có nhánh khác trùng đuôi tên nhánh bản đồ thì lần đẩy bản đồ có thể bị từ chối.
+  - Ngoài-9: Trên Windows, cảnh báo về lệnh hồ sơ có thể mất câu luật đi kèm.
+  - Ngoài-11: Sửa chỉ ở bộ chấm của hồ sơ thì một số phép kiểm có thể được mang màu xanh cũ sang mà không chạy lại.
+  - Ngoài-12: Dò đỉnh nhánh bản đồ khớp theo đuôi tên, nên có thể chặn lần đẩy dù cấu hình đúng.
+  - Ngoài-13: Lệnh đẩy nhánh bản đồ vẫn đẩy trang lộ trình mang lỗi tệp ý định và thoát xanh.
+  - Ngoài-14: Bước bật trong hướng dẫn gỡ cả hai tệp trong một lệnh, nên hỏng ở kho không có trang lộ trình.
+  - Ngoài-15: Bộ sinh dòng sổ được kiểm bằng mẫu viết tay, chưa rút từ khuôn của bên viết.
+  - Ngoài-16: Số dòng nêu trong thông báo sau khi thêm dòng sổ chưa được đối chiếu với số dòng thật.

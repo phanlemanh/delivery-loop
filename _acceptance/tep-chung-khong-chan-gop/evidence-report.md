@@ -8,7 +8,7 @@ verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
 verified_commit: c5a80162f10a70b56473e66ebdf71c52c7bc0355
-human_signoff:
+human_signoff: Phan Le Manh 2026-11-22 — ký lượt chấm round 2; Ngoài-1 đến Ngoài-9 và Ngoài-11 đến Ngoài-16 ghi Known limits, Ngoài-10 chấp nhận không sửa; cắt/hoãn đồng ý cắt; Treo phê hết; gộp khi CI xanh
 ---
 
 # Evidence Report: tep-chung-khong-chan-gop
