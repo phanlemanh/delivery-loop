@@ -13,14 +13,34 @@ import { docTuTri, tangCuaTep, coMacKy, cuaProof } from '../../../plugins/dispat
 import { xetGop } from '../../../plugins/dispatch/scripts/gop.mjs';
 import { kiemCauHinh } from '../../../plugins/dispatch/scripts/hinh-dang.mjs';
 import { CFG_PHAT_LICH } from './mau-thu.mjs';
+import { fileURLToPath } from 'node:url';
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.join(HERE, '..', '..', '..');
+// Bên ghi THẬT của hàng 1 (mac-ky-co-phu-quyet): dòng mặc-ký và dòng phủ quyết của ca do nó sinh, không viết tay.
+const TLQ = path.join(ROOT, 'plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs');
+const LUAT_THAT = fs.readFileSync(path.join(ROOT, 'tests/dieu-phoi/fixtures/autonomy-repo-standards.yaml'), 'utf8');
 
 const tam = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dp-chuyen-')));
 const git = (cwd, ...a) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', '-c', 'commit.gpgsign=false', ...a], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const ghi = (kho, tep, noi) => { fs.mkdirSync(path.dirname(path.join(kho, tep)), { recursive: true }); fs.writeFileSync(path.join(kho, tep), noi); };
 const commit = (kho, tep, noi, msg) => { ghi(kho, tep, noi); git(kho, 'add', '-A'); git(kho, 'commit', '-q', '-m', msg); };
 // Hồ sơ đã thông bằng máy (không mang chuỗi trạng thái ký người — lưới RT13, tiền lệ gop.test.mjs).
-const HD = (slug) => `---\nslug: ${slug}\nstatus: machine-cleared\n---\n`;
-const MAC_KY = (ve = 'd-1') => JSON.stringify({ id: 'd-2', type: 'approach', stage: 'gate1', at: '2026-11-22T00:00:00Z', decision: 'Đã đi theo khuyến nghị: x', why: 'v', cost_if_wrong: 'x', so_do: 2, may: 'mac-ky', ve, di_theo: 'khuyen' }) + '\n';
+const HD = (slug) => `---\nslug: ${slug}\nstatus: machine-cleared\nsurfaces: [api]\n---\n`;
+const CFG_TLQ = 'schema_version: 1\ntro_ly_quyet_dinh:\n  mac_ky: true\n';
+const S1 = (id, at = '2026-11-20T00:00:00Z') => JSON.stringify({ id, type: 'approach', stage: 'S1', at, decision: 'Chọn cách làm.', why: 'v', cost_if_wrong: 'x', can_cu: { nguon: 'chi-nguoi', kho_dao: false, khuyen: 'Khuyên giữ.', loi_khac: 'Đổi — tốn một khúc.', loai_cau: 'chon-cach-lam', vung: ['src/**'] } }) + '\n';
+// Nền mặc-ký của kho thử: cấu hình bật cờ + một hồ sơ cũ đã trả lời cùng loại, cùng vùng (khởi động lạnh đã qua).
+const nenMacKy = (k) => { ghi(k, '_acceptance/config.yaml', CFG_TLQ); ghi(k, '_acceptance/cu/contract.md', HD('cu')); ghi(k, '_acceptance/cu/decisions.jsonl', S1('d-cu', '2026-11-01T00:00:00Z')); };
+const tlq = (k, ...a) => execFileSync(process.execPath, [TLQ, '--root', k, ...a], { encoding: 'utf8' });
+// Sinh sổ mặc-ký của hồ sơ `slug` trong kho `k` bằng bên ghi thật; `phuQuyet` → thêm dòng người bằng --ghi phu-quyet.
+function macKyThat(k, slug, { phuQuyet = false } = {}) {
+  ghi(k, `_acceptance/${slug}/decisions.jsonl`, S1('d-1'));
+  tlq(k, '--slug', slug, '--write', '--dot', tam());
+  if (phuQuyet) tlq(k, '--slug', slug, '--ghi', 'phu-quyet', '--ve', 'd-1', '--nguoi', 'Chủ Kho', '--lua-chon', 'Đổi cách làm.');
+  const so = fs.readFileSync(path.join(k, `_acceptance/${slug}/decisions.jsonl`), 'utf8');
+  assert.ok(so.includes('"may":"mac-ky"') && so.includes('"di_theo":"khuyen"'), `bên ghi hàng 1 phải sinh dòng mặc-ký: ${so}`);
+  return so;
+}
 const XANH = [{ __typename: 'CheckRun', name: 'gate', status: 'COMPLETED', conclusion: 'SUCCESS' }];
 const XANH_PROOF = [...XANH, { __typename: 'CheckRun', name: 'evidence-recheck', status: 'COMPLETED', conclusion: 'SUCCESS' }];
 
@@ -33,6 +53,7 @@ function kho(prs, { tuTri = null } = {}) {
   git(goc, 'clone', '-q', origin, k);
   git(k, 'checkout', '-q', '-b', 'main');
   commit(k, 'src/chung.ts', 'v1\n', 'goc');
+  nenMacKy(k); git(k, 'add', '-A'); git(k, 'commit', '-q', '-m', 'nen mac-ky');
   if (tuTri) commit(k, 'governance/autonomy.yaml', tuTri, 'luat tu tri');
   git(k, 'push', '-q', 'origin', 'main');
   const sha = {};
@@ -40,7 +61,7 @@ function kho(prs, { tuTri = null } = {}) {
     git(k, 'checkout', '-q', '-b', `pr-${p.n}`, 'main');
     for (const [t, v] of Object.entries(p.tep)) ghi(k, t, v);
     ghi(k, `_acceptance/h${p.n}/contract.md`, HD(`h${p.n}`));
-    ghi(k, `_acceptance/h${p.n}/decisions.jsonl`, p.macKy ? MAC_KY() : '');
+    if (p.macKy) macKyThat(k, `h${p.n}`); else ghi(k, `_acceptance/h${p.n}/decisions.jsonl`, '');
     git(k, 'add', '-A');
     git(k, '-c', `user.name=t`, 'commit', '-q', '-m', `pr ${p.n}`, `--date=${p.dat_luc ?? '2026-11-22T01:00:00Z'}`);
     git(k, 'push', '-q', 'origin', `pr-${p.n}`);
@@ -112,18 +133,22 @@ test('AC-3 chuyen do tach doi quy dung PR loi, PR loi rot, phan con lai van gop'
   assert.deepEqual(kq.rot.map((r) => [r.pr, r.ly_do]), [[4, 'làm chuyến đỏ — lệnh kiểm trên ngọn thoát khác 0 khi có PR này']]);
   assert.deepEqual(kq.xanh, [1, 2, 3, 5, 6]);
   assert.deepEqual(gopDaGoi(io), [1, 2, 3, 5, 6], 'PR lỗi không bị gộp');
-  assert.ok(kq.so_lan_kiem <= 1 + Math.ceil(Math.log2(6)) + 1, `tách đôi phải dưới tuyến tính: ${kq.so_lan_kiem} lần`);
+  // Ngọn đỏ (1) + nhánh chính (1) + chia đôi trên 6 (≤3) + kiểm lại phần còn lại (1).
+  assert.ok(kq.so_lan_kiem <= 6, `tách đôi phải ≤ 6 lần kiểm: ${kq.so_lan_kiem} lần`);
 });
 test('AC-3 tach doi thuan: hai PR loi, so lan kiem logarit', () => {
   const hong = new Set([3, 7]);
   const kiem = (ds) => !ds.some((p) => hong.has(p));
   const kq = tachDoi([1, 2, 3, 4, 5, 6, 7, 8], kiem);
   assert.deepEqual([kq.xanh, kq.rot.map((r) => r.pr)], [[1, 2, 4, 5, 6, 8], [3, 7]]);
-  assert.ok(kq.so_lan_kiem <= 2 * (1 + Math.ceil(Math.log2(8))) + 1, `${kq.so_lan_kiem} lần`);
+  // Hai vòng (ngọn đỏ + chia đôi ≤3) + một lần kiểm nhánh chính + ngọn xanh cuối: ≤ 10; tách tuyến tính tốn 14.
+  assert.ok(kq.so_lan_kiem <= 10, `≤ 10 lần kiểm: ${kq.so_lan_kiem} lần`);
   // Hỏng do TỔ HỢP (mỗi PR một mình xanh, cùng nhau đỏ): PR đứng sau trong chuyến rớt.
   const toHop = tachDoi([1, 2, 3], (ds) => !(ds.includes(1) && ds.includes(3)));
   assert.deepEqual([toHop.xanh, toHop.rot.map((r) => r.pr)], [[1, 2], [3]]);
   assert.deepEqual(tachDoi([], kiem), { xanh: [], rot: [], so_lan_kiem: 0 });
+  // Nhánh chính đỏ: dừng, không PR nào bị quy lỗi.
+  assert.deepEqual(tachDoi([1, 2, 3], () => false), { xanh: [], rot: [], so_lan_kiem: 2, chinh_do: true });
 });
 
 // ── AC-4 — xung đột trong chuyến ──────────────────────────────────────────────────────────────────────
@@ -157,12 +182,27 @@ test('AC-5 mac-ky chi tu gop khi luat tu tri khai proof, check proof xanh va PR 
   // Đối chứng: hồ sơ không mang mặc-ký đi như trước vòng, không đọc luật tự trị.
   assert.deepEqual(cuaProof({ tuTri: docTuTri(null), rollup: XANH, tep, macKy: false }), { qua: true, ly_do: null });
 });
-test('AC-5 nhan biet mon mac-ky tu so tren dau nhanh, mon da bi nguoi phu quyet khong tinh', () => {
-  assert.equal(coMacKy({ status: 'machine-cleared', so: MAC_KY() }), true);
-  assert.equal(coMacKy({ status: 'machine-cleared', so: '' }), false);
-  const daLat = MAC_KY() + JSON.stringify({ id: 'd-3', stage: 'gate1', supersedes: 'd-1', decided_by: 'Chủ Kho' }) + '\n';
-  assert.equal(coMacKy({ status: 'machine-cleared', so: daLat }), false, 'người đã quyết lại món ấy');
-  assert.equal(coMacKy({ status: 'machine-cleared', so: '{hỏng\n' + MAC_KY() }), true, 'dòng hỏng bỏ qua');
+test('AC-5 nhan biet mon mac-ky tu so do ben ghi hang 1 sinh, mon da bi nguoi phu quyet khong tinh', () => {
+  const k = tam(); git(k, 'init', '-q'); nenMacKy(k); ghi(k, '_acceptance/h/contract.md', HD('h'));
+  const so = macKyThat(k, 'h');
+  assert.equal(coMacKy({ status: 'machine-cleared', so }), true);
+  assert.equal(coMacKy({ status: 'machine-cleared', so: S1('d-1') }), false, 'đối chứng: câu chỉ-người chưa có dòng máy');
+  const k2 = tam(); git(k2, 'init', '-q'); nenMacKy(k2); ghi(k2, '_acceptance/h/contract.md', HD('h'));
+  assert.equal(coMacKy({ status: 'machine-cleared', so: macKyThat(k2, 'h', { phuQuyet: true }) }), false, 'người đã phủ quyết món ấy (dòng --ghi phu-quyet)');
+  assert.equal(coMacKy({ status: 'machine-cleared', so: '{hỏng\n' + so }), true, 'dòng hỏng bỏ qua');
+});
+test('AC-5 luat tu tri dung khuon Repo Standards: tep tang high chan mac-ky ke ca khi default low', () => {
+  const mo = docTuTri(LUAT_THAT.replace(/^default: medium$/m, 'default: low').replace(/^  check: ""$/m, '  check: "evidence-recheck"'));
+  assert.deepEqual([mo.co, mo.default, mo.proof, mo.high.length > 5, mo.low.length > 3], [true, 'low', 'evidence-recheck', true, true], 'đọc được khuôn thật');
+  assert.deepEqual(cuaProof({ tuTri: mo, rollup: XANH_PROOF, tep: ['src/kho/a.ts'], macKy: true }).qua, true, 'đối chứng dương: tệp thường ở tầng low');
+  for (const t of ['governance/autonomy.yaml', '.github/workflows/ci.yml', 'apps/web/.claude/settings.json', 'tsconfig.base.json', 'ontology/kho.yaml']) {
+    assert.deepEqual(cuaProof({ tuTri: mo, rollup: XANH_PROOF, tep: ['src/kho/a.ts', t], macKy: true }).ly_do, 'mặc-ký dừng trước cửa gộp: PR ở tầng high của luật tự trị — chỉ tầng low tự gộp', t);
+  }
+  assert.equal(docTuTri(LUAT_THAT).proof, '', 'khuôn gốc chưa khai proof');
+  // Khối rules của khuôn: xoá tệp (ca kiểm) nâng lên medium — mặc-ký không tự gộp.
+  assert.deepEqual(mo.rules, { test_deletions_raise_to: 'medium', agent_guard_removals_raise_to: 'high' }, 'đọc khối rules');
+  assert.equal(cuaProof({ tuTri: mo, rollup: XANH_PROOF, tep: ['tests/kho.test.ts'], xoa: ['tests/kho.test.ts'], macKy: true }).ly_do, 'mặc-ký dừng trước cửa gộp: PR ở tầng medium của luật tự trị — chỉ tầng low tự gộp', 'xoá ca kiểm');
+  assert.equal(cuaProof({ tuTri: mo, rollup: XANH_PROOF, tep: ['tests/kho.test.ts'], macKy: true }).qua, true, 'đối chứng: sửa ca kiểm (tầng low) không xoá thì qua');
 });
 test('AC-5 lenh gop tung PR va chuyen gop cung chan mac-ky o kho chua khai proof', () => {
   const a = kho([{ n: 1, tep: { 'src/a.ts': 'a\n' }, macKy: true, dat_luc: '2026-11-22T10:00:00Z' }, { n: 2, tep: { 'src/b.ts': 'b\n' }, dat_luc: '2026-11-22T10:01:00Z' }]);
@@ -182,6 +222,36 @@ test('AC-5 lenh gop tung PR va chuyen gop cung chan mac-ky o kho chua khai proof
   const c = kho([{ n: 1, tep: { 'src/a.ts': 'a\n', 'governance/autonomy.yaml': 'version: 1\ndefault: low\nproof:\n  check: "gate"\n' }, macKy: true }]);
   const g3 = xetGop({ io: ioCua(c.k, c.sha), cfg: { ...CFG_PHAT_LICH, nhanh_chinh: 'main' }, pr: 1, slug: 'h1' });
   assert.equal(g3.duong, 'chan', 'luật tự trị của nhánh PR không được tính');
+});
+
+// ── AC-8 — pha gộp: nhánh chính đổi, gộp hỏng giữa chuyến, nhánh chính đỏ ─────────────────────────────
+test('AC-8 nhanh chinh doi giua luc kiem va luc gop thi khong gop PR nao', () => {
+  const a = kho([{ n: 1, tep: { 'src/a.ts': 'a\n' } }, { n: 2, tep: { 'src/b.ts': 'b\n' } }]);
+  const io = ioCua(a.k, a.sha);
+  io.truocGop = () => { git(a.k, 'checkout', '-q', 'main'); commit(a.k, 'src/nguoi-gop-tay.ts', 'x\n', 'gop tay'); git(a.k, 'push', '-q', 'origin', 'main'); };
+  const kq = chayChuyen({ io, cfg: CFG(), prs: [1, 2], now: '2026-11-22T12:00:00Z' });
+  assert.equal(kq.duong, 'nhanh-chinh-doi');
+  assert.match(kq.ly_do, /^nhánh chính đổi giữa lúc kiểm và lúc gộp \([0-9a-f]{7} → [0-9a-f]{7}\) — không gộp PR nào; chạy lại chuyến$/);
+  assert.deepEqual(gopDaGoi(io), []);
+  const io2 = ioCua(a.k, a.sha);
+  assert.deepEqual([chayChuyen({ io: io2, cfg: CFG(), prs: [1, 2], now: '2026-11-22T12:00:00Z' }).duong, gopDaGoi(io2)], ['da-gop', [1, 2]], 'đối chứng: không chen ngang thì gộp đủ');
+});
+test('AC-8 mot lan gop hong giua chuyen thi dung, khong gop PR sau no', () => {
+  const a = kho([1, 2, 3].map((n) => ({ n, tep: { [`src/p${n}.ts`]: `${n}\n` } })));
+  const io = ioCua(a.k, a.sha);
+  const goc = io.chay;
+  io.chay = (cmd, args) => { if (cmd === 'gh' && args[1] === 'merge' && args[2] === '2') { io.goiGh.push(args); throw Object.assign(new Error('x'), { stderr: 'GraphQL: Head branch was modified' }); } return goc(cmd, args); };
+  const kq = chayChuyen({ io, cfg: CFG(), prs: [1, 2, 3], now: '2026-11-22T12:00:00Z' });
+  assert.deepEqual([kq.duong, kq.da_gop, kq.dung_tai], ['gop-do-dang', [1], 2]);
+  assert.equal(kq.ly_do, 'gộp #2 hỏng (GraphQL: Head branch was modified) — dừng, không gộp 1 PR sau nó; đã gộp #1');
+  assert.deepEqual(gopDaGoi(io), [1, 2], 'không có lời gọi gộp #3');
+});
+test('AC-8 nhanh chinh do voi lenh kiem thi chuyen dung, khong PR nao bi quy loi', () => {
+  const a = kho([1, 2].map((n) => ({ n, tep: { [`src/p${n}.ts`]: `${n}\n` } })));
+  const io = ioCua(a.k, a.sha);
+  const kq = chayChuyen({ io, cfg: CFG({ lenh_kiem: 'test ! -e src/chung.ts' }), prs: [1, 2], now: '2026-11-22T12:00:00Z' });
+  assert.deepEqual([kq.duong, kq.rot, gopDaGoi(io)], ['chan', [], []]);
+  assert.equal(kq.ly_do, 'nhánh chính đỏ với lệnh kiểm của chuyến — chuyến dừng, không PR nào bị quy lỗi');
 });
 
 // ── AC-6 — cấu hình đợt ───────────────────────────────────────────────────────────────────────────────

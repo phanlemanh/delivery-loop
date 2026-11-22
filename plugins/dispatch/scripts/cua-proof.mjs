@@ -15,8 +15,8 @@ const go = (s) => String(s ?? '').replace(/\s+#.*$/, '').trim().replace(/^"(.*)"
 // Đọc theo dòng (gói không nạp bộ đọc YAML): khoá cột 0 `default`, khối `proof:` với `check:` thụt một bậc, danh sách
 // khối `low:` / `high:` mục `- "<glob>"`. Văn bản null → { co: false }.
 export function docTuTri(text) {
-  if (text == null) return { co: false, proof: '', default: 'medium', low: [], high: [] };
-  const out = { co: true, proof: '', default: 'medium', low: [], high: [] };
+  if (text == null) return { co: false, proof: '', default: 'medium', low: [], high: [], rules: {} };
+  const out = { co: true, proof: '', default: 'medium', low: [], high: [], rules: {} };
   let khoi = null;
   for (const d of String(text).split(/\r?\n/)) {
     if (!d.trim() || /^\s*#/.test(d)) continue;
@@ -27,14 +27,20 @@ export function docTuTri(text) {
       continue;
     }
     if (khoi === 'proof') { const m = /^\s+check:\s*(.*)$/.exec(d); if (m) out.proof = go(m[1]); continue; }
+    if (khoi === 'rules') { const m = /^\s{2}([a-z_]+_raise_to):\s*(.*)$/.exec(d); if (m && TANG.includes(go(m[2]))) out.rules[m[1]] = go(m[2]); continue; }
     if (khoi === 'low' || khoi === 'high') { const m = /^\s+-\s+(.*)$/.exec(d); if (m && go(m[1])) out[khoi].push(go(m[1])); }
   }
   return out;
 }
 
 // Tầng của MỘT PR = tầng cao nhất của mọi tệp nó đổi: tệp khớp `high` → high; khớp `low` → low; còn lại → `default`.
-export function tangCuaTep(tuTri, tep) {
+// Khối `rules` của khuôn nâng tầng theo điều máy ở đây không đọc được nghĩa — nghiêng về phía an toàn: PR XOÁ tệp nào thì
+// lấy tầng của `test_deletions_raise_to`; PR chạm `ontology/` thì lấy tầng của `agent_guard_removals_raise_to`.
+export function tangCuaTep(tuTri, tep, { xoa = [] } = {}) {
   let max = 0;
+  const r = tuTri.rules ?? {};
+  if (xoa.length && r.test_deletions_raise_to) max = Math.max(max, TANG.indexOf(r.test_deletions_raise_to));
+  if (r.agent_guard_removals_raise_to && tep.some((t) => t.startsWith('ontology/'))) max = Math.max(max, TANG.indexOf(r.agent_guard_removals_raise_to));
   for (const t of tep) {
     const tang = tuTri.high.some((g) => khop(g, t)) ? 'high' : tuTri.low.some((g) => khop(g, t)) ? 'low' : tuTri.default;
     max = Math.max(max, TANG.indexOf(tang));
@@ -59,12 +65,12 @@ export function coMacKy({ status, so }) {
 const xanh = (c) => (c.state !== undefined ? c.state === 'SUCCESS' : c.status === 'COMPLETED' && c.conclusion === 'SUCCESS');
 const DUNG = 'mặc-ký dừng trước cửa gộp: ';
 
-export function cuaProof({ tuTri, rollup, tep, macKy }) {
+export function cuaProof({ tuTri, rollup, tep, macKy, xoa = [] }) {
   if (!macKy) return { qua: true, ly_do: null };
   if (!tuTri.co) return { qua: false, ly_do: `${DUNG}kho chưa có governance/autonomy.yaml — không có bằng chứng máy đứng thế chỗ người` };
   if (!tuTri.proof) return { qua: false, ly_do: `${DUNG}luật tự trị chưa khai proof.check` };
   if (!(Array.isArray(rollup) && rollup.some((c) => (c.name ?? c.context) === tuTri.proof && xanh(c)))) return { qua: false, ly_do: `${DUNG}check proof «${tuTri.proof}» chưa xanh trên đầu nhánh` };
-  const tang = tangCuaTep(tuTri, tep);
+  const tang = tangCuaTep(tuTri, tep, { xoa });
   if (tang !== 'low') return { qua: false, ly_do: `${DUNG}PR ở tầng ${tang} của luật tự trị — chỉ tầng low tự gộp` };
   return { qua: true, ly_do: `mặc-ký qua cửa proof: «${tuTri.proof}» xanh, PR ở tầng low` };
 }
@@ -76,6 +82,7 @@ export function xetCuaProof({ io, sha, dinh, mb, slug, rollup }) {
   const status = (/^status:\s*(\S+)/m.exec(ct) || [])[1] ?? null;
   const macKy = coMacKy({ status, so: show(`${sha}:_acceptance/${slug}/decisions.jsonl`) });
   if (!macKy) return { qua: true, ly_do: null, mac_ky: false };
-  const tep = String(io.chay('git', ['diff', '--name-only', '--no-renames', mb, sha])).split('\n').map((x) => x.trim()).filter(Boolean);
-  return { ...cuaProof({ tuTri: docTuTri(show(`${dinh}:governance/autonomy.yaml`)), rollup, tep, macKy }), mac_ky: true };
+  const trangThai = String(io.chay('git', ['diff', '--name-status', '--no-renames', mb, sha])).split('\n').map((x) => x.trim()).filter(Boolean).map((x) => x.split('\t'));
+  const tep = trangThai.map((x) => x[x.length - 1]); const xoa = trangThai.filter((x) => x[0] === 'D').map((x) => x[1]);
+  return { ...cuaProof({ tuTri: docTuTri(show(`${dinh}:governance/autonomy.yaml`)), rollup, tep, xoa, macKy }), mac_ky: true };
 }

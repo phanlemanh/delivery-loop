@@ -43,11 +43,14 @@ export function gom(ungVien, { now, cuaSoPhut }) {
 // ── 4. Tách đôi ────────────────────────────────────────────────────────────────────────────────────────
 // `kiem(tiềnTố)` → true khi nhánh chính + các PR ấy xanh. Bất biến: tiền tố rỗng xanh (nhánh chính), tiền tố `hi` đỏ.
 export const LY_DO_DO = 'làm chuyến đỏ — lệnh kiểm trên ngọn thoát khác 0 khi có PR này';
+// Ngọn đỏ lần đầu → kiểm nhánh chính MỘT lần trước khi quy lỗi: nhánh chính đỏ (hay lệnh kiểm chập chờn) thì dừng, không
+// PR nào bị quy lỗi oan (`chinh_do: true`).
 export function tachDoi(ds, kiem) {
-  const con = [...ds]; const rot = []; let n = 0;
+  const con = [...ds]; const rot = []; let n = 0; let daKiemChinh = false;
   const k = (x) => { n++; return kiem(x); };
   while (con.length) {
     if (k(con)) return { xanh: con, rot, so_lan_kiem: n };
+    if (!daKiemChinh) { daKiemChinh = true; if (!k([])) return { xanh: [], rot, so_lan_kiem: n, chinh_do: true }; }
     let lo = 0; let hi = con.length;
     while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (k(con.slice(0, mid))) lo = mid; else hi = mid; }
     rot.push({ pr: con[hi - 1], ly_do: LY_DO_DO });
@@ -130,11 +133,24 @@ export function chayChuyen({ io, cfg, prs, now = new Date().toISOString(), xet =
     return memo.get(k);
   };
   const td = tachDoi(dung.vao, kiem);
+  if (td.chinh_do) return { duong: 'chan', ...co, xanh: [], rot: dung.rot, so_lan_kiem: td.so_lan_kiem, ly_do: 'nhánh chính đỏ với lệnh kiểm của chuyến — chuyến dừng, không PR nào bị quy lỗi' };
   const rot = [...dung.rot, ...td.rot];
   if (!td.xanh.length) return { duong: 'khong-co', ...co, xanh: [], rot, so_lan_kiem: td.so_lan_kiem, ly_do: 'mọi PR của chuyến rớt' };
   if (xet) return { duong: 'gop-duoc', ...co, xanh: td.xanh, rot, so_lan_kiem: td.so_lan_kiem, ly_do: `ngọn chuyến xanh với ${td.xanh.length} PR` };
-  for (const pr of td.xanh) io.chay('gh', ['pr', 'merge', String(pr), '--merge', '--match-head-commit', sha[pr]]);
-  return { duong: 'da-gop', ...co, xanh: td.xanh, rot, so_lan_kiem: td.so_lan_kiem, ly_do: `đã gộp chuyến ${td.xanh.length} PR, ${rot.length} rớt` };
+  // Cây đã kiểm chỉ còn đúng khi nhánh chính vẫn ở đỉnh lúc dựng: đổi (người gộp tay, kho khác gộp) → không gộp gì.
+  if (typeof io.truocGop === 'function') io.truocGop(); // khe cho ca kiểm chen một sự kiện giữa kiểm và gộp
+  git(['fetch', '-q', 'origin', nhanh]);
+  const dinhMoi = git(['rev-parse', `origin/${nhanh}`]).trim();
+  if (dinhMoi !== dinh) return { duong: 'nhanh-chinh-doi', ...co, xanh: td.xanh, rot, so_lan_kiem: td.so_lan_kiem, da_gop: [], ly_do: `nhánh chính đổi giữa lúc kiểm và lúc gộp (${dinh.slice(0, 7)} → ${dinhMoi.slice(0, 7)}) — không gộp PR nào; chạy lại chuyến` };
+  // Gộp theo đúng thứ tự đã kiểm; một lần gộp hỏng → dừng ngay: gộp tiếp sẽ ra một tổ hợp chưa ai kiểm.
+  const daGop = [];
+  for (const pr of td.xanh) {
+    try { io.chay('gh', ['pr', 'merge', String(pr), '--merge', '--match-head-commit', sha[pr]]); daGop.push(pr); } catch (e) {
+      const loi = String(e?.stderr ?? e?.message ?? e).split('\n').map((x) => x.trim()).find(Boolean) ?? '';
+      return { duong: 'gop-do-dang', ...co, xanh: td.xanh, rot, so_lan_kiem: td.so_lan_kiem, da_gop: daGop, dung_tai: pr, ly_do: `gộp #${pr} hỏng (${loi}) — dừng, không gộp ${td.xanh.length - daGop.length - 1} PR sau nó; đã gộp ${daGop.length ? daGop.map((x) => `#${x}`).join(', ') : 'không PR nào'}` };
+    }
+  }
+  return { duong: 'da-gop', ...co, xanh: td.xanh, rot, so_lan_kiem: td.so_lan_kiem, da_gop: daGop, ly_do: `đã gộp chuyến ${td.xanh.length} PR, ${rot.length} rớt` };
 }
 
 const IO_THAT = (cwd) => ({ chay: (cmd, args) => execFileSync(cmd, args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 120_000 }) });
@@ -155,10 +171,10 @@ export function chuyen(cwd, danhSach, { xet = false, ngay = false, io = IO_THAT(
     if (docPha(thuMuc).tu_merge !== true) throw new Error('chuyen: đợt không cho tự gộp (tu_merge) — bấm gộp là của người; dùng --xet để xem quyết định');
   }
   const kq = chayChuyen({ io, cfg, prs: prs.map(Number), xet, ngay, ...(now ? { now } : {}) });
-  const nhaMerge = kq.duong === 'da-gop' && chu?.phien === day;
+  const nhaMerge = (kq.da_gop ?? []).length > 0 && chu?.phien === day;
   if (nhaMerge) fs.rmSync(path.join(thuMuc, 'khoa', 'merge'), { recursive: true, force: true });
   ghiSuKien(thuMuc, { loai: 'chuyen', phien: day, duong: kq.duong, thanh_vien: kq.thanh_vien, xanh: kq.xanh, rot: kq.rot, ngoai: kq.ngoai, so_lan_kiem: kq.so_lan_kiem, ly_do: kq.ly_do });
   return { ...kq, nha_merge: nhaMerge };
 }
 
-export const maThoatChuyen = (kq) => (kq.duong === 'da-gop' || kq.duong === 'gop-duoc' ? 0 : kq.duong === 'cho' ? 4 : 1);
+export const maThoatChuyen = (kq) => (kq.duong === 'da-gop' || kq.duong === 'gop-duoc' ? 0 : kq.duong === 'cho' || kq.duong === 'nhanh-chinh-doi' ? 4 : 1);

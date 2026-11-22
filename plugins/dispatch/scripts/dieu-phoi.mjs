@@ -321,7 +321,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === fs.realpathSync(proces
   // `--theo-loi` (hồ sơ loi-gop-trong-cau-ky): lối ngoài đợt theo lời gộp trong câu ký — cùng bảng mã thoát.
   // `--cho-ci <phút>`: lệnh tự hỏi lại trạng thái check tới khi xanh (gộp), đỏ hẳn (1) hay hết giờ (4).
   // Chuyến gộp (hồ sơ chuyen-gop): gom PR đã đạt bằng chứng, kiểm một lần trên ngọn, chuyến đỏ tách đôi. Mã thoát:
-  // 0 đã gộp (hay --xet nói gộp được) · 4 chờ tới giờ khởi hành · 1 không PR nào gộp được, chặn hoặc lỗi.
+  // 0 đã gộp (hay --xet nói gộp được) · 4 chờ tới giờ khởi hành, hay nhánh chính đổi giữa kiểm và gộp (chạy lại) · 1 không PR
+  // nào gộp được, nhánh chính đỏ, một lần gộp hỏng giữa chuyến, chặn hoặc lỗi.
   if (lenh === 'chuyen') {
     try {
       const kq = chuyen(cwd, doiSo, { xet: co.xet === true, ngay: co.ngay === true });
