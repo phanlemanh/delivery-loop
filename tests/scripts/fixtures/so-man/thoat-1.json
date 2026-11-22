@@ -1,0 +1,37 @@
+{
+  "exit": 1,
+  "json": {
+    "ledger": "design/screens.yaml",
+    "states_table": "design/states.json",
+    "screens": [
+      {
+        "id": "overdue",
+        "route": "/overdue",
+        "title": "overdueTitle",
+        "family": null,
+        "status": "built",
+        "states": [
+          "loading",
+          "empty",
+          "error",
+          "list"
+        ],
+        "must_have": [
+          "loading",
+          "empty",
+          "error"
+        ],
+        "exempt": null,
+        "entry": {
+          "action": null,
+          "roles": null
+        },
+        "actions": []
+      }
+    ],
+    "unknown": [
+      "khong-co"
+    ],
+    "keys_not_found": []
+  }
+}

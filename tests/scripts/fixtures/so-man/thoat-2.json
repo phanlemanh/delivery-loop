@@ -1,0 +1,5 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "design-assembly: design/screens.yaml is missing, and so is design/screens/: there is no screen to read\n"
+}
