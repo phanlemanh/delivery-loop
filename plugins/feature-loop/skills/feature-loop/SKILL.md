@@ -613,12 +613,12 @@ cũ). Việc BẤM MERGE vẫn là của người — khó-đảo.
 trọn câu người gõ thành một dòng sổ `loi_gop` cùng commit chữ ký. Hồ sơ `signed-off` có dòng ấy mang lời gộp, vòng chạy
 NGOÀI đợt → sau khi commit chữ ký đã lên PR, chạy đúng dòng lệnh dưới ở chế độ NỀN (chính lệnh chờ CI; phiên không tự hỏi
 lại) rồi làm theo bảng mã thoát. Lệnh là chỗ DUY NHẤT gộp: nó đọc trên đầu nhánh của PR và tự đọc lại câu người gõ; câu
-không mang lời gộp thì nó từ chối, máy không gộp. Kho tự host kit: `DP=plugins/dispatch`. Vòng trong đợt: khối TRONG-DOT
+không mang lời gộp thì nó từ chối, máy không gộp. `AG` là gốc lõi: vế chữ ký đọc bằng `chuKyThat` của lõi, nên chữ ký giữ chỗ (`pending`, `TBD`…) không qua; không có bộ đọc dùng được thì lệnh chặn (mã 1). Kho tự host kit: `DP=plugins/dispatch`, `AG=plugins/acceptance-gate`. Vòng trong đợt: khối TRONG-DOT
 thắng như cũ. Bộ giải thoát 1 (gói điều phối chưa cài) → một dòng «gói điều phối chưa cài — lời gộp đã ghi trong sổ; bấm
 gộp là của người», không chặn. Resume vào `signed-off` mà PR còn mở và sổ có dòng lời gộp → chạy lại khối này.
 <!-- <<<GOP-THEO-LOI-KY -->
 ```
-DP=$(node "$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs" --plugin dispatch --require scripts/dieu-phoi.mjs) && node "$DP/scripts/dieu-phoi.mjs" gop <số PR> --theo-loi --slug <slug> --cho-ci 30
+DP=$(node "$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs" --plugin dispatch --require scripts/dieu-phoi.mjs) && AG=$(node "$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs" --plugin acceptance-gate --require lib/evidence-core.cjs) && node "$DP/scripts/dieu-phoi.mjs" gop <số PR> --theo-loi --slug <slug> --cho-ci 30 --loi "$AG"
 ```
 <!-- GOP-THEO-LOI-KY>>> -->
 <!-- <<<GOP-THEO-LOI-THOAT -->

@@ -20,6 +20,8 @@ const CHEP = [
   'plugins/feature-loop/workflows',
   'plugins/feature-loop/skills/feature-loop/SKILL.md',
   'plugins/acceptance-gate/commands/signoff.md',
+  // Vế chữ ký đọc bằng `chuKyThat` của lõi (hồ sơ va-chu-ky-giu-cho-lenh-gop): bản sao mang lõi ở bố cục nguồn.
+  'plugins/acceptance-gate/lib',
   'plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md',
   TEP_CA,
 ];
@@ -92,8 +94,9 @@ const NHAT = [
   ['bo-khoa-kho — bỏ kiểm khoá kho', GOP, "if (!khoaGopTheoLoi(doc('_acceptance/config.yaml'))) return", 'if (false) return', ['GL-6b', 'GL-6c']],
   ['nhan-may-thong — nhận hồ sơ máy đã thông', GOP, 'if (st !== DA_KY_NGUOI) return', 'if (!DA_THONG.includes(st)) return', ['GL-6b']],
   ['bo-chu-ky — bỏ kiểm chữ ký người', GOP, 'if (!chuKy) return', 'if (false) return', ['GL-6b']],
+  ['giu-cho-la-ky — vế chữ ký coi giá trị giữ chỗ là chữ ký', GOP, 'if (!ck.signed) return', 'if (!ck.signed && !ck.placeholder) return', ['GL-6b', 'GL-6k']],
   ['doc-cay-lam-viec — đọc cây làm việc thay đầu nhánh', GOP, "return io.chay('git', ['show', `${sha}:${tep}`]);", "return io.chay('cat', [tep]);", ['GL-6g']],
-  ['them-auto — lệnh gộp thêm --auto', GOP, "'--match-head-commit', kq.sha]);", "'--match-head-commit', kq.sha, '--auto']);", ['GL-6a', 'GL-6g', 'GL-6h', 'GL-8b']],
+  ['them-auto — lệnh gộp thêm --auto', GOP, "'--match-head-commit', kq.sha]);", "'--match-head-commit', kq.sha, '--auto']);", ['GL-6a', 'GL-6g', 'GL-6h', 'GL-6i', 'GL-8b']],
   ['gop-khi-dang-chay — gộp khi check còn chạy', GOP, 'if (!ci.xanh) return', 'if (false) return', ['GL-8b', 'GL-8c', 'GL-8d', 'GL-8e']],
   ['khong-co-bo-doi-dot — lệnh không cờ thôi đòi đợt', GOP, "  if (!thuMuc) throw new Error('gop: không có đợt nào đang chạy');\n", '', ['GL-7']],
 ];
@@ -107,7 +110,7 @@ const IM = [
 const viecM0 = luot(null);
 const viecNhat = NHAT.map(([, tep, goc, moi]) => luot((d) => tiem(d, tep, goc, moi)));
 const viecIm = IM.map(([, tep, goc, moi]) => luot((d) => tiem(d, tep, goc, moi)));
-const SO_CA_GL = 17;
+const SO_CA_GL = 20;
 
 // Đối chứng dương dùng chung: mọi nhát chỉ đáng tin khi bản sao chưa tiêm đã xanh trên đúng tệp ca ấy.
 async function lanh() {
