@@ -7,7 +7,7 @@ reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
-verified_commit: 35808675565b8413d344ecf1a1ad973643423eeb
+verified_commit: cdc9c99916389787147eff96b8f15b37b05558a7
 human_signoff: Phan Le Manh 2026-11-22
 ---
 
@@ -194,3 +194,7 @@ Round 1: moi eval xanh (14/14), khong judgment item, khong variance. Verdict PAS
 ### Re-pin lần 1 — 2026-11-22, do gộp origin/main (sau PR #19, #20) + 6 hàng sổ giới hạn P179; cây trùng commit gộp thử --no-ff vào origin/main
 run_id: repin-20261122T124443Z-84629
 sha: 35808675565b8413d344ecf1a1ad973643423eeb · suites: 11 lệnh exit 0 · evals: 14/14 eval máy đạt kỳ vọng
+
+### Re-pin lần 2 — 2026-11-22, do gộp origin/main sau PR #24 release-3-1-0 (đổi số bản năm plugin.json); lượt đo dài 4 chủ kho cho ở câu ký
+run_id: repin-20261122T135953Z-71849
+sha: cdc9c99916389787147eff96b8f15b37b05558a7 · suites: 11 lệnh exit 0 · evals: 14/14 eval máy đạt kỳ vọng
