@@ -6,6 +6,9 @@ Thư mục này chỉ sống ở nhánh `chuyen-nha` cho tới ngày cắt sang 
 |---|---|
 | `KHAC-BIET-DU-KIEN.md` | **Bảng chủ kho dò lúc ký mốc 3.0**: mỗi điều trước và sau ngày cắt, trạng thái quyết, kiểm bằng gì |
 | `NOI-REPO-STANDARDS.md` | Ranh giới và điểm nối giữa Repo Standards (`repo-setup`) và kho này — ai sở hữu gì, tám điểm nối, mười mục `doctor` trượt và ai giải |
+| `BAN-GIAO.md` | **Bàn giao của phiên giữ đợt (22/11)** — phiên mới đọc trước tiên: việc phải làm ngay, việc nóng, việc kế theo ngày, luật, cách làm |
+| `KE-HOACH-GIAI-DOAN-2.md` · `KE-HOACH-12-MUC-REPO-STANDARDS.md` | Hai kế hoạch đang hiệu lực (chủ kho duyệt 19/11 và 21/11) |
+| `cong-cu/` · `luu-nhap/` | Công cụ phát lại xung đột · bản chép hồ sơ nháp của vòng bản vá chữ ký giữ chỗ |
 | `TRANG-THAI.md` | **Tệp sống** — máy nào đang giữ, đã xong, đang dở, việc kế, quyết định còn chờ chủ kho |
 | `MO-PHIEN.md` | Máy cần có gì, lệnh kéo kho, cách nhận giữ, lời mở phiên |
 | `BOI-CANH.md` | Quyết định đã có, luật của đợt, bẫy đã dẫm, thứ không nằm trong kho |

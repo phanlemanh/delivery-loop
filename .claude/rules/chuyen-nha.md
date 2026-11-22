@@ -5,6 +5,8 @@ của kho này là NGUỒN của kit. Tệp này chỉ có ở nhánh `chuyen-nh
 
 Trước mọi việc trên nhánh này, đọc theo thứ tự:
 
+0. `migration/BAN-GIAO.md` — bàn giao của phiên giữ đợt (viết 22/11): ba việc phải làm ngay khi phiên mới mở, việc nóng,
+   việc kế theo ngày, luật không được quên. Phiên mới bắt đầu ở đây.
 1. `migration/TRANG-THAI.md`, mục «Bảng việc giai đoạn 2» — việc nào xong, việc nào đang mở, điều kiện mở việc kế.
 2. `migration/KE-HOACH-GIAI-DOAN-2.md` — kế hoạch chủ kho duyệt 19/11: năm chặng, thước, điểm dừng, quyền lặp A3.
 3. `migration/BOI-CANH.md` — luật của đợt và các bẫy đã dẫm. `migration/KE-HOACH.md` là sử liệu của giai đoạn 1.

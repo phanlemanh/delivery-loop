@@ -1,0 +1,27 @@
+{
+  "feature_plain": "Vá lệnh gộp theo lời: chữ ký tạm như «pending», «TBD» không còn được coi là đã ký; lệnh đọc chữ ký bằng đúng bộ đọc của lõi, tìm lõi bằng bộ định vị sẵn có của kit.",
+  "will_do": [
+    {"id": "AC-2", "p": "Sẽ chặn gộp khi chữ ký chỉ là chữ tạm — mọi mẫu trong bảng của lõi — và vẫn gộp khi chữ ký thật; phá thử trên bản sao chứng lệnh gộp đọc đúng bảng của lõi, không có bảng riêng."},
+    {"id": "AC-3", "p": "Sẽ nhận gốc lõi qua cờ --loi do dòng lệnh giải bằng bộ định vị sẵn có (ADR 0003); không có bộ đọc dùng được thì chặn, nêu đường đã thử và lệnh giải."},
+    {"id": "AC-4", "p": "Sẽ để toàn bộ ca của gói điều phối xanh, kể cả bản sao chỉ có gói điều phối (≥ 84 ca)."}
+  ],
+  "wont_do": [
+    {"id": "AC-1", "p": "Không vỡ gì khác: mọi bộ kiểm của lượt chấm xanh, kể cả ca P33 canh gói điều phối không mang bộ định vị thứ hai."},
+    {"id": "OOS-1", "p": "Sẽ KHÔNG đổi số bản, ghi chú phát hành, CHANGELOG, thẻ hay bản phát hành — để vòng mốc quanh 02/12."},
+    {"id": "OOS-2", "p": "Sẽ KHÔNG làm DL1, P179 hay hạt giống khác — phiên khác làm trong cây riêng."},
+    {"id": "OOS-3", "p": "Sẽ KHÔNG cài lên kho tiêu thụ nào, KHÔNG đụng nhánh chuyen-nha và migration/."},
+    {"id": "OOS-4", "p": "Sẽ KHÔNG đổi lõi hay lưới trước-gộp, KHÔNG sửa ba giới hạn đã nhận của PR #15."},
+    {"id": "OOS-5", "p": "Sẽ KHÔNG bịt chỗ mù của ca P33 ở vòng này — đã ghi hạt giống."}
+  ],
+  "scope_plain": "Vòng thu về đúng bản vá theo lời chủ kho 21/11; phần cắt mốc chuyển sang một mốc duy nhất quanh 02/12.",
+  "coverage_plain": [
+    {"i": 0, "p": "Một trục — bản vá: đọc bảng chữ ký của lõi (AC-2), tìm lõi bằng bộ định vị của kit (AC-3), gói điều phối đứng riêng (AC-4), không vỡ gì khác (AC-1)."}
+  ],
+  "gap_probe_plain": [
+    {"i": 0, "p": "Máy từng tự quyết cách tìm lõi khác số mà không có căn cứ, rồi định cho gói điều phối tự dò chỗ cài — trái ADR 0003; nay gốc lõi do bộ định vị sẵn có giải rồi truyền vào, chỉ chặn khi không có bộ đọc nào."},
+    {"i": 1, "p": "Máy từng ghi «bỏ đường nền» như thể không còn lối khác; nay là câu hỏi cho chủ kho. Ca của bản sao chỉ có gói điều phối có thêm GL-6j đo đúng hành vi chặn ở đó."},
+    {"i": 2, "p": "Chỗ cài và bản chép đợt nay đi chung đường của bộ định vị; ca đo cờ truyền gốc lõi (đúng · rỗng · lõi hỏng), bố cục nguồn và gói một mình; giới hạn gọi tay thiếu cờ có ngưỡng đếm."},
+    {"i": 3, "p": "Phép đo «không có bảng thứ hai» từng chỉ dò chữ; nay phá thử: thêm một mẫu vào bảng của lõi thì lệnh gộp phải theo, bảng riêng thì đỏ."},
+    {"i": 4, "p": "Mục này thuộc phần ghi chú phát hành, đã bỏ cùng phần mốc."}
+  ]
+}

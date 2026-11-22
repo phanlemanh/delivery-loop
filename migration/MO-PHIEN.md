@@ -1,5 +1,8 @@
 # Mở phiên — máy nào cũng làm theo được
 
+> **Từ 22/11/2026 tệp này là SỬ LIỆU của giai đoạn 1.** Nhiều câu dưới đây đã sai từ ngày cắt sang 18/11 (kho đã công khai,
+> `main` là nguồn của kit, kho cũ đã đóng băng). Phiên mới đọc `BAN-GIAO.md`; lời mở phiên hiện hành ở mục 12 của tệp ấy.
+
 ## Máy cần có
 
 - `git`, và `gh` đã đăng nhập tài khoản có quyền đọc ghi kho `phanlemanh/delivery-loop` (kho riêng tư) và

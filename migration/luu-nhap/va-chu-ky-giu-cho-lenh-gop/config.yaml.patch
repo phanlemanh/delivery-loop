@@ -1,0 +1,14 @@
+diff --git a/_acceptance/config.yaml b/_acceptance/config.yaml
+index fe870629..bdbf8894 100644
+--- a/_acceptance/config.yaml
++++ b/_acceptance/config.yaml
+@@ -985,6 +985,9 @@ executors:
+     rel300_guide_ci: bash _acceptance/release-3-0-0/guide-ci.sh --hai-chieu 90c3f9f197e18004eb0a8efb7d3d960bb02f5d12
+     rel300_don_dau_vet: bash _acceptance/release-3-0-0/don-dau-vet.sh
+     rel300_duong_cu: bash _acceptance/release-3-0-0/duong-cu-con-sot.sh --hai-chieu 6597f700cc494b7dff8c832c6939176b0cdf46cd
++    # Hồ sơ va-chu-ky-giu-cho-lenh-gop: hai khoá dựng kho thử và bản sao cây trong lượt — KHÔNG vào feature_loop.suite_keys.
++    vcgc_giu_cho: bash _acceptance/va-chu-ky-giu-cho-lenh-gop/chu-ky-giu-cho.sh --chan giu-cho
++    vcgc_duong_loi: bash _acceptance/va-chu-ky-giu-cho-lenh-gop/chu-ky-giu-cho.sh --chan duong-loi
+     lgtp_doc_cu: bash _acceptance/lan-ghim-lai-theo-paths/rang.sh --chan doc-cu
+     lgtp_nhay_dac_hieu: bash _acceptance/lan-ghim-lai-theo-paths/rang.sh --chan nhay-dac-hieu
+     lgtp_chi_thu: bash _acceptance/lan-ghim-lai-theo-paths/rang.sh --chan chi-thu
