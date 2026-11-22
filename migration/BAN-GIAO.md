@@ -49,8 +49,9 @@ Lượt gọi người của đợt: **13 / 15**. Còn dự kiến hai lượt: 
 
 Chủ kho bảo «Commit và mở pr» ngày 22/11; phiên cũ mở PR #21 từ `chuyen-nha` vào `main` ở dạng nháp. KHÔNG bỏ nháp, KHÔNG gộp
 trước khi đủ điều kiện II.4 và có lời chủ kho. PR xung đột ở đúng `.claude/rules/chuyen-nha.md` (nhánh chính đã xoá) — để
-nguyên có chủ ý: gộp `main` vào `chuyen-nha` sẽ đổi cây của nhánh sang bố cục mới và đổi plugin phiên ở kho này nạp. Nếu
-ứng dụng gửi sự kiện «xung đột» của Auto-fix cho PR này: đừng tự gỡ, báo chủ kho. Mỗi lần đẩy `chuyen-nha` là PR này
+nguyên có chủ ý: gộp `main` vào `chuyen-nha` sẽ đổi cây của nhánh sang bố cục mới và đổi plugin phiên ở kho này nạp. Chủ kho
+đã quyết 22/11: «Để nguyên tới II.4». Ứng dụng sẽ gửi sự kiện «xung đột» của Auto-fix sau mỗi lần đẩy nhánh: đừng gộp `main`
+vào nhánh, trả lời một dòng là đủ. Mỗi lần đẩy `chuyen-nha` là PR này
 đổi theo.
 
 ### Kế hoạch 12 mục Repo Standards (`KE-HOACH-12-MUC-REPO-STANDARDS.md`; mục 8 là thứ tự hiện hành)
