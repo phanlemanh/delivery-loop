@@ -1,29 +1,43 @@
-## Trong hợp đồng
+# Review findings: tep-chung-khong-chan-gop (round 2)
 
-(không có)
+## Trong hợp đồng
 
 ## Ngoài hợp đồng — người quyết ở Gate 2
 
 Các lỗi dưới đây nằm ngoài phạm vi đã duyệt ở Cổng Phạm vi và CHƯA qua bác bỏ đối kháng — người quyết, máy không sửa và không chấm thứ máy không được sửa.
 
-- **Nhánh hỏi `ls-remote --symref` mới thêm ở --day-nhanh-ve không có phép đo nào giữ: gỡ nó đi, TCG-11-khoa vẫn xanh**
-  Người dùng thấy gì: Nếu cách kho tự hỏi nhánh mặc định hỏng, lệnh đẩy trang bản đồ lên nhánh riêng có thể dừng ở mọi kho chạy trên máy chủ CI mà bộ kiểm tra vẫn báo xanh. Chỉ kho bật lựa chọn rời git mới bị ảnh hưởng, và lỗi hiện ra rõ ngay ở lần chạy đầu, không âm thầm làm mất dữ liệu.
-  Căn cứ: Hậu quả nhẹ và hiện ra ngay khi chạy thật: lệnh dừng với thông báo rõ, không mất hay ghi sai dữ liệu, và chỉ các kho đã chủ động bật lựa chọn mới gặp; bổ sung phép đo sau cũng rẻ.
+- **Ca 'main-khong-head' mới thêm không bao giờ đỏ khi khôi phục lối rơi lặng về 'main' mà vòng 1 vừa gỡ**
+  Người dùng thấy gì: Khi kho không có thông tin nhánh mặc định, lệnh đẩy trang bản đồ vẫn chạy đúng trong trường hợp nhánh mặc định tên là main. Nhưng phép kiểm chưa chứng minh được là nó đọc đúng nhánh khi tên nhánh khác, nên về sau nếu lối này hỏng thì có thể không ai hay.
+  Căn cứ: Hậu quả nhẹ: không mất dữ liệu, hiện tại chạy đúng, chỉ là lưới an toàn cho lần sửa sau còn mỏng; ghi giới hạn rồi bổ sung khi có dịp là đủ.
   file: `tests/scripts/tcg-ban-do.test.mjs`
   severity: medium
   Đề xuất: known-limits
 
-- **Ca 'main-khong-head' mới thêm không phân biệt được bản sửa fallback nhánh mặc định với chính lỗi nó định sửa (cả hai mutant đều sống)**
-  Người dùng thấy gì: Nếu lỗi cũ quay lại, kho có nhánh chính tên khác «main» và chạy trên CI có thể bị đẩy bản đồ đè lên chính nhánh chính, mà bộ kiểm tra không báo đỏ. Chỉ xảy ra ở kho đã bật lựa chọn rời git và đặt nhánh bản đồ trùng nhánh chính.
-  Căn cứ: Lỗi chỉ quay lại nếu có người sửa sai sau này, chỉ chạm kho bật lựa chọn và đặt trùng tên, và thay đổi nằm trên nhánh nên đảo lại được bằng lệnh git thông thường; thêm phép đo sau không đắt.
+- **Lớp 'khac' của hàng sổ do máy sinh không được phép đo nào giữ; bên viết và bên đọc P177 vẫn có thể trôi lại**
+  Người dùng thấy gì: Sổ giới hạn tự sinh hàng mới với một nhãn lớp cố định. Nếu nhãn này bị đổi sai về sau, một phép kiểm khác của kho sẽ báo đỏ và có thể lại làm lượt chấm bị trượt, mà phép đo của vòng này không báo trước.
+  Căn cứ: Hậu quả nhẹ và tự lộ ra ngay ở lần chạy kế tiếp, không mất dữ liệu; chỉ có thể tốn một lượt chấm nếu tái phát, nên ghi giới hạn là đủ.
+  file: `tools/so-gioi-han.mjs`
+  severity: medium
+  Đề xuất: known-limits
+
+- **Nothing tests the ls-remote fallback for the default branch: the 'main-khong-head' case passes even when the fallback is removed**
+  Người dùng thấy gì: Trên máy chạy kiểm tra tự động không có thông tin nhánh mặc định, nếu cách đọc nhánh mặc định hỏng thì lệnh đẩy trang bản đồ sẽ báo lỗi sau mỗi lần gộp và trang không được cập nhật, trong khi bộ kiểm hiện tại vẫn xanh.
+  Căn cứ: Người dùng thấy ngay trang không cập nhật và tự chạy lại được, không mất dữ liệu; nhưng chỉ xảy ra khi định dạng đầu ra của git đổi, hiếm, nên ghi giới hạn và bổ sung ca khi có dịp.
   file: `tests/scripts/tcg-ban-do.test.mjs`
   severity: medium
   Đề xuất: known-limits
 
-- **Hình dạng 4: ca mới 'main-khong-head' của TCG-11-khoa chỉ ghim mã thoát 2 và cụm chung 'ban_do.nhanh_ve', nên không phân biệt được bản đã sửa với chính lỗi nó định chặn**
-  Người dùng thấy gì: Bộ kiểm tra không phân biệt được lý do lệnh đẩy bản đồ dừng lại, nên một lỗi cũ có thể quay lại mà không ai biết. Người dùng chỉ thấy hậu quả nếu lỗi đó thật sự quay lại ở kho đã bật lựa chọn.
-  Căn cứ: Đây là điểm yếu của việc kiểm tra chứ không phải lỗi đang hại người dùng; hậu quả nhẹ, tự lộ khi chạy thật và sửa bổ sung sau rẻ.
+- **Hình dạng 4 (âm-tính-một-mình, không ghim đúng thông điệp): ca 'main-khong-head' của TCG-11-khoa không phân biệt được ba nhánh thoát 2, và vẫn xanh khi đặt lại lối đoán 'main' cũ**
+  Người dùng thấy gì: Một phép kiểm không phân biệt được các lý do khiến lệnh đẩy trang bản đồ dừng lại. Nếu lỗi quay lại, kho có thể bị đoán sai nhánh mặc định mà bộ kiểm vẫn xanh.
+  Căn cứ: Không gây mất dữ liệu và lỗi sẽ lộ khi kho có nhánh mặc định khác main; sửa rẻ nhưng không chặn việc giao, nên ghi giới hạn.
   file: `tests/scripts/tcg-ban-do.test.mjs`
+  severity: high
+  Đề xuất: known-limits
+
+- **Hình dạng 2 (không round-trip qua bên đọc thật): cột lớp mà bộ sinh hàng sổ ghi không qua bên đọc nào, nên lùi phần sửa lượt chấm 2 ('khac' về 'chua-xep') thì toàn bộ TCG-9 vẫn xanh**
+  Người dùng thấy gì: Phần sửa giúp sổ giới hạn không còn làm lượt chấm trượt chưa có phép kiểm giữ lại. Nếu ai đó đổi lại nhãn cũ, lỗi từng làm trượt vòng trước có thể quay lại mà không báo sớm.
+  Căn cứ: Lỗi nếu quay lại sẽ hiện rõ và sửa được ngay, chỉ tốn thêm một lượt chấm; chi phí dựng phép đo bổ sung vượt hậu quả nên ghi giới hạn.
+  file: `tests/scripts/tcg-so-gioi-han.test.mjs`
   severity: medium
   Đề xuất: known-limits
 
@@ -55,7 +69,7 @@ Các lỗi dưới đây nằm ngoài phạm vi đã duyệt ở Cổng Phạm v
   severity: low
   Đề xuất: known-limits
 
-- **CLI so-gioi-han không kiểm tham số `--root`: thiếu giá trị thì crash kèm stack trace (r1)**
+- **CLI so-gioi-han không kiểm tham số `--root`: thiếu giá trị thì crash kèm stack trace (r1 · tệp đã đổi)**
   Người dùng thấy gì: Gõ thiếu giá trị cho tuỳ chọn gốc thì công cụ báo lỗi dài khó đọc thay vì một dòng gọn. Không có gì bị hỏng.
   Căn cứ: Rất nhẹ: chỉ xảy ra khi gõ sai lệnh, thử lại là xong, không mất dữ liệu.
   file: `tools/so-gioi-han.mjs`
@@ -103,5 +117,7 @@ Các lỗi dưới đây nằm ngoài phạm vi đã duyệt ở Cổng Phạm v
   file: `tests/scripts/tcg-so-gioi-han.test.mjs`
   severity: low
   Đề xuất: known-limits
+
+## Chưa adversarial-verify (refuter chết)
 
 Cụm ngoài vùng phủ: cluster: n-a (không đo được — không eval nào khai paths, hoặc dưới ngưỡng cụm).

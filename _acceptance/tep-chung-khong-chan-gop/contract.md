@@ -5,7 +5,7 @@ slug: tep-chung-khong-chan-gop
 owner: phanlemanh@gmail.com
 risk_tier: T3      # plugins/acceptance-gate/lib/workspace-record.cjs (bảng nhãn chung của bản đồ) khớp t3_paths
 surfaces: [cli]
-status: implemented
+status: verified
 design_doc: docs/superpowers/specs/2026-11-21-tep-chung-khong-chan-gop-design.md
 approved_by: Phan Le Manh
 approved_at: 2026-11-22
