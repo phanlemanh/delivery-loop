@@ -6,9 +6,9 @@ owner: phanlemanh@gmail.com
 risk_tier: T2               # scripts/ (tro-ly-quyet-dinh.cjs mới, can-cu-s1.cjs, gate-card.js) + SKILL feature-loop — không chạm hooks/, lib/
 surfaces: [cli]
 design_doc: docs/superpowers/specs/2026-11-22-mac-ky-co-phu-quyet-design.md
-status: draft
-approved_by:
-approved_at:
+status: approved
+approved_by: Manh Phan
+approved_at: 2026-11-22
 ---
 
 # Acceptance Contract: mac-ky-co-phu-quyet
