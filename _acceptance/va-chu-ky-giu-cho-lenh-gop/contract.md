@@ -5,7 +5,7 @@ slug: va-chu-ky-giu-cho-lenh-gop
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: plugins/dispatch/scripts/gop.mjs + dieu-phoi.mjs, khối dòng lệnh ở feature-loop SKILL và commands/signoff.md, ca kiểm của gói điều phối — KHÔNG khớp t3_paths
 surfaces: [cli]
-status: implemented
+status: verified
 approved_by: Phan Le Manh
 approved_at: 2026-11-22
 ---
