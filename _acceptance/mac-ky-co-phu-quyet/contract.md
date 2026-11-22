@@ -92,5 +92,5 @@ Bỏ quét không gian: quyết định `bỏ coverage-scan` trong `decisions.js
 
 ## Notes
 
-- Ca `KK-8 ho-so-cu` của `tests/scripts/can-cu-s1.ca.mjs` đỏ cả trên `main` (`50840764`) trước vòng này, cùng thông điệp —
-  không do vật của vòng.
+- Ca `KK-8 ho-so-cu` của `tests/scripts/can-cu-s1.ca.mjs` đỏ hai lần khi chạy lẻ trong lúc máy chạy bộ kiểm khác (cả trên
+  `main` `50840764`), xanh trong lượt đầy đủ trên cây cuối — chập chờn, không do vật của vòng.
