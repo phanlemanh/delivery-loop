@@ -1389,3 +1389,5 @@ chuyen-gop#may-7	chuyen-gop	medium	khac	song			Hình dạng 2 (mối nối bên 
 chuyen-gop#may-8	chuyen-gop	low	khac	song			Hình dạng 3 (khớp chuỗi trong khi lời hứa là một quan hệ): bộ so tên ca của bộ đột biến dùng startsWith, mà tên ca của DB-9 là tiền tố của tên một ca khác [máy sinh từ review-findings.md]
 chuyen-gop#may-9	chuyen-gop	medium	khac	song			Hình dạng 3/5 (khẳng định đọc được khuôn thật bằng ngưỡng 'nhiều hơn', chỉ thử mẫu 5/16 mẫu high): ca không bắt được bộ đọc làm rơi mục [máy sinh từ review-findings.md]
 chuyen-gop#may-10	chuyen-gop	low	khac	song			Hình dạng 4 (âm-tính-một-mình): ca chặn khi PR tự sửa luật tự trị chỉ kiểm duong === 'chan', không ghim thông điệp [máy sinh từ review-findings.md]
+release-3-1-0#may-1	release-3-1-0	medium	khac	song			Hình dạng 2 — tập mong đợi của AC-3 là bản chép tay, không rút từ Context của hợp đồng [máy sinh từ review-findings.md]
+release-3-1-0#may-2	release-3-1-0	low	khac	song			Hình dạng 3 (hẹp) — bộ lọc dòng đổi bỏ sót dòng trống và dòng có nội dung mở đầu bằng - hoặc + [máy sinh từ review-findings.md]
