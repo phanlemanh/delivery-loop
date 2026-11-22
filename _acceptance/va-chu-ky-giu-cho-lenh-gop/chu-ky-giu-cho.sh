@@ -43,7 +43,7 @@ tiem() {
     if (t === s) { console.error("nhát tiêm không đổi tệp: " + tep); process.exit(3); }
     fs.writeFileSync(tep, t);' "$1" "$2" "$3" || do_ "nhát tiêm hỏng ở $1 — thước không chạy được, không phải xanh"
 }
-so_mau() { grep -Eo 'GL-6k: [0-9]+ mẫu' <<<"$1" | head -1 | grep -Eo '[0-9]+'; }
+so_mau() { grep -Eo 'GL-6k: [0-9]+ mẫu' <<<"$1" | head -1 | sed -E 's/^GL-6k: ([0-9]+) mẫu$/\1/'; }
 
 GOP=plugins/dispatch/scripts/gop.mjs
 LOI=plugins/acceptance-gate/lib/evidence-core.cjs
