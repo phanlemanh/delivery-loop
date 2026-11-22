@@ -821,9 +821,11 @@ if (want('LT-16-do')) {
   try {
     const that = khoiMap(readFileSync(P(KIT, THAN.approve[0]), 'utf8'));
     const lanh = lt16(that);
-    const DUOI = ' && if [ -f LO-TRINH.html ]; then git add -- LO-TRINH.html; fi';
+    // Hồ sơ tep-chung-khong-chan-gop: đuôi khối là một vòng lặp qua hai view (bỏ view bị .gitignore bỏ qua) —
+    // nhát tiêm gỡ LO-TRINH.html khỏi danh sách vòng lặp, tức «khối chỉ đưa bản đồ».
+    const DUOI = 'for f in PRODUCT-MAP.md LO-TRINH.html;';
     if (that.split(DUOI).length !== 2) throw new Error('khối không chứa đúng một đoạn đưa LO-TRINH.html để tiêm');
-    const hong = lt16(that.replace(DUOI, ''));
+    const hong = lt16(that.replace(DUOI, 'for f in PRODUCT-MAP.md;'));
     if (lanh.c.status === 0 && hong.c.status === 1 && hong.c.stderr.includes('LO-TRINH.html')) ok('LT-16-do', `bản sao khối chỉ đưa bản đồ: --check trên clone đỏ «${hong.c.stderr.trim().slice(0, 90)}»`);
     else bad('LT-16-do', `lành ${lanh.c.status}, hỏng ${hong.c.status} «${hong.c.stderr.trim().slice(0, 120)}»`);
   } catch (e) { bad('LT-16-do', loi(e)); }

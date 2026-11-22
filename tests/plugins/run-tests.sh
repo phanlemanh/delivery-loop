@@ -8952,7 +8952,7 @@ assert one > 0, 'bo dem tra 0 tren ho so DA BIET co muc — bo dem hong, khong p
 assert known >= one, 'tong corpus be hon mot ho so — bo dem hong'
 text = LEDGER.read_text()
 errs = measure(text, known)
-assert not errs, 'ban that do oan: ' + '; '.join(errs)
+assert not errs, 'ban that do oan: ' + '; '.join(errs) + ' — chạy: node tools/so-gioi-han.mjs --slug <slug> --write cho hồ sơ vừa thêm mục (hồ sơ tep-chung-khong-chan-gop)'
 print('P179 DUONG-OK')
 lines = text.strip().split('\n')
 def mut(transform):

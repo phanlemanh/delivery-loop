@@ -126,7 +126,7 @@ là thứ duy nhất phiên này sinh ra mà máy không thay được.
   `LO-TRINH.html` khi kho khai `lo_trinh.tep`, rồi đưa cả hai vào commit chữ ký:
 <!-- <<<MAP-STAGE -->
 ```
-AG="${AG:-${CLAUDE_PLUGIN_ROOT}}" && PMAP=scripts/product-map.mjs && { [ -f "$PMAP" ] || PMAP="$AG/scripts/product-map.mjs"; } && node "$PMAP" --root . && git add -- PRODUCT-MAP.md && if [ -f LO-TRINH.html ]; then git add -- LO-TRINH.html; fi
+AG="${AG:-${CLAUDE_PLUGIN_ROOT}}" && PMAP=scripts/product-map.mjs && { [ -f "$PMAP" ] || PMAP="$AG/scripts/product-map.mjs"; } && node "$PMAP" --root . && { r=0; for f in PRODUCT-MAP.md LO-TRINH.html; do if [ -f "$f" ] && ! git check-ignore -q -- "$f"; then git add -- "$f" || r=1; fi; done; [ "$r" = 0 ]; }
 ```
 <!-- MAP-STAGE>>> -->
 - Bước kế theo verdict — mỗi lối có CHỦ, không lối nào bỏ lửng:

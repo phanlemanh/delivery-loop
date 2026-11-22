@@ -12,7 +12,7 @@ flowchart TD
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
   B --> CD["Chờ duyệt phạm vi<br/>chưa có"] --> GP{"Cổng Phạm vi"}
   GP --> DL["Đang làm<br/>2 việc"] --> GB{"Cổng Bằng chứng"}
-  GB --> DG["Đã giao<br/>157 việc"]
+  GB --> DG["Đã giao<br/>158 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>74 việc"] --> GG{"Cổng Giá trị"}
   GG --> NT["Đã nghiệm thu giá trị<br/>7 việc"]
 ```
@@ -273,6 +273,7 @@ flowchart TD
 - Vế chữ ký của luật code t3_paths không được tắt im lặng (`t3-arm-chu-ky-khong-im`)
 - Code t3_paths phải có hồ sơ thật sự bị cổng chấm (`t3-can-ho-so-arm`)
 - Tên ca chập chờn đọc được qua tiền tố của bộ chạy monorepo — dòng pin chap_chon gọi đúng tên ca khi suite chạy qua turbo (`ten-ca-qua-tien-to-turbo`)
+- Ba tệp mọi PR cùng chạm thôi chặn gộp — hai view máy sinh rời git theo lựa chọn của kho (`ban_do.ngoai_git`), lệnh kiểm riêng của hồ sơ về thư mục hồ sơ thay vì tệp cấu hình chung, và sổ giới hạn được máy sinh hàng nên P179 thôi đốt lượt chấm (`tep-chung-khong-chan-gop`)
 - thước biết trước là không phán được — chặn eval judgment hỏi diff/lệnh ở bước sinh args S4, chọn người chấm theo từng vế (`thuoc-biet-truoc-khong-phan-duoc`)
 - Thước có cửa — đổi thước trong vòng có tên, có đếm, có trần như «Ngoài hợp đồng» đã có; thêm trục đỉnh-có-sẵn ở S0 (vật trước vòng · tiền đề tách khỏi tiêu chí) để giá trị mới trên vật có sẵn không thành vòng sửa thước mặc áo hợp đồng vật (`thuoc-co-cua`) — đã giao — đã nghỉ, giữ sử liệu
 - Hai thước tự khai một đằng đo một nẻo — răng lane có chiều đỏ sống trên cây hôm nay, và P86 so quan hệ ngân sách thay vì hỏi chữ số có mặt (`thuoc-khai-mot-dang-do-mot-neo`) — đã giao — đã nghỉ, giữ sử liệu

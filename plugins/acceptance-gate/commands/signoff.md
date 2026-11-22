@@ -301,7 +301,7 @@ Steps:
    `lo_trinh.tep` — and stages both:
 <!-- <<<MAP-STAGE -->
 ```
-AG="${AG:-${CLAUDE_PLUGIN_ROOT}}" && PMAP=scripts/product-map.mjs && { [ -f "$PMAP" ] || PMAP="$AG/scripts/product-map.mjs"; } && node "$PMAP" --root . && git add -- PRODUCT-MAP.md && if [ -f LO-TRINH.html ]; then git add -- LO-TRINH.html; fi
+AG="${AG:-${CLAUDE_PLUGIN_ROOT}}" && PMAP=scripts/product-map.mjs && { [ -f "$PMAP" ] || PMAP="$AG/scripts/product-map.mjs"; } && node "$PMAP" --root . && { r=0; for f in PRODUCT-MAP.md LO-TRINH.html; do if [ -f "$f" ] && ! git check-ignore -q -- "$f"; then git add -- "$f" || r=1; fi; done; [ "$r" = 0 ]; }
 ```
 <!-- MAP-STAGE>>> -->
 

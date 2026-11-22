@@ -28,5 +28,18 @@
       "Bash(node plugins/acceptance-gate/scripts/product-map.mjs --root . --check)",
       "Bash(node tests/scripts/kiem-ban-cai.ca.mjs --chi-luot-moc)"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/tools/so-gioi-han.mjs\" --moc"
+          }
+        ]
+      }
+    ]
   }
 }

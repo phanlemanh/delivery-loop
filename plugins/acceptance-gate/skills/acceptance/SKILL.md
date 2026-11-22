@@ -147,8 +147,11 @@ Run immediately after the user reviews the contract (same gate, one sitting).
    seal thì thẻ Cổng 2 hiện ở khối «CHƯA duyệt»; không có đường bỏ im lặng. Răng:
    lint W8 · cờ vàng thẻ Cổng 1 · NOTE pre-merge (chưa chặn; ngưỡng siết: 2 hợp
    đồng ký không frame trong một mốc phát hành).
-3. Repo-specific commands MUST be `config:` references
-   (e.g. `cmd: config:executors.test.api`) — never hardcoded.
+3. Where an eval's `cmd` lives — repo-wide commands through `config:` (never hardcoded), a dossier's own
+   commands as a file under the dossier (tep-chung-khong-chan-gop):
+   <!-- <<<LENH-HO-SO -->
+   Lệnh dùng chung của kho (suite, build, dev server) → `cmd: config:<khoá>`; lệnh riêng của một hồ sơ → `cmd:` là đường dẫn từ gốc kho tới tệp trong `_acceptance/<slug>/` (ví dụ `bash _acceptance/<slug>/rang/chay.sh E1`) — KHÔNG thêm khoá vào `_acceptance/config.yaml`.
+   <!-- LENH-HO-SO>>> -->
 3b. `inputs` on a `judgment` eval and `paths` on any eval are written from the
    repo root (or absolute) — never from `_acceptance/{slug}/`. A dossier file is
    `_acceptance/{slug}/contract.md`. Declare only files that exist when S4
