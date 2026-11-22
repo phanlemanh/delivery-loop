@@ -6,7 +6,7 @@ owner: phanlemanh@gmail.com
 risk_tier: T2               # plugins/dispatch/scripts/ (chuyen-gop.mjs, cua-proof.mjs mới; gop.mjs, hinh-dang.mjs, dieu-phoi.mjs) — không chạm hooks/, lib/
 surfaces: [cli]
 design_doc: docs/superpowers/specs/2026-11-22-chuyen-gop-design.md
-status: verified
+status: signed-off
 approved_by: Manh Phan
 approved_at: 2026-11-22
 ---
@@ -83,3 +83,16 @@ ngoài vì cửa proof (AC-5) · ngoài vì chưa đủ điều kiện (AC-7) ·
   không gộp tổ hợp chưa kiểm, nhưng mất lợi ích của chuyến). Kho như thế dùng `gop` từng PR, hoặc tắt luật ấy khi bật
   `chuyen_gop`. Ngưỡng mở lại: ≥1 kho tiêu thụ bật `chuyen_gop` mà bật luật ấy.
 - Hồ sơ xếp chồng lên nhánh của hàng 1; PR của hàng này nhắm nhánh hàng 1 tới khi hàng 1 gộp.
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-22:
+  - Ngoài-2: Hôm nay gộp theo chuyến và gộp từng PR đi hai đường riêng. Nếu sau này thêm một chốt chặn mới ở một đường thì đường kia có thể bỏ sót, nên PR có thể được gộp mà chưa qua chốt đó.
+  - Ngoài-3: Các PR được gộp qua chuyến không hiện trong bảng đếm số lần gộp, và nhật ký không cho biết PR nào đã vào nhánh chính khi chuyến dừng giữa chừng. Người dùng phải tự xem trên GitHub.
+  - Ngoài-4: Tài liệu hướng dẫn mô tả sai ý nghĩa một mã kết quả, nên người đọc có thể chờ tới giờ khởi hành trong khi thực ra phải chạy lại chuyến ngay.
+  - Ngoài-5: Một PR tự thu hẹp luật tự trị có thể khiến vài câu hỏi dành riêng cho chủ kho bị bỏ qua ở bước chốt phạm vi. Cửa gộp vẫn chặn tự gộp, nhưng câu hỏi đã không được hỏi.
+  - Ngoài-6: Kho nào tình cờ có thư mục tên đó sẽ không được tự gộp cho PR chạm vào nó, dù luật của kho không đòi vậy. Người dùng phải gộp tay những PR này.
+  - Ngoài-8: Khi chuyến dừng giữa chừng, nhật ký không cho biết chính xác PR nào đã vào nhánh chính, và các PR gộp qua chuyến không được đếm.
+  - Ngoài-9: Phép thử nối bên ghi với bên đọc có thể đỏ vì một bước kiểm phụ chứ không vì bên đọc thật sự bỏ sót, nên bằng chứng ở chỗ này yếu hơn vẻ ngoài.
+  - Ngoài-10: Bộ thử có thể báo đã làm đỏ đúng ca trong khi thực ra chỉ làm đỏ một ca có tên giống, nên một lỗi có thể bị đếm nhầm là đã bắt.
+  - Ngoài-11: Phép thử chỉ kiểm vài loại tệp nhạy cảm trong số mười sáu loại. Nếu bộ đọc luật làm rơi một loại khác thì PR chạm loại tệp đó có thể bị tự gộp mà không ai biết.
+  - Ngoài-12: Phép thử không phân biệt được PR bị chặn vì đọc luật ở nhánh chính hay vì một lý do khác, nên bằng chứng cho chốt chặn này yếu hơn vẻ ngoài.
+- Mở hợp đồng mới ở Cổng Bằng chứng 2026-11-22 (Ngoài-7): hạt giống
+  `docs/plans/2026-11-22-hat-giong-chuyen-gop-moc-so-sanh.md`.
