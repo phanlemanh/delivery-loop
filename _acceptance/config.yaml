@@ -141,6 +141,8 @@ executors:
     can_cu_s1_ca: node tests/scripts/can-cu-s1.ca.mjs
     # Hồ sơ mac-ky-co-phu-quyet (trợ lý quyết định, hàng 1): tệp ca trọn và từng tiêu chí (lọc bằng TLQ_CASES).
     tro_ly_quyet_dinh: node tests/scripts/tro-ly-quyet-dinh.test.mjs
+    # Hồ sơ chuyen-gop (trợ lý quyết định, hàng 2): chuyến gộp + cửa proof.
+    chuyen_gop: "bash -c 'set -o pipefail; node --test --test-reporter=tap tests/dieu-phoi/loi/chuyen-gop.test.mjs 2>&1 | grep -E \"^ *(not )?ok [0-9]+ - AC-|^# (pass|fail) \" | paste -sd\"|\" -'"
     tro_ly_quyet_dinh_ac1: env TLQ_CASES=AC-1 node tests/scripts/tro-ly-quyet-dinh.test.mjs
     tro_ly_quyet_dinh_ac2: env TLQ_CASES=AC-2 node tests/scripts/tro-ly-quyet-dinh.test.mjs
     tro_ly_quyet_dinh_ac3: env TLQ_CASES=AC-3 node tests/scripts/tro-ly-quyet-dinh.test.mjs
@@ -281,6 +283,7 @@ executors:
     # Hồ sơ vong-mo-co-chu-giu (GT1, E4b): chỉ đọc kênh thật #308 bằng gh thật; KHÔNG vào feature_loop.suite_keys (CI không có gh đăng nhập).
     dieu_phoi_tin_kenh_that: node tests/dieu-phoi/tin-kenh-that.mjs
     coverage_lint: "node plugins/acceptance-gate/scripts/eval-coverage-lint.js ."
+    chuyen_gop_dot_bien: node _acceptance/chuyen-gop/rang/dot-bien.mjs
     # Câu cho người gửi trên dữ liệu thật (hồ sơ cau-tin-hieu-nguoi-gui, E9): bản sao crm ở sha đã ghim + kit 2.27.
     # crm vắng → thoát 2 nêu đường (mù, không xanh giả); đặt CRM_ROOT khi kho crm ở chỗ khác.
     cau_crm: node _acceptance/cau-tin-hieu-nguoi-gui/rang/do-crm.mjs --crm "${CRM_ROOT:-$HOME/dev/crm}" --sha 06e34d26c38426e2e23cbf1a51bc612cccb405c9

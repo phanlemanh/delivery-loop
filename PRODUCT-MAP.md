@@ -10,7 +10,7 @@ flowchart TD
   GD --> B["Sắp mở vòng<br/>4 việc"]
   GD --> XL["Xếp lại sau<br/>24 việc"]
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
-  B --> CD["Chờ duyệt phạm vi<br/>1 việc"] --> GP{"Cổng Phạm vi"}
+  B --> CD["Chờ duyệt phạm vi<br/>2 việc"] --> GP{"Cổng Phạm vi"}
   GP --> DL["Đang làm<br/>2 việc"] --> GB{"Cổng Bằng chứng"}
   GB --> DG["Đã giao<br/>158 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>74 việc"] --> GG{"Cổng Giá trị"}
@@ -44,6 +44,7 @@ flowchart TD
 
 ## Chờ duyệt phạm vi
 
+- Chuyến gộp kiểm một lần trên ngọn, chuyến đỏ tách đôi, và cửa proof cho hồ sơ mặc-ký (`chuyen-gop`)
 - Mặc-ký có phủ quyết, giữ-quyền và sổ đếm thăng cấp cho câu chỉ-người ở bước thiết kế (`mac-ky-co-phu-quyet`)
 
 ## Đang làm
