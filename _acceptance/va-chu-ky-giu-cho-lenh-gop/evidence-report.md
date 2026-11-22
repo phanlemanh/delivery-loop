@@ -7,7 +7,7 @@ reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
-verified_commit: 6a9c6a9a23aede8775940c2a9d094868040fd068
+verified_commit: 35808675565b8413d344ecf1a1ad973643423eeb
 human_signoff:
 ---
 
@@ -190,3 +190,7 @@ none — every multi-run eval is uniform
 ## Iterations
 
 Round 1: moi eval xanh (14/14), khong judgment item, khong variance. Verdict PASS.
+
+### Re-pin lần 1 — 2026-11-22, do gộp origin/main (sau PR #19, #20) + 6 hàng sổ giới hạn P179; cây trùng commit gộp thử --no-ff vào origin/main
+run_id: repin-20261122T124443Z-84629
+sha: 35808675565b8413d344ecf1a1ad973643423eeb · suites: 11 lệnh exit 0 · evals: 14/14 eval máy đạt kỳ vọng
