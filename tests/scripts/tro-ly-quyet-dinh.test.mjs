@@ -153,7 +153,7 @@ check('AC-3 mon ngoai dieu kien ve hoi-nguoi voi ly do co ten', () => {
   eq(may.find(e => e.ve === 'd-high').di_theo, 'cho-nguoi', 'câu vùng high chờ người');
 });
 check('AC-3 hang man hinh va hop dong khong khai surfaces khong mac-ky', () => {
-  for (const [surfaces, ly] of [['ui', 'man-hinh'], ['api, web', 'man-hinh'], ['', 'loai-hang-khong-ro']]) {
+  for (const [surfaces, ly] of [['ui', 'man-hinh'], ['api, web', 'man-hinh'], ['', 'loai-hang-khong-ro'], ['frontend', 'loai-hang-la'], ['api, desktop', 'loai-hang-la'], ['email', 'loai-hang-la']]) {
     const r = mkKho(); const dot = dotTrong();
     hoSo(r, 'h', { status: 'draft', surfaces, dongs: [CN('d-1', 'chon-cach-lam')] });
     eq(ghi(r, 'h', dot).status, 0, '--write');
@@ -202,6 +202,17 @@ check('AC-4 giu-quyen theo slug va theo vung luon hoi-nguoi ke ca loai da thang 
   eq([mk.di_theo, mk.ly_do, mk.giu_quyen], ['cho-nguoi', 'giu-quyen', 'src/kho/nhap/**'], 'dòng máy ghi lần kéo');
   const d = JSON.parse(node(MOD, ['--root', r, '--dem', '--json', '--dot', dot], r).stdout);
   eq(d.loai.find(x => x.loai === 'chon-cach-lam').keo, 1, 'sổ đếm thấy một lần kéo (hồ sơ draft vẫn đếm lần kéo)');
+  // Kéo SAU khi món h đã có dòng máy (lối thẻ cổng gợi ý): --write nối một dòng sự kiện riêng, không sửa dòng cũ, không lặp.
+  const truoc = docSo(r, 'h').length;
+  eq(ghi(r, 'h', dot).status, 0, '--write h sau khi kéo');
+  const soH = docSo(r, 'h');
+  eq(soH.length, truoc + 1, 'đúng một dòng sự kiện kéo được nối');
+  eq([soH[soH.length - 1].su_kien, soH[soH.length - 1].ly_do, soH[soH.length - 1].ve, soH[soH.length - 1].di_theo], ['keo', 'giu-quyen', 'd-1', 'cho-nguoi'], 'dòng kéo');
+  eq(docSo(r, 'h')[truoc - 1].di_theo, 'khuyen', 'dòng máy cũ giữ nguyên');
+  ghi(r, 'h', dot); eq(docSo(r, 'h').length, truoc + 1, 'ghi lần nữa không lặp dòng kéo');
+  eq(node(MOD, ['--root', r, '--slug', 'h', '--check'], r).status, 0, 'dòng kéo đúng lược đồ');
+  const d2 = JSON.parse(node(MOD, ['--root', r, '--dem', '--json', '--dot', dot], r).stdout);
+  eq(d2.loai.find(x => x.loai === 'chon-cach-lam').keo, 2, 'sổ đếm thấy cả lần kéo sau mặc-ký');
 });
 
 // ── AC-5 — sổ đếm và danh sách thăng cấp ───────────────────────────────────────────────────────────────
@@ -246,6 +257,21 @@ check('AC-5 keo va lam lai do phu quyet chan thang cap, lam lai do bo kiem thi k
   const keo = mk(r => { const d2 = dotTrong(); writeFileSync(path.join(d2, 'giu-quyen.txt'), 'g\n'); hoSo(r, 'g', { status: 'machine-cleared', dongs: [CN('d-g', 'sua-o-dau', {}, '2026-10-19T00:00:00Z')] }); writeFileSync(path.join(r, '_acceptance/config.yaml'), 'schema_version: 1\n' + CFG_BAT); node(MOD, ['--root', r, '--slug', 'g', '--write', '--dot', d2], r); });
   eq(keo.loai.find(x => x.loai === 'sua-o-dau').keo, 1, 'một lần kéo được đếm');
   eq(keo.de_nghi_thang_cap, [], 'một lần kéo trong cửa sổ chặn thăng cấp');
+});
+
+check('AC-5 mon mac-ky nguoi im lang khong tinh la lan hoi, khong nuoi thang cap', () => {
+  const r = mkKho({ tienLe: 1, loaiTienLe: 'sua-o-dau' }); const dot = dotTrong();
+  for (let i = 1; i <= 5; i++) { hoSo(r, `m-${i}`, { status: 'machine-cleared', dongs: [CN(`d-m${i}`, 'sua-o-dau', {}, `2026-11-1${i}T00:00:00Z`)] }); eq(ghi(r, `m-${i}`, dot).status, 0, `--write m-${i}`); }
+  eq(docSo(r, 'm-3').some(e => e.may === 'mac-ky' && e.di_theo === 'khuyen'), true, 'đối chứng: năm món đã mặc-ký thật');
+  const j = JSON.parse(node(MOD, ['--root', r, '--dem', '--json', '--dot', dot], r).stdout);
+  const row = j.loai.find(x => x.loai === 'sua-o-dau');
+  eq([row.hoi, row.im, row.trang_thai], [1, 5, 'chưa đủ'], 'chỉ lần người thật trả lời vào mẫu số; năm lần im lặng ở cột riêng');
+  eq(j.de_nghi_thang_cap, [], 'không trình thăng cấp loại người chưa trả lời đủ');
+  co(node(MOD, ['--root', r, '--dem', '--dot', dot], r).stdout, 'sua-o-dau · hỏi 1 · theo 1 · 100%', 'dòng in');
+  // Người soi kiểm mẫu bốn món (đạt) → bốn lần người thật nhìn → đủ năm.
+  for (let i = 1; i <= 4; i++) ghiNg(r, `m-${i}`, 'kiem-mau', '--ket', 'dat', '--ve', `d-m${i}`, '--nguoi', 'Chủ Kho');
+  const j2 = JSON.parse(node(MOD, ['--root', r, '--dem', '--json', '--dot', dot], r).stdout);
+  eq([j2.loai.find(x => x.loai === 'sua-o-dau').hoi, j2.de_nghi_thang_cap], [5, ['sua-o-dau']], 'kiểm mẫu của người là lần trả lời');
 });
 
 // ── AC-6 — giáng loại ──────────────────────────────────────────────────────────────────────────────────

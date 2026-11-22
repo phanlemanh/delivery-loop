@@ -24,7 +24,8 @@ vi (`scripts/gate-card.js`) in khối «Đã đi theo khuyến nghị — phủ 
 
 ## Điều kiện mặc-ký (đóng-khi-ngờ, xét theo thứ tự)
 
-khó đảo → luật sản phẩm → chạm tiền hay gửi ra ngoài (`can_cu.tien` / `can_cu.ra_ngoai`) → hợp đồng không khai `surfaces` → hàng màn hình (`ui`, `web`, `web-ui`, `mobile`) → loại câu lạ
+khó đảo → luật sản phẩm → chạm tiền hay gửi ra ngoài (`can_cu.tien` / `can_cu.ra_ngoai`) → hợp đồng không khai `surfaces` → hàng màn hình (`ui`, `web`, `web-ui`, `mobile`) → surfaces ngoài danh sách CHO PHÉP backend
+(`api`, `cli`, `sdk`, `docs`, `ci`, `config`, `db`, `tool`; giá trị lạ như `frontend`, `desktop`, `email` = hỏi người) → loại câu lạ
 hay vắng → loại kho tắt (`loai_tat`) → giữ-quyền → vùng không rõ → vùng tầng `high` của `governance/autonomy.yaml` → vùng
 `khong_bao_gio` của kho → (khi có gốc nhánh) tệp thật ngoài vùng khai (`vung-lech`) hay tệp thật chạm `high` → lần đầu của loại → lần đầu của vùng → loại vừa bị giáng. Qua hết: `thang-cap` nếu loại nằm trong
 `thang_cap` và còn sạch, không thì `mac-ky`.
@@ -41,6 +42,11 @@ hay vắng → loại kho tắt (`loai_tat`) → giữ-quyền → vùng không 
   ∧ làm lại do phủ quyết ≤ `nguong_lam_lai` ∧ 0 lần kéo trong cửa sổ. Loại trong `thang_cap` mà cửa sổ không còn đạt = bị
   giáng: món chưa gộp đang mang dòng máy của loại ấy về lại câu hỏi ở lần dựng thẻ kế (bộ đọc xét lại lúc đọc), và `--dem`
   liệt các hồ sơ chưa ký phải kiểm lại. Sau một sự kiện giáng, loại hỏi người tới khi có ít nhất một lần trả lời mới.
+- **Lần hỏi** (mẫu số của thăng cấp) = lần NGƯỜI THẬT trả lời: câu hỏi thường đã qua cổng, món mặc-ký bị người quyết lại,
+  hay món mặc-ký người đã soi kiểm mẫu. Món mặc-ký người im lặng không tính — in ở cột «mặc-ký im lặng» riêng; nếu tính,
+  năm lần im lặng tự trình thăng cấp một loại người chưa từng trả lời.
+- **Kéo sau mặc-ký** (lối thẻ cổng gợi ý): `--write` gặp món đã có dòng máy mà nay khớp `giu-quyen.txt` thì nối một dòng
+  sự kiện `su_kien: keo` riêng, mỗi dòng giữ-quyền một lần — mọi lần kéo đều vào sổ đếm.
 - **Kiểm mẫu** = băm sha256 của slug, 8 chữ hex đầu, chia dư cho `kiem_mau_moi` bằng 0 — tất định, không ai chọn tay được.
 
 ## Cấu hình của kho (`_acceptance/config.yaml`)

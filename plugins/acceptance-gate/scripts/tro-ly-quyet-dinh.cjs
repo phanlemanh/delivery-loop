@@ -57,6 +57,7 @@ const LY_DO = {
   'vung-lech': 'diff thật chạm tệp ngoài vùng đã khai của câu — hỏi người',
   'man-hinh': 'hàng màn hình — cổng màn hình chủ kho phải tự trải nghiệm',
   'loai-hang-khong-ro': 'hợp đồng không khai surfaces — không biết hàng backend hay màn hình',
+  'loai-hang-la': 'hợp đồng khai surfaces ngoài danh sách backend của kit — không biết hàng có mặt người hay không',
   'loai-la': 'loại câu không có trong danh mục của kit',
   'loai-tat': 'kho đã tắt mặc-ký cho loại câu này (tro_ly_quyet_dinh.loai_tat)',
   'giu-quyen': 'chủ kho giữ quyền (giu-quyen.txt của đợt)',
@@ -71,6 +72,9 @@ const LY_DO = {
 const KHOA = 'tro_ly_quyet_dinh';
 const MAC_DINH = { mac_ky: false, nguong_hoi: 5, nguong_theo: 100, nguong_lam_lai: 0, kiem_mau_moi: 5, loai_tat: [], khong_bao_gio: [], thang_cap: [], nguoi_quyet: '' };
 const MAN_HINH = new Set(['ui', 'web', 'web-ui', 'mobile']);
+// Danh sách CHO PHÉP (đóng-khi-ngờ): hàng là backend chỉ khi MỌI surfaces nằm ở đây. Giá trị lạ (frontend, desktop, email…)
+// = hỏi người — không suy «không phải màn hình thì là backend».
+const BACKEND = new Set(['api', 'cli', 'sdk', 'docs', 'ci', 'config', 'db', 'tool']);
 // Hồ sơ «chưa gộp» = còn ở một trạng thái mở của vòng — tập dương, không rẽ theo chữ ký (lưới RT13 của ra-co-ten-lam-va-trao).
 const CON_MO = new Set(['draft', 'approved', 'implemented', 'verified']);
 const TEP_GIU_QUYEN = 'giu-quyen.txt';
@@ -191,7 +195,12 @@ function cauCuaHoSo(hs) {
     if (e.stage === 'S1') thayS1.add(e.supersedes);
     else if (chuoi(e.decided_by)) nguoiThay.set(e.supersedes, e);
   });
-  const may = new Map(); E.forEach(e => { if (e.may === DAU_MAY && typeof e.ve === 'string' && !may.has(e.ve)) may.set(e.ve, e); });
+  const may = new Map(); const keoVe = new Map();
+  E.forEach(e => {
+    if (e.may !== DAU_MAY || typeof e.ve !== 'string') return;
+    if (!may.has(e.ve)) may.set(e.ve, e);
+    if (e.ly_do === 'giu-quyen') keoVe.set(e.ve, (keoVe.get(e.ve) || []).concat(chuoi(e.giu_quyen)));
+  });
   const out = [];
   E.forEach((e, i) => {
     if (e.stage !== 'S1' || !e.can_cu || e.can_cu.nguon !== 'chi-nguoi' || thayS1.has(e.id)) return;
@@ -199,7 +208,7 @@ function cauCuaHoSo(hs) {
     const m = may.get(id) || null; const thay = nguoiThay.get(id) || null;
     const vung = [].concat(Array.isArray(c.vung) ? c.vung : [], m && Array.isArray(m.vung) ? m.vung : []).filter(g => typeof g === 'string' && g.trim());
     out.push({ slug: hs.slug, id, e, at: chuoi(e.at), loai: LOAI_CAU[c.loai_cau] ? c.loai_cau : null, may: m, khac: !!thay, thay,
-      mac_ky_ghi: !!m && m.di_theo === 'khuyen', keo: !!m && m.ly_do === 'giu-quyen', vung: [...new Set(vung)], tu_nay: false, kiem_sai: 0, kiem_dat: 0,
+      mac_ky_ghi: !!m && m.di_theo === 'khuyen', keo: (keoVe.get(id) || []).length, keo_khop: keoVe.get(id) || [], vung: [...new Set(vung)], tu_nay: false, kiem_sai: 0, kiem_dat: 0,
       lam_lai: { 'phu-quyet': 0, 'bo-kiem': 0, khac: 0 }, su_kien: [] });
   });
   const theoId = new Map(out.map(o => [o.id, o]));
@@ -216,6 +225,9 @@ function cauCuaHoSo(hs) {
     }
   }
   for (const o of out) if (o.khac && o.mac_ky_ghi) o.su_kien.push(chuoi(o.thay.at) || o.at); // phủ quyết một món mặc-ký
+  // Lần NGƯỜI THẬT trả lời: câu hỏi thường đã qua cổng, món mặc-ký bị người quyết lại, hay món mặc-ký người đã soi kiểm
+  // mẫu. Món mặc-ký người im lặng KHÔNG phải một lần trả lời — không vào điều kiện thăng cấp (cột «im» riêng).
+  for (const o of out) o.nguoi = !(o.mac_ky_ghi && !o.khac && o.kiem_dat === 0 && o.kiem_sai === 0);
   return { cau: out, lamLaiRoi };
 }
 
@@ -230,7 +242,7 @@ function thongKe(hsList, cfg, { boSlug = null } = {}) {
     const { cau, lamLaiRoi: r } = cauCuaHoSo(hs);
     for (const k of Object.keys(r)) lamLaiRoi[k] += r[k];
     for (const o of cau) {
-      if (o.keo && o.loai) keoTheoLoai.set(o.loai, (keoTheoLoai.get(o.loai) || 0) + 1);
+      if (o.keo && o.loai) keoTheoLoai.set(o.loai, (keoTheoLoai.get(o.loai) || 0) + o.keo);
       if (!traLoi(hs)) continue;
       vungDaCo.push(...o.vung);
       if (o.loai) theoLoai.get(o.loai).push(Object.assign({ status: hs.status }, o));
@@ -243,7 +255,7 @@ function thongKe(hsList, cfg, { boSlug = null } = {}) {
     const moc = suKien.length ? suKien[suKien.length - 1] : null;
     const cs = moc ? ds.filter(o => o.at > moc) : ds;
     const dem = arr => ({ n: arr.length, theo: arr.filter(o => !o.khac).length, lam_lai_pq: arr.reduce((s, o) => s + o.lam_lai['phu-quyet'], 0), keo: arr.filter(o => o.keo).length });
-    const tong = dem(ds); const w = dem(cs);
+    const tong = dem(ds.filter(o => o.nguoi)); const w = dem(cs.filter(o => o.nguoi)); const im = ds.filter(o => !o.nguoi).length;
     const pct = x => (x.n ? Math.round(100 * x.theo / x.n) : 0);
     const sach = w.n > 0 && pct(w) >= cfg.nguong_theo && w.lam_lai_pq <= cfg.nguong_lam_lai;
     const du = w.n >= cfg.nguong_hoi;
@@ -252,7 +264,7 @@ function thongKe(hsList, cfg, { boSlug = null } = {}) {
     const trang_thai = daThang ? (du && sach ? 'đã thăng cấp' : 'bị giáng') : dat ? 'đạt ngưỡng' : 'chưa đủ';
     rows.push({ loai, hoi: tong.n, theo: tong.theo, pct: pct(tong), phu_quyet: ds.filter(o => o.khac && o.mac_ky_ghi).length,
       lam_lai: { 'phu-quyet': ds.reduce((s, o) => s + o.lam_lai['phu-quyet'], 0), 'bo-kiem': ds.reduce((s, o) => s + o.lam_lai['bo-kiem'], 0), khac: ds.reduce((s, o) => s + o.lam_lai.khac, 0) },
-      keo: keoTheoLoai.get(loai) || 0, kiem_sai: ds.reduce((s, o) => s + o.kiem_sai, 0), tu_nay: ds.filter(o => o.tu_nay).length,
+      im, keo: keoTheoLoai.get(loai) || 0, kiem_sai: ds.reduce((s, o) => s + o.kiem_sai, 0), tu_nay: ds.filter(o => o.tu_nay).length,
       cua_so: { tu: moc, n: w.n, pct: pct(w), lam_lai_pq: w.lam_lai_pq, keo: w.keo }, co_su_kien: !!moc, trang_thai });
   }
   return { rows, vungDaCo: [...new Set(vungDaCo)], lamLaiRoi };
@@ -280,7 +292,8 @@ function xetHoSo({ root, slug, dot = null, entries = null, cfg = null, base = nu
   const tepThat = tepCuaVong(root, slug, base);
   const tk = thongKe(danhSachHoSo(root), cfg, { boSlug: slug });
   const row = new Map(tk.rows.map(r => [r.loai, r]));
-  const backend = hs.surfaces.length && !hs.surfaces.some(s => MAN_HINH.has(s));
+  const manHinh = hs.surfaces.some(s => MAN_HINH.has(s));
+  const backend = hs.surfaces.length > 0 && hs.surfaces.every(s => BACKEND.has(s));
   const dong = [];
   for (const o of cau) {
     if (o.khac) continue; // người đã quyết lại câu này ở cổng
@@ -292,7 +305,8 @@ function xetHoSo({ root, slug, dot = null, entries = null, cfg = null, base = nu
     else if (typeof c.pham_luat === 'string' && c.pham_luat.trim()) kq = raHoi('luat-san-pham');
     else if (c.tien === true || c.ra_ngoai === true) kq = raHoi('tien-ra-ngoai');
     else if (!hs.surfaces.length) kq = raHoi('loai-hang-khong-ro');
-    else if (!backend) kq = raHoi('man-hinh');
+    else if (manHinh) kq = raHoi('man-hinh');
+    else if (!backend) kq = raHoi('loai-hang-la', { surfaces: hs.surfaces.filter(x => !BACKEND.has(x)) });
     else if (!o.loai) kq = raHoi('loai-la');
     else if (cfg.loai_tat.includes(o.loai)) kq = raHoi('loai-tat');
     else if (giuKhop) kq = raHoi('giu-quyen', { giu_quyen: giuKhop });
@@ -337,8 +351,17 @@ function ghi({ root, slug, dot = null, base = null, now = new Date() }) {
   const utc = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
   const moi = [];
   for (const d of x.dong) {
-    if (d.da_ghi) continue;
     const o = theoId.get(d.id); const c = o.e.can_cu; const theo = d.lop !== 'hoi';
+    if (d.da_ghi) {
+      // Kéo giữ-quyền SAU khi món đã có dòng máy: một dòng sự kiện riêng (sổ chỉ thêm), mỗi lần kéo một dòng, không lặp.
+      if (d.ly_do === 'giu-quyen' && !o.keo_khop.includes(chuoi(d.giu_quyen))) {
+        n++;
+        moi.push({ id: `d-${utc}-${n}`, type: 'approach', stage: 'gate1', at: now.toISOString(), decision: `Chủ kho giữ quyền: ${chuoi(o.e.decision)}`,
+          why: `Vẫn hỏi người — ${LY_DO['giu-quyen']} (dòng «${chuoi(d.giu_quyen)}»).`, cost_if_wrong: chuoi(c.loi_khac) || chuoi(o.e.cost_if_wrong),
+          so_do: SO_DO, may: DAU_MAY, ve: d.id, loai_cau: d.loai_cau, di_theo: 'cho-nguoi', ly_do: 'giu-quyen', giu_quyen: d.giu_quyen, su_kien: 'keo' });
+      }
+      continue;
+    }
     n++;
     moi.push(Object.assign({ id: `d-${utc}-${n}`, type: 'approach', stage: 'gate1', at: now.toISOString(),
       decision: theo ? `Đã đi theo khuyến nghị: ${chuoi(c.khuyen)}` : `Chờ người: ${chuoi(o.e.decision)}`,
@@ -417,7 +440,7 @@ function dem({ root }) {
 }
 function inDem(d) {
   const L = [`Sổ đếm trợ lý quyết định — ${d.ho_so} hồ sơ · mặc-ký ${d.bat ? 'bật' : 'tắt'} · ngưỡng thăng cấp: ≥${d.nguong.hoi} lần hỏi, ≥${d.nguong.theo}% theo, ≤${d.nguong.lam_lai} làm lại do phủ quyết`];
-  for (const r of d.loai) L.push(`${r.loai} · hỏi ${r.hoi} · theo ${r.theo} · ${r.pct}% · phủ quyết ${r.phu_quyet} · làm lại phủ-quyết ${r.lam_lai['phu-quyet']} / bộ-kiểm ${r.lam_lai['bo-kiem']} / khác ${r.lam_lai.khac} · kéo ${r.keo} · kiểm mẫu sai ${r.kiem_sai} · ${r.trang_thai}${r.tu_nay ? ` · án lệ «từ nay» ${r.tu_nay}` : ''}`);
+  for (const r of d.loai) L.push(`${r.loai} · hỏi ${r.hoi} · theo ${r.theo} · ${r.pct}% · phủ quyết ${r.phu_quyet} · làm lại phủ-quyết ${r.lam_lai['phu-quyet']} / bộ-kiểm ${r.lam_lai['bo-kiem']} / khác ${r.lam_lai.khac} · kéo ${r.keo} · kiểm mẫu sai ${r.kiem_sai} · ${r.trang_thai}${r.im ? ` · mặc-ký im lặng ${r.im} (không tính)` : ''}${r.tu_nay ? ` · án lệ «từ nay» ${r.tu_nay}` : ''}`);
   const rr = d.lam_lai_khong_gan_loai;
   if (rr['phu-quyet'] + rr['bo-kiem'] + rr.khac) L.push(`(không gắn loại) · làm lại phủ-quyết ${rr['phu-quyet']} / bộ-kiểm ${rr['bo-kiem']} / khác ${rr.khac}`);
   L.push(`Đề nghị thăng cấp: ${d.de_nghi_thang_cap.length ? d.de_nghi_thang_cap.join(', ') : '(chưa loại nào)'}`);
