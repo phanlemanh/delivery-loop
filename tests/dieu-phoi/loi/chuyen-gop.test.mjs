@@ -171,14 +171,15 @@ test('AC-5 lenh gop tung PR va chuyen gop cung chan mac-ky o kho chua khai proof
   assert.deepEqual([g.duong, g.ly_do], ['chan', 'mặc-ký dừng trước cửa gộp: kho chưa có governance/autonomy.yaml — không có bằng chứng máy đứng thế chỗ người']);
   assert.equal(xetGop({ io, cfg: { ...CFG_PHAT_LICH, nhanh_chinh: 'main' }, pr: 2, slug: 'h2' }).duong, 'moi-nhat', 'đối chứng: PR không mặc-ký gộp như cũ');
   const kq = chayChuyen({ io, cfg: CFG(), prs: [1, 2], now: '2026-11-22T12:00:00Z' });
-  assert.deepEqual(kq.rot.map((r) => r.pr), [1]);
+  assert.deepEqual(kq.ngoai.map((r) => [r.pr, r.ly_do.slice(0, 33)]), [[1, "mặc-ký dừng trước cửa gộp: kho ch"]], "PR mặc-ký đứng ngoài chuyến, có tên");
   assert.deepEqual(gopDaGoi(io), [2]);
   // Kho khai proof, check xanh, tầng low → mặc-ký vào chuyến.
   const b = kho([{ n: 1, tep: { 'src/a.ts': 'a\n' }, macKy: true }], { tuTri: TU_TRI('evidence-recheck') });
   const ioB = ioCua(b.k, b.sha, { rollup: () => XANH_PROOF });
   assert.equal(xetGop({ io: ioB, cfg: { ...CFG_PHAT_LICH, nhanh_chinh: 'main' }, pr: 1, slug: 'h1' }).duong, 'moi-nhat');
   // PR tự sửa luật tự trị trên nhánh của nó không mở được cửa: luật đọc ở nhánh chính.
-  const c = kho([{ n: 1, tep: { 'src/a.ts': 'a\n', 'governance/autonomy.yaml': TU_TRI('gate') }, macKy: true }]);
+  // Luật PR tự viết mở hết cửa (default low, proof «gate» đã xanh, không có dòng high) — vẫn phải chặn.
+  const c = kho([{ n: 1, tep: { 'src/a.ts': 'a\n', 'governance/autonomy.yaml': 'version: 1\ndefault: low\nproof:\n  check: "gate"\n' }, macKy: true }]);
   const g3 = xetGop({ io: ioCua(c.k, c.sha), cfg: { ...CFG_PHAT_LICH, nhanh_chinh: 'main' }, pr: 1, slug: 'h1' });
   assert.equal(g3.duong, 'chan', 'luật tự trị của nhánh PR không được tính');
 });
