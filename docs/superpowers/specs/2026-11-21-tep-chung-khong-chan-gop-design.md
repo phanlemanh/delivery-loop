@@ -90,7 +90,7 @@ tham số chấm chuyển nguyên văn, lớp L2 nhận đường dẫn tới t�
 
 - `tools/so-gioi-han.mjs --slug <slug> [--write]`: đếm mục `Đề xuất: known-limits` trong `review-findings.md` của hồ sơ,
   đếm hàng sổ có cột `slug` là hồ sơ ấy, thêm đúng số hàng còn thiếu ở cuối sổ (`<slug>#may-<n>`, mức nặng chép từ mục,
-  lớp `chua-xep`, trạng thái `song`, ghi chú = tiêu đề mục + «[máy sinh từ review-findings.md]»), giữ mọi hàng cũ từng
+  lớp `khac` (ô bắt-hết sẵn có của sổ), trạng thái `song`, ghi chú = tiêu đề mục + «[máy sinh từ review-findings.md]»), giữ mọi hàng cũ từng
   byte; chạy lại không đổi gì. Chỉ là bộ đếm khớp đúng nghĩa P179 (P179 so số lượng, không gắn hàng với mục).
 - Gọi tự động: một móc `PostToolUse` của CHÍNH kho kit (`.claude/settings.json`) chạy bộ sinh khi tệp vừa ghi là
   `_acceptance/<slug>/review-findings.md` — đúng lúc phiên chính ghi kết quả lượt chấm, trước lượt kế. Móc trả
@@ -132,6 +132,6 @@ Câu chỉ người có:
 
 - Bật khoá không gỡ được xung đột ở PR đã mở trước lần bật (một lần sửa ↔ xoá).
 - Răng vàng của 2.2 chỉ cảnh báo; vòng vẫn có thể thêm khoá vào tệp chung.
-- Bộ sinh hàng sổ khớp SỐ LƯỢNG, không gắn từng hàng với từng mục (đúng nghĩa P179 hôm nay); lớp `chua-xep` phải được
+- Bộ sinh hàng sổ khớp SỐ LƯỢNG, không gắn từng hàng với từng mục (đúng nghĩa P179 hôm nay); lớp `khac` phải được
   người xếp lại nếu cần.
 - Móc chỉ chạy khi phiên ghi tệp bằng công cụ Write/Edit; ghi bằng lệnh shell thì lưới là thông điệp của P179.

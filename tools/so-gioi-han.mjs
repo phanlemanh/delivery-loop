@@ -6,7 +6,7 @@
 // «Đề xuất: known-limits» trên mọi _acceptance/*/review-findings.md. Hàng sổ từng do thợ chép tay nên lượt chấm kế
 // của vòng nào có mục known-limits mới đều đỏ. Bộ sinh khớp đúng nghĩa P179 hôm nay — SỐ LƯỢNG theo hồ sơ: hồ sơ có k
 // mục và h hàng (cột slug) thì thêm k − h hàng ở cuối sổ cho các mục sau cùng, giữ mọi hàng cũ từng byte. Hàng mới
-// mang lớp `chua-xep` để người xếp lại khi cần.
+// mang lớp `khac` — ô bắt-hết sẵn có của sổ (P177 miễn trừ) — để người xếp lại khi cần.
 //
 //   node tools/so-gioi-han.mjs --slug <slug> [--root <gốc kho>] [--write]   (vắng --write: chỉ in)
 //   node tools/so-gioi-han.mjs --moc     (móc PostToolUse: đọc JSON sự kiện từ stdin; chỉ chạy khi tệp vừa ghi là
@@ -43,7 +43,7 @@ export function dongBo(root, slug, { ghi = false } = {}) {
   if (thieu <= 0) return { them: 0, ly: `đủ hàng (${cua.length} hàng · ${mucs.length} mục)` };
   let maxN = 0;
   for (const c of cua) { const m = c[0].match(new RegExp(`^${slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}#may-(\\d+)$`)); if (m) maxN = Math.max(maxN, Number(m[1])); }
-  const moi = mucs.slice(-thieu).map((m, i) => [`${slug}#may-${maxN + i + 1}`, slug, m.sev, 'chua-xep', 'song', '', '', `${m.tieuDe} [máy sinh từ review-findings.md]`].join('\t'));
+  const moi = mucs.slice(-thieu).map((m, i) => [`${slug}#may-${maxN + i + 1}`, slug, m.sev, 'khac', 'song', '', '', `${m.tieuDe} [máy sinh từ review-findings.md]`].join('\t'));
   if (ghi) writeFileSync(soP, (so.endsWith('\n') ? so : so + '\n') + moi.join('\n') + '\n');
   return { them: thieu, moi };
 }
