@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..', '..');
-const CA = 'tests/dieu-phoi/loi/chuyen-gop.test.mjs';
+const CA = 'tests/dieu-phoi/chuyen-gop.test.mjs';
 const DS = 'plugins/dispatch/scripts/';
 const DOT_BIEN = [
   ['DB-1 bỏ cửa proof ở lệnh gộp', `${DS}gop.mjs`, "  if (!cp.qua) return { duong: 'chan', sha, ly_do: cp.ly_do };", '', 'AC-5 lenh gop tung PR'],

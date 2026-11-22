@@ -142,7 +142,7 @@ executors:
     # Hồ sơ mac-ky-co-phu-quyet (trợ lý quyết định, hàng 1): tệp ca trọn và từng tiêu chí (lọc bằng TLQ_CASES).
     tro_ly_quyet_dinh: node tests/scripts/tro-ly-quyet-dinh.test.mjs
     # Hồ sơ chuyen-gop (trợ lý quyết định, hàng 2): chuyến gộp + cửa proof.
-    chuyen_gop: "bash -c 'set -o pipefail; node --test --test-reporter=tap tests/dieu-phoi/loi/chuyen-gop.test.mjs 2>&1 | grep -E \"^ *(not )?ok [0-9]+ - AC-|^# (pass|fail) \" | paste -sd\"|\" -'"
+    chuyen_gop: "bash -c 'set -o pipefail; node --test --test-reporter=tap tests/dieu-phoi/chuyen-gop.test.mjs 2>&1 | grep -E \"^ *(not )?ok [0-9]+ - AC-|^# (pass|fail) \" | paste -sd\"|\" -'"
     tro_ly_quyet_dinh_ac1: env TLQ_CASES=AC-1 node tests/scripts/tro-ly-quyet-dinh.test.mjs
     tro_ly_quyet_dinh_ac2: env TLQ_CASES=AC-2 node tests/scripts/tro-ly-quyet-dinh.test.mjs
     tro_ly_quyet_dinh_ac3: env TLQ_CASES=AC-3 node tests/scripts/tro-ly-quyet-dinh.test.mjs

@@ -23,7 +23,7 @@ thành chuyến, kiểm một lần trên ngọn thay vì từng PR sau mỗi l�
 nối luật tự trị qua cửa proof: mặc-ký chỉ tự gộp ở kho đã khai proof check.
 
 Thuật ngữ:
-- **tệp ca** = `tests/dieu-phoi/loi/chuyen-gop.test.mjs` (tên ca = mã tiêu chí).
+- **tệp ca** = `tests/dieu-phoi/chuyen-gop.test.mjs` (tên ca = mã tiêu chí).
 - **kho thử** = origin trần + bản clone do tệp ca dựng, mỗi PR một nhánh; chỉ `gh` là giả.
 - **món mặc-ký** = dòng sổ `"may":"mac-ky","di_theo":"khuyen"` (lược đồ sổ 2 của hàng 1) mà dòng S1 nó trỏ chưa bị dòng
   người nào quyết lại.

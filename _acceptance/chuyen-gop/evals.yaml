@@ -1,6 +1,6 @@
 schema_version: 1
 feature_slug: chuyen-gop
-# Một tệp ca (tests/dieu-phoi/loi/chuyen-gop.test.mjs, khoá executors.test.chuyen_gop), tên ca = mã tiêu chí; kho git thật
+# Một tệp ca (tests/dieu-phoi/chuyen-gop.test.mjs, khoá executors.test.chuyen_gop), tên ca = mã tiêu chí; kho git thật
 # dựng trong lượt, chỉ gh là giả. Chiều đỏ: commit ca đứng trước commit vật (tệp ca không nạp được mô-đun), và sáu đột biến
 # trên bản sao vật (bỏ cửa proof ở gop · tách tuyến tính · bỏ cửa sổ · bỏ vế tầng · đọc luật ở nhánh PR · kiểm từng PR thay
 # vì ngọn) mỗi cái làm ≥1 ca đỏ. Ca gộp cũ (tests/dieu-phoi/loi/gop.test.mjs, ky-den-gop-mutants) giữ xanh.
@@ -9,7 +9,7 @@ evals:
     criterion: AC-1
     executor: test
     cmd: config:executors.test.chuyen_gop
-    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/loi/chuyen-gop.test.mjs]
+    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/chuyen-gop.test.mjs]
     expected: >
       exit 0; stdout có "ok <n> - AC-1 " cho mọi ca AC-1, không có "not ok", và "# fail 0". Chiều đỏ: tệp ca đỏ ở commit
       ca (vật chưa có); ca âm tính của AC-1 có đối chứng dương cùng kho thử và ghim thông điệp.
@@ -18,7 +18,7 @@ evals:
     criterion: AC-2
     executor: test
     cmd: config:executors.test.chuyen_gop
-    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/loi/chuyen-gop.test.mjs]
+    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/chuyen-gop.test.mjs]
     expected: >
       exit 0; stdout có "ok <n> - AC-2 " cho mọi ca AC-2, không có "not ok", và "# fail 0". Chiều đỏ: tệp ca đỏ ở commit
       ca (vật chưa có); ca âm tính của AC-2 có đối chứng dương cùng kho thử và ghim thông điệp.
@@ -27,7 +27,7 @@ evals:
     criterion: AC-3
     executor: test
     cmd: config:executors.test.chuyen_gop
-    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/loi/chuyen-gop.test.mjs]
+    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/chuyen-gop.test.mjs]
     expected: >
       exit 0; stdout có "ok <n> - AC-3 " cho mọi ca AC-3, không có "not ok", và "# fail 0". Chiều đỏ: tệp ca đỏ ở commit
       ca (vật chưa có); ca âm tính của AC-3 có đối chứng dương cùng kho thử và ghim thông điệp.
@@ -36,7 +36,7 @@ evals:
     criterion: AC-4
     executor: test
     cmd: config:executors.test.chuyen_gop
-    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/loi/chuyen-gop.test.mjs]
+    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/chuyen-gop.test.mjs]
     expected: >
       exit 0; stdout có "ok <n> - AC-4 " cho mọi ca AC-4, không có "not ok", và "# fail 0". Chiều đỏ: tệp ca đỏ ở commit
       ca (vật chưa có); ca âm tính của AC-4 có đối chứng dương cùng kho thử và ghim thông điệp.
@@ -45,7 +45,7 @@ evals:
     criterion: AC-5
     executor: test
     cmd: config:executors.test.chuyen_gop
-    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/loi/chuyen-gop.test.mjs]
+    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/chuyen-gop.test.mjs]
     expected: >
       exit 0; stdout có "ok <n> - AC-5 " cho mọi ca AC-5, không có "not ok", và "# fail 0". Chiều đỏ: tệp ca đỏ ở commit
       ca (vật chưa có); ca âm tính của AC-5 có đối chứng dương cùng kho thử và ghim thông điệp.
@@ -54,7 +54,7 @@ evals:
     criterion: AC-6
     executor: test
     cmd: config:executors.test.chuyen_gop
-    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/loi/chuyen-gop.test.mjs]
+    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/chuyen-gop.test.mjs]
     expected: >
       exit 0; stdout có "ok <n> - AC-6 " cho mọi ca AC-6, không có "not ok", và "# fail 0". Chiều đỏ: tệp ca đỏ ở commit
       ca (vật chưa có); ca âm tính của AC-6 có đối chứng dương cùng kho thử và ghim thông điệp.
@@ -63,7 +63,7 @@ evals:
     criterion: AC-7
     executor: test
     cmd: config:executors.test.chuyen_gop
-    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/loi/chuyen-gop.test.mjs]
+    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/hinh-dang.mjs, tests/dieu-phoi/chuyen-gop.test.mjs]
     expected: >
       exit 0; stdout có "ok <n> - AC-7 " cho mọi ca AC-7, không có "not ok", và "# fail 0". Chiều đỏ: tệp ca đỏ ở commit
       ca (vật chưa có); ca âm tính của AC-7 có đối chứng dương cùng kho thử và ghim thông điệp.
@@ -80,7 +80,7 @@ evals:
     criterion: AC-8
     executor: test
     cmd: config:executors.test.chuyen_gop
-    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, tests/dieu-phoi/loi/chuyen-gop.test.mjs]
+    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, tests/dieu-phoi/chuyen-gop.test.mjs]
     expected: >
       exit 0; stdout có "ok <n> - AC-8 " cho cả ba ca AC-8, không có "not ok", "# fail 0".
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
@@ -88,7 +88,7 @@ evals:
     criterion: AC-8
     executor: script
     cmd: config:executors.script.chuyen_gop_dot_bien
-    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, tests/dieu-phoi/loi/chuyen-gop.test.mjs, _acceptance/chuyen-gop/rang/dot-bien.mjs]
+    paths: [plugins/dispatch/scripts/chuyen-gop.mjs, plugins/dispatch/scripts/cua-proof.mjs, plugins/dispatch/scripts/gop.mjs, plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, tests/dieu-phoi/chuyen-gop.test.mjs, _acceptance/chuyen-gop/rang/dot-bien.mjs]
     expected: >
       exit 0; stdout có "PASS: DB-0 bản nguyên vẹn xanh", mười dòng "PASS: DB-<n> …" mỗi dòng nêu đúng ca AC bị đỏ, và
       "DB Results: 10 passed, 0 failed". Chuỗi đột biến không còn trong vật → thoát 3 «HẠ TẦNG: …» (không thành xanh im).

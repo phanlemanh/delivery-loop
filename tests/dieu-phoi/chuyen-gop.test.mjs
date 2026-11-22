@@ -1,3 +1,4 @@
+// Ở tests/dieu-phoi/, KHÔNG ở loi/: ca gọi bên ghi của plugin lõi (hàng 1), nên không thuộc bước CI tự đứng của gói (DP1-03).
 // Hồ sơ chuyen-gop (thí điểm «trợ lý quyết định», hàng 2) — chuyến gộp + cửa proof của luật tự trị. Tên ca = mã tiêu chí.
 // Kho git THẬT dựng trong lượt (origin trần + bản clone, mỗi PR một nhánh); chỉ `gh` là giả (trả JSON `gh pr view`, ghi
 // lại lời gọi `gh pr merge`). Lệnh kiểm trên ngọn chuyến là lệnh thật chạy trong worktree tạm. Mọi ca âm tính có đối
@@ -8,15 +9,15 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { gom, tachDoi, chayChuyen } from '../../../plugins/dispatch/scripts/chuyen-gop.mjs';
-import { docTuTri, tangCuaTep, coMacKy, cuaProof } from '../../../plugins/dispatch/scripts/cua-proof.mjs';
-import { xetGop } from '../../../plugins/dispatch/scripts/gop.mjs';
-import { kiemCauHinh } from '../../../plugins/dispatch/scripts/hinh-dang.mjs';
-import { CFG_PHAT_LICH } from './mau-thu.mjs';
+import { gom, tachDoi, chayChuyen } from '../../plugins/dispatch/scripts/chuyen-gop.mjs';
+import { docTuTri, tangCuaTep, coMacKy, cuaProof } from '../../plugins/dispatch/scripts/cua-proof.mjs';
+import { xetGop } from '../../plugins/dispatch/scripts/gop.mjs';
+import { kiemCauHinh } from '../../plugins/dispatch/scripts/hinh-dang.mjs';
+import { CFG_PHAT_LICH } from './loi/mau-thu.mjs';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const ROOT = path.join(HERE, '..', '..', '..');
+const ROOT = path.join(HERE, '..', '..');
 // Bên ghi THẬT của hàng 1 (mac-ky-co-phu-quyet): dòng mặc-ký và dòng phủ quyết của ca do nó sinh, không viết tay.
 const TLQ = path.join(ROOT, 'plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs');
 const LUAT_THAT = fs.readFileSync(path.join(ROOT, 'tests/dieu-phoi/fixtures/autonomy-repo-standards.yaml'), 'utf8');

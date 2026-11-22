@@ -1,4 +1,4 @@
-# Bản chép khuôn governance/autonomy.yaml của Repo Standards (phanlemanh/repo-standards, plugins/repo-setup/presets/_core/team/governance/autonomy.yaml.tmpl, commit c29dea4 21/11/2026), ô {{owner_handle}} điền «owner». Fixture của tests/dieu-phoi/loi/chuyen-gop.test.mjs — ca đổi default/proof bằng thay chữ trong lượt.
+# Bản chép khuôn governance/autonomy.yaml của Repo Standards (phanlemanh/repo-standards, plugins/repo-setup/presets/_core/team/governance/autonomy.yaml.tmpl, commit c29dea4 21/11/2026), ô {{owner_handle}} điền «owner». Fixture của tests/dieu-phoi/chuyen-gop.test.mjs — ca đổi default/proof bằng thay chữ trong lượt.
 # Autonomy policy: who decides that a change may merge. People decide; machines check.
 # Source of truth for tools/autonomy.py (CI gate + CODEOWNERS) and for agents.
 #
