@@ -8,7 +8,7 @@ verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
 verified_commit: 0e19606c23c4466c9298dbc5ba89a38592d930eb
-human_signoff:
+human_signoff: Manh Phan 2026-11-22 — ký lượt chấm round 2; Ngoài-1, 3, 4, 5, 7–12 ghi Known limits; Ngoài-2, 6 mở hợp đồng mới (hạt giống); Ngoài-13 chấp nhận không sửa; cắt/hoãn đồng ý cắt; gộp khi CI xanh
 ---
 
 # Evidence Report: mac-ky-co-phu-quyet
