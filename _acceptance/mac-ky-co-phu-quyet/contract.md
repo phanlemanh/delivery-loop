@@ -6,7 +6,7 @@ owner: phanlemanh@gmail.com
 risk_tier: T2               # scripts/ (tro-ly-quyet-dinh.cjs mới, can-cu-s1.cjs, gate-card.js) + SKILL feature-loop — không chạm hooks/, lib/
 surfaces: [cli]
 design_doc: docs/superpowers/specs/2026-11-22-mac-ky-co-phu-quyet-design.md
-status: verified
+status: signed-off
 approved_by: Manh Phan
 approved_at: 2026-11-22
 ---
@@ -96,5 +96,18 @@ Bỏ quét không gian: quyết định `bỏ coverage-scan` trong `decisions.js
 
 ## Notes
 
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-22:
+  - Ngoài-1: Một phép kiểm giữ cho kho không bật chế độ ngoài-git luôn thấy đúng như cũ đang so với một mốc cố định. Về sau nếu có vòng khác đổi chính đáng những gì các kho đó thấy, phép kiểm sẽ báo đỏ và đổ lỗi nhầm sang vòng cũ. Người dùng cuối không bị ảnh hưởng, chỉ làm người bảo trì mất thời gian lần nguồn.
+  - Ngoài-3: Hai bộ đọc cùng một trường có thể phán khác nhau về một số loại hàng, nên có hợp đồng bị cảnh báo lạ ở nơi này mà vẫn được coi là hàng máy ở nơi kia.
+  - Ngoài-4: Số liệu và thẻ của hồ sơ cũ đã gộp có thể đổi khi hồ sơ khác bị phủ quyết, dù bản thân hồ sơ cũ không đổi gì.
+  - Ngoài-5: Một dòng sổ gõ tay sai khuôn vẫn có thể ảnh hưởng việc thăng hay giáng loại câu mà không ai bị báo lỗi.
+  - Ngoài-7: Khi gốc nhánh sai hoặc chưa tải về, việc so với tệp thật bị bỏ qua lặng lẽ nên câu có thể được tự đi tiếp mà không ai biết lưới kiểm không chạy.
+  - Ngoài-8: Phần trăm theo khuyến nghị mà chủ kho đọc để quyết thăng cấp có thể bị đếm cao hơn thực tế một chút.
+  - Ngoài-9: Nếu trợ lý quyết định gặp lỗi, người chạy lệnh thấy kết quả bình thường và không biết mặc-ký đã tắt vì lỗi, nên mọi câu quay về hỏi người mà không có lý do.
+  - Ngoài-10: Một phần danh sách loại hàng được máy tự đi tiếp không có phép kiểm giữ, nên ai đó gỡ bớt loại hàng thì bộ kiểm vẫn xanh.
+  - Ngoài-11: Hướng dẫn trong khuôn có thể dạy máy ghi một giá trị mà bộ kiểm sẽ từ chối, mà bộ kiểm tự động vẫn báo xanh.
+  - Ngoài-12: Nếu hướng dẫn thêm một loại câu mà mô-đun không biết, câu đó bị xếp vào loại lạ và luôn hỏi người mà bộ kiểm không báo.
+- Mở hợp đồng mới ở Cổng Bằng chứng 2026-11-22 (Ngoài-2, Ngoài-6): hạt giống
+  `docs/plans/2026-11-22-hat-giong-tro-ly-quyet-dinh-vung-va-an-le.md`.
 - Ca `KK-8 ho-so-cu` của `tests/scripts/can-cu-s1.ca.mjs` đỏ hai lần khi chạy lẻ trong lúc máy chạy bộ kiểm khác (cả trên
   `main` `50840764`), xanh trong lượt đầy đủ trên cây cuối — chập chờn, không do vật của vòng.
