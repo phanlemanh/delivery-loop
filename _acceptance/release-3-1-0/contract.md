@@ -5,7 +5,7 @@ slug: release-3-1-0
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: 5 tệp khai + câu khớp-phiên-bản của GUIDE + CHANGELOG + hồ sơ mốc + bản đồ — KHÔNG dính t3_paths
 surfaces: [cli]
-status: verified
+status: signed-off
 approved_by:
 approved_at:
 veto_state: mo
@@ -86,3 +86,6 @@ Source input: `git log v3.0.0..130192ae --first-parent` · nếp phát hành `_a
   `chay.sh dd-giu 90c3f9f1` thoát 1 «plugins/diagram-design có dòng đổi»; `chay.sh goi-doi` trên cây chưa nâng số thoát 1
   «tập tệp đổi khác hai tệp khai»; `chay.sh lop-chep a2198fcf` thoát 1 «ghi chú kể tệp KHÔNG đổi: lib/workspace-record.cjs
   scripts/product-map.mjs».
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-22:
+  - Ngoài-1: Phép kiểm «bản phát hành mang đúng bốn hồ sơ đã ký» so với một danh sách chép tay; ai sửa phần mô tả mà quên sửa danh sách thì phép kiểm vẫn xanh dù hai bên đã lệch.
+  - Ngoài-2: Phép kiểm «hai gói chỉ đổi số phiên bản» có thể bỏ sót việc thêm hoặc xoá một dòng trống trong tệp khai của hai gói ấy.
