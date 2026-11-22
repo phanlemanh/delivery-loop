@@ -67,12 +67,15 @@ const quet = r => { const x = chay(SCAN, ['--root', r], r); assert.equal(x.statu
 // ── AC-1 — kho không bật không đổi byte so với bản trước vòng ──────────────────────────────────────────────────
 // Lịch sử git hỏi ở kho thật: bản sao đã tiêm của tcg-mutants không phải kho git, nên nó truyền TCG_GIT_GOC.
 const GIT_GOC = process.env.TCG_GIT_GOC ? path.resolve(process.env.TCG_GIT_GOC) : GOC;
+// «Bản trước vòng» GHIM vào nhánh chính ngay trước vật của hồ sơ tep-chung-khong-chan-gop: cha thứ nhất của commit gộp
+// PR #17 (56bb22b1). Bản cũ lấy merge-base(HEAD, origin/main) — đúng khi vòng còn trên nhánh của nó, nhưng sau khi PR #17
+// gộp thì merge-base của main (và của mọi nhánh đã gộp main) đã chứa sẵn vật của vòng: TCG-1 đỏ «khong co ban truoc vong»
+// trên main, TCG-1-bat đỏ «phep so khong thay thay doi cua vong» trên mọi PR mở sau đó. Ghi đè bằng TCG_BAN_TRUOC.
+const BAN_TRUOC = process.env.TCG_BAN_TRUOC || '50840764d39b317d02eb4d881917bd128d67c86f';
 function banTruoc() {
-  let ref = null;
-  for (const b of ['origin/main', 'main']) { const x = gitThu(GIT_GOC, 'rev-parse', '--verify', '-q', b); if (x.status === 0) { ref = b; break; } }
-  if (!ref) return { loi: 'khong tim duoc nhanh chinh (origin/main, main)' };
-  const mb = git(GIT_GOC, 'merge-base', 'HEAD', ref);
-  if (mb === git(GIT_GOC, 'rev-parse', 'HEAD')) return { loi: 'khong co ban truoc vong' };
+  const x = gitThu(GIT_GOC, 'rev-parse', '--verify', '-q', `${BAN_TRUOC}^{commit}`);
+  if (x.status !== 0) return { loi: `khong co ban truoc vong ${BAN_TRUOC.slice(0, 8)} trong lich su (clone nong? fetch day du hoac dat TCG_BAN_TRUOC)` };
+  const mb = BAN_TRUOC;
   const d = path.join(TMP, 'truoc'); mkdirSync(d, { recursive: true });
   execFileSync('bash', ['-c', `git -C "$1" archive "$2" plugins/acceptance-gate | tar -x -C "$3"`, 'x', GIT_GOC, mb, d]);
   return { sha: mb, pm: path.join(d, 'plugins', 'acceptance-gate', 'scripts', 'product-map.mjs'), scan: path.join(d, 'plugins', 'acceptance-gate', 'scripts', 'start-scan.mjs') };

@@ -7,7 +7,7 @@ reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
-verified_commit: c5a80162f10a70b56473e66ebdf71c52c7bc0355
+verified_commit: a9e900e55096e4a3f4f06d070c87a4cb68d38199
 human_signoff: Phan Le Manh 2026-11-22 — ký lượt chấm round 2; Ngoài-1 đến Ngoài-9 và Ngoài-11 đến Ngoài-16 ghi Known limits, Ngoài-10 chấp nhận không sửa; cắt/hoãn đồng ý cắt; Treo phê hết; gộp khi CI xanh
 ---
 
@@ -203,3 +203,7 @@ none — every multi-run eval is uniform
 
 Round 1: E7, E8 xanh (carry sang round 2); S4 vong 1 sua VC8, ghim thong diep nhat tiem, nhanh mac dinh cua lenh day.
 Round 2: E1-E6, E9-E11 chay lai tren c5a80162 va xanh; E7, E8 carry-forward tu round 1 vi delta khong cham paths cua chung; cac lenh suite xanh.
+
+### Re-pin lần 1 — 2026-11-22, do ghim «bản trước vòng» của TCG-1 vào 50840764 thay merge-base — ca đỏ trên main từ PR #17
+run_id: repin-20261122T061105Z-58608
+sha: a9e900e55096e4a3f4f06d070c87a4cb68d38199 · suites: 11 lệnh exit 0 · evals: 11/11 eval máy đạt kỳ vọng
