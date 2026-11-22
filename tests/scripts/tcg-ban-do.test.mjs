@@ -243,10 +243,10 @@ test('TCG-6-tat kho khong bat xung dot o hai view', () => {
 });
 
 // ── AC-11 — nhánh view ────────────────────────────────────────────────────────────────────────────────────────
-function khoOrigin(khoaNhanh = 'ban_do:\n  ngoai_git: true\n  nhanh_ve: ban-do\n') {
+function khoOrigin(khoaNhanh = 'ban_do:\n  ngoai_git: true\n  nhanh_ve: ban-do\n', { datHead = true } = {}) {
   const r = kho({ khoa: khoaNhanh, views: 'ignore' });
   const o = path.join(TMP, `origin-${++khoN}.git`); execFileSync('git', ['init', '-q', '--bare', '-b', 'main', o]);
-  git(r, 'remote', 'add', 'origin', o); git(r, 'push', '-q', 'origin', 'main'); git(r, 'remote', 'set-head', 'origin', 'main');
+  git(r, 'remote', 'add', 'origin', o); git(r, 'push', '-q', 'origin', 'main'); if (datHead) git(r, 'remote', 'set-head', 'origin', 'main');
   return { r, o };
 }
 const day = r => pm(r, '--day-nhanh-ve');
@@ -263,7 +263,7 @@ test('TCG-11-day lan dau day nhanh view chi hai view, nhanh chinh khong doi', ()
 });
 test('TCG-11-lai khong doi thi khong day', () => {
   const { r, o } = khoOrigin(); assert.equal(day(r).status, 0); const s1 = dinh(o, 'ban-do');
-  const x = day(r); assert.equal(x.status, 0, x.stderr); assert.equal(dinh(o, 'ban-do'), s1); assert.match(x.stdout, /không đẩy/);
+  const x = day(r); assert.equal(x.status, 0, x.stderr); assert.equal(dinh(o, 'ban-do'), s1, 'day lai khi view khong doi'); assert.match(x.stdout, /không đẩy/);
 });
 test('TCG-11-doi doi nguon thi dinh moi', () => {
   const { r, o } = khoOrigin(); assert.equal(day(r).status, 0); const s1 = dinh(o, 'ban-do'); const cu = git(o, 'show', 'ban-do:PRODUCT-MAP.md');
@@ -271,8 +271,8 @@ test('TCG-11-doi doi nguon thi dinh moi', () => {
   assert.equal(day(r).status, 0); assert.notEqual(dinh(o, 'ban-do'), s1); assert.notEqual(git(o, 'show', 'ban-do:PRODUCT-MAP.md'), cu);
 });
 test('TCG-11-khoa nhanh_ve vang, rong, trung nhanh mac dinh thi thoat 2', () => {
-  for (const [ten, khoa] of [['vang', KHOA_BAT], ['rong', 'ban_do:\n  ngoai_git: true\n  nhanh_ve: ""\n'], ['main', 'ban_do:\n  ngoai_git: true\n  nhanh_ve: main\n']]) {
-    const { r, o } = khoOrigin(khoa); const truoc = git(o, 'for-each-ref', '--format=%(refname)');
+  for (const [ten, khoa, datHead] of [['vang', KHOA_BAT, true], ['rong', 'ban_do:\n  ngoai_git: true\n  nhanh_ve: ""\n', true], ['main', 'ban_do:\n  ngoai_git: true\n  nhanh_ve: main\n', true], ['main-khong-head', 'ban_do:\n  ngoai_git: true\n  nhanh_ve: main\n', false]]) {
+    const { r, o } = khoOrigin(khoa, { datHead }); const truoc = git(o, 'for-each-ref', '--format=%(refname)');
     const x = day(r); assert.equal(x.status, 2, `${ten}: ${x.stdout} ${x.stderr}`); assert.ok(x.stderr.includes('ban_do.nhanh_ve'), `${ten}: ${x.stderr}`);
     assert.equal(git(o, 'for-each-ref', '--format=%(refname)'), truoc, `${ten}: origin co ref moi`);
   }

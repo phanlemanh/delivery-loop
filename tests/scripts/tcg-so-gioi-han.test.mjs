@@ -65,11 +65,11 @@ test('TCG-9-them bo sinh them dung k-h hang, giu hang cu, P179 xanh tren cung go
 test('TCG-9-slug khong dem hang cua ho so ten gan', () => {
   const r = gocKhop(); hoSo(r, 'a', [muc('một')]); hoSo(r, 'a-b', [muc('x'), muc('y')]);
   appendFileSync(path.join(r, SO), hang('a-b', '1') + hang('a-b', '2'));
-  const h0 = dongSo(r); assert.equal(sinh(r, 'a').status, 0); assert.equal(dongSo(r), h0 + 1);
+  const h0 = dongSo(r); assert.equal(sinh(r, 'a').status, 0); assert.equal(dongSo(r), h0 + 1, 'dem nham hang cua ho so ten gan');
 });
 test('TCG-9-lai chay lan hai khong doi byte', () => {
   const r = gocKhop(); hoSo(r, 'tcg-thu', [muc('một'), muc('hai')]); assert.equal(sinh(r, 'tcg-thu').status, 0);
-  const a = readFileSync(path.join(r, SO), 'utf8'); assert.equal(sinh(r, 'tcg-thu').status, 0); assert.equal(readFileSync(path.join(r, SO), 'utf8'), a);
+  const a = readFileSync(path.join(r, SO), 'utf8'); assert.equal(sinh(r, 'tcg-thu').status, 0); assert.equal(readFileSync(path.join(r, SO), 'utf8'), a, 'chay lan hai doi byte');
 });
 test('TCG-9-rong ho so khong muc thi so khong doi', () => {
   const r = gocKhop(); hoSo(r, 'tcg-thu', [muc('một', 'wont-fix')]); const a = readFileSync(path.join(r, SO), 'utf8');
@@ -93,5 +93,5 @@ test('TCG-9-moc moc rut tu settings bat dung tep review-findings', () => {
   // Tệp khác trên một gốc CÒN THIẾU hàng: móc phải im — gốc đã đủ hàng thì móc chạy nhầm cũng không đổi gì.
   const r3 = gocKhop(); hoSo(r3, 'tcg-thu', [muc('một'), muc('hai')]); const c0 = readFileSync(path.join(r3, SO), 'utf8');
   const c = goi({ tool_name: 'Write', cwd: r3, tool_input: { file_path: path.join(r3, '_acceptance', 'tcg-thu', 'contract.md') } }, r3);
-  assert.equal(c.status, 0); assert.equal(c.stdout, ''); assert.equal(readFileSync(path.join(r3, SO), 'utf8'), c0);
+  assert.equal(c.status, 0); assert.equal(c.stdout, '', 'moc chay cho tep khac'); assert.equal(readFileSync(path.join(r3, SO), 'utf8'), c0, 'moc chay cho tep khac');
 });

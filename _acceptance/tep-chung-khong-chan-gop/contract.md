@@ -158,4 +158,5 @@ Thuật ngữ:
 - Dự đoán đoạn gộp ngược ở forge cho Inventory khi bật (ước, không đo lại): không bộ gộp riêng thì forge thấy 134 trên
   168 lần có xung đột; hai view rời git thì phần còn lại ngang số «có bộ gộp riêng» tại máy, khoảng 63, phần lớn ở
   `_acceptance/config.yaml` — phần ấy chỉ giảm dần khi vòng mới viết lệnh theo luật lệnh hồ sơ.
-- Việc ngoài phạm vi thấy trên đường: ghi hạt giống có dòng `Gốc:`, không làm trong vòng.
+- Việc ngoài phạm vi thấy trên đường: ghi hạt giống có dòng `Gốc:`, không làm trong vòng —
+  `docs/plans/2026-11-21-hat-giong-dong-giu-co-trai-bo-xep-can-cu.md` (khuôn dòng «giữ cỡ» trái bộ xếp căn cứ).

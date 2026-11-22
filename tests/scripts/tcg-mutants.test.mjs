@@ -33,7 +33,7 @@ function chayCa(ca) {
   const x = spawnSync(process.execPath, ['--test', '--test-reporter=tap', `--test-name-pattern=^${ca}( |$)`, path.join(BS, 'tests', 'scripts', `${tepCua(ca)}.test.mjs`)],
     { encoding: 'utf8', env: ENV_CON, maxBuffer: 64 * 1024 * 1024 });
   const pass = Number((x.stdout.match(/^# pass (\d+)/m) || [])[1] || 0);
-  return { xanh: x.status === 0 && pass >= 1 && !/^not ok /m.test(x.stdout), ra: x.stdout.slice(-1500) };
+  return { xanh: x.status === 0 && pass >= 1 && !/^not ok /m.test(x.stdout), ra: x.stdout.slice(-1500), het: x.stdout };
 }
 function tiem(tep, tu, den, f) {
   const p = path.join(BS, tep); const goc = readFileSync(p, 'utf8');
@@ -46,30 +46,31 @@ const PM = 'plugins/acceptance-gate/scripts/product-map.mjs';
 const WR = 'plugins/acceptance-gate/lib/workspace-record.cjs';
 const SCAN = 'plugins/acceptance-gate/scripts/start-scan.mjs';
 const NHAT = [
-  ['bo-kiem-chi-muc', PM, 'if (theoDoi.status === 0) { loi.push(', 'if (false) { loi.push(', 'TCG-3-1'],
-  ['bo-kiem-ignore', PM, "if (gitRc(root, ['check-ignore', '-q', '--', v]).status !== 0) loi.push(", 'if (false) loi.push(', 'TCG-3-3'],
-  ['tat-di-nhanh-moi', PM, 'if (check && bd.ngoaiGit) {', 'if (check && (bd.ngoaiGit || true)) {', 'TCG-1'],
-  ['khoa-sai-la-tat', WR, 'loi: `ban_do.ngoai_git phải là true hoặc false', 'loi: null, x: `ban_do.ngoai_git phải là true hoặc false', 'TCG-5-dang'],
-  ['them-vo-dieu-kien', 'plugins/acceptance-gate/commands/approve.md', 'if [ -f "$f" ] && ! git check-ignore -q -- "$f"; then', 'if [ -f "$f" ]; then', 'TCG-4-bat'],
-  ['quet-tra-da-xoa', SCAN, 'ngoaiGit: bd.ngoaiGit, khoaSai', 'ngoaiGit: false, khoaSai', 'TCG-5-bat'],
-  ['quet-doc-khoa-rieng', SCAN, 'const bd = banDo(cfgRead.t);', "const bd = { ngoaiGit: /ngoai_git: true\\s*$/m.test(cfgRead.t || ''), loi: null };", 'TCG-5-dang'],
-  ['bo-so-goc', 'plugins/feature-loop/scripts/s4-args.mjs', 'if (resolveConfigKey(cfgGoc, khoa) || khacDung(khoa)) continue;', 'if (khacDung(khoa)) continue;', 'TCG-8-2'],
-  ['ghi-de-hang-cu', 'tools/so-gioi-han.mjs', "writeFileSync(soP, (so.endsWith('\\n') ? so : so + '\\n') + moi.join('\\n') + '\\n');", "writeFileSync(soP, so.split('\\n').slice(0, 1).join('\\n') + '\\n' + moi.join('\\n') + '\\n');", 'TCG-9-them'],
-  ['them-khi-du', 'tools/so-gioi-han.mjs', 'if (thieu <= 0) return', 'if (thieu < 0) return', 'TCG-9-lai'],
-  ['dem-nham-slug', 'tools/so-gioi-han.mjs', 'const cua = hangs.filter(c => c[1] === slug);', 'const cua = hangs.filter(c => c[1].startsWith(slug));', 'TCG-9-slug'],
-  ['moc-moi-tep', 'tools/so-gioi-han.mjs', 'review-findings\\.md$/); if (!m) return;', '[\\w.-]+$/); if (!m) return;', 'TCG-9-moc'],
-  ['day-khi-khong-doi', PM, '=== cay) return { code: 0', '=== cay && false) return { code: 0', 'TCG-11-lai'],
-  ['day-nhanh-mac-dinh', PM, 'if (bd.nhanhVe === macDinh) return { code: 2', 'if (false) return { code: 2', 'TCG-11-khoa'],
+  ['bo-kiem-chi-muc', PM, 'if (theoDoi.status === 0) { loi.push(', 'if (false) { loi.push(', 'TCG-3-1', 'không hỏi được git về PRODUCT-MAP.md'],
+  ['bo-kiem-ignore', PM, "if (gitRc(root, ['check-ignore', '-q', '--', v]).status !== 0) loi.push(", 'if (false) loi.push(', 'TCG-3-3', 'vẽ tại chỗ, ngoài git'],
+  ['tat-di-nhanh-moi', PM, 'if (check && bd.ngoaiGit) {', 'if (check && (bd.ngoaiGit || true)) {', 'TCG-1', 'lech byte'],
+  ['khoa-sai-la-tat', WR, 'loi: `ban_do.ngoai_git phải là true hoặc false', 'loi: null, x: `ban_do.ngoai_git phải là true hoặc false', 'TCG-5-dang', 'lib, dang yes'],
+  ['them-vo-dieu-kien', 'plugins/acceptance-gate/commands/approve.md', 'if [ -f "$f" ] && ! git check-ignore -q -- "$f"; then', 'if [ -f "$f" ]; then', 'TCG-4-bat', 'paths are ignored'],
+  ['quet-tra-da-xoa', SCAN, 'ngoaiGit: bd.ngoaiGit, khoaSai', 'ngoaiGit: false, khoaSai', 'TCG-5-bat', 'da-xoa'],
+  ['quet-doc-khoa-rieng', SCAN, 'const bd = banDo(cfgRead.t);', "const bd = { ngoaiGit: /ngoai_git: true\\s*$/m.test(cfgRead.t || ''), loi: null };", 'TCG-5-dang', 'start-scan, dang nhay'],
+  ['bo-so-goc', 'plugins/feature-loop/scripts/s4-args.mjs', 'if (resolveConfigKey(cfgGoc, khoa) || khacDung(khoa)) continue;', 'if (khacDung(khoa)) continue;', 'TCG-8-2', 'config:executors.script.cu'],
+  ['ghi-de-hang-cu', 'tools/so-gioi-han.mjs', "writeFileSync(soP, (so.endsWith('\\n') ? so : so + '\\n') + moi.join('\\n') + '\\n');", "writeFileSync(soP, so.split('\\n').slice(0, 1).join('\\n') + '\\n' + moi.join('\\n') + '\\n');", 'TCG-9-them', 'hang cu bi doi'],
+  ['them-khi-du', 'tools/so-gioi-han.mjs', 'if (thieu <= 0) return', 'if (thieu < 0) return', 'TCG-9-lai', 'chay lan hai doi byte'],
+  ['dem-nham-slug', 'tools/so-gioi-han.mjs', 'const cua = hangs.filter(c => c[1] === slug);', 'const cua = hangs.filter(c => c[1].startsWith(slug));', 'TCG-9-slug', 'dem nham hang cua ho so ten gan'],
+  ['moc-moi-tep', 'tools/so-gioi-han.mjs', 'review-findings\\.md$/); if (!m) return;', '[\\w.-]+$/); if (!m) return;', 'TCG-9-moc', 'moc chay cho tep khac'],
+  ['day-khi-khong-doi', PM, '=== cay) return { code: 0', '=== cay && false) return { code: 0', 'TCG-11-lai', 'day lai khi view khong doi'],
+  ['day-nhanh-mac-dinh', PM, 'if (bd.nhanhVe === macDinh) return { code: 2', 'if (false) return { code: 2', 'TCG-11-khoa', 'đã đẩy hai view lên nhánh main'],
 ];
 const DICH = [...new Set(NHAT.map(n => n[4]))];
 
 test('TCG-10-M0 ban sao chua tiem: moi ca dich xanh', () => {
   for (const ca of DICH) { const r = chayCa(ca); assert.ok(r.xanh, `doi chung duong do: ${ca}\n${r.ra}`); }
 });
-for (const [ten, tep, tu, den, ca] of NHAT) {
+for (const [ten, tep, tu, den, ca, ghim] of NHAT) {
   test(`TCG-10-${ten} nhat tiem lam ${ca} do`, () => {
     const r = tiem(tep, tu, den, () => chayCa(ca));
     assert.ok(!r.xanh, `phep do mu: ${ca} van xanh khi tiem ${ten}`);
+    assert.ok(r.het.includes(ghim), `do nhung sai thong diep (can «${ghim}»): ${ca}\n${r.ra}`);
   });
 }
 const IM = [

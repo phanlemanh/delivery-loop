@@ -438,8 +438,12 @@ export async function dayNhanhVe(root) {
   const bd = banDo(readPlain(path.join(root, '_acceptance', 'config.yaml')) || '');
   if (bd.loi) return { code: 2, loi: `product-map: ${bd.loi}` };
   if (!bd.ngoaiGit) return { code: 2, loi: 'product-map: --day-nhanh-ve cần ban_do.ngoai_git: true' };
+  // Nhánh mặc định: origin/HEAD của bản kéo, không có (checkout của job CI không đặt nó) thì hỏi origin. Không biết thì
+  // dừng — rơi lặng về một tên đoán là để phép chặn «trùng nhánh mặc định» thủng đúng ở job sau gộp.
   const sr = gitRc(root, ['symbolic-ref', '--short', 'refs/remotes/origin/HEAD']);
-  const macDinh = sr.status === 0 ? sr.stdout.trim().replace(/^origin\//, '') : 'main';
+  let macDinh = sr.status === 0 ? sr.stdout.trim().replace(/^origin\//, '') : null;
+  if (!macDinh) { const lr = gitRc(root, ['ls-remote', '--symref', 'origin', 'HEAD']); const m = (lr.stdout || '').match(/^ref: refs\/heads\/(\S+)\s+HEAD/m); macDinh = m ? m[1] : null; }
+  if (!macDinh) return { code: 2, loi: 'product-map: không xác định được nhánh mặc định của origin (origin/HEAD vắng, ls-remote --symref không trả) — ban_do.nhanh_ve chưa kiểm được' };
   if (!bd.nhanhVe) return { code: 2, loi: 'product-map: ban_do.nhanh_ve vắng hoặc rỗng — khai tên nhánh view (khác nhánh mặc định) rồi chạy lại' };
   if (bd.nhanhVe === macDinh) return { code: 2, loi: `product-map: ban_do.nhanh_ve trùng nhánh mặc định «${macDinh}» — nhánh view phải là nhánh riêng` };
   const vt = await veTrangLoTrinh(root);
