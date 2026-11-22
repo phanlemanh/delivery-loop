@@ -2,7 +2,7 @@
 // Răng chiều đỏ của hồ sơ chuyen-gop: chép TRỌN hai thư mục `plugins/` và `tests/` của cây đang kiểm (gốc suy từ vị trí
 // tệp này) vào thư mục tạm, chạy tệp ca trên bản nguyên vẹn (phải xanh — đối chứng dương), rồi mỗi đột biến thay đúng một
 // chuỗi trong bản chép và chạy lại: tệp ca phải đỏ ĐÚNG ca đã ghim. Chuỗi đột biến không còn trong vật → thoát 3 nêu tên
-// (vật đã đổi, răng phải sửa cùng) — không bao giờ thành xanh im lặng.
+// (vật đã đổi, răng phải sửa cùng), chuỗi trùng nhiều chỗ cũng thế — không bao giờ thành xanh im lặng.
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -23,7 +23,7 @@ const DOT_BIEN = [
   ['DB-7 bỏ so đỉnh trước gộp', `${DS}chuyen-gop.mjs`, 'if (dinhMoi !== dinh) return', 'if (false) return', 'AC-8 nhanh chinh doi'],
   ['DB-8 gộp tiếp sau lần gộp hỏng', `${DS}chuyen-gop.mjs`, "      return { duong: 'gop-do-dang',", "      if (false) return { duong: 'gop-do-dang',", 'AC-8 mot lan gop hong'],
   ['DB-9 bỏ kiểm nhánh chính', `${DS}chuyen-gop.mjs`, 'if (!k([])) return { xanh: [], rot, so_lan_kiem: n, chinh_do: true };', '', 'AC-8 nhanh chinh do'],
-  ['DB-10 bên ghi hàng 1 đổi tên trường may', 'plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs', 'so_do: SO_DO, may: DAU_MAY,', 'so_do: SO_DO, mayx: DAU_MAY,', 'AC-5 nhan biet mon mac-ky'],
+  ['DB-10 bên ghi hàng 1 đổi tên trường may', 'plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs', "may: DAU_MAY, ve: d.id, loai_cau: d.loai_cau, di_theo: theo ? 'khuyen'", "mayx: DAU_MAY, ve: d.id, loai_cau: d.loai_cau, di_theo: theo ? 'khuyen'", 'AC-5 nhan biet mon mac-ky'],
 ];
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'chuyen-gop-dot-bien-'));
@@ -39,7 +39,8 @@ try {
   console.log('PASS: DB-0 bản nguyên vẹn xanh');
   for (const [ten, tep, tu, thanh, ca] of DOT_BIEN) {
     const d = chep(); const p = path.join(d, tep); const s = fs.readFileSync(p, 'utf8');
-    if (!s.includes(tu)) { console.log(`HẠ TẦNG: ${ten} — chuỗi đột biến không còn trong ${tep}`); process.exit(3); }
+    const lan = s.split(tu).length - 1; // tiêm phải trúng ĐÚNG một chỗ: chuỗi trùng thì replace chỉ sửa chỗ đầu, có thể không phải vật ca đo
+    if (lan !== 1) { console.log(`HẠ TẦNG: ${ten} — chuỗi đột biến có ${lan} chỗ trong ${tep} (phải đúng 1)`); process.exit(3); }
     fs.writeFileSync(p, s.replace(tu, thanh));
     const r = chay(d);
     if (r.ma !== 0 && r.khong.some((x) => x.startsWith(ca))) console.log(`PASS: ${ten} → đỏ «${ca}…» (${r.khong.length} ca đỏ)`);
