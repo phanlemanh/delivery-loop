@@ -1,0 +1,97 @@
+schema_version: 1
+feature_slug: mac-ky-co-phu-quyet
+# Một tệp ca (tests/scripts/tro-ly-quyet-dinh.test.mjs, khoá executors.test.tro_ly_quyet_dinh), tên ca = mã tiêu chí; lọc
+# một tiêu chí bằng biến TLQ_CASES (khoá tro_ly_quyet_dinh_ac<n>). Kho thử do code sinh trong lượt; dòng máy do chính bộ
+# ghi sinh rồi bộ đọc đọc (round-trip). Chiều đỏ: commit ca đứng trước commit vật (1dc5abe9 — 15 ca đỏ), và bốn đột biến
+# trên bản sao vật (bỏ khoá khó-đảo · bỏ giữ-quyền · bỏ khởi động lạnh · bỏ ngưỡng theo) mỗi cái làm ≥1 ca đỏ.
+evals:
+  - id: E1
+    criterion: AC-1
+    executor: test
+    cmd: config:executors.test.tro_ly_quyet_dinh_ac1
+    paths: [plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, plugins/acceptance-gate/scripts/can-cu-s1.cjs, plugins/acceptance-gate/scripts/gate-card.js, plugins/feature-loop/skills/feature-loop/SKILL.md, tests/scripts/tro-ly-quyet-dinh.test.mjs]
+    expected: >
+      exit 0; stdout có dòng mở bằng "  PASS: AC-1 " cho mọi ca AC-1 và "TLQ Results: " kèm ", 0 failed". Chiều đỏ: cùng
+      ca đỏ ở commit 1dc5abe9 (vật chưa có); ca âm tính của AC-1 có đối chứng dương cùng kho thử và ghim thông điệp.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E2
+    criterion: AC-2
+    executor: test
+    cmd: config:executors.test.tro_ly_quyet_dinh_ac2
+    paths: [plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, plugins/acceptance-gate/scripts/can-cu-s1.cjs, plugins/acceptance-gate/scripts/gate-card.js, plugins/feature-loop/skills/feature-loop/SKILL.md, tests/scripts/tro-ly-quyet-dinh.test.mjs]
+    expected: >
+      exit 0; stdout có dòng mở bằng "  PASS: AC-2 " cho mọi ca AC-2 và "TLQ Results: " kèm ", 0 failed". Chiều đỏ: cùng
+      ca đỏ ở commit 1dc5abe9 (vật chưa có); ca âm tính của AC-2 có đối chứng dương cùng kho thử và ghim thông điệp.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E3
+    criterion: AC-3
+    executor: test
+    cmd: config:executors.test.tro_ly_quyet_dinh_ac3
+    paths: [plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, plugins/acceptance-gate/scripts/can-cu-s1.cjs, plugins/acceptance-gate/scripts/gate-card.js, plugins/feature-loop/skills/feature-loop/SKILL.md, tests/scripts/tro-ly-quyet-dinh.test.mjs]
+    expected: >
+      exit 0; stdout có dòng mở bằng "  PASS: AC-3 " cho mọi ca AC-3 và "TLQ Results: " kèm ", 0 failed". Chiều đỏ: cùng
+      ca đỏ ở commit 1dc5abe9 (vật chưa có); ca âm tính của AC-3 có đối chứng dương cùng kho thử và ghim thông điệp.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E4
+    criterion: AC-4
+    executor: test
+    cmd: config:executors.test.tro_ly_quyet_dinh_ac4
+    paths: [plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, plugins/acceptance-gate/scripts/can-cu-s1.cjs, plugins/acceptance-gate/scripts/gate-card.js, plugins/feature-loop/skills/feature-loop/SKILL.md, tests/scripts/tro-ly-quyet-dinh.test.mjs]
+    expected: >
+      exit 0; stdout có dòng mở bằng "  PASS: AC-4 " cho mọi ca AC-4 và "TLQ Results: " kèm ", 0 failed". Chiều đỏ: cùng
+      ca đỏ ở commit 1dc5abe9 (vật chưa có); ca âm tính của AC-4 có đối chứng dương cùng kho thử và ghim thông điệp.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E5
+    criterion: AC-5
+    executor: test
+    cmd: config:executors.test.tro_ly_quyet_dinh_ac5
+    paths: [plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, plugins/acceptance-gate/scripts/can-cu-s1.cjs, plugins/acceptance-gate/scripts/gate-card.js, plugins/feature-loop/skills/feature-loop/SKILL.md, tests/scripts/tro-ly-quyet-dinh.test.mjs]
+    expected: >
+      exit 0; stdout có dòng mở bằng "  PASS: AC-5 " cho mọi ca AC-5 và "TLQ Results: " kèm ", 0 failed". Chiều đỏ: cùng
+      ca đỏ ở commit 1dc5abe9 (vật chưa có); ca âm tính của AC-5 có đối chứng dương cùng kho thử và ghim thông điệp.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E6
+    criterion: AC-6
+    executor: test
+    cmd: config:executors.test.tro_ly_quyet_dinh_ac6
+    paths: [plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, plugins/acceptance-gate/scripts/can-cu-s1.cjs, plugins/acceptance-gate/scripts/gate-card.js, plugins/feature-loop/skills/feature-loop/SKILL.md, tests/scripts/tro-ly-quyet-dinh.test.mjs]
+    expected: >
+      exit 0; stdout có dòng mở bằng "  PASS: AC-6 " cho mọi ca AC-6 và "TLQ Results: " kèm ", 0 failed". Chiều đỏ: cùng
+      ca đỏ ở commit 1dc5abe9 (vật chưa có); ca âm tính của AC-6 có đối chứng dương cùng kho thử và ghim thông điệp.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E7
+    criterion: AC-7
+    executor: test
+    cmd: config:executors.test.tro_ly_quyet_dinh_ac7
+    paths: [plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, plugins/acceptance-gate/scripts/can-cu-s1.cjs, plugins/acceptance-gate/scripts/gate-card.js, plugins/feature-loop/skills/feature-loop/SKILL.md, tests/scripts/tro-ly-quyet-dinh.test.mjs]
+    expected: >
+      exit 0; stdout có dòng mở bằng "  PASS: AC-7 " cho mọi ca AC-7 và "TLQ Results: " kèm ", 0 failed". Chiều đỏ: cùng
+      ca đỏ ở commit 1dc5abe9 (vật chưa có); ca âm tính của AC-7 có đối chứng dương cùng kho thử và ghim thông điệp.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E8
+    criterion: AC-8
+    executor: test
+    cmd: config:executors.test.tro_ly_quyet_dinh_ac8
+    paths: [plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, plugins/acceptance-gate/scripts/can-cu-s1.cjs, plugins/acceptance-gate/scripts/gate-card.js, plugins/feature-loop/skills/feature-loop/SKILL.md, tests/scripts/tro-ly-quyet-dinh.test.mjs]
+    expected: >
+      exit 0; stdout có dòng mở bằng "  PASS: AC-8 " cho mọi ca AC-8 và "TLQ Results: " kèm ", 0 failed". Chiều đỏ: cùng
+      ca đỏ ở commit 1dc5abe9 (vật chưa có); ca âm tính của AC-8 có đối chứng dương cùng kho thử và ghim thông điệp.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E9
+    criterion: AC-9
+    executor: test
+    cmd: config:executors.test.tro_ly_quyet_dinh_ac9
+    paths: [plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, plugins/acceptance-gate/scripts/can-cu-s1.cjs, plugins/acceptance-gate/scripts/gate-card.js, plugins/feature-loop/skills/feature-loop/SKILL.md, tests/scripts/tro-ly-quyet-dinh.test.mjs]
+    expected: >
+      exit 0; stdout có dòng mở bằng "  PASS: AC-9 " cho mọi ca AC-9 và "TLQ Results: " kèm ", 0 failed". Chiều đỏ: cùng
+      ca đỏ ở commit 1dc5abe9 (vật chưa có); ca âm tính của AC-9 có đối chứng dương cùng kho thử và ghim thông điệp.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E10
+    criterion: AC-10
+    executor: test
+    cmd: config:executors.test.tro_ly_quyet_dinh_ac10
+    paths: [plugins/acceptance-gate/scripts/tro-ly-quyet-dinh.cjs, plugins/acceptance-gate/scripts/can-cu-s1.cjs, plugins/acceptance-gate/scripts/gate-card.js, plugins/feature-loop/skills/feature-loop/SKILL.md, tests/scripts/tro-ly-quyet-dinh.test.mjs]
+    expected: >
+      exit 0; stdout có dòng mở bằng "  PASS: AC-10 " cho mọi ca AC-10 và "TLQ Results: " kèm ", 0 failed". Chiều đỏ: cùng
+      ca đỏ ở commit 1dc5abe9 (vật chưa có); ca âm tính của AC-10 có đối chứng dương cùng kho thử và ghim thông điệp.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
