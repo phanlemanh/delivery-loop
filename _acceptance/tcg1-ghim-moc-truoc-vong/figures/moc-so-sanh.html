@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mốc so sánh TCG-1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Lora:ital,wght@0,400;1,400&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --color-paper:#f5f5f5; --color-ink:#2d3142; --color-muted:#4f5d75; --color-accent:#eb6c36; --font-sans:'Geist',system-ui,sans-serif; --font-serif:'Instrument Serif','Lora',serif; --font-mono:'Geist Mono',ui-monospace,monospace; }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1240px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 900px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">tcg1-ghim-moc-truoc-vong · hình cho điểm quyết định · AC-1, AC-3</p>
+    <h1>Mốc so sánh của TCG-1 — merge-base sống hay commit ghim</h1>
+
+    <!-- Nguồn: bản thiết kế 2026-11-22-tcg1-ghim-moc-truoc-vong-design.md mục 1–2 (bảng ba hàng) + contract.md.
+         viewBox 0 0 1120 688. Làn PR y=168, làn nhánh chính y=264. Bảng y=404..564. Chú giải y=632.. -->
+    <svg viewBox="0 0 1120 688" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/>
+        </marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/>
+        </marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/>
+        </marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ─── Nhãn làn ─── -->
+      <text x="24" y="172" fill="#4f5d75" font-size="9" font-weight="500" font-family="'Geist Mono', monospace" letter-spacing="0.14em">NHÁNH PR</text>
+      <text x="24" y="268" fill="#4f5d75" font-size="9" font-weight="500" font-family="'Geist Mono', monospace" letter-spacing="0.14em">NHÁNH CHÍNH</text>
+
+      <!-- ─── Cạnh git (vẽ trước nút) ─── -->
+      <g fill="none" stroke="rgba(45,49,66,0.35)" stroke-width="2">
+        <line x1="112" y1="264" x2="144" y2="264" stroke-dasharray="3,3"/>
+        <line x1="256" y1="264" x2="504" y2="264"/>
+        <line x1="616" y1="264" x2="704" y2="264"/>
+        <!-- 50840764 → nhánh vòng tep-chung -->
+        <path d="M232 244 V176 A8 8 0 0 1 240 168 H344"/>
+        <!-- ea7ca444 → commit gộp 56bb22b1 -->
+        <path d="M456 168 H536 A8 8 0 0 1 544 176 V244"/>
+        <!-- 678572f0 → nhánh PR mở sau gộp -->
+        <path d="M816 264 H856 A8 8 0 0 0 864 256 V176 A8 8 0 0 1 872 168 H904"/>
+      </g>
+      <!-- các commit giữa của nhánh vòng -->
+      <circle cx="280" cy="168" r="2.4" fill="rgba(45,49,66,0.45)"/>
+      <circle cx="296" cy="168" r="2.4" fill="rgba(45,49,66,0.45)"/>
+      <circle cx="312" cy="168" r="2.4" fill="rgba(45,49,66,0.45)"/>
+
+      <!-- ─── Mũi tên mốc ghim (accent) — cả ba HEAD đều trỏ 50840764 ─── -->
+      <g fill="none" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)">
+        <path d="M960 148 V72 A8 8 0 0 0 952 64 H176 A8 8 0 0 0 168 72 V244"/>
+        <path d="M760 244 V96 A8 8 0 0 0 752 88 H192 A8 8 0 0 0 184 96 V244"/>
+        <path d="M400 148 V120 A8 8 0 0 0 392 112 H208 A8 8 0 0 0 200 120 V244"/>
+      </g>
+      <rect x="400" y="40" width="320" height="16" rx="2" fill="#f5f5f5"/>
+      <text x="560" y="52" fill="#ba4513" font-size="9" font-weight="500" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MỐC GHIM → 50840764 · MỌI HEAD</text>
+
+      <!-- ─── Mũi tên merge-base (nét đứt) — mốc cũ, đổi theo HEAD ─── -->
+      <g fill="none" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)">
+        <!-- ① HEAD ea7ca444 → 50840764 (nhảy qua nhánh chính) -->
+        <path d="M400 188 V256 a8 8 0 0 0 0 16 V316 A8 8 0 0 1 392 324 H208 A8 8 0 0 1 200 316 V284"/>
+        <!-- ② HEAD 678572f0 → chính nó -->
+        <path d="M772 284 V304 A8 8 0 0 1 764 312 H756 A8 8 0 0 1 748 304 V284"/>
+        <!-- ③ HEAD PR sau → 678572f0 -->
+        <path d="M960 188 V328 A8 8 0 0 1 952 336 H792 A8 8 0 0 1 784 328 V284"/>
+      </g>
+      <rect x="252" y="300" width="96" height="16" rx="2" fill="#f5f5f5"/>
+      <text x="300" y="312" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">MERGE-BASE</text>
+      <rect x="616" y="292" width="124" height="16" rx="2" fill="#f5f5f5"/>
+      <text x="736" y="304" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.06em">MERGE-BASE = HEAD</text>
+      <rect x="824" y="312" width="96" height="16" rx="2" fill="#f5f5f5"/>
+      <text x="872" y="324" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">MERGE-BASE</text>
+
+      <!-- ─── Nút commit ─── -->
+      <!-- 50840764 — mốc ghim (focal) -->
+      <rect x="144" y="244" width="112" height="40" rx="6" fill="#f5f5f5"/>
+      <rect x="144" y="244" width="112" height="40" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1.4"/>
+      <text x="200" y="260" fill="#2d3142" font-size="10" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="middle">50840764</text>
+      <text x="200" y="276" fill="#4f5d75" font-size="9" font-family="'Geist', sans-serif" text-anchor="middle">chính, trước vòng</text>
+
+      <!-- ea7ca444 — đầu nhánh vòng tep-chung -->
+      <rect x="344" y="148" width="112" height="40" rx="6" fill="#f5f5f5"/>
+      <rect x="344" y="148" width="112" height="40" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="400" y="164" fill="#2d3142" font-size="10" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="middle">ea7ca444</text>
+      <text x="400" y="180" fill="#4f5d75" font-size="9" font-family="'Geist', sans-serif" text-anchor="middle">vòng tep-chung</text>
+
+      <!-- 56bb22b1 — commit gộp PR #17 -->
+      <rect x="504" y="244" width="112" height="40" rx="6" fill="#f5f5f5"/>
+      <rect x="504" y="244" width="112" height="40" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="560" y="260" fill="#2d3142" font-size="10" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="middle">56bb22b1</text>
+      <text x="560" y="276" fill="#4f5d75" font-size="9" font-family="'Geist', sans-serif" text-anchor="middle">gộp PR #17</text>
+
+      <!-- 678572f0 — nhánh chính hôm nay -->
+      <rect x="704" y="244" width="112" height="40" rx="6" fill="#f5f5f5"/>
+      <rect x="704" y="244" width="112" height="40" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="760" y="260" fill="#2d3142" font-size="10" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="middle">678572f0</text>
+      <text x="760" y="276" fill="#4f5d75" font-size="9" font-family="'Geist', sans-serif" text-anchor="middle">chính hôm nay</text>
+
+      <!-- commit của nhánh PR mở sau gộp -->
+      <rect x="904" y="148" width="112" height="40" rx="6" fill="#f5f5f5"/>
+      <rect x="904" y="148" width="112" height="40" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="960" y="164" fill="#2d3142" font-size="10" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">commit PR</text>
+      <text x="960" y="180" fill="#4f5d75" font-size="9" font-family="'Geist', sans-serif" text-anchor="middle">mở sau gộp</text>
+
+      <!-- ─── Thẻ HEAD ─── -->
+      <rect x="412" y="124" width="48" height="16" rx="2" fill="#2d3142"/>
+      <text x="436" y="136" fill="#f5f5f5" font-size="9" font-weight="500" font-family="'Geist Mono', monospace" text-anchor="middle">HEAD ①</text>
+      <rect x="772" y="220" width="48" height="16" rx="2" fill="#2d3142"/>
+      <text x="796" y="232" fill="#f5f5f5" font-size="9" font-weight="500" font-family="'Geist Mono', monospace" text-anchor="middle">HEAD ②</text>
+      <rect x="972" y="124" width="48" height="16" rx="2" fill="#2d3142"/>
+      <text x="996" y="136" fill="#f5f5f5" font-size="9" font-weight="500" font-family="'Geist Mono', monospace" text-anchor="middle">HEAD ③</text>
+
+      <!-- ═══ Bảng ba hàng ═══ -->
+      <rect x="24" y="404" width="1072" height="28" fill="rgba(45,49,66,0.04)"/>
+      <rect x="980" y="404" width="116" height="160" fill="rgba(235,108,54,0.08)"/>
+      <g fill="#4f5d75" font-size="9" font-weight="500" font-family="'Geist Mono', monospace" letter-spacing="0.10em">
+        <text x="36" y="422">#</text>
+        <text x="68" y="422">HEAD ĐANG Ở</text>
+        <text x="324" y="422">MERGE-BASE · MỐC CŨ</text>
+        <text x="572" y="422">TCG-1</text>
+        <text x="772" y="422">TCG-1-BAT</text>
+      </g>
+      <text x="992" y="422" fill="#ba4513" font-size="9" font-weight="500" font-family="'Geist Mono', monospace" letter-spacing="0.10em">MỐC GHIM · MỚI</text>
+      <g stroke="rgba(45,49,66,0.12)" stroke-width="0.8">
+        <line x1="24" y1="432" x2="1096" y2="432"/>
+        <line x1="24" y1="476" x2="1096" y2="476"/>
+        <line x1="24" y1="520" x2="1096" y2="520"/>
+        <line x1="24" y1="564" x2="1096" y2="564"/>
+      </g>
+
+      <!-- Hàng ① -->
+      <g font-family="'Geist', sans-serif" font-size="12" fill="#2d3142">
+        <text x="36" y="460" font-family="'Geist Mono', monospace" font-size="12">①</text>
+        <text x="68" y="460">nhánh vòng tep-chung, trước gộp</text>
+        <text x="324" y="460"><tspan font-family="'Geist Mono', monospace" font-size="10">50840764</tspan> — đúng</text>
+        <text x="572" y="460">✔ đo đúng</text>
+        <text x="772" y="460">✔ đo đúng</text>
+        <text x="992" y="460" font-family="'Geist Mono', monospace" font-size="10">50840764</text>
+      </g>
+
+      <!-- Hàng ② -->
+      <g font-family="'Geist', sans-serif" font-size="12" fill="#2d3142">
+        <text x="36" y="500" font-family="'Geist Mono', monospace" font-size="12">②</text>
+        <text x="68" y="500">nhánh chính sau gộp</text>
+        <text x="324" y="500">= HEAD</text>
+        <text x="572" y="496" font-weight="600">✖ đỏ</text>
+        <text x="572" y="512" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">khong co ban truoc vong</text>
+        <text x="772" y="496" font-weight="600">✖ đỏ</text>
+        <text x="992" y="500" font-family="'Geist Mono', monospace" font-size="10">50840764</text>
+      </g>
+
+      <!-- Hàng ③ -->
+      <g font-family="'Geist', sans-serif" font-size="12" fill="#2d3142">
+        <text x="36" y="544" font-family="'Geist Mono', monospace" font-size="12">③</text>
+        <text x="68" y="544">mọi nhánh PR mở sau gộp</text>
+        <text x="324" y="540"><tspan font-family="'Geist Mono', monospace" font-size="10">678572f0</tspan></text>
+        <text x="324" y="556" fill="#4f5d75" font-size="9">nhánh chính đã chứa vòng</text>
+        <text x="572" y="540" font-weight="600">xanh suông</text>
+        <text x="572" y="556" fill="#4f5d75" font-size="9">so mã của vòng với chính nó</text>
+        <text x="772" y="540" font-weight="600">✖ đỏ</text>
+        <text x="772" y="556" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace">phep so khong thay thay doi cua vong</text>
+        <text x="992" y="544" font-family="'Geist Mono', monospace" font-size="10">50840764</text>
+      </g>
+
+      <!-- Sau sửa -->
+      <text x="24" y="592" fill="#4f5d75" font-size="9" font-weight="500" font-family="'Geist Mono', monospace" letter-spacing="0.14em">SAU SỬA</text>
+      <text x="96" y="592" fill="#2d3142" font-size="12" font-family="'Geist', sans-serif">Hai ca so với <tspan font-family="'Geist Mono', monospace" font-size="10">50840764</tspan> dù HEAD ở đâu — xanh trên cây PR và cây gộp thử (AC-1).</text>
+      <text x="96" y="612" fill="#2d3142" font-size="12" font-family="'Geist', sans-serif">Vắng mốc (clone nông · HEAD không có mốc làm tổ tiên) → hai ca đỏ, gọi tên sha ghim; không lùi về merge-base, không bỏ qua (AC-3).</text>
+
+      <!-- ─── Chú giải ─── -->
+      <line x1="24" y1="632" x2="1096" y2="632" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <text x="24" y="652" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">CHÚ GIẢI</text>
+      <rect x="24" y="660" width="24" height="16" rx="4" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="56" y="672" fill="#4f5d75" font-size="10" font-family="'Geist', sans-serif">commit</text>
+      <rect x="112" y="660" width="40" height="16" rx="2" fill="#2d3142"/>
+      <text x="132" y="672" fill="#f5f5f5" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">HEAD</text>
+      <text x="160" y="672" fill="#4f5d75" font-size="10" font-family="'Geist', sans-serif">vị trí HEAD đang kiểm</text>
+      <line x1="320" y1="668" x2="356" y2="668" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <text x="368" y="672" fill="#4f5d75" font-size="10" font-family="'Geist', sans-serif">mốc ghim — hằng MOC_TRUOC_VONG</text>
+      <line x1="600" y1="668" x2="636" y2="668" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="648" y="672" fill="#4f5d75" font-size="10" font-family="'Geist', sans-serif">merge-base HEAD origin/main — mốc cũ</text>
+      <line x1="900" y1="668" x2="932" y2="668" stroke="rgba(45,49,66,0.35)" stroke-width="2"/>
+      <text x="944" y="672" fill="#4f5d75" font-size="10" font-family="'Geist', sans-serif">cạnh git</text>
+    </svg>
+  </div>
+</body>
+</html>

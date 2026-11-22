@@ -1,0 +1,23 @@
+{
+  "feature_plain": "Nhánh chính của kit xanh trở lại: ca kiểm «kho không bật không đổi byte» so với một mốc cố định (nhánh chính ngay trước vòng tep-chung) thay vì một mốc trôi theo nhánh đang chạy — nên nó đo đúng cả trên nhánh chính lẫn mọi PR sau, và vẫn đỏ khi ai phá bộ vẽ bản đồ.",
+  "will_do": [
+    {"id": "AC-1", "p": "Sẽ cho hai ca so-byte (TCG-1, TCG-1-bat) xanh ở cả cây PR lẫn cây gộp thử vào nhánh chính, và chứng bản ca cũ đỏ đúng ở hai cây ấy — đúng chỗ PR #17 lọt."},
+    {"id": "AC-2", "p": "Sẽ giữ đủ 18 ca phá-thử của bộ tiêm: bản lành xanh, mười bốn nhát phá đều đỏ đúng câu, ba nhát chạm thứ không phải vật vẫn im — ở cả hai cây."},
+    {"id": "AC-3", "p": "Sẽ đỏ có tên (không bỏ qua) khi máy chạy không có mốc ghim — clone nông, hoặc lịch sử không chứa mốc — và xanh khi đủ lịch sử."},
+    {"id": "AC-4", "p": "Sẽ in câu đỏ nói rõ so với mốc nào và vòng sau đổi bản đồ có chủ đích thì dời mốc thế nào."},
+    {"id": "AC-5", "p": "Sẽ kê mười bốn ca cùng lớp ngoài nhát sửa vào một hạt giống, mỗi ca trỏ đúng dòng có mốc trôi trong mã."}
+  ],
+  "wont_do": [
+    {"id": "OOS-1", "p": "KHÔNG sửa mười bốn ca cùng lớp ngoài hàm này — chúng không làm nhánh chính đỏ; vào hạt giống."},
+    {"id": "OOS-2", "p": "KHÔNG đổi engine, CI hay kho tiêu thụ nào — vòng chỉ chạm hai tệp ca kiểm của kit và thư mục hồ sơ."},
+    {"id": "OOS-3", "p": "KHÔNG sửa hồ sơ đã ký tep-chung cho khớp định nghĩa mốc mới — ghi chú ở hồ sơ này."}
+  ],
+  "coverage_plain": [
+    {"i": 0, "p": "Trục HEAD đang ở đâu: nhánh PR và nhánh chính sau gộp đều chạy ca (AC-1, AC-2); thước là hai sự kiện push/pull_request của CI."},
+    {"i": 1, "p": "Trục mốc ghim có trong kho không: có · vắng · có mà không là tổ tiên — mỗi ô một ca (AC-3)."},
+    {"i": 2, "p": "Trục vật: lành · bị phá · chạm thứ không phải vật — bảng nhát tiêm của bộ tiêm (AC-2, AC-4)."},
+    {"i": 3, "p": "Trục các ca cùng lớp trong bộ kiểm: cùng nhát sửa ngay; còn lại kê vào hạt giống (AC-5)."},
+    {"i": 4, "p": "Commit gộp tổng hợp của CI cho PR không cần ca riêng: mốc ghim không phụ thuộc HEAD."},
+    {"i": 5, "p": "Để sau: sửa mười bốn ca cùng lớp. Không làm: lùi về mốc trôi, bỏ qua trên nhánh chính, lấy cha thứ nhất."}
+  ]
+}
