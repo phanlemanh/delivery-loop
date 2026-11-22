@@ -29,7 +29,7 @@ const { khoaTuConfig: khoaLoTrinh } = require(path.join(__dirname, 'lo-trinh-kho
 // được cho hai kết luận trái nhau. Kiểm tay lại ở đây là cách hai bên đã trôi
 // khỏi nhau ở r12 và r13 dù bảng enum đã gom xong từ r3.
 const { recordProblem, navValues, consumedTexts, usesOpportunity, readRecord, ioReason,
-        configList, fieldProblem, missingArtifact, mapState, MAP_LABELS, mapTracked,
+        configList, fieldProblem, missingArtifact, mapState, MAP_LABELS, mapTracked, banDo,
         DA_THONG_CONG_2, conflictProblem, hoSoNghi, DA_DONG_THUC_TE, thucTe, hoSoDaKhep, coTepTrongCay } =
   require(path.join(__dirname, '..', 'lib', 'workspace-record.cjs'));
 
@@ -668,7 +668,7 @@ const map = {
 // (S4-r1 vòng này: hai bên từng suy tracked từ hai tín hiệu khác nhau).
 // enabled null (config không đọc được) → state null, thẻ nói "chưa biết".
 map.state = map.enabled == null ? null
-  : mapState({ exists: map.present, tracked: mapTracked(root, cfgRead.t) });
+  : (() => { const bd = banDo(cfgRead.t); return mapState({ exists: map.present, tracked: mapTracked(root, cfgRead.t), ngoaiGit: bd.ngoaiGit, khoaSai: bd.loi != null }); })();
 map.label = map.state == null ? null : MAP_LABELS[map.state];
 // Đợt Điều phối – Thợ đang chạy (hồ sơ dieu-phoi-mo-dot-mot-lenh AC-11): symlink
 // `.acceptance-runs/dieu-phoi-hien-tai` ở gốc CHECKOUT CHÍNH (worktree nào cũng thấy cùng một đợt;

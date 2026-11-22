@@ -712,6 +712,47 @@ chạy driver của máy nên trên web PR vẫn báo xung đột ở hai tệp 
 trước khi nhánh có hai dòng vẫn xung đột ở lần gộp đầu. Bật không bớt lần gộp lại khi nhánh chính dời, chỉ bớt phần gỡ tay.
 Kho không khai thì không có gì đổi.
 
+**Hai view rời git — PR thôi chạm chúng, bật theo lựa chọn** (vòng `tep-chung-khong-chan-gop`). Kho khai
+`ban_do.ngoai_git: true` thì `PRODUCT-MAP.md` và `LO-TRINH.html` không còn được git theo dõi: bốn lệnh cổng vẫn vẽ lại tại
+chỗ nhưng không đưa chúng vào commit, nên PR không còn xung đột ở hai tệp — cả ở máy lẫn trên web của forge — và lối gộp
+không-trùng-tệp của gói điều phối dùng được. `--check` khi bật đo đúng vật của chế độ này: hai tệp không trong git, bị
+`.gitignore` bỏ qua, và vẽ được từ nguồn; sửa hồ sơ mà không vẽ lại không làm đỏ. Bật bằng ba bước, trong MỘT PR:
+<!-- <<<BAN-DO-NGOAI-GIT -->
+```
+printf 'PRODUCT-MAP.md\nLO-TRINH.html\n' >> .gitignore
+git rm --cached -- PRODUCT-MAP.md LO-TRINH.html
+printf 'ban_do:\n  ngoai_git: true\n' >> _acceptance/config.yaml
+```
+<!-- BAN-DO-NGOAI-GIT>>> -->
+**Kho có bên đọc hai view qua git hay forge** (một trang đọc tệp qua GitHub, một workflow chạy khi tệp đổi — đo 21/11:
+`crm-onehub` có cả hai) PHẢI khai thêm nhánh view và dán job sau gộp dưới đây trong CÙNG PR bật, rồi trỏ bên đọc sang
+nhánh ấy; không thì bên đọc mất nguồn. Kho bật mà không khai nhánh view thì `--check` in một dòng cảnh báo. Job vẽ hai view
+từ nhánh chính và đẩy chúng thành một commit lên nhánh view (không đổi nhánh chính; view không đổi thì không đẩy) — nhánh
+view không được nằm trong luật khoá nhánh của kho:
+<!-- <<<BAN-DO-NHANH-VE -->
+```yaml
+# _acceptance/config.yaml:   ban_do:  ngoai_git: true  ·  nhanh_ve: ban-do
+# .github/workflows/ban-do.yml
+on:
+  push:
+    branches: [main]          # nhánh mặc định của kho
+permissions:
+  contents: write
+concurrency: { group: ban-do, cancel-in-progress: false }
+jobs:
+  ve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc }
+      - run: node scripts/product-map.mjs --root . --day-nhanh-ve   # bản chép của kho; không có thì đường gói
+```
+<!-- BAN-DO-NHANH-VE>>> -->
+Giới hạn: PR mở trước lần bật vẫn vấp một lần (sửa ↔ xoá) ở lần gộp đầu; kho bật không còn đọc hai view trên web ở nhánh
+chính — đọc ở nhánh view, hoặc vẽ tại chỗ.
+
 Từ vòng `lo-trinh-cat-luot` (lát 2): **cắt lượt** — skill `/acceptance-gate:scope-slice` biến một bản phạm
 vi (tệp markdown trong git, khuôn `skills/acceptance/references/pham-vi-template.md`) thành hàng và
 chân trời của lộ trình, mỗi hàng mang `dot` và `phu`. Răng `scripts/cat-luot.mjs --pham-vi <tệp>

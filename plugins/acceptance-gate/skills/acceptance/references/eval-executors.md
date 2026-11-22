@@ -249,8 +249,11 @@ only the measure knows its resource is exclusive.
    P0). Strategic "on-brand / not generic" stays `judgment`. Phase 2 adds this
    for any web-UI surface even with no explicit design criterion (SKILL.md 2b).
 5. Every criterion gets ≥1 eval. A criterion with zero evals fails Gate 1.
-6. `cmd` MUST be a `config:` reference when the command is repo-specific —
-   never hardcode repo commands into evals.yaml.
+6. Where `cmd` lives — never hardcode a repo-wide command into evals.yaml; a dossier's own command is a
+   file under the dossier, not a new key in the shared config (tep-chung-khong-chan-gop):
+   <!-- <<<LENH-HO-SO -->
+   Lệnh dùng chung của kho (suite, build, dev server) → `cmd: config:<khoá>`; lệnh riêng của một hồ sơ → `cmd:` là đường dẫn từ gốc kho tới tệp trong `_acceptance/<slug>/` (ví dụ `bash _acceptance/<slug>/rang/chay.sh E1`) — KHÔNG thêm khoá vào `_acceptance/config.yaml`.
+   <!-- LENH-HO-SO>>> -->
 
 ### Pick the grader per clause, not per criterion
 

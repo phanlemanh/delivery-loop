@@ -349,6 +349,26 @@ const pathsKhaiRes = evals.flatMap(e => (Array.isArray(e.paths) ? e.paths : []))
 const laNgoaiVat = f => !pathsKhaiRes.some(re => re.test(f)) && ngoaiVatRes.some(re => re.test(f));
 // NGOAI-VAT>>>
 const diffTatCa = git('diff', '--name-only', `${diffBase}..HEAD`).split('\n').filter(Boolean);
+// ── Lệnh riêng của hồ sơ thêm vào tệp cấu hình chung (hồ sơ tep-chung-khong-chan-gop, AC-8): một dòng cảnh báo, không
+// chặn. Khoá `config:` của eval mà gốc vòng chưa có VÀ không hồ sơ nào khác dùng là lệnh riêng của hồ sơ này nằm sai
+// chỗ — mỗi PR thêm khoá kiểu ấy là một chỗ xung đột khi gộp. Câu luật rút từ khối LENH-HO-SO của SKILL cùng gói.
+{
+  const cfgGoc = gitTry('show', `${diffBase}:_acceptance/config.yaml`);
+  if (cfgGoc != null) {
+    const accDir = path.join(root, '_acceptance');
+    const khacDung = khoa => fs.readdirSync(accDir, { withFileTypes: true })
+      .filter(x => x.isDirectory() && x.name !== flags.slug)
+      .some(x => { try { return new RegExp(`config:${khoa.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w.-])`).test(fs.readFileSync(path.join(accDir, x.name, 'evals.yaml'), 'utf8')); } catch { return false; } });
+    let cau = '';
+    try { const m = fs.readFileSync(path.join(path.dirname(decodeURIComponent(new URL(import.meta.url).pathname)), '..', 'skills', 'feature-loop', 'SKILL.md'), 'utf8').match(/<!-- <<<LENH-HO-SO -->\n([\s\S]*?)\n[ \t]*<!-- LENH-HO-SO>>> -->/); if (m) cau = ' ' + m[1].trim(); } catch { /* vắng khối: chỉ dòng đầu */ }
+    for (const e of evals) {
+      if (!e.ref || !e.ref.startsWith('config:')) continue;
+      const khoa = e.ref.slice('config:'.length);
+      if (resolveConfigKey(cfgGoc, khoa) || khacDung(khoa)) continue;
+      process.stderr.write(`s4-args: cảnh báo: eval ${e.id} dùng ${e.ref} — khoá thêm trong vòng này và chỉ hồ sơ này dùng.${cau}\n`);
+    }
+  }
+}
 // ── Lưới khuôn (hồ sơ khuon-loi, AC-11): kho khai bản đồ khuôn, vòng chạm vùng một nhóm mà evals.yaml không có eval
 // mang config:executors.design.khuon → dừng, không sinh tệp. Nhờ đó «màn ngoài khuôn bị trả lại» không phụ thuộc tác tử
 // S1 nhớ chép khối eval, và không đụng vị từ còn-cần-người. Gốc kit đời cũ không có bộ đọc → bỏ qua; kho không khai

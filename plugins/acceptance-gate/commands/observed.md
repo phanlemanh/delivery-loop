@@ -49,7 +49,7 @@ nào mà vẫn là đúng bản đang chạy.
    và trang lộ trình `LO-TRINH.html` khi kho khai `lo_trinh.tep`, rồi đưa cả hai vào commit:
 <!-- <<<MAP-STAGE -->
 ```
-AG="${AG:-${CLAUDE_PLUGIN_ROOT}}" && PMAP=scripts/product-map.mjs && { [ -f "$PMAP" ] || PMAP="$AG/scripts/product-map.mjs"; } && node "$PMAP" --root . && git add -- PRODUCT-MAP.md && if [ -f LO-TRINH.html ]; then git add -- LO-TRINH.html; fi
+AG="${AG:-${CLAUDE_PLUGIN_ROOT}}" && PMAP=scripts/product-map.mjs && { [ -f "$PMAP" ] || PMAP="$AG/scripts/product-map.mjs"; } && node "$PMAP" --root . && { r=0; for f in PRODUCT-MAP.md LO-TRINH.html; do if [ -f "$f" ] && ! git check-ignore -q -- "$f"; then git add -- "$f" || r=1; fi; done; [ "$r" = 0 ]; }
 ```
 <!-- MAP-STAGE>>> -->
 5. **Một commit** gồm dòng sổ + hợp đồng (+ bản đồ nếu vẽ lại): `observed: <slug> — <tên>`.
