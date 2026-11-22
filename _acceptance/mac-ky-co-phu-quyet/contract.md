@@ -107,5 +107,7 @@ Bỏ quét không gian: quyết định `bỏ coverage-scan` trong `decisions.js
   - Ngoài-10: Một phần danh sách loại hàng được máy tự đi tiếp không có phép kiểm giữ, nên ai đó gỡ bớt loại hàng thì bộ kiểm vẫn xanh.
   - Ngoài-11: Hướng dẫn trong khuôn có thể dạy máy ghi một giá trị mà bộ kiểm sẽ từ chối, mà bộ kiểm tự động vẫn báo xanh.
   - Ngoài-12: Nếu hướng dẫn thêm một loại câu mà mô-đun không biết, câu đó bị xếp vào loại lạ và luôn hỏi người mà bộ kiểm không báo.
+- Mở hợp đồng mới ở Cổng Bằng chứng 2026-11-22 (Ngoài-2, Ngoài-6): hạt giống
+  `docs/plans/2026-11-22-hat-giong-tro-ly-quyet-dinh-vung-va-an-le.md`.
 - Ca `KK-8 ho-so-cu` của `tests/scripts/can-cu-s1.ca.mjs` đỏ hai lần khi chạy lẻ trong lúc máy chạy bộ kiểm khác (cả trên
   `main` `50840764`), xanh trong lượt đầy đủ trên cây cuối — chập chờn, không do vật của vòng.
