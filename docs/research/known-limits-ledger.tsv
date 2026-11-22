@@ -1378,3 +1378,4 @@ mac-ky-co-phu-quyet#may-6	mac-ky-co-phu-quyet	low	khac	song			Lệnh đếm can-
 mac-ky-co-phu-quyet#may-7	mac-ky-co-phu-quyet	medium	khac	song			Hình dạng 5: tuyên quét LỚP ở danh sách cho phép surfaces backend mà chỉ có điểm-case [máy sinh từ review-findings.md]
 mac-ky-co-phu-quyet#may-8	mac-ky-co-phu-quyet	medium	khac	song			Hình dạng 3/5: round-trip khuôn DEC-TRO-LY-SLOT chỉ đưa lựa chọn ĐẦU của mỗi ô liệt kê qua bộ đọc, không so tập khuôn với tập của mô-đun [máy sinh từ review-findings.md]
 mac-ky-co-phu-quyet#may-9	mac-ky-co-phu-quyet	low	khac	song			Hình dạng 3: «SKILL liệt mọi mã của danh mục» kiểm bằng includes trên cả tệp, một chiều [máy sinh từ review-findings.md]
+mac-ky-co-phu-quyet#may-10	mac-ky-co-phu-quyet	low	khac	song			Hình dạng 3: «SKILL liệt mọi mã của danh mục» kiểm bằng includes trên cả tệp, một chiều (r1) [máy sinh từ review-findings.md]

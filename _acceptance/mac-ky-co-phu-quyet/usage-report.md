@@ -47,3 +47,40 @@ wall: 2771s
 - **claude-sonnet-5-5**: 4 agent · 9 calls · out 23,689 · in 18 · cache_read 166,539 · cache_create 157,730
 - **claude-haiku-5-5**: 21 agent · 47 calls · out 20,522 · in 94 · cache_read 603,514 · cache_create 530,298
 
+### S4 round 2 — wf_d95fafca-a0b (17 agent, 26,475 out-tok)
+
+| label | model | calls | out | in | cache_read | s |
+|---|---|--:|--:|--:|--:|--:|
+| synthesize:report | claude-sonnet-5-5 | 2 | 5,366 | 4 | 35,354 | 30 |
+| machine:bash tests/scripts/run-tests.sh --manh m | claude-haiku-5-5 | 5 | 3,343 | 10 | 82,885 | 767 |
+| review:conventions | claude-opus-5-5 | 7 | 3,317 | 14 | 183,748 | 46 |
+| machine:bash tests/scripts/run-tests.sh --manh m | claude-haiku-5-5 | 7 | 2,916 | 14 | 135,115 | 926 |
+| review:bugs | claude-opus-5-5 | 7 | 2,552 | 14 | 191,501 | 44 |
+| review:measurement | claude-opus-5-5 | 5 | 1,730 | 10 | 124,136 | 32 |
+| machine:bash tests/scripts/run-tests.sh --manh b | claude-haiku-5-5 | 2 | 980 | 4 | 22,331 | 158 |
+| machine:bash tests/workflows/run-tests.sh | claude-haiku-5-5 | 2 | 979 | 4 | 25,703 | 90 |
+| machine:bash -c 'set -o pipefail; bash tests/plu | claude-haiku-5-5 | 2 | 962 | 4 | 25,759 | 124 |
+| triage | claude-sonnet-5-5 | 2 | 729 | 4 | 23,438 | 7 |
+| machine:node plugins/acceptance-gate/scripts/pro | claude-haiku-5-5 | 2 | 631 | 4 | 25,719 | 7 |
+| machine:bash -c 'set -o pipefail; bash tests/plu | claude-haiku-5-5 | 2 | 606 | 4 | 25,759 | 168 |
+| machine:node tests/scripts/kiem-ban-cai.ca.mjs - | claude-haiku-5-5 | 2 | 596 | 4 | 25,729 | 7 |
+| machine:bash -c 'set -o pipefail; bash tests/plu | claude-haiku-5-5 | 2 | 563 | 4 | 25,759 | 171 |
+| machine:bash tests/scripts/run-tests.sh --manh m | claude-haiku-5-5 | 2 | 446 | 4 | 3,381 | 596 |
+| machine:bash tests/hooks/run-tests.sh | claude-haiku-5-5 | 2 | 432 | 4 | 25,703 | 10 |
+| capture:provenance | claude-sonnet-5-5 | 2 | 327 | 4 | 21,065 | 5 |
+
+
+wall: 3069s
+
+| vai tro | agents | out | cache_read | wall s | bat dau | ket thuc |
+|---|--:|--:|--:|--:|---|---|
+| machine | 11 | 12,454 | 423,843 | 3026 | 07:34:33 | 08:24:59 |
+| review | 3 | 7,599 | 499,385 | 46 | 07:34:33 | 07:35:20 |
+| triage | 1 | 729 | 23,438 | 7 | 08:24:59 | 08:25:07 |
+| capture | 1 | 327 | 21,065 | 5 | 08:25:07 | 08:25:12 |
+| synthesize | 1 | 5,366 | 35,354 | 30 | 08:25:12 | 08:25:42 |
+
+- **claude-sonnet-5-5**: 3 agent · 6 calls · out 6,422 · in 12 · cache_read 79,857 · cache_create 100,822
+- **claude-haiku-5-5**: 11 agent · 30 calls · out 12,454 · in 60 · cache_read 423,843 · cache_create 325,121
+- **claude-opus-5-5**: 3 agent · 19 calls · out 7,599 · in 38 · cache_read 499,385 · cache_create 109,025
+
