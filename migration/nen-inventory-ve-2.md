@@ -106,3 +106,26 @@ khoảng 10′ vì lượt CI đỏ đầu, 37′ một lượt CI trọn, **42�
 Kết: vế 2 không đổi sang đỏ theo luật đã khai («nguyên nhân thuộc kit mới thì vế đỏ»), nhưng dòng ký → gộp nay là 2 đạt
 trên 3 vòng, không còn là «đạt» trọn. PR #95 (`upgrade-repo-setup-0-10-2`) và #97 đã gộp nhưng bộ đo không tính thành vòng
 ở cửa sổ này; chưa tìm hiểu vì sao.
+
+## Năm vòng trên kit 3.0 (đo 22/11 09:10, chuông hằng ngày)
+
+`nguong-thuc-te.mjs cua-so --tu 47d52b06 --den f41c4935` (chạy từ cây kit `50840764`): 5 vòng có chữ ký người, đo được 5/5.
+Ngưỡng 51′ ở trên không sửa. Các vòng đi làn máy đã thông (không có chữ ký người, ví dụ PR #100) bộ đo không tính.
+
+| Vòng | PR | Ký → gộp | Ngưỡng 51′ | CI trọn sau chữ ký | Chờ gộp sau khi CI xanh |
+|---|---|--:|---|--:|--:|
+| `split-log-ledger` | #92 | 50′ | đạt | — | — |
+| `upgrade-repo-setup-0-10-1` | #93 | 89′ | vượt | 37′ (sau một lượt đỏ 10′) | 42′ |
+| `commit-msg-kit-subjects` | #94 | 46′ | đạt | — | — |
+| `upgrade-repo-setup-0-10-3` | #98 | 64′ | vượt | khoảng 39′ (ký 06:46:44Z → ô `check` xanh 07:25:18Z) | khoảng 26′ (gộp 07:51:08Z) |
+| `dat-khoa-mot-lenh` | #103 | 70′ | vượt | khoảng 40′ (ký 00:39:39Z → `check` xanh 01:19:17Z) | khoảng 30′ (gộp 01:49:48Z) |
+
+Trung vị trên 3.0: **64′** (nền 34′); p75 70′. Ba trên năm vòng vượt ngưỡng.
+
+Nguyên nhân, đọc từ GitHub cho từng vòng vượt: một lượt CI trọn của kho ấy nay khoảng 40′ sau chữ ký (sàn đã khai), cộng
+22–42′ chờ gộp sau khi CI đã xanh. Không vòng nào có commit sau chữ ký hay lần gộp nhánh chính vào nhánh. Hai thành phần
+ấy không do kit 3.0 đổi: thời lượng CI là của kho, và việc chờ gộp sau khi xanh có từ trước 3.0 (ở các vòng nền, CI ngắn
+hơn nên tổng còn dưới ngưỡng — chưa đo lại thời lượng CI của cửa sổ nền để khẳng định).
+
+Kết theo luật đã khai («nguyên nhân thuộc kit mới thì vế đỏ»): vế 2 KHÔNG đỏ. Nhưng dòng ký → gộp nay là 2 đạt trên 5, và
+trung vị gần gấp đôi nền — đây là dữ liệu chủ kho cần thấy khi ghi quan sát mốc 3.0, không phải một kết luận «đạt».
