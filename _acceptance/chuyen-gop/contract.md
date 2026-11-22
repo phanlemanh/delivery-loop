@@ -6,9 +6,9 @@ owner: phanlemanh@gmail.com
 risk_tier: T2               # plugins/dispatch/scripts/ (chuyen-gop.mjs, cua-proof.mjs mới; gop.mjs, hinh-dang.mjs, dieu-phoi.mjs) — không chạm hooks/, lib/
 surfaces: [cli]
 design_doc: docs/superpowers/specs/2026-11-22-chuyen-gop-design.md
-status: draft
-approved_by:
-approved_at:
+status: approved
+approved_by: Manh Phan
+approved_at: 2026-11-22
 ---
 
 # Acceptance Contract: chuyen-gop
