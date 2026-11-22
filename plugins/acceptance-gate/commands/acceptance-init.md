@@ -202,6 +202,7 @@ Omit the `capture` block if the repo has no UI evidence need.
    - `${CLAUDE_PLUGIN_ROOT}/scripts/tri-thuc-tra.cjs` → `scripts/` (the knowledge-lookup line reader and the prior-ledger lookup `traSo` that tri-thuc.mjs `require`s on its `--tra` path only — the map step never loads it) [only-if-declared: tri_thuc]
    - `${CLAUDE_PLUGIN_ROOT}/scripts/can-cu-s1.cjs` → `scripts/` (the ONE quote-length floor `TRICH_MIN` that tri-thuc-tra.cjs `require`s lazily when it builds a ready-made basis from a prior ledger line — the map step never loads it) [only-if-declared: tri_thuc]
    - `${CLAUDE_PLUGIN_ROOT}/scripts/luat-san-pham.cjs` → `scripts/` (product-rule reader can-cu-s1.cjs `require`s leniently at load — only on the same `--tra` path) [only-if-declared: tri_thuc]
+   - `${CLAUDE_PLUGIN_ROOT}/scripts/tro-ly-quyet-dinh.cjs` → `scripts/` (default-sign reader can-cu-s1.cjs `require`s leniently at load; missing it, every owner-only question stays a question — only on the same `--tra` path) [only-if-declared: tri_thuc]
    - `${CLAUDE_PLUGIN_ROOT}/skills/acceptance/references/tri-thuc-template.md` → `skills/acceptance/references/` (the ONE knowledge-store template — page frontmatter, kinds, raw line, hash pointer — that tri-thuc.mjs and tri-thuc-nguon.cjs read at run time; missing → `ENOENT` on the first knowledge read) [only-if-declared: tri_thuc]
    <!-- INIT-CI-COPY-LIST>>> -->
    Copying only pre-merge-check.sh silently drops the committed-evidence

@@ -1112,7 +1112,7 @@ thể ghim `KIT_SHA` bằng sha hoặc lấy kit bằng tag — `git fetch --dep
 sửa riêng của cổng: đo trước bằng cách chạy hai gate cạnh nhau trên vài merge
 gần nhất (`--base <cha thứ nhất>`), như đã làm cho oneflow.
 
-**Đường cũ — còn chạy, không còn khuyến nghị, sẽ xoá ở mốc kế:** Copy **đủ 38 file**
+**Đường cũ — còn chạy, không còn khuyến nghị, sẽ xoá ở mốc kế:** Copy **đủ 39 file**
 từ plugin vào repo, giữ đúng layout (re-check `require ../lib`; đuôi `.cjs` là cố
 ý — repo khai `"type": "module"` sẽ đọc file `.js` chép sang thành ESM và
 `require()` bên trong nổ ReferenceError, lớp cưỡng chế chết câm). Danh sách này
@@ -1159,6 +1159,7 @@ DANH SÁCH, không theo con số «thêm N tệp» của CHANGELOG. Thiếu mộ
 - `scripts/tri-thuc-tra.cjs` — bộ đọc dòng tra tri thức và bộ tra sổ hồ sơ trước `traSo`; `tri-thuc.mjs` chỉ nạp ở lối `--tra` — bước vẽ bản đồ không nạp — chỉ cần khi kho khai `tri_thuc`
 - `scripts/can-cu-s1.cjs` — ngưỡng độ dài câu trích MỘT nguồn `TRICH_MIN` mà `tri-thuc-tra.cjs` nạp lười khi dựng căn cứ từ một dòng sổ trước — bước vẽ bản đồ không nạp — chỉ cần khi kho khai `tri_thuc`
 - `scripts/luat-san-pham.cjs` — bộ đọc luật sản phẩm mà `can-cu-s1.cjs` nạp khoan dung lúc nạp — cùng lối `--tra` — chỉ cần khi kho khai `tri_thuc`
+- `scripts/tro-ly-quyet-dinh.cjs` — bộ đọc mặc-ký mà `can-cu-s1.cjs` nạp khoan dung lúc nạp (vắng thì mọi câu chỉ-người vẫn là câu hỏi) — cùng lối `--tra` — chỉ cần khi kho khai `tri_thuc`
 - `skills/acceptance/references/tri-thuc-template.md` — khuôn MỘT nguồn của kho tri thức (frontmatter trang, loại, dòng raw, đường trỏ băm) mà `tri-thuc.mjs` và `tri-thuc-nguon.cjs` đọc lúc chạy; thiếu → `ENOENT` ở lần đọc tri thức đầu — chỉ cần khi kho khai `tri_thuc`
 <!-- GUIDE-CI-COPY-LIST>>> -->
 

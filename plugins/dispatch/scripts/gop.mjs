@@ -26,6 +26,7 @@ import { docJson, ghiSuKien, phienCuaCwd, timThuMucDot } from './dot.mjs';
 import { docCauHinh, docHangViec } from './hinh-dang.mjs';
 import { docPha } from './pha.mjs';
 import { DA_THONG, trangThaiHopDong } from './phat-lich.mjs';
+import { xetCuaProof } from './cua-proof.mjs';
 
 export const GOP_DUOC = ['moi-nhat', 'khong-trung'];
 const KET_LUAN_XANH = new Set(['SUCCESS', 'NEUTRAL', 'SKIPPED']);
@@ -65,6 +66,9 @@ export function xetGop({ io, cfg, pr, slug }) {
   if (!DA_THONG.includes(st)) return { duong: 'chan', sha, ly_do: `hồ sơ ${slug} trên đầu PR ở «${st ?? 'không có'}» — chưa ký, chưa thông` };
   const dinh = git(['rev-parse', `origin/${v.baseRefName}`]).trim();
   const mb = git(['merge-base', sha, dinh]).trim();
+  // Cửa proof (hồ sơ chuyen-gop): hồ sơ mang món mặc-ký chỉ tự gộp ở kho đã khai proof check — luật đọc ở nhánh chính.
+  const cp = xetCuaProof({ io, sha, dinh, mb, slug, rollup: v.statusCheckRollup });
+  if (!cp.qua) return { duong: 'chan', sha, ly_do: cp.ly_do };
   if (mb === dinh) return { duong: 'moi-nhat', sha, ly_do: 'nhánh đã chứa đỉnh nhánh chính; CI xanh trên đúng đầu nhánh' };
   const tien = Number(git(['rev-list', '--count', `${mb}..${dinh}`]).trim());
   if (cfg.gop_khong_chay_lai_ci !== true) return { duong: 'cu', sha, ly_do: `nhánh chính đã tiến ${tien} commit từ base của CI; khoá gop_khong_chay_lai_ci tắt — gộp nhánh chính vào nhánh, chờ CI` };

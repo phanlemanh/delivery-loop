@@ -139,6 +139,20 @@ executors:
     o_mo_viec_mang_nguon: node tests/scripts/o-mo-viec-mang-nguon.test.mjs
     # Hồ sơ o-mo-viec-mang-nguon (AC-8): ca hồi quy của bộ xếp căn cứ bước thiết kế.
     can_cu_s1_ca: node tests/scripts/can-cu-s1.ca.mjs
+    # Hồ sơ mac-ky-co-phu-quyet (trợ lý quyết định, hàng 1): tệp ca trọn và từng tiêu chí (lọc bằng TLQ_CASES).
+    tro_ly_quyet_dinh: node tests/scripts/tro-ly-quyet-dinh.test.mjs
+    # Hồ sơ chuyen-gop (trợ lý quyết định, hàng 2): chuyến gộp + cửa proof.
+    chuyen_gop: "bash -c 'set -o pipefail; node --test --test-reporter=tap tests/dieu-phoi/chuyen-gop.test.mjs 2>&1 | grep -E \"^ *(not )?ok [0-9]+ - AC-|^# (pass|fail) \" | paste -sd\"|\" -'"
+    tro_ly_quyet_dinh_ac1: env TLQ_CASES=AC-1 node tests/scripts/tro-ly-quyet-dinh.test.mjs
+    tro_ly_quyet_dinh_ac2: env TLQ_CASES=AC-2 node tests/scripts/tro-ly-quyet-dinh.test.mjs
+    tro_ly_quyet_dinh_ac3: env TLQ_CASES=AC-3 node tests/scripts/tro-ly-quyet-dinh.test.mjs
+    tro_ly_quyet_dinh_ac4: env TLQ_CASES=AC-4 node tests/scripts/tro-ly-quyet-dinh.test.mjs
+    tro_ly_quyet_dinh_ac5: env TLQ_CASES=AC-5 node tests/scripts/tro-ly-quyet-dinh.test.mjs
+    tro_ly_quyet_dinh_ac6: env TLQ_CASES=AC-6 node tests/scripts/tro-ly-quyet-dinh.test.mjs
+    tro_ly_quyet_dinh_ac7: env TLQ_CASES=AC-7 node tests/scripts/tro-ly-quyet-dinh.test.mjs
+    tro_ly_quyet_dinh_ac8: env TLQ_CASES=AC-8 node tests/scripts/tro-ly-quyet-dinh.test.mjs
+    tro_ly_quyet_dinh_ac9: env TLQ_CASES=AC-9 node tests/scripts/tro-ly-quyet-dinh.test.mjs
+    tro_ly_quyet_dinh_ac10: env TLQ_CASES=AC-10 node tests/scripts/tro-ly-quyet-dinh.test.mjs
     # Hồ sơ thiet-ke-nap-tri-thuc (TT4, đợt tri-thuc-2410): ca TN-1…TN-8 chung một lệnh (đuôi .test.mjs — cũng chạy trong mảnh mjs).
     thiet_ke_nap_tri_thuc: node tests/scripts/thiet-ke-nap-tri-thuc.test.mjs
     # Hồ sơ thiet-ke-nap-tri-thuc (AC-9): bốn tệp ca hồi quy, dừng ở tệp đỏ đầu tiên.
@@ -269,6 +283,7 @@ executors:
     # Hồ sơ vong-mo-co-chu-giu (GT1, E4b): chỉ đọc kênh thật #308 bằng gh thật; KHÔNG vào feature_loop.suite_keys (CI không có gh đăng nhập).
     dieu_phoi_tin_kenh_that: node tests/dieu-phoi/tin-kenh-that.mjs
     coverage_lint: "node plugins/acceptance-gate/scripts/eval-coverage-lint.js ."
+    chuyen_gop_dot_bien: node _acceptance/chuyen-gop/rang/dot-bien.mjs
     # Câu cho người gửi trên dữ liệu thật (hồ sơ cau-tin-hieu-nguoi-gui, E9): bản sao crm ở sha đã ghim + kit 2.27.
     # crm vắng → thoát 2 nêu đường (mù, không xanh giả); đặt CRM_ROOT khi kho crm ở chỗ khác.
     cau_crm: node _acceptance/cau-tin-hieu-nguoi-gui/rang/do-crm.mjs --crm "${CRM_ROOT:-$HOME/dev/crm}" --sha 06e34d26c38426e2e23cbf1a51bc612cccb405c9

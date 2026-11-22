@@ -12,7 +12,7 @@ flowchart TD
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
   B --> CD["Chờ duyệt phạm vi<br/>chưa có"] --> GP{"Cổng Phạm vi"}
   GP --> DL["Đang làm<br/>3 việc"] --> GB{"Cổng Bằng chứng"}
-  GB --> DG["Đã giao<br/>158 việc"]
+  GB --> DG["Đã giao<br/>160 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>74 việc"] --> GG{"Cổng Giá trị"}
   GG --> NT["Đã nghiệm thu giá trị<br/>7 việc"]
 ```
@@ -139,6 +139,7 @@ flowchart TD
 - Luật bằng chứng cũ chỉ kéo hồ sơ vào xét khi PR chạm tệp vật của hồ sơ, không phải khi chỉ sửa tệp chữ (`chi-tep-vat-keo-xet-lai`) — đã giao — không đo, khai ở Cổng Đáng
 - Chốt máy trường-của-người sau bước tổng hợp S4 — workflow tự ép rỗng human_signoff / human_override / bypass_ack và ép verified_at bằng giờ engine trước khi trả báo cáo; tác tử tổng hợp hết quyền viết bốn trường ấy (`chot-may-chu-ky-sau-synthesize`)
 - Chữ ký không tự làm bằng chứng hoá cũ (bản ghi định tuyến là vật T1 máy sinh) và làn trước chữ ký bỏ qua khi cây bằng pin (`chu-ky-khong-tu-lam-hoa-cu`)
+- Chuyến gộp kiểm một lần trên ngọn, chuyến đỏ tách đôi, và cửa proof cho hồ sơ mặc-ký (`chuyen-gop`)
 - Gói Codex mang đủ mọi công cụ mà chỉ dẫn của nó bảo người dùng chạy — hết con trỏ chết, và có chốt máy canh quan hệ đó cho mọi lần thêm công cụ về sau (`codex-script-packaging`)
 - Cổng Đáng có cửa — thẻ cổng thứ ba + ký một lượt bằng lệnh duyệt sẵn có (`cong-dang-co-cua`) — đã giao — đã nghỉ, giữ sử liệu
 - Cổng người đọc đủ nguồn — thẻ đọc được tiêu chí khai bằng tiêu đề, ba bên gọi cùng một bộ bóc, mục Coverage viết bằng bảng thôi bị báo thiếu oan (`cong-nguoi-doc-du-nguon`)
@@ -193,6 +194,7 @@ flowchart TD
 - Lượt sửa giữ đủ, đếm đúng — mục ngoài hợp đồng lượt trước không rụng khi tệp bị sửa; khối ui-check carry giữ khung lượt gốc; thước-vật không đếm nội dung nhập từ nhánh nền (`luot-sua-giu-du-dem-dung`)
 - Lưu kho harness Codex và khai tử nghi lễ design-loop — chỉ TRỪ, có mốc git để đảo và 2 ADR (`luu-kho-codex-va-nghi-le-design`) — đã giao — đã nghỉ, giữ sử liệu
 - Mã sổ quyết định duy nhất — khuôn mã d-<UTC>-<n> ở bên ghi, khoá overlay theo dòng ở bên đọc để thẻ không lặp một câu dịch lên mọi dòng chung mã (`ma-so-quyet-dinh-duy-nhat`)
+- Mặc-ký có phủ quyết, giữ-quyền và sổ đếm thăng cấp cho câu chỉ-người ở bước thiết kế (`mac-ky-co-phu-quyet`)
 - lớp lỗi đo-lường thành luật ở 2 điểm cắm: gap-probe S1 (7 câu đối chiếu chéo) + review lens measurement S4 (6 hình dạng, một chỗ, mutation-covered); không nới finder cũ (`matrix-measure-law`)
 - Ca MC-11 đọc tên kho từ thư mục checkout thay vì viết cứng tên acceptance-gate-kit (`mc11-ten-kho`) — đã giao — máy thông, cửa veto còn mở
 - Khuôn khai sinh phép đo — mọi phép đo mới phải tự chứng minh biết báo đỏ (đối chứng dương xanh + phá-vật-thật đổi kết luận + thông điệp ghim) ngay lúc viết, trước khi được tính là xong (`measure-birth-certificate`)
