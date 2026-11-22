@@ -11,6 +11,141 @@
 > `_acceptance/release-<x-y-0>/contract.md` và `evidence-report.md`. Mục đầu
 > tiên dưới đây là phần CHƯA phát hành.
 
+## 3.1.0 — 22/11/2026
+
+Mốc «Trợ lý quyết định»: hai hàng thí điểm chủ kho duyệt 22/11 (máy đi theo khuyến nghị ở câu chỉ-người đảo được, có
+phủ quyết; gộp theo chuyến, kiểm một lần trên ngọn), lời gộp đi cùng lời ký, và ba tệp mọi PR cùng chạm thôi chặn gộp. Có
+**bốn hồ sơ được ký** sau thẻ `v3.0.0` — tập đối chiếu bằng `_acceptance/release-2-39-0/cua-so.sh c16d25db …` (AC-3 của hồ
+sơ mốc): `loi-gop-trong-cau-ky` (#15), `tep-chung-khong-chan-gop` (#17), `mac-ky-co-phu-quyet` (#19), `chuyen-gop` (#20).
+Bảy PR khác gộp vào nhánh chính trong cửa sổ không mang hồ sơ: #2 (đuôi mốc 3.0.0: sáu ca kiểm lấy bản base theo bố
+cục của chính base, kho nhận 3.0 đổi sang `onehub-inventory`), #3, #13, #14, #16, #18 (tài liệu), #22 (ca `tcg-ban-do` ghim «bản trước vòng» vào một sha cố định — nhánh chính đỏ từ #17). Năm gói `acceptance-gate`,
+`feature-loop`, `dispatch`, `roadmap`, `knowledge` cùng lên `3.1.0`; `diagram-design` giữ `3.0.0` vì thư mục của nó
+không đổi từ thẻ trước (AC-4). `roadmap` và `knowledge` chỉ đổi số (AC-5).
+
+**Vì sao 3.1.0** (minor): bốn vòng thêm hành vi mới, mọi hành vi mới sau một khoá kho tự bật (`ban_do.ngoai_git`,
+`feature_loop.gop_theo_loi_ky`, `tro_ly_quyet_dinh.mac_ky`, `chuyen_gop` trong `dieu-phoi.config.json`); kho không bật
+chạy như 3.0.0. Không đổi tên, không đổi khuôn hồ sơ.
+
+### Lời gộp đi cùng lời ký (hồ sơ `loi-gop-trong-cau-ky`, T2)
+
+Gốc: `_acceptance/ky-den-gop/` — ý định «đoạn ký → gộp có thước và có chủ máy» đã ký 23/10; vòng này nối câu ký với lệnh
+gộp của hồ sơ ấy cho vòng chạy ngoài đợt.
+
+- **Vật:** Lời gộp đi cùng lời ký trong một câu ở Cổng Bằng chứng — ô gộp điền sẵn «gộp khi CI xanh» trên thẻ của kho đã
+  bật, lệnh ký ghi câu người gõ thành một dòng sổ máy đọc, lệnh gộp sẵn có nhận lối vào «theo lời ký» ngoài đợt; kho không
+  bật không đổi một byte
+- **Giới hạn đã khai:** 3 giới hạn khai trước và 5 mục chọn ở Cổng Bằng chứng 21/11, ở Notes hợp đồng — đáng nhớ nhất:
+  Ngoài-1 «kho viết khoá bật theo một cách YAML hợp lệ nhưng lạ (khoảng trắng quanh dấu hai chấm…) thì thẻ vẫn in ô gộp
+  mà lệnh gộp từ chối». Ngoài-2 và Ngoài-4 thành hạt giống `docs/plans/2026-11-21-hat-giong-chu-ky-giu-cho-o-lenh-gop.md`.
+
+### Ba tệp mọi PR cùng chạm thôi chặn gộp (hồ sơ `tep-chung-khong-chan-gop`, T3)
+
+Gốc: `_acceptance/tep-sinh-khong-chan-gop/` — vòng 2.36.0 gỡ xung đột của hai view tại máy bằng bộ gộp riêng; giới hạn đã
+khai của nó («forge không chạy bộ gộp của máy») là điều vòng này gỡ.
+
+- **Vật:** Ba tệp mọi PR cùng chạm thôi chặn gộp — hai view máy sinh rời git theo lựa chọn của kho (`ban_do.ngoai_git`),
+  lệnh kiểm riêng của hồ sơ về thư mục hồ sơ thay vì tệp cấu hình chung, và sổ giới hạn được máy sinh hàng nên P179 thôi
+  đốt lượt chấm
+- **Cảnh báo cho kho có bên đọc trang lộ trình qua git hay forge** (ghi chú của hồ sơ, chép nguyên ý): kho bật
+  `ban_do.ngoai_git` thì PHẢI khai `ban_do.nhanh_ve`, dán job sau gộp, và trỏ bên đọc sang nhánh view trong CÙNG PR bật;
+  không thì trang Lộ trình mất nguồn. `--check` in cờ vàng khi kho bật mà không khai nhánh view.
+- **Giới hạn đã khai:** 16 mục chọn ở Cổng Bằng chứng 22/11, 15 ghi ở Notes hợp đồng — đáng nhớ nhất: Ngoài-2 «Nhãn lớp
+  của dòng sổ giới hạn do máy sinh chưa có phép kiểm giữ; đổi sai thì một lượt chấm sau có thể trượt.»
+
+### Mặc-ký có phủ quyết (hồ sơ `mac-ky-co-phu-quyet`, T2, hàng 1 của thí điểm)
+
+Gốc: `docs/findings/2026-11-22-tro-ly-quyet-dinh.md` — đặc tả «trợ lý quyết định» chủ kho duyệt thí điểm 22/11/2026.
+
+- **Vật:** Mặc-ký có phủ quyết, giữ-quyền và sổ đếm thăng cấp cho câu chỉ-người ở bước thiết kế — câu chỉ-người đảo được ở
+  hàng backend không dừng chờ nữa mà đi theo khuyến nghị, vẫn lên thẻ Cổng Phạm vi để phủ quyết; chủ kho giữ quyền được
+  bằng một tệp của đợt; một sổ đếm theo loại câu trình loại đủ điều kiện thăng cấp và giáng loại khi bị phủ quyết hay kiểm
+  mẫu ra sai. Tắt cờ là về nguyên hành vi cũ.
+- **Giới hạn đã khai:** 13 mục chọn ở Cổng Bằng chứng 22/11, 10 ghi ở Notes hợp đồng — đáng nhớ nhất: Ngoài-9 «Nếu trợ lý
+  quyết định gặp lỗi, người chạy lệnh thấy kết quả bình thường và không biết mặc-ký đã tắt vì lỗi, nên mọi câu quay về
+  hỏi người mà không có lý do.» Ngoài-2 và Ngoài-6 thành hạt giống
+  `docs/plans/2026-11-22-hat-giong-tro-ly-quyet-dinh-vung-va-an-le.md` — làm trước khi kho tiêu thụ nào bật mặc-ký.
+
+### Chuyến gộp và cửa proof (hồ sơ `chuyen-gop`, T2, hàng 2 của thí điểm)
+
+Gốc: `_acceptance/mac-ky-co-phu-quyet/` — dòng sổ hoãn «hồ sơ mang món mặc-ký chưa bị chặn tự gộp khi kho chưa khai proof
+check — để sang hàng 2».
+
+- **Vật:** Chuyến gộp kiểm một lần trên ngọn, chuyến đỏ tách đôi, và cửa proof cho hồ sơ mặc-ký — mặc-ký chỉ tự gộp khi
+  `governance/autonomy.yaml` ở nhánh chính khai `proof.check`, check ấy xanh trên đầu nhánh và PR ở tầng `low`.
+- **Giới hạn đã khai:** 1 giới hạn khai trước (kho bật luật nhánh «phải cập nhật với nhánh chính trước khi gộp» thì chuyến
+  dừng sau đúng một PR) và 12 mục chọn ở Cổng Bằng chứng 22/11, 10 ghi ở Notes hợp đồng — đáng nhớ nhất: Ngoài-11 «Phép
+  thử chỉ kiểm vài loại tệp nhạy cảm trong số mười sáu loại. Nếu bộ đọc luật làm rơi một loại khác thì PR chạm loại tệp đó
+  có thể bị tự gộp mà không ai biết.» Ngoài-7 thành hạt giống `docs/plans/2026-11-22-hat-giong-chuyen-gop-moc-so-sanh.md`.
+
+**Ai bị ảnh hưởng:**
+
+- **Kho không bật khoá mới nào:** hành vi như 3.0.0. Hai thay đổi chạm mọi kho: lượt chấm in thêm cảnh báo khi một eval
+  dùng khoá `config:` mà chỉ hồ sơ ấy dùng (luật lệnh hồ sơ, `tep-chung-khong-chan-gop`) — cảnh báo, không chặn; và lớp
+  chép CI có thêm `scripts/tro-ly-quyet-dinh.cjs` (gạch dưới).
+- **Kho bật `ban_do.ngoai_git`:** đọc cảnh báo ở mục hồ sơ `tep-chung-khong-chan-gop` trước khi bật.
+- **Kho bật `feature_loop.gop_theo_loi_ky`:** thẻ Cổng Bằng chứng điền sẵn «gộp: khi CI xanh»; ký xong máy gộp PR khi mọi
+  check xanh.
+- **Kho bật `tro_ly_quyet_dinh.mac_ky`:** câu chỉ-người đảo được ở hàng backend đi theo khuyến nghị, lên thẻ Cổng Phạm vi để
+  phủ quyết; mọi ngưỡng ở `_acceptance/config.yaml`. Hồ sơ mang món mặc-ký chỉ tự gộp ở kho khai `proof.check` trong
+  `governance/autonomy.yaml` — kho chưa khai thì lệnh gộp chặn có tên.
+- **Kho bật `chuyen_gop`** (trong `dieu-phoi.config.json` của đợt): lệnh `chuyen <số PR,…>` gom PR đã đạt bằng chứng thành
+  chuyến.
+- **Lớp chép CI:** đổi `lib/workspace-record.cjs`, `scripts/can-cu-s1.cjs`, `scripts/hop-thu/hinh-dang.mjs`,
+  `scripts/product-map.mjs`; thêm `scripts/tro-ly-quyet-dinh.cjs` — kho chép lớp CI chép lại năm tệp ấy.
+
+**Đường đọc-cũ:** bốn khoá mới đều vắng = tắt; dòng sổ mặc-ký mang lược đồ sổ `so_do: 2`, sổ cũ không có trường mới vẫn đọc
+được; không đổi khuôn hồ sơ đã có.
+
+**Kho tiêu thụ làm gì khi nhận:** ghim kit ở thẻ `v3.1.0` (khuôn GUIDE §5.3), chép lại năm tệp của lớp chép CI, cài sáu gói
+theo ĐÚNG THẺ `v3.1.0` rồi `node <gốc gói acceptance-gate>/scripts/kiem-ban-cai.mjs --may --ref v3.1.0 --root <bản clone
+kit đã git fetch --tags>` — `TỔNG KẾT: ĐẠT …`. Mở phiên MỚI. Bật khoá nào là quyết của kho, không phải bước nâng cấp.
+
+**Người cắt mốc kit:** sau khi gắn thẻ chạy `node plugins/acceptance-gate/scripts/kiem-ban-cai.mjs --ref v3.1.0` (KC1).
+Đối chiếu tập hồ sơ của mốc sau bằng `_acceptance/release-2-39-0/cua-so.sh <mốc-trước> <slug…>`.
+
+**onehub-inventory**: kho nhận của mốc. Mốc chỉ tính là «được kho nhận» khi có một commit ở nhánh chính kho ấy kéo kit ở
+thẻ `v3.1.0`.
+
+**Năm dòng số của luật (c)**: bốn vòng trong cửa sổ (giờ VN). Định nghĩa giữ như mốc 3.0.0: làm-xong = commit đầu đưa hợp
+đồng sang `implemented` · ký = commit đầu đưa `status:` sang trạng thái đã ký · gộp = commit gộp sớm nhất trên lối cha-đầu
+của nhánh chính có commit ký là tổ tiên. Dòng 2 đếm từ sổ quyết định, `opportunity.md` và commit cổng. Dòng 4–5 lấy từ
+bảng vai trò của `usage-report.md`: vật = baseline + machine + judge · tìm-lỗi = review + refute · tổng hợp = triage +
+capture + synthesize. Một hồ sơ T3 (trần 4), ba hồ sơ T2 (trần 3).
+
+| Hồ sơ | 1 · làm-xong→ký · ký→gộp · lượt chấm | 2 · gọi người trong / ngoài (trần) | 3 · lượt bị hạ tầng đốt | 4 · out-token S4 · vật / tìm-lỗi / tổng hợp % | 5 · phút máy / lượt |
+|---|---|---|---|---|---|
+| `loi-gop-trong-cau-ky` (#15, T2) | 1 g 49 · 0 g 07 · 2 (lượt 1 BLOCKED: Node lệch ở tác tử chấm; lượt 2 PASS) | 3 / 0 (3): Đáng, Phạm vi, Bằng chứng | 1 | 106 100 · 43,0 / 41,1 / 15,8 | 5 · 65 = 70 |
+| `tep-chung-khong-chan-gop` (#17, T3) | 4 g 02 · 0 g 14 · 2 lượt đánh số, 3 lượt chạy (lượt 1 REJECT: mục trong hợp đồng — VC8, thông điệp nhát tiêm, nhánh mặc định của lệnh đẩy; lượt 2 REJECT rồi cây đổi trong lượt — tác tử chấm sửa `tools/so-gioi-han.mjs`; chấm lại PASS) | 3 / 1 (4): Phạm vi, Kế hoạch, Bằng chứng; ngoài thiết kế: «Gộp #22» — nhánh chính đỏ sau khi gộp | 1 (cây đổi trong lượt) | 241 333 · 40,3 / 43,6 / 16,0 | 64 · 64 · 62 = 190 |
+| `mac-ky-co-phu-quyet` (#19, T2) | 3 g 30 · 0 g 18 · 2 (lượt 1 REJECT: chỉ ca `tcg-ban-do`, đỏ sẵn trên nhánh chính từ #17 — mười eval xanh; lượt 2 PASS) | 2 / 0 (3): Phạm vi, Bằng chứng | 1 (nền đỏ) | 125 590 · 32,8 / 49,8 / 17,5 | 46 · 51 = 97 |
+| `chuyen-gop` (#20, T2) | 5 g 12 · 0 g 11 · 2 (lượt 1 REJECT: răng đột biến DB-10 tiêm nhầm dòng sau khi gộp hàng 1 — mục trong hợp đồng; lượt 2 PASS) | 2 / 0 (3): Phạm vi, Bằng chứng | 0 | 123 335 · 28,9 / 53,6 / 17,4 | 55 · 44 = 99 |
+
+- Lời giao mở vòng không đếm, như mốc 3.0.0: lời duyệt thí điểm 22/11 mở cả hai hàng; lời bảo của phiên điều phối không
+  phải lượt gọi người. «0 ngoài thiết kế» nghĩa là «0 ghi được»: không đọc được phiên chat.
+- Số lần gộp nhánh nền vào nhánh làm việc: `loi-gop-trong-cau-ky` 2 · `tep-chung-khong-chan-gop` 0 · `mac-ky-co-phu-quyet`
+  2 · `chuyen-gop` 9 (nhánh xếp chồng lên nhánh hàng 1: mỗi lần hàng 1 đổi là một lần gộp).
+- **Gộp bốn vòng:** 596 358 out-token S4, vật 36,9 / tìm-lỗi 46,5 / tổng hợp 16,6 %; 456 phút S4 qua 9 lượt chạy (8 lượt
+  đánh số). Trung vị làm-xong → ký **3 g 46**; ký → gộp **0 g 12**. Gọi người: 10 trong thiết kế + 1 ngoài thiết kế ghi được
+  = 11 cho 4 kết quả đã gộp. Hạ tầng đốt **3 / 9** lượt chạy. **Ký chưa gộp: 0.**
+
+**Đọc số:**
+- **Ký → gộp ngắn lại** (trung vị 0 g 28 ở cửa sổ 3.0 → 0 g 12): ba vòng gộp bằng lời gộp trong câu ký, không chờ người bấm.
+- **Làm-xong → ký ngắn lại** (7 g 21 → 3 g 46), nhưng ba trong bốn vòng mất một lượt chấm: hai vì nền hay hạ tầng (Node lệch,
+  nhánh chính đỏ), một vì cây đổi trong lượt.
+- **Dòng 2 không vượt trần ở vòng nào.** Lượt ngoài thiết kế duy nhất ghi được («Gộp #22») là hệ quả của nhánh chính đỏ sau
+  #17, không phải cổng của vòng.
+- **Dòng 3: 3 / 9** (2 / 15 ở 3.0): cả ba là lỗi ngoài vật — một ca đỏ sẵn trên nền làm đỏ lượt chấm của hồ sơ khác là chỗ
+  rò lặp lại, vì lượt chấm chạy suite trên nền chưa xanh.
+
+**Điều kiện tin cậy:**
+- **(i)** Đường phán quyết (tìm lỗi → phản bác trong hợp đồng → REJECT) không đổi thành phần — không vòng nào chạm nó.
+- **(ii)** Lượt chấm sai do phép-đo-tự-dối giữa hai mốc: **0** ghi được.
+
+**Dự báo năm dòng cho thay đổi của mốc này** (chép từ bảng dự báo của từng hồ sơ, cho kho bật): dòng 1 ↓ ký → gộp (lời gộp
+trong câu ký, chuyến gộp, hai view rời git) · dòng 2 ↓ (mặc-ký bớt câu chỉ-người phải chờ; hết lượt gọi riêng cho lời gộp)
+· dòng 3 ↓ (P179 thôi đốt lượt chấm) · dòng 4 ↓ (bớt lượt chấm lại và lượt chạy lại CI sau gộp ngược) · dòng 5 =.
+
+**Dòng hiệu chuẩn:** `ĐẠT đã ký → prod đỏ: 0 / 0` — N = 0 nên dòng vô hiệu, cấm đọc thành «0 sự cố».
+
 ## 3.0.0 — 17/11/2026
 
 Mốc «Chuyển nhà»: kit chuyển sang kho kế nhiệm `phanlemanh/delivery-loop`. Sáu plugin nay ở `plugins/<tên>/`, chợ đổi tên
