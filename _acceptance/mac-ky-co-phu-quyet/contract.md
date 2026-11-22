@@ -40,20 +40,24 @@ Thuật ngữ:
   căn cứ in `câu hỏi 0` và ` · mặc-ký 1`.
 - AC-3: Given mười ba câu chỉ-người lần lượt khó đảo, phạm luật sản phẩm, chạm tiền, gửi ra ngoài, loại lạ, loại vắng, loại kho tắt, vùng
   `khong_bao_gio`, vùng tầng `high` của `governance/autonomy.yaml`, vùng rỗng, loại lần đầu, vùng lần đầu, và một câu đủ điều
-  kiện, cùng ba hợp đồng `surfaces` `ui` / `api, web` / rỗng, When `--write` rồi xếp, Then câu đủ điều kiện ra `mac-ky`, mỗi
+  kiện, cùng sáu hợp đồng `surfaces` `ui` / `api, web` / rỗng / `frontend` / `api, desktop` / `email`, When `--write` rồi xếp, Then câu đủ điều kiện ra `mac-ky`, mỗi
   câu kia ra `hoi` với đúng mã `ly_do` của nó (`kho-dao` · `luat-san-pham` · `tien-ra-ngoai` · `loai-la` · `loai-tat` · `khong-bao-gio` ·
-  `vung-high` · `vung-khong-ro` · `lan-dau-loai` · `lan-dau-vung` · `man-hinh` · `loai-hang-khong-ro`), và mỗi câu có một dòng
+  `vung-high` · `vung-khong-ro` · `lan-dau-loai` · `lan-dau-vung` · `man-hinh` · `loai-hang-khong-ro` · `loai-hang-la` — hàng chỉ là mặt máy khi MỌI surfaces nằm trong danh sách cho phép
+  `api, cli, sdk, docs, ci, config, db, tool`), và mỗi câu có một dòng
   máy; khi có gốc nhánh, câu mặc-ký mà diff thật chạm tệp ngoài vùng khai ra `vung-lech` (nêu tệp; đối chứng: diff trong
   vùng vẫn `mac-ky`), tệp thật chạm tầng `high` ra `vung-high`.
 - AC-4: Given loại `chon-cach-lam` đã thăng cấp và tệp `giu-quyen.txt` của đợt có slug một hồ sơ và glob vùng của hồ sơ khác,
   When xếp hai hồ sơ (đối chứng: trước khi có tệp, hồ sơ đầu ra `thang-cap`), Then cả hai ra `hoi` mã `ly_do` `giu-quyen`; dòng
-  máy ghi `giu_quyen` khớp; sổ đếm ghi một lần kéo cho loại.
+  máy ghi `giu_quyen` khớp; sổ đếm ghi một lần kéo cho loại; kéo SAU khi món đã có dòng máy → `--write` nối đúng một
+  dòng sự kiện `su_kien: keo` (dòng cũ giữ nguyên, ghi lại không lặp) và sổ đếm thấy hai lần kéo.
 - AC-5: Given năm hồ sơ `sua-o-dau` theo khuyến nghị cả năm, năm hồ sơ `chon-cach-lam` có một lần chủ kho chọn khác, ba hồ sơ
   `ten-va-chu` và một hồ sơ nháp, When `--dem`, Then mỗi loại một hàng «hỏi · theo · % · phủ quyết · làm lại tách nguồn ·
   kéo · kiểm mẫu sai · trạng thái», hồ sơ nháp không vào mẫu số, «Đề nghị thăng cấp: sua-o-dau»; với `nguong_hoi: 3`,
   `nguong_theo: 80` cả ba loại được trình; `nguong_hoi: 0` thoát 2 với thông điệp gọi tên khoá; một lần kéo trong cửa sổ
   hay một lần làm lại do phủ quyết chặn thăng cấp, làm lại do bộ kiểm hay nguồn khác thì không (đối chứng dương). Mọi dòng
-  làm lại và chọn khác của ca do bên ghi `--ghi` sinh.
+  làm lại và chọn khác của ca do bên ghi `--ghi` sinh. Món mặc-ký người im lặng KHÔNG là một lần hỏi: năm món mặc-ký im
+  lặng cho «hỏi 1» (chỉ lần người thật trả lời) và cột «im» 5, không trình thăng cấp; kiểm mẫu `dat` của người trên bốn món
+  đưa «hỏi» lên 5 và loại được trình.
 - AC-6: Given loại đã thăng cấp và hồ sơ chưa ký đang mang dòng máy của loại (đối chứng: ra `thang-cap`), When một món mặc-ký
   của loại bị phủ quyết ở hồ sơ khác, hoặc một lần kiểm mẫu ghi `sai` (cả hai ghi bằng `--ghi`; đối chứng: kiểm mẫu `dat` giữ cấp), Then hồ sơ chưa ký ra `hoi` mã `ly_do` `loai-bi-giang`, bộ
   xếp căn cứ đếm lại `câu hỏi 1`, và `--dem` in `Bị giáng: chon-cach-lam — hồ sơ chưa ký phải kiểm lại: h`; với loại CHƯA thăng cấp, phủ quyết một món
