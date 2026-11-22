@@ -78,4 +78,8 @@ ngoài vì cửa proof (AC-5) · ngoài vì chưa đủ điều kiện (AC-7) ·
 
 ## Notes
 
+- Giới hạn đã khai: chuyến gộp từng PR bằng `gh pr merge` tuần tự. Kho bật luật nhánh «phải cập nhật với nhánh chính trước
+  khi gộp» thì GitHub từ chối PR thứ hai ngay sau khi PR đầu gộp — chuyến dừng ở `gop-do-dang` sau đúng một PR (an toàn,
+  không gộp tổ hợp chưa kiểm, nhưng mất lợi ích của chuyến). Kho như thế dùng `gop` từng PR, hoặc tắt luật ấy khi bật
+  `chuyen_gop`. Ngưỡng mở lại: ≥1 kho tiêu thụ bật `chuyen_gop` mà bật luật ấy.
 - Hồ sơ xếp chồng lên nhánh của hàng 1; PR của hàng này nhắm nhánh hàng 1 tới khi hàng 1 gộp.
