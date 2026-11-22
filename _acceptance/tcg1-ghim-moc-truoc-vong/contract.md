@@ -5,7 +5,7 @@ slug: tcg1-ghim-moc-truoc-vong
 owner: phanlemanh@gmail.com
 risk_tier: T2      # chỉ tests/scripts/ + thư mục hồ sơ; không khớp t3_paths, không khớp t1_skip_globs
 surfaces: [cli]
-status: approved
+status: implemented
 design_doc: docs/superpowers/specs/2026-11-22-tcg1-ghim-moc-truoc-vong-design.md
 approved_by: Phan Le Manh
 approved_at: 2026-11-22
