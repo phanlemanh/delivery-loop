@@ -1397,3 +1397,7 @@ va-chu-ky-giu-cho-lenh-gop#may-3	va-chu-ky-giu-cho-lenh-gop	low	khac	song			Eval
 va-chu-ky-giu-cho-lenh-gop#may-4	va-chu-ky-giu-cho-lenh-gop	low	khac	song			dispatch README still documents the `--theo-loi` command without `--loi`, which now always blocks in an installed setup [máy sinh từ review-findings.md]
 va-chu-ky-giu-cho-lenh-gop#may-5	va-chu-ky-giu-cho-lenh-gop	medium	khac	song			Assertion âm-tính-một-mình (hình dạng 4): nhát tiêm bo-loi của chân duong-loi không ghim thông điệp đỏ [máy sinh từ review-findings.md]
 va-chu-ky-giu-cho-lenh-gop#may-6	va-chu-ky-giu-cho-lenh-gop	low	khac	song			Assertion âm-tính-một-mình (hình dạng 4, mức nhẹ): chuỗi grep ở phep-cu và bang-rieng là NHÃN ca, không phải lý do đỏ [máy sinh từ review-findings.md]
+release-3-1-1#may-1	release-3-1-1	low	khac	song			do-dong-1.sh tính phút bằng `date -j -f` của BSD, nên chỉ chạy được trên macOS [máy sinh từ review-findings.md]
+release-3-1-1#may-2	release-3-1-1	medium	khac	song			gop-thu.sh reports green when the suite list is empty [máy sinh từ review-findings.md]
+release-3-1-1#may-3	release-3-1-1	low	khac	song			gop-thu.sh resolves a relative output path in two different places [máy sinh từ review-findings.md]
+release-3-1-1#may-4	release-3-1-1	low	khac	song			Shape 5 (claims the whole suite, no full matrix written in advance): gop-thu.sh divides by the number of commands that happened to run, not by the length of suite_keys [máy sinh từ review-findings.md]

@@ -101,3 +101,8 @@ Source input: `git log v3.1.0..origin/main --first-parent` · nếp phát hành 
   commit bản vá là thẻ cũ) thoát 1 thêm «ngoài năm tệp khai, plugins/ ở HEAD lệch commit gộp bản vá: …» nêu bốn tệp.
   `chay.sh lop-chep a2198fcf` (sau khi có mục 3.1.1) thoát 1 «tệp đổi mà ghi chú KHÔNG kể: scripts/can-cu-s1.cjs
   scripts/hop-thu/hinh-dang.mjs scripts/tro-ly-quyet-dinh.cjs».
+- **Lượt chấm 2 đỏ ở P179** (23/11, sau Cổng Phạm vi): lượt 1 ghi bốn mục «Đề xuất: known-limits» vào
+  `review-findings.md` mà sổ `docs/research/known-limits-ledger.tsv` chưa thêm hàng (1398 < 1402). Sửa bằng
+  `node tools/so-gioi-han.mjs --slug release-3-1-1 --write`. Bước này không có trong SKILL hay GUIDE, và #26 vấp
+  đúng chỗ ấy ở làn ghim lại — hạt giống `docs/plans/2026-11-23-hat-giong-so-gioi-han-sau-luot-cham.md`, không làm
+  trong vòng này.

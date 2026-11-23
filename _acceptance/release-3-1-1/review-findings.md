@@ -1,41 +1,39 @@
-# Review findings: release-3-1-1 (round 1)
+# Review findings: release-3-1-1
 
 ## Trong hợp đồng
 
-(không có finding nào map được vào AC)
+Không có finding nào map được vào AC.
 
 ## Ngoài hợp đồng — người quyết ở Gate 2
 
 Các lỗi dưới đây nằm ngoài phạm vi đã duyệt ở Cổng Phạm vi và CHƯA qua bác bỏ đối kháng — người quyết, máy không sửa và không chấm thứ máy không được sửa.
 
-- **gop-thu.sh: các lệnh suite đọc chung stdin với vòng lặp, và tổng «i/i» chỉ tự so với chính nó**
-  Người dùng thấy gì: Phép thử gộp có thể lặng lẽ bỏ sót vài bước kiểm mà vẫn báo XANH, nên người ký có thể tin là bộ kiểm đã chạy đủ trong khi thực tế chưa.
-  Căn cứ: Hậu quả vừa: màu xanh giả có thể lên thẻ ký, nhưng chưa thấy xảy ra thật, bộ kiểm chính của lượt chấm vẫn chạy riêng, và sửa sau rẻ.
+- **do-dong-1.sh tính phút bằng `date -j -f` của BSD, nên chỉ chạy được trên macOS**
+  Người dùng thấy gì: Phép đo thời gian từ làm xong đến gộp chỉ chạy được trên máy Mac. Chạy trên máy khác sẽ ra số sai hoặc trống, nên người ghi số liệu cho mốc phát hành phải dùng đúng máy Mac.
+  Căn cứ: Hậu quả nhẹ vì chủ kho dùng Mac và chỉ ảnh hưởng một dòng số liệu nội bộ, không ảnh hưởng người dùng cuối. Ai chạy lại trên máy khác sẽ thấy ngay số trống hoặc sai. Sửa sau cũng rẻ.
+  file: `_acceptance/release-3-1-1/do-dong-1.sh`
+  severity: low
+  Đề xuất: known-limits
+
+- **gop-thu.sh reports green when the suite list is empty**
+  Người dùng thấy gì: Khi cấu hình danh sách kiểm tra bị hỏng, bước rà gộp thử vẫn báo xanh dù chưa chạy kiểm tra nào. Người ký có thể tin rằng bộ kiểm đã xanh trên bản gộp trong khi nó chưa được chạy.
+  Căn cứ: Mức nặng vừa, vì báo xanh giả đúng lúc cấu hình hỏng có thể khiến người ký yên tâm sai. Tuy vậy các lệnh kiểm của lượt chấm chính vẫn chạy riêng nên lỗi gộp vẫn bị bắt ở chỗ khác. Sửa sau rẻ.
   file: `_acceptance/release-3-1-1/gop-thu.sh`
   severity: medium
   Đề xuất: known-limits
 
-- **gop-thu.sh: thư mục ra dạng tương đối được hiểu theo hai gốc khác nhau**
-  Người dùng thấy gì: Nếu chạy phép thử gộp từ thư mục lạ với đường dẫn ngắn, nó sẽ báo lỗi xung đột sai lý do. Người dùng chỉ cần chạy lại cho đúng chỗ.
-  Căn cứ: Hậu quả nhẹ: lỗi hiện rõ ràng chứ không im, không mất dữ liệu, người chạy tự thử lại được, và đây là công cụ dùng một lần cho mốc này.
+- **gop-thu.sh resolves a relative output path in two different places**
+  Người dùng thấy gì: Nếu chạy bước rà gộp thử từ thư mục không phải gốc kho với đường dẫn kết quả tương đối, nó báo lỗi xung đột gộp sai lý do. Người chạy sẽ bị đánh lạc hướng nhưng chạy lại đúng cách là hết.
+  Căn cứ: Hậu quả nhẹ, không mất dữ liệu và người chạy tự gỡ được bằng cách chạy lại từ gốc kho hoặc dùng đường dẫn đầy đủ. Sửa sau rẻ.
   file: `_acceptance/release-3-1-1/gop-thu.sh`
   severity: low
-  Đề xuất: wont-fix
-
-- **gop-thu.sh báo XANH 1/1 khi feature_loop.suite_keys rỗng hoặc vắng (không chạy lệnh suite nào)**
-  Người dùng thấy gì: Nếu cấu hình danh sách bộ kiểm bị trống hoặc mất, phép thử gộp vẫn báo XANH dù không chạy bộ kiểm nào, tạo cảm giác an toàn giả cho người ký.
-  Căn cứ: Hậu quả vừa nhưng hiếm: chỉ xảy ra khi cấu hình hỏng, hiện cấu hình có 11 khoá nên chưa dính, người ký có thể tự nhìn bảng kết quả để thấy, sửa sau rẻ.
-  file: `_acceptance/release-3-1-1/gop-thu.sh`
-  severity: medium
   Đề xuất: known-limits
 
-- **gop-thu.sh hiểu sai đường dẫn tương đối khi chạy ngoài gốc kho, và không kiểm rev-parse nên báo nhầm lý do lỗi**
-  Người dùng thấy gì: Khi gõ sai tên nhánh hoặc chạy sai chỗ, phép thử gộp báo là xung đột thay vì nói đúng nguyên nhân, làm người đọc mất thời gian tìm sai hướng.
-  Căn cứ: Hậu quả nhẹ: script vẫn dừng với lỗi rõ ràng, không có màu xanh giả hay mất dữ liệu, người dùng gõ lại là xong.
+- **Shape 5 (claims the whole suite, no full matrix written in advance): gop-thu.sh divides by the number of commands that happened to run, not by the length of suite_keys**
+  Người dùng thấy gì: Bước rà gộp thử có thể báo đã chạy đủ bộ kiểm trong khi thực tế một lệnh đọc hết đầu vào làm các lệnh sau bị bỏ qua. Người ký có thể thấy kết quả xanh trên số lệnh ít hơn thực có.
+  Căn cứ: Mức nặng thấp đến vừa, vì cần một lệnh kiểm đặc biệt mới gây ra và lượt chấm chính vẫn chạy đủ bộ lệnh riêng. Người dùng cuối không bị ảnh hưởng, sửa sau rẻ.
   file: `_acceptance/release-3-1-1/gop-thu.sh`
   severity: low
-  Đề xuất: wont-fix
-
-## Chưa adversarial-verify (refuter chết)
+  Đề xuất: known-limits
 
 Cụm ngoài vùng phủ: cluster: n-a (không đo được — không eval nào khai paths, hoặc dưới ngưỡng cụm).
