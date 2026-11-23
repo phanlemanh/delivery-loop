@@ -1409,7 +1409,10 @@ thay đổi ấy. Mở vòng bằng `/feature-loop:feature-loop` như mọi vi�
 chỉ còn sáu dòng `@delivery-loop` (hoặc ít hơn, đúng số dòng `true` kho giữ), không dòng `@acceptance-gate-kit` nào,
 và không lệnh nào hiện hai lần.
 
-**Đường lùi:** đảo commit của PR và bật lại chợ cũ — kho cũ vẫn cài được ở `v2.39.0`, kho không mất hồ sơ nào.
+**Lỗi sau khi chuyển: sửa đi lên, không lùi về chợ cũ.** Kho cũ đã đóng băng ở `v2.39.0` và không nhận bản vá nào
+nữa. Gặp lỗi do bản mới thì mở vấn đề ở kho này; bản vá đi trong một mốc 3.x kế tiếp, rồi kho đổi thẻ đã ghim ở
+bước 2 (và `ref` của chợ trong `.claude/settings.json`, nếu kho có ghim) sang mốc ấy. Hồ sơ `_acceptance/` không
+phải đổi khi đổi mốc.
 
 ## 6. Vận hành hằng ngày
 
