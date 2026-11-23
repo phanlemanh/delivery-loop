@@ -12,7 +12,7 @@ flowchart TD
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
   B --> CD["Chờ duyệt phạm vi<br/>chưa có"] --> GP{"Cổng Phạm vi"}
   GP --> DL["Đang làm<br/>2 việc"] --> GB{"Cổng Bằng chứng"}
-  GB --> DG["Đã giao<br/>163 việc"]
+  GB --> DG["Đã giao<br/>164 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>74 việc"] --> GG{"Cổng Giá trị"}
   GG --> NT["Đã nghiệm thu giá trị<br/>7 việc"]
 ```
@@ -263,6 +263,7 @@ flowchart TD
 - Phát hành kit 2.9.0 — đóng số cho ba vòng sửa của cửa sổ 2.8→2.9 (PR 146 inputs-tinh-tu-goc-kho · 149 co-qua-timebox-nhom-da-xong · 151 thuoc-khai-mot-dang-do-mot-neo), bộ audit 05/09 + giấy phép MIT, và bộ tài liệu playbook 07/09 — để repo tiêu thụ nhận bộ máy theo mốc có chủ đích (`release-2-9-0`)
 - Phát hành kit 3.0.0 — mốc «Chuyển nhà»: kho delivery-loop thành nguồn, sáu plugin ở plugins/<tên>/ với tên mới, kho cũ đóng băng ở 2.39.0; kho chờ nhận onehub-quy-hang (`release-3-0-0`)
 - Phát hành kit 3.1.0 — mốc «Trợ lý quyết định»: mang bốn hồ sơ được ký sau 3.0.0 (lời gộp trong câu ký, ba tệp chung thôi chặn gộp, mặc-ký có phủ quyết, chuyến gộp); kho chờ nhận onehub-inventory (`release-3-1-0`)
+- Phát hành kit 3.1.1 — bản vá mang «chữ ký giữ chỗ không còn qua vế chữ ký của lệnh gộp theo lời» (PR (`release-3-1-1`)
 - Repo khai plugin — acceptance-init ghi .claude/settings.json (marketplace + 4 plugin) bằng script hợp nhất JSON, tên plugin lấy từ marketplace.json ship cùng plugin; GUIDE §5.1 từ 5 lệnh còn 1 cho máy sau; diagram-design bắt buộc (`repo-khai-plugin`)
 - Road-map dễ dùng — cắt lượt theo luật 17/10 (không mốc ngoài; việc vận hành ra khỏi kho, không vào bản phạm vi), khối Mốc của trang đọc bằng tên tiếng sản phẩm kèm trạng thái, luật «chỉ việc phát triển» kiểm trên mọi lần đọc tệp, ngày dự kiến nối tiếp theo làn (`road-map-de-dung`)
 - Mã lượt chạy chỉ được ghi khi đúng hình dạng mã — mã rác của tác tử (dấu huyền, chữ không có số, chuỗi có khoảng trắng) thành mã máy đúc, và lượt sau không mang sang eval có mã rác trong sổ cũ (`run-id-danh-sach-cho-phep`) — đã giao — không đo, khai ở Cổng Đáng

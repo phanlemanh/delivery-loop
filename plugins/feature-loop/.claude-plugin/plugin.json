@@ -1,7 +1,7 @@
 {
   "name": "feature-loop",
-  "version": "3.1.0",
-  "description": "Feature development loop on top of acceptance-gate: brainstorm → contract + evals (Gate 1) → plan → execute → multi-agent verify → evidence and human sign-off (Gate 2); T3 adds a plan-review stop. v3.1.0 — release notes and earlier history are in CHANGELOG.md. Pairs with acceptance-gate >= 3.1.0.",
+  "version": "3.1.1",
+  "description": "Feature development loop on top of acceptance-gate: brainstorm → contract + evals (Gate 1) → plan → execute → multi-agent verify → evidence and human sign-off (Gate 2); T3 adds a plan-review stop. v3.1.1 — release notes and earlier history are in CHANGELOG.md. Pairs with acceptance-gate >= 3.1.1.",
   "author": {
     "name": "Manh Phan",
     "email": "phanlemanh@gmail.com"

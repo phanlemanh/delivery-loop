@@ -1,0 +1,24 @@
+{
+  "feature_plain": "Cắt bản kit 3.1.1 để kho tiêu thụ nhận được bản vá: lệnh gộp theo lời không còn gộp một báo cáo mà chữ ký người chỉ là chữ giữ chỗ như «pending».",
+  "will_do": [
+    {"id": "AC-1", "p": "Sẽ đưa năm gói lõi lên cùng số 3.1.1, mô tả gói và câu «Khớp phiên bản» trong GUIDE nói đúng số ấy (ca kiểm P200)."},
+    {"id": "AC-2", "p": "Sẽ để mọi bộ kiểm của lượt chấm và bản đồ sản phẩm chạy xanh trên cây đã sửa."},
+    {"id": "AC-3", "p": "Sẽ đối chiếu bằng máy rằng sau thẻ v3.1.0 chỉ có đúng một hồ sơ được ký: bản vá chữ ký giữ chỗ (#26)."},
+    {"id": "AC-5", "p": "Sẽ chỉ đổi dòng số phiên bản ở hai gói roadmap và knowledge — không đổi gì khác."},
+    {"id": "AC-6", "p": "Sẽ ghi rõ kho chép lớp CI không phải chép lại tệp nào, và máy kiểm điều đó đúng."},
+    {"id": "AC-7", "p": "Sẽ kiểm thẻ mang nguyên bản vá #26: ngoài năm tệp số phiên bản, phần gói trùng từng byte với commit gộp của bản vá."},
+    {"id": "AC-8", "p": "Sẽ viết mục 3.1.1 trong CHANGELOG chép đúng chữ hồ sơ, năm dòng số khớp nguồn đếm, nói thẳng ai bị đổi hành vi — một hội đồng máy đọc đối chiếu."},
+    {"id": "AC-9", "p": "Sẽ cài thử kit từ chính cây này như kho tiêu thụ sẽ cài và đòi kết quả ĐẠT trước khi cắt thẻ."}
+  ],
+  "wont_do": [
+    {"id": "AC-4", "p": "Sẽ KHÔNG đổi gói diagram-design — giữ số 3.0.0 vì thư mục của nó không đổi từ thẻ trước."},
+    {"id": "OOS-1", "p": "KHÔNG đổi mã cổng nào — bản vá đã được ký và gộp ở #26, mốc chỉ đổi số và tài liệu."},
+    {"id": "OOS-2", "p": "KHÔNG cài lên onehub-inventory hay đổi KIT_TAG ở PR #110 — việc của phiên kho ấy."},
+    {"id": "OOS-3", "p": "KHÔNG sửa các mục CHANGELOG cũ từ 3.1.0 trở về trước."},
+    {"id": "OOS-4", "p": "KHÔNG sửa bộ đo ký → gộp đang trả rỗng — ghi thành hạt giống cho vòng riêng; số của mốc này đo bằng tệp riêng của hồ sơ."}
+  ],
+  "scope_plain": "Bốn việc để ngoài mốc này:",
+  "coverage_plain": [
+    {"i": 0, "p": "Phủ mọi phần của một lần cắt số như ba mươi tám mốc trước — số trong tệp khai, câu khớp phiên bản, mô tả gói, gói đổi hay giữ số, lớp chép CI, bản cài khớp thẻ (AC-1 tới AC-6, AC-9) — thêm một ô riêng cho mốc vá: thẻ mang đúng bản vá, không thêm gì (AC-7). Bộ kiểm trên commit gộp thử chạy riêng ngoài lượt chấm."}
+  ]
+}

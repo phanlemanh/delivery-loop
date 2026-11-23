@@ -11,6 +11,99 @@
 > `_acceptance/release-<x-y-0>/contract.md` và `evidence-report.md`. Mục đầu
 > tiên dưới đây là phần CHƯA phát hành.
 
+## 3.1.1 — 23/11/2026
+
+Bản vá của 3.1.0: thẻ `v3.1.0` (`0a93a5b9`, PR #24) được cắt TRƯỚC khi bản vá chữ ký giữ chỗ gộp, nên kho cài 3.1.0 vẫn để
+báo cáo mang `human_signoff: pending` qua vế chữ ký của lệnh gộp theo lời. Chủ kho 23/11 «Mở phiên mới vòng mốc 3.1.1 mang
+bản vá». Có **một hồ sơ được ký** sau thẻ `v3.1.0` — tập đối chiếu bằng `_acceptance/release-3-1-1/chay.sh cua-so` (AC-3
+của hồ sơ mốc): `va-chu-ky-giu-cho-lenh-gop` (#26). Trong cửa sổ từ thẻ `v3.1.0` tới thẻ này không PR nào khác. Năm gói
+`acceptance-gate`, `feature-loop`, `dispatch`, `roadmap`, `knowledge` cùng lên `3.1.1` (`acceptance-gate`, `feature-loop`,
+`dispatch` đổi vật; `roadmap`, `knowledge` chỉ đổi số — AC-5); `diagram-design` giữ `3.0.0` vì thư mục của nó không đổi từ
+thẻ trước (AC-4). Ngoài năm tệp khai, cây `plugins/` của thẻ trùng byte với commit gộp `1a887948` của bản vá (AC-7). Thẻ
+`v3.1.1` gắn vào commit cuối của nhánh mốc TRƯỚC khi nhánh chính gộp vào nhánh, không vào commit gộp PR mốc như các mốc
+trước: PR #27 (`dac-ta-ux-doc-so-man`) gộp vào nhánh chính 23/11 09:41, giữa lúc vòng mốc chạy, và đổi `plugins/`; thẻ
+không mang nó — #27 vào mốc sau. Commit của thẻ vẫn nằm trong lịch sử nhánh chính sau khi PR mốc gộp.
+
+**Vì sao 3.1.1** (patch): theo nếp «minor cho bề mặt mới», bản này không thêm khoá cấu hình, lệnh hay bề mặt mới — vòng duy
+nhất siết một vế kiểm sẵn có. Lệnh gộp theo lời có thêm MỘT cờ, `--loi`, chỉ để chỉ đường tới bộ đọc chữ ký của lõi cho
+chính vế kiểm ấy (mục con dưới). Một đổi hành vi chạm kho đang dùng lệnh gộp theo lời, khai thẳng ở «Ai bị ảnh hưởng» dưới.
+
+### Lệnh gộp theo lời đọc chữ ký bằng vị từ của lõi (hồ sơ `va-chu-ky-giu-cho-lenh-gop`, T2)
+
+Gốc: `docs/plans/2026-11-21-hat-giong-chu-ky-giu-cho-o-lenh-gop.md` — Ngoài-2 và Ngoài-4 của Cổng Bằng chứng hồ sơ
+`loi-gop-trong-cau-ky` (21/11/2026), chủ kho chọn «mở hợp đồng mới».
+
+- **Vật:** Lệnh gộp theo lời của gói điều phối đọc chữ ký bằng vị từ của lõi — chữ ký giữ chỗ («pending», «TBD»…) không
+  còn qua vế chữ ký; gốc lõi đến từ bộ định vị sẵn có của kit
+- **Đường tới lõi:** lệnh nhận cờ `--loi <gốc acceptance-gate>`; khối dòng lệnh `GOP-THEO-LOI-KY` ở SKILL S5 của
+  feature-loop và ở lệnh ký giải gốc ấy bằng `resolve-plugin.mjs --plugin acceptance-gate --require lib/evidence-core.cjs`.
+  Thiếu cờ thì chỉ thử bố cục nguồn `plugins/acceptance-gate/` cạnh gói (kho tự host kit). Không có bộ đọc dùng được → lối
+  gộp theo lời chặn, không rơi về phép cũ.
+- **Giới hạn đã khai:** 1 giới hạn khai trước — ai gọi `dieu-phoi.mjs gop … --theo-loi` bằng tay ở bố cục cài (ngoài kho tự
+  host kit) mà không có `--loi` thì bị chặn kèm lệnh giải — và 6 mục chọn ở Cổng Bằng chứng 22/11, ở Notes hợp đồng — đáng
+  nhớ nhất: Ngoài-4 «README của gói điều phối còn ghi lệnh gộp theo lời không có cờ --loi; làm theo ở bố cục cài thì bị
+  chặn kèm lệnh giải.»
+
+**Ai bị ảnh hưởng:**
+
+- **Kho cài gói `dispatch` và bật `feature_loop.gop_theo_loi_ky`:** lệnh gộp theo lời thôi gộp báo cáo mang chữ ký giữ chỗ
+  (`pending`, `TBD`…) vào nhánh chính — bảng giữ chỗ một nguồn với lõi và lưới trước-gộp. Gọi lệnh ấy bằng tay ở bố cục cài
+  thì phải kèm `--loi <gốc acceptance-gate>`; thiếu thì bị chặn kèm lệnh giải. Dòng lệnh mẫu của SKILL và lệnh ký đã mang
+  sẵn đuôi `--loi`.
+- **Kho không cài gói `dispatch`, hoặc không bật `feature_loop.gop_theo_loi_ky`:** không chạy lệnh gộp theo lời nên không
+  đổi hành vi; chỉ dòng lệnh mẫu trong khối `GOP-THEO-LOI-KY` có thêm đuôi `--loi`.
+- **Kho cài gói `dispatch` mà không có lõi bên cạnh:** lối gộp theo lời chặn có tên, các lối gộp khác như cũ.
+- **Lớp chép CI:** không chép gì — không tệp nào của khối INIT-CI-COPY-LIST đổi từ `v3.1.0`.
+
+**Đường đọc-cũ:** không khoá cấu hình mới, không đổi khuôn hồ sơ; hồ sơ đã có giữ nguyên.
+
+**Kho tiêu thụ làm gì khi nhận:** đổi ghim kit sang thẻ `v3.1.1` (khuôn GUIDE §5.3; kho có biến `KIT_TAG` thì đổi nó), cài
+sáu gói theo ĐÚNG THẺ `v3.1.1` rồi `node <gốc gói acceptance-gate>/scripts/kiem-ban-cai.mjs --may --ref v3.1.1 --root <bản
+clone kit đã git fetch --tags>` — `TỔNG KẾT: ĐẠT …`. Mở phiên MỚI. Lớp chép CI giữ nguyên như `v3.1.0`.
+
+**Người cắt mốc kit:** sau khi gắn thẻ chạy `node plugins/acceptance-gate/scripts/kiem-ban-cai.mjs --ref v3.1.1` (KC1).
+Đối chiếu tập hồ sơ của mốc sau bằng `_acceptance/release-2-39-0/cua-so.sh <mốc-trước> <slug…>`.
+
+**onehub-inventory**: kho nhận của mốc. PR #110 của kho ấy đổi `KIT_TAG` sang `v3.1.0` — cần đổi sang `v3.1.1` để có bản
+vá. Mốc chỉ tính là «được kho nhận» khi có một commit ở nhánh chính kho ấy kéo kit ở thẻ `v3.1.1`.
+
+**Năm dòng số của luật (c)**: một vòng trong cửa sổ (giờ VN). Định nghĩa giữ như mốc 3.1.0: làm-xong = commit đầu đưa hợp
+đồng sang `implemented` · ký = commit đầu đưa `status:` sang trạng thái đã ký · gộp = commit gộp sớm nhất trên lối cha-đầu
+của nhánh chính có commit ký là tổ tiên — đo bằng `_acceptance/release-3-1-1/do-dong-1.sh` (bảng ở `do-dong-1.md`; bộ đo
+`do-gop.mjs` của kit trả rỗng cho vòng này, xem hạt giống `docs/plans/2026-11-23-hat-giong-do-gop-cha-thu-hai.md`). Dòng
+2 đếm từ sổ quyết định. Dòng 4–5 lấy từ bảng vai trò của `usage-report.md`: vật = baseline + machine + judge · tìm-lỗi =
+review + refute · tổng hợp = triage + capture + synthesize. Hồ sơ T2 (trần 3).
+
+| Hồ sơ | 1 · làm-xong→ký · ký→gộp · lượt chấm | 2 · gọi người trong / ngoài (trần) | 3 · lượt bị hạ tầng đốt | 4 · out-token S4 · vật / tìm-lỗi / tổng hợp % | 5 · phút máy / lượt |
+|---|---|---|---|---|---|
+| `va-chu-ky-giu-cho-lenh-gop` (#26, T2) | 3 g 52 · 1 g 14 · 1 (PASS) | 2 / 0 (3): Phạm vi, Bằng chứng | 0 | 80 488 · 46,4 / 41,1 / 12,6 | 64 |
+
+- Ba làn ghim lại, ngoài lượt chấm: 59,7 phút (đỏ — ca vùng 3 của suite plugins sau khi gộp nhánh chính; sửa bằng commit «sổ
+  giới hạn thêm 6 hàng … (P179)») · 66,9 phút (xanh, trước chữ ký) · 63,2 phút (xanh, sau chữ ký, vì nhánh chính tiến bởi PR
+  #24). Cộng **189,8 phút máy**; trong 1 g 14 ký → gộp có 63,2 phút là làn ghim lại.
+- Gộp nhánh chính vào nhánh làm việc: **2** (sau PR #19, #20 · sau PR #24).
+- Lượt đo dài thứ tư (làn ghim lại sau chữ ký) được hỏi và cho chạy ngay trong câu ký ở Cổng Bằng chứng — không thêm lượt
+  gọi. Lời đổi đề bài 21/11 (thu vòng về bản vá) đến từ chủ kho ở phiên giữ đợt, không phải lượt máy gọi — không đếm, như
+  lời giao mở vòng. «0 ngoài thiết kế» nghĩa là «0 ghi được»: không đọc được phiên chat.
+- **Gộp một vòng:** 80 488 out-token S4; 64 phút S4 qua 1 lượt chạy, cộng 189,8 phút làn ghim lại. Làm-xong → ký **3 g 52**;
+  ký → gộp **1 g 14**. Gọi người: 2 trong thiết kế cho 1 kết quả đã gộp. Hạ tầng đốt **0 / 1** lượt chấm. **Ký chưa gộp: 0.**
+
+**Đọc số:**
+- **Ký → gộp dài ra** (trung vị 0 g 12 ở cửa sổ 3.1 → 1 g 14): nhánh chính tiến (PR #24 cắt mốc 3.1.0) ngay lúc ký nên phải
+  gộp nhánh chính vào và ghim lại một làn. Chi phí sau chữ ký nằm ở làn ghim lại, không ở người.
+- **Làn ghim lại tốn gấp ba lượt chấm** (189,8 so 64 phút máy) — chỗ cắt đáng đo cho cửa sổ kế.
+
+**Điều kiện tin cậy:**
+- **(i)** Đường phán quyết (tìm lỗi → phản bác trong hợp đồng → REJECT) không đổi thành phần — `git diff --stat v3.1.0 HEAD --
+  plugins/feature-loop/workflows/ plugins/feature-loop/agents/` rỗng.
+- **(ii)** Lượt chấm sai do phép-đo-tự-dối giữa hai mốc: **0** ghi được.
+
+**Dự báo năm dòng cho thay đổi của mốc này** (kho bật lệnh gộp theo lời): dòng 1 = (ký → gộp chỉ dài ra khi báo cáo mang chữ
+ký giữ chỗ — đúng ý: người phải ký thật) · dòng 2 = (ca giữ chỗ thêm một lượt ký thật, thay cho một lần gộp nhầm khó đảo) ·
+dòng 3 = · dòng 4 = · dòng 5 =.
+
+**Dòng hiệu chuẩn:** `ĐẠT đã ký → prod đỏ: 0 / 0` — N = 0 nên dòng vô hiệu, cấm đọc thành «0 sự cố».
+
 ## 3.1.0 — 22/11/2026
 
 Mốc «Trợ lý quyết định»: hai hàng thí điểm chủ kho duyệt 22/11 (máy đi theo khuyến nghị ở câu chỉ-người đảo được, có
