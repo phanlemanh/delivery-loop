@@ -1401,3 +1401,7 @@ release-3-1-1#may-1	release-3-1-1	low	khac	song			do-dong-1.sh tính phút bằn
 release-3-1-1#may-2	release-3-1-1	medium	khac	song			gop-thu.sh reports green when the suite list is empty [máy sinh từ review-findings.md]
 release-3-1-1#may-3	release-3-1-1	low	khac	song			gop-thu.sh resolves a relative output path in two different places [máy sinh từ review-findings.md]
 release-3-1-1#may-4	release-3-1-1	low	khac	song			Shape 5 (claims the whole suite, no full matrix written in advance): gop-thu.sh divides by the number of commands that happened to run, not by the length of suite_keys [máy sinh từ review-findings.md]
+dac-ta-ux-doc-so-man#may-1	dac-ta-ux-doc-so-man	medium	khac	song			Khối UX-SO-MAN-S1 bảo chạy `--kiem --slug` TRƯỚC khi sinh 3 artifact, lúc contract.md chưa có, nên dòng kiểm ở S1 không bao giờ kiểm được [máy sinh từ review-findings.md]
+dac-ta-ux-doc-so-man#may-2	dac-ta-ux-doc-so-man	low	khac	song			Bộ đọc bảng trạng thái xoá trắng inline code: ô mã trạng thái viết `ST-…` trong backtick bị báo «trống» [máy sinh từ review-findings.md]
+dac-ta-ux-doc-so-man#may-3	dac-ta-ux-doc-so-man	medium	khac	song			Hình dạng 4 (assertion âm-tính-một-mình / không ghim thông điệp): W1 tuyên «chạy được trên kho bỏ đi» mà chỉ đòi mã thoát 0, cũng là mã của nhánh im [máy sinh từ review-findings.md]
+dac-ta-ux-doc-so-man#may-4	dac-ta-ux-doc-so-man	low	khac	song			Hình dạng 5 (quét LỚP mà phép đếm không phải ma trận toàn phần): dòng «số ca chạy: 64» đếm cả id trùng, không so đúng tập ô [máy sinh từ review-findings.md]

@@ -3,10 +3,18 @@
 Chép section trong marker `UX-SPEC-TEMPLATE` dưới đây vào design-doc của
 feature rồi điền. **GIỮ NGUYÊN các dòng marker HTML-comment** (cả
 `UX-SPEC-TEMPLATE` lẫn `UX-STATE-TABLE`): chúng vô hình khi render nhưng là mỏ
-neo máy-đọc CHO VIỆC SAU — phép đo khớp vòng «trạng thái khai trước ↔ bài kiểm
-đo nó» chưa tồn tại (đề bài + điều kiện mở lại:
-`https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/plans/2026-08-24-hat-giong-khop-vong-dac-ta-ux.md`). Bản này KHÔNG có lưới
-máy nào cho đặc tả UX: chốt chặn là MẮT NGƯỜI duyệt tại Cổng Phạm vi.
+neo máy-đọc — hàng tiêu đề bảng trạng thái và hai dòng marker được lệnh
+`scripts/so-man.cjs` rút từ chính tệp này lúc chạy.
+
+**Kho có lệnh đọc màn** (`tools/design-assembly/screen-facts.mjs`): `so-man.cjs
+--dien` in sẵn hàng «Kiểm kê màn» và khối «Bảng trạng thái» từ sổ màn của kho
+(cột chỉ việc này biết để ô khuôn cho người viết); `so-man.cjs --kiem` so bảng
+với sổ — màn hay trạng thái sổ không có, hoặc thiếu trạng thái sổ bắt phải có,
+là câu đỏ nêu đích danh, hiện thành khối thông tin trên thẻ Cổng Phạm vi. Kho
+không có lệnh đọc: hai lệnh im, chốt chặn vẫn là MẮT NGƯỜI duyệt tại Cổng Phạm
+vi. Phép đo khớp vòng «trạng thái khai trước ↔ bài kiểm đo nó» vẫn chưa tồn tại
+(đề bài + điều kiện mở lại:
+`https://github.com/phanlemanh/acceptance-gate-kit/blob/0fe48c145d7ff6d230a736b1852dfbe3ecc0295b/docs/plans/2026-08-24-hat-giong-khop-vong-dac-ta-ux.md`).
 
 Ba dây nối máy-đọc đi kèm (S1 của feature-loop ghi cả ba):
 
@@ -14,8 +22,10 @@ Ba dây nối máy-đọc đi kèm (S1 của feature-loop ghi cả ba):
    repo-root>` — chỗ phép đo tìm section này.
 2. Id trạng thái theo khuôn `ST-<màn>-<trạng-thái>` (chữ/số/gạch-nối) — bảng
    phải có ÍT NHẤT một dòng; bảng rỗng là «chép khuôn rồi xoá sạch».
-3. Đối chiếu tự động «trạng thái khai trước ↔ bài kiểm đo nó» CHƯA có (tách sang
-   việc riêng, 24/08) — người duyệt soi bằng mắt tại cổng.
+3. Ô «Màn» của bảng trạng thái là mã màn của sổ (hoặc đường dẫn của màn) khi
+   kho có lệnh đọc màn — chỉ ô ấy nói được màn nào, vì mã màn và mã trạng thái
+   đều có thể mang gạch nối. Đối chiếu tự động «trạng thái khai trước ↔ bài
+   kiểm đo nó» CHƯA có (tách sang việc riêng, 24/08) — người duyệt soi bằng mắt.
 
 **Cửa miễn:** feature KHÔNG chạm UI → không điền khuôn, ghi MỘT entry
 `descope` vào `decisions.jsonl` với decision bắt đầu đúng chuỗi

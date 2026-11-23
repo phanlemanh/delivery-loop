@@ -1,0 +1,16 @@
+{
+  "_doc": "Nguồn của từng mẫu câu trả lời lệnh đọc màn (hồ sơ dac-ta-ux-doc-so-man, bản thiết kế §2). ban-chep = stdout của lệnh đọc THẬT chạy trên kho bỏ đi bằng sinh-ban-chep.mjs (ledger đổi thành đường tương đối; mọi khoá khác nguyên văn). bien-the = suy từ một bản chép, chỉ khác ở đúng các đường khoá khai (ca F1 kiểm). loc:false = lệnh giả in nguyên mẫu, không lọc theo --screens.",
+  "goc.json": { "loai": "ban-chep", "goi": "design-assembly", "phien_ban": "0.36.1", "lenh": "node tools/design-assembly/screen-facts.mjs --json --target <kho>", "ngay": "2026-11-23" },
+  "khong-bang.json": { "loai": "ban-chep", "goi": "design-assembly", "phien_ban": "0.36.1", "lenh": "node tools/design-assembly/screen-facts.mjs --json --target <kho> (kho không có design/states.json)", "ngay": "2026-11-23" },
+  "khoa-rieng.json": { "loai": "ban-chep", "goi": "design-assembly", "phien_ban": "0.36.1", "lenh": "node tools/design-assembly/screen-facts.mjs --json --target <kho> (sổ không màn nào có entry/actions)", "ngay": "2026-11-23" },
+  "thoat-1.json": { "loai": "ban-chep", "goi": "design-assembly", "phien_ban": "0.36.1", "lenh": "node tools/design-assembly/screen-facts.mjs --json --target <kho> --screens overdue,khong-co", "ngay": "2026-11-23" },
+  "theo-duong.json": { "loai": "ban-chep", "goi": "design-assembly", "phien_ban": "0.36.1", "lenh": "node tools/design-assembly/screen-facts.mjs --json --target <kho> --screens /don-hang,don", "ngay": "2026-11-23" },
+  "thoat-2.json": { "loai": "bien-the", "goc": "goc.json", "khoa": ["exit", "json", "stdout", "stderr"] },
+  "khong-json.json": { "loai": "bien-the", "goc": "goc.json", "khoa": ["json", "stdout"] },
+  "thieu-screens.json": { "loai": "bien-the", "goc": "goc.json", "khoa": ["json.screens"] },
+  "states-khong-mang.json": { "loai": "bien-the", "goc": "goc.json", "khoa": ["json.screens.0.states"] },
+  "ma-gach-dung.json": { "loai": "bien-the", "goc": "goc.json", "khoa": ["json.screens.0.id", "json.screens.1.states.0"] },
+  "thoat1-unknown-rong.json": { "loai": "bien-the", "goc": "goc.json", "khoa": ["exit", "loc"] },
+  "ma-la.json": { "loai": "bien-the", "goc": "goc.json", "khoa": ["exit", "loc"] },
+  "thoat0-co-unknown.json": { "loai": "bien-the", "goc": "goc.json", "khoa": ["loc", "json.unknown.0"] }
+}

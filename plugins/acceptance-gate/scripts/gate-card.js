@@ -869,6 +869,10 @@ if (gate === '1') {
     const ddoc = (cfm.design_doc || '').trim();
     khuonG1 = require('./ban-do-khuon.cjs').theCong1({ root, slug, contractTxt: contract, designTxt: ddoc ? read(path.join(root, ddoc)) : '', decisionsTxt: read(path.join(dir, 'decisions.jsonl')) });
   } catch (e) { khuonG1 = loiKhuon(e); }
+  // ── Bảng trạng thái ↔ sổ màn (dac-ta-ux-doc-so-man AC-8): chỉ ở kho có lệnh đọc màn, hồ sơ nháp. Khối THÔNG TIN —
+  // không vào routing.hoi, không đổi câu gộp, không vào --extract; kho không có lệnh đọc → null, thẻ không đổi một byte.
+  let soManG1 = null;
+  try { soManG1 = require('./so-man.cjs').theCong1({ root, contractTxt: contract }); } catch (e) { process.stderr.write(`gate-card: khối sổ màn không dựng được: ${e.message}\n`); }
   // Câu gộp MÁY SINH cho Cổng 1 — đặt SAU mọi nguồn cờ đỏ và TRƯỚC --extract
   // (thứ tự khai có thật: blindSpot 349 · roiBac 401 · rangHong/mienDo ~549).
   // Ô duy nhất của cổng này là CHỮ QUYẾT: thẻ sạch → điền sẵn «duyệt»; có cờ
@@ -924,6 +928,7 @@ if (gate === '1') {
   if (nen.present) P.push(`<div class="lab">Nền hạ tầng (máy kiểm trước khi vòng viết gì)</div><div class="grp gnot"><p class="li">Nền: <b>${esc(nen.nen || '?')}</b> · công cụ ${esc(nen.cong_cu || '?')} · bộ kiểm ${esc(nen.suite || '?')} · lưới như CI ${esc(nen.luoi || '?')} · bộ máy ${esc(nen.engine || '?')}</p>${nen.do.map(l => `<p class="li">${esc(l)}</p>`).join('')}${nen.vang.length ? `<p class="li"><b>${esc(NEN_VANG_LAB)} (${nen.vang.length})</b></p>${nen.vang.map(l => `<p class="li">${esc(l)}</p>`).join('')}` : ''}</div>`);
   if (sanTk) P.push(`<div class="lab">Sàn thiết kế (thông tin, không cần trả lời)</div><div class="grp gnot">${sanTk.dong.map(t => `<p class="li">${esc(t)}</p>`).join('')}</div>`);
   if (khuonG1) P.push(`<div class="lab">Khuôn (thông tin, không cần trả lời)</div><div class="grp gnot">${[...khuonG1.co.map(t => `<p class="li">⚠ ${esc(t)}</p>`), ...khuonG1.dong.map(t => `<p class="li">${esc(t)}</p>`)].join('')}</div>`);
+  if (soManG1) P.push(`<div class="lab">Bảng trạng thái ↔ sổ màn (thông tin, không cần trả lời)</div><div class="grp gnot">${soManG1.dong.map(t => `<p class="li">${esc(t)}</p>`).join('')}</div>`);
   if (ddLines.length) P.push(`<div class="lab">Đường đo (con số cho ngưỡng sẽ đến từ đâu)</div><div class="grp gnot">${ddLines.map(t => `<p class="li">${esc(t)}</p>`).join('')}</div>`);
   if (dp.present) P.push(`<div class="lab">Bản mẫu &amp; ngữ cảnh</div><div class="grp gnot"><p class="li">Vật liệu: ${esc(dp.material || '(chưa khai)')} · sống ở: <b>${esc(CONTEXT_LABEL[dp.context] || dp.context || '(chưa khai)')}</b>${dp.scenes.length ? ' · ' + dp.scenes.length + ' cảnh ngữ-cảnh' : ''}</p><p class="li">Phản ứng ở nấc: <b>${esc(REACTION_LABEL[dp.reaction] || dp.reaction || '(chưa khai)')}</b>${dp.options ? ' · có bộ phương án đính kèm' : ''}</p></div>`);
   // Dòng ngưỡng in NGUYÊN VĂN (AC-1 hồ sơ moi-noi-vong-trao): chỉ bỏ dấu đầu dòng, không đi qua

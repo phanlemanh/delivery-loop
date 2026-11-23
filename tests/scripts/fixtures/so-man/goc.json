@@ -1,0 +1,140 @@
+{
+  "exit": 0,
+  "json": {
+    "ledger": "design/screens.yaml",
+    "states_table": "design/states.json",
+    "screens": [
+      {
+        "id": "overdue",
+        "route": "/overdue",
+        "title": "overdueTitle",
+        "family": null,
+        "status": "built",
+        "states": [
+          "loading",
+          "empty",
+          "error",
+          "list"
+        ],
+        "must_have": [
+          "loading",
+          "empty",
+          "error"
+        ],
+        "exempt": null,
+        "entry": {
+          "action": null,
+          "roles": null
+        },
+        "actions": []
+      },
+      {
+        "id": "don",
+        "route": "/don",
+        "title": "donTitle",
+        "family": null,
+        "status": "built",
+        "states": [
+          "loading",
+          "empty",
+          "error"
+        ],
+        "must_have": [
+          "loading",
+          "empty",
+          "error"
+        ],
+        "exempt": null,
+        "entry": {
+          "action": null,
+          "roles": null
+        },
+        "actions": []
+      },
+      {
+        "id": "don-hang",
+        "route": "/don-hang",
+        "title": "donHangTitle",
+        "family": null,
+        "status": "built",
+        "states": [
+          "loading",
+          "error",
+          "chi-tiet"
+        ],
+        "must_have": [
+          "loading",
+          "empty",
+          "error"
+        ],
+        "exempt": null,
+        "entry": {
+          "action": null,
+          "roles": null
+        },
+        "actions": []
+      },
+      {
+        "id": "ho-so",
+        "route": "/ho-so",
+        "title": "hoSoTitle",
+        "family": null,
+        "status": "built",
+        "states": [
+          "xem"
+        ],
+        "must_have": [],
+        "exempt": "trang tĩnh, không tải dữ liệu",
+        "entry": {
+          "action": null,
+          "roles": null
+        },
+        "actions": []
+      },
+      {
+        "id": "trong",
+        "route": "/trong",
+        "title": "trongTitle",
+        "family": null,
+        "status": "built",
+        "states": [],
+        "must_have": [
+          "loading",
+          "empty",
+          "error"
+        ],
+        "exempt": null,
+        "entry": {
+          "action": null,
+          "roles": null
+        },
+        "actions": []
+      },
+      {
+        "id": "tổng-quan",
+        "route": "/tong-quan",
+        "title": "tongQuanTitle",
+        "family": null,
+        "status": "built",
+        "states": [
+          "loading",
+          "empty",
+          "error"
+        ],
+        "must_have": [
+          "loading",
+          "empty",
+          "error"
+        ],
+        "exempt": null,
+        "entry": {
+          "action": null,
+          "roles": null
+        },
+        "actions": []
+      }
+    ],
+    "unknown": [],
+    "keys_not_found": []
+  }
+}

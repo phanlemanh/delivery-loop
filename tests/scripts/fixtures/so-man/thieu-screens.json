@@ -1,0 +1,9 @@
+{
+  "exit": 0,
+  "json": {
+    "ledger": "design/screens.yaml",
+    "states_table": "design/states.json",
+    "unknown": [],
+    "keys_not_found": []
+  }
+}

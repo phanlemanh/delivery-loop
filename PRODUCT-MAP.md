@@ -12,7 +12,7 @@ flowchart TD
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
   B --> CD["Chờ duyệt phạm vi<br/>chưa có"] --> GP{"Cổng Phạm vi"}
   GP --> DL["Đang làm<br/>3 việc"] --> GB{"Cổng Bằng chứng"}
-  GB --> DG["Đã giao<br/>162 việc"]
+  GB --> DG["Đã giao<br/>163 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>74 việc"] --> GG{"Cổng Giá trị"}
   GG --> NT["Đã nghiệm thu giá trị<br/>7 việc"]
 ```
@@ -144,6 +144,7 @@ flowchart TD
 - Cổng Đáng có cửa — thẻ cổng thứ ba + ký một lượt bằng lệnh duyệt sẵn có (`cong-dang-co-cua`) — đã giao — đã nghỉ, giữ sử liệu
 - Cổng người đọc đủ nguồn — thẻ đọc được tiêu chí khai bằng tiêu đề, ba bên gọi cùng một bộ bóc, mục Coverage viết bằng bảng thôi bị báo thiếu oan (`cong-nguoi-doc-du-nguon`)
 - Chữ ký người ở Cổng Bằng chứng đóng cửa veto — lưới trước-merge và máy quét /start thôi nói «owner chưa veto» về hồ sơ người đã ký (`cua-veto-sau-chu-ky`) — đã giao — đã nghỉ, giữ sử liệu
+- Đặc tả UX đọc sổ màn — điền sẵn kiểm kê màn và bảng trạng thái từ lệnh đọc màn của kho, và một lệnh kiểm bảng trạng thái so với sổ (`dac-ta-ux-doc-so-man`)
 - Dải tóm tắt hồ sơ nói đúng trên dữ liệu thật — ô production tách «đã triển khai» (máy suy, khi kho khai nhánh production) khỏi «đã thấy chạy» (người ghi), ô chưa làm đếm đủ giới hạn người đã chọn và gọi đúng tên phần để ngoài phạm vi, ô vì sao không cụt ở câu dẫn và không quá 400 ký tự (`dai-tom-tat-doc-dung`)
 - design-gate chế độ chặt tuỳ chọn — cờ `--require-measured` làm «không đo được» (đích không phải HTML) thoát mã 5 thay vì 0, ở cả static lẫn dom; vắng cờ mọi ô y như bản gốc (`design-gate-che-do-chat`)
 - Đổi tài khoản giữa đợt Điều phối – Thợ không mất việc — đọc mức dùng (CLI han-muc, mod đọc mức dùng), báo trước và tự bàn giao theo ngưỡng, hai pha ★, lệnh /dieu-phoi:ban-giao, ban-giao.json dựng từ git, tiếp tục dưới tài khoản kia bằng một lệnh, lưới cuối StopFailure, răng an toàn của lớp mod (`dieu-phoi-doi-tai-khoan`)

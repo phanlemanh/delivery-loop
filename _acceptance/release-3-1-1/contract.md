@@ -5,7 +5,7 @@ slug: release-3-1-1
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: 5 tệp khai + câu khớp-phiên-bản của GUIDE + CHANGELOG + hồ sơ mốc + bản đồ — KHÔNG dính t3_paths
 surfaces: [cli]
-status: verified
+status: implemented
 approved_by: Phan Le Manh
 approved_at: 2026-11-23
 ---
@@ -113,6 +113,10 @@ Source input: `git log v3.1.0..origin/main --first-parent` · nếp phát hành 
   nhánh chính gộp vào nhánh — lấy bằng PR tạm vào nhánh `tam/ci-release-3-1-1-nen-1a887948` đặt ở `1a887948`, vì CI của kho
   chỉ chạy trên PR và bản gộp của PR ấy có cây trùng cây commit mốc. #27 vào mốc sau. Đề bài ghi «thẻ vào đúng commit gộp»;
   lối này lệch chữ ấy có chủ đích, chủ kho đã chọn.
+  CI trên commit mốc: `b427f2af` lượt 45116883796 và `1193bc22` (commit mốc, có câu CHANGELOG đã sửa) lượt 45117767660 —
+  job `tests` xanh 13/13 mảnh ở cả hai; job `gate` đỏ đúng một vi phạm «human_signoff is empty» (Cổng Bằng chứng chưa ký).
+  Sau đó nhánh chính `b0f88c44` gộp vào nhánh; `dinh-moc.txt` = `1193bc22`; hợp đồng hạ về `implemented` cho lượt chấm 4
+  (chủ kho «cho chạy lượt chấm 4» — vượt trần ba lượt, cũng là lượt đo dài thứ ba).
 - **Lượt chấm 2 đỏ ở P179** (23/11, sau Cổng Phạm vi): lượt 1 ghi bốn mục «Đề xuất: known-limits» vào
   `review-findings.md` mà sổ `docs/research/known-limits-ledger.tsv` chưa thêm hàng (1398 < 1402). Sửa bằng
   `node tools/so-gioi-han.mjs --slug release-3-1-1 --write`. Bước này không có trong SKILL hay GUIDE, và #26 vấp
