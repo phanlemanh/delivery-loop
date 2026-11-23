@@ -61,7 +61,7 @@ vào nhánh, trả lời một dòng là đủ. Mỗi lần đẩy `chuyen-nha` 
 | Đợt 0 (K8, K1 nửa đầu, K6, K9, K11, K12) | xong 21/11 |
 | Vòng DL1 + P179 (K1 nửa sau, K2; K10 để ngoài) | GỘP 22/11, PR #17, `56bb22b1`; 5 lượt gọi (trần 4); để lại nhánh chính đỏ (mục 1) |
 | Vòng bản vá chữ ký giữ chỗ | TẠM GÁC. Chủ kho: «Mở lại sau DL1». Hồ sơ nháp chưa duyệt — mục 4 |
-| Mốc chung quanh 02/12 (DL1, P179, bản vá, «lời gộp») | chưa mở; tên hồ sơ để dành: `release-3-1-0` |
+| Mốc chung quanh 02/12 (DL1, P179, bản vá, «lời gộp») | thẻ `v3.1.0` đã cắt 22/11 ở `0a93a5b9` (PR #24, hồ sơ `release-3-1-0`); bản vá gộp sau thẻ (`1a887948`), chưa vào thẻ nào |
 | DL2 (K3) | vòng kế sau mốc, chờ chủ kho gọi tên |
 | K4, K7, K5, phần kit của K6 và K9, DL4, DL6 | chờ ngưỡng |
 
@@ -80,7 +80,7 @@ vào nhánh, trả lời một dòng là đủ. Mỗi lần đẩy `chuyen-nha` 
 | Khi | Việc | Ai quyết |
 |---|---|---|
 | ~~Ngay~~ | ~~Nhánh chính kit đỏ → mở vòng sửa~~ — **xong 22/11**: `main` xanh ở `a2198fcf` (PR #22) | — |
-| **Đã mở 22/11** (phiên `va-chu-ky`) | Mở lại vòng bản vá chữ ký giữ chỗ (đã có quyết định). Khi mở, hỏi chủ kho có gộp sáu mục Ngoài-6, 7, 8, 12, 13, 14 của `tep-chung-khong-chan-gop/review-findings.md` vào không: kho đầu tiên bật `ban_do.ngoai_git` sẽ vấp chúng | chủ kho bảo mở phiên |
+| ~~**Đã mở 22/11** (phiên `va-chu-ky`)~~ xong 23/11: PR #26, commit gộp `1a887948`, CI xanh | Mở lại vòng bản vá chữ ký giữ chỗ (đã có quyết định). Khi mở, hỏi chủ kho có gộp sáu mục Ngoài-6, 7, 8, 12, 13, 14 của `tep-chung-khong-chan-gop/review-findings.md` vào không: kho đầu tiên bật `ban_do.ngoai_git` sẽ vấp chúng | chủ kho bảo mở phiên |
 | Ngay, còn treo | Dòng «Đường lùi» ở `GUIDE.md` §5.4 (trên nhánh chính): mở PR tài liệu bỏ nó, hay giữ. Chủ kho chưa trả lời | chủ kho |
 | Mỗi sáng | Chuông hằng ngày (mục 9) | máy |
 | 28/11 | Đo K1: số lần xung đột ở `LO-TRINH.html` trong 7 ngày sau PR #100 của Inventory, bằng `cong-cu/phat-lai-gop-nguoc.py` (mục 6) | máy |
