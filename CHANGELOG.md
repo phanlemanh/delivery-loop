@@ -22,8 +22,9 @@ của hồ sơ mốc): `va-chu-ky-giu-cho-lenh-gop` (#26). Không PR nào khác 
 thẻ trước (AC-4). Ngoài năm tệp khai, cây `plugins/` của thẻ trùng byte với commit gộp `1a887948` của bản vá (AC-7). Thẻ
 `v3.1.1` gắn vào commit gộp PR mốc.
 
-**Vì sao 3.1.1** (patch): theo nếp «minor cho bề mặt mới», bản này không có cờ, khoá cấu hình hay lệnh mới — vòng duy nhất
-siết một vế kiểm sẵn có. Một đổi hành vi chạm kho đang dùng lệnh gộp theo lời, khai thẳng ở «Ai bị ảnh hưởng» dưới.
+**Vì sao 3.1.1** (patch): theo nếp «minor cho bề mặt mới», bản này không thêm khoá cấu hình, lệnh hay bề mặt mới — vòng duy
+nhất siết một vế kiểm sẵn có. Lệnh gộp theo lời có thêm MỘT cờ, `--loi`, chỉ để chỉ đường tới bộ đọc chữ ký của lõi cho
+chính vế kiểm ấy (mục con dưới). Một đổi hành vi chạm kho đang dùng lệnh gộp theo lời, khai thẳng ở «Ai bị ảnh hưởng» dưới.
 
 ### Lệnh gộp theo lời đọc chữ ký bằng vị từ của lõi (hồ sơ `va-chu-ky-giu-cho-lenh-gop`, T2)
 
