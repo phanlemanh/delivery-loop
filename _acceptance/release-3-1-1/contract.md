@@ -5,7 +5,7 @@ slug: release-3-1-1
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: 5 tệp khai + câu khớp-phiên-bản của GUIDE + CHANGELOG + hồ sơ mốc + bản đồ — KHÔNG dính t3_paths
 surfaces: [cli]
-status: approved
+status: implemented
 approved_by: Phan Le Manh
 approved_at: 2026-11-23
 ---
@@ -99,4 +99,5 @@ Source input: `git log v3.1.0..origin/main --first-parent` · nếp phát hành 
   90c3f9f1` thoát 1 «plugins/diagram-design có dòng đổi»; `chay.sh goi-doi` thoát 1 «tập tệp đổi khác hai tệp khai»;
   `chay.sh vat-va` thoát 1 «tập tệp đổi khác bốn tệp của #26 cộng năm tệp khai»; `chay.sh vat-va 0a93a5b9 0a93a5b9` (giả
   commit bản vá là thẻ cũ) thoát 1 thêm «ngoài năm tệp khai, plugins/ ở HEAD lệch commit gộp bản vá: …» nêu bốn tệp.
-  `chay.sh lop-chep` đo sau khi có mục 3.1.1.
+  `chay.sh lop-chep a2198fcf` (sau khi có mục 3.1.1) thoát 1 «tệp đổi mà ghi chú KHÔNG kể: scripts/can-cu-s1.cjs
+  scripts/hop-thu/hinh-dang.mjs scripts/tro-ly-quyet-dinh.cjs».
