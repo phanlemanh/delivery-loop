@@ -5,7 +5,7 @@ slug: release-3-1-1
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: 5 tệp khai + câu khớp-phiên-bản của GUIDE + CHANGELOG + hồ sơ mốc + bản đồ — KHÔNG dính t3_paths
 surfaces: [cli]
-status: verified
+status: signed-off
 approved_by: Phan Le Manh
 approved_at: 2026-11-23
 ---
@@ -122,3 +122,12 @@ Source input: `git log v3.1.0..origin/main --first-parent` · nếp phát hành 
   `node tools/so-gioi-han.mjs --slug release-3-1-1 --write`. Bước này không có trong SKILL hay GUIDE, và #26 vấp
   đúng chỗ ấy ở làn ghim lại — hạt giống `docs/plans/2026-11-23-hat-giong-so-gioi-han-sau-luot-cham.md`, không làm
   trong vòng này.
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-23:
+  - Ngoài-1: Lần cài thử E9 kiểm đỉnh nhánh đã gộp #27, không kiểm commit mốc mà thẻ gắn vào; hai bản trùng nhau ở phần mã cài nên chưa ảnh hưởng ai.
+  - Ngoài-2: Cờ `--dinh-moc` chỉ kiểm dòng mốc là một commit có thật; sửa tay dòng ấy thành bản khác thì E3–E7 vẫn có thể xanh dù đo nhầm bản.
+  - Ngoài-4: Lệnh hồ sơ bị ngắt giữa chừng có thể để lại cây tạm; `do-dong-1.sh` chỉ đúng với `date` của macOS, trên máy khác in số phút sai mà không báo lỗi.
+  - Ngoài-5: Công cụ rà gộp thử báo «XANH: 1/1» khi danh sách lệnh kiểm trong cấu hình rỗng hoặc thiếu khoá — không lệnh nào chạy mà vẫn xanh.
+  - Ngoài-7: Phán quyết E7 nói về thẻ nhưng chỉ kiểm commit ghi tay ở `dinh-moc.txt`; thẻ gắn lệch thì phép đo không thấy.
+  - Ngoài-8: Phép đối chiếu cửa sổ của E3 chỉ nhận hồ sơ `signed-off`, bỏ sót hồ sơ `machine-cleared` và `da-cham-boi-thuc-te`; ở mốc này không thiếu hồ sơ nào.
+  - Ngoài-9: E3–E7 đo một commit ghi tay, không kiểm nó gắn với HEAD hay với thẻ; hôm nay commit ấy là cha đầu của đỉnh nhánh.
+  - Ngoài-10: Ca P200 chỉ bảo đảm năm gói cùng một số, không bảo đảm số ấy là 3.1.1; người cắt mốc tự nhìn số khi gắn thẻ.
