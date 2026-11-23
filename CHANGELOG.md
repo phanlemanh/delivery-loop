@@ -16,11 +16,13 @@
 Bản vá của 3.1.0: thẻ `v3.1.0` (`0a93a5b9`, PR #24) được cắt TRƯỚC khi bản vá chữ ký giữ chỗ gộp, nên kho cài 3.1.0 vẫn để
 báo cáo mang `human_signoff: pending` qua vế chữ ký của lệnh gộp theo lời. Chủ kho 23/11 «Mở phiên mới vòng mốc 3.1.1 mang
 bản vá». Có **một hồ sơ được ký** sau thẻ `v3.1.0` — tập đối chiếu bằng `_acceptance/release-3-1-1/chay.sh cua-so` (AC-3
-của hồ sơ mốc): `va-chu-ky-giu-cho-lenh-gop` (#26). Không PR nào khác gộp vào nhánh chính trong cửa sổ. Năm gói
+của hồ sơ mốc): `va-chu-ky-giu-cho-lenh-gop` (#26). Trong cửa sổ từ thẻ `v3.1.0` tới thẻ này không PR nào khác. Năm gói
 `acceptance-gate`, `feature-loop`, `dispatch`, `roadmap`, `knowledge` cùng lên `3.1.1` (`acceptance-gate`, `feature-loop`,
 `dispatch` đổi vật; `roadmap`, `knowledge` chỉ đổi số — AC-5); `diagram-design` giữ `3.0.0` vì thư mục của nó không đổi từ
 thẻ trước (AC-4). Ngoài năm tệp khai, cây `plugins/` của thẻ trùng byte với commit gộp `1a887948` của bản vá (AC-7). Thẻ
-`v3.1.1` gắn vào commit gộp PR mốc.
+`v3.1.1` gắn vào commit cuối của nhánh mốc TRƯỚC khi nhánh chính gộp vào nhánh, không vào commit gộp PR mốc như các mốc
+trước: PR #27 (`dac-ta-ux-doc-so-man`) gộp vào nhánh chính 23/11 09:41, giữa lúc vòng mốc chạy, và đổi `plugins/`; thẻ
+không mang nó — #27 vào mốc sau. Commit của thẻ vẫn nằm trong lịch sử nhánh chính sau khi PR mốc gộp.
 
 **Vì sao 3.1.1** (patch): theo nếp «minor cho bề mặt mới», bản này không thêm khoá cấu hình, lệnh hay bề mặt mới — vòng duy
 nhất siết một vế kiểm sẵn có. Lệnh gộp theo lời có thêm MỘT cờ, `--loi`, chỉ để chỉ đường tới bộ đọc chữ ký của lõi cho

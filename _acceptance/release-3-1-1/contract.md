@@ -23,8 +23,8 @@ approved_at: 2026-11-23
 mở. Vòng này KHÔNG đụng Inventory; kho nhận cần đổi `KIT_TAG` sang `v3.1.1` để có bản vá — việc ở phiên của kho đó.
 
 **Cửa sổ này có gì** — suy từ kho bằng quan hệ (AC-3), không chép tay. Một hồ sơ **được ký** sau thẻ `v3.1.0`:
-`va-chu-ky-giu-cho-lenh-gop` (#26). Không PR nào khác gộp vào nhánh chính trong cửa sổ (`git log --first-parent
-v3.1.0..origin/main` chỉ có commit gộp `1a887948`). Thư mục gói có tệp đổi: `acceptance-gate` (`commands/signoff.md`) ·
+`va-chu-ky-giu-cho-lenh-gop` (#26). Không PR nào khác gộp vào nhánh chính trong cửa sổ tới commit mốc (lúc cắt nhánh, `git
+log --first-parent v3.1.0..origin/main` chỉ có commit gộp `1a887948`; PR #27 gộp sau đó — xem Notes «Lối B»). Thư mục gói có tệp đổi: `acceptance-gate` (`commands/signoff.md`) ·
 `dispatch` (`scripts/gop.mjs`, `scripts/dieu-phoi.mjs`) · `feature-loop` (`skills/feature-loop/SKILL.md`).
 
 **Vật của mốc** (trên nền `1a887948`):
@@ -47,13 +47,16 @@ Source input: `git log v3.1.0..origin/main --first-parent` · nếp phát hành 
 
 ## Criteria
 
+**Commit mốc** = commit gắn thẻ `v3.1.1`: commit cuối của nhánh mốc TRƯỚC khi nhánh chính gộp vào nhánh (lối B, Notes). Lệnh
+`chay.sh <nhóm> --dinh-moc` đo ở commit ấy — sha ghi ở `dinh-moc.txt` của hồ sơ; ở chính commit mốc tệp vắng nên là HEAD.
+
 - AC-1: Given cây đã sửa, When chạy vùng 3 của suite plugins (ca vĩnh viễn P200), Then lệnh thoát 0 — P200 đòi năm gói lõi mang CÙNG một số hợp semver, `diagram-design` hợp semver, mô tả `acceptance-gate` có mục của đúng số ấy, mục ấy của `feature-loop` tự khai cặp `acceptance-gate >= <số>`, và câu «Khớp phiên bản» của GUIDE dựng từ số trong tệp khai.
 - AC-2: Given cây đã sửa, When chạy mọi lệnh suite của lượt chấm (bốn mảnh scripts, hooks, ba vùng plugins, workflows) và `product-map --check`, Then mọi lệnh XANH.
-- AC-3: Given tập hồ sơ ĐƯỢC KÝ sau thẻ `v3.1.0` suy từ kho (`_acceptance/release-3-1-1/chay.sh cua-so`), When so với hồ sơ kể trong Context, Then hai tập BẰNG NHAU.
-- AC-4: Given mốc `0a93a5b9` (thẻ `v3.1.0`), When so thư mục `plugins/diagram-design/` và số của nó với HEAD (`chay.sh dd-giu`), Then thư mục KHÔNG có dòng đổi VÀ số bằng số ở mốc — `diagram-design` giữ `3.0.0` là đúng.
-- AC-5: Given mốc `0a93a5b9`, When liệt tệp đổi dưới `plugins/roadmap/` và `plugins/knowledge/` tới HEAD (`chay.sh goi-doi`), Then tập tệp đổi BẰNG đúng hai tệp khai VÀ mọi dòng đổi là dòng `"version"`.
-- AC-6: Given khối INIT-CI-COPY-LIST của `acceptance-init`, gạch «Lớp chép CI» của mục `3.1.1` trong CHANGELOG và mốc `0a93a5b9`, When so tệp nào của lớp chép đổi byte tới HEAD (`chay.sh lop-chep`), Then tập tệp đổi BẰNG tập ghi chú kể — ở mốc này cả hai rỗng và gạch nói đúng chữ «không chép gì».
-- AC-7: Given mốc `0a93a5b9` và commit gộp #26 `1a887948`, When liệt tệp đổi dưới `plugins/` từ mốc tới HEAD và so phần ngoài năm tệp khai với `1a887948` (`chay.sh vat-va`), Then tập tệp đổi BẰNG bốn tệp của #26 cộng năm tệp khai, VÀ ngoài năm tệp khai cây `plugins/` ở HEAD trùng byte với `1a887948` — thẻ mang đúng bản vá, không thêm gì khác.
+- AC-3: Given tập hồ sơ ĐƯỢC KÝ sau thẻ `v3.1.0` tới commit mốc, suy từ kho (`_acceptance/release-3-1-1/chay.sh cua-so --dinh-moc`), When so với hồ sơ kể trong Context, Then hai tập BẰNG NHAU.
+- AC-4: Given mốc `0a93a5b9` (thẻ `v3.1.0`), When so thư mục `plugins/diagram-design/` và số của nó với commit mốc (`chay.sh dd-giu --dinh-moc`), Then thư mục KHÔNG có dòng đổi VÀ số bằng số ở mốc — `diagram-design` giữ `3.0.0` là đúng.
+- AC-5: Given mốc `0a93a5b9`, When liệt tệp đổi dưới `plugins/roadmap/` và `plugins/knowledge/` tới commit mốc (`chay.sh goi-doi --dinh-moc`), Then tập tệp đổi BẰNG đúng hai tệp khai VÀ mọi dòng đổi là dòng `"version"`.
+- AC-6: Given khối INIT-CI-COPY-LIST của `acceptance-init`, gạch «Lớp chép CI» của mục `3.1.1` trong CHANGELOG và mốc `0a93a5b9`, When so tệp nào của lớp chép đổi byte tới commit mốc (`chay.sh lop-chep --dinh-moc`), Then tập tệp đổi BẰNG tập ghi chú kể — ở mốc này cả hai rỗng và gạch nói đúng chữ «không chép gì».
+- AC-7: Given mốc `0a93a5b9` và commit gộp #26 `1a887948`, When liệt tệp đổi dưới `plugins/` từ mốc tới commit mốc và so phần ngoài năm tệp khai với `1a887948` (`chay.sh vat-va --dinh-moc`), Then tập tệp đổi BẰNG bốn tệp của #26 cộng năm tệp khai, VÀ ngoài năm tệp khai cây `plugins/` ở commit mốc trùng byte với `1a887948` — thẻ mang đúng bản vá, không thêm gì khác.
 - AC-8: Given mục `3.1.1` của `CHANGELOG.md` cùng nguồn nó chép, When đọc từng phần, Then (i) mục con của hồ sơ (dòng «Gốc:», gạch «Vật:», giới hạn trích, giới hạn khai trước) là chữ của hợp đồng hồ sơ ấy, không nói rộng hơn, và số giới hạn khớp Notes và sổ quyết định; (ii) năm dòng số khớp nguồn đếm (sổ chạy, `usage-report.md`, sổ quyết định, lịch sử commit đã dẫn); (iii) đoạn «Vì sao 3.1.1» và «Ai bị ảnh hưởng» không giấu đổi hành vi chạm kho đang dùng, nêu rõ kho không cài gói điều phối có đổi hành vi không. (judgment)
 - AC-9: Given số trong tệp khai `acceptance-gate` ở HEAD khác gốc vòng, When chạy khoá `kiem_ban_cai_moc`, Then lệnh chạy TRỌN kiểm bản cài trên HEAD và thoát 0 với «TỔNG KẾT: ĐẠT … — HEAD (<sha>) cài đúng tag»; đỏ thì KHÔNG cắt mốc.
 
@@ -101,6 +104,15 @@ Source input: `git log v3.1.0..origin/main --first-parent` · nếp phát hành 
   commit bản vá là thẻ cũ) thoát 1 thêm «ngoài năm tệp khai, plugins/ ở HEAD lệch commit gộp bản vá: …» nêu bốn tệp.
   `chay.sh lop-chep a2198fcf` (sau khi có mục 3.1.1) thoát 1 «tệp đổi mà ghi chú KHÔNG kể: scripts/can-cu-s1.cjs
   scripts/hop-thu/hinh-dang.mjs scripts/tro-ly-quyet-dinh.cjs».
+- **Lối B — thẻ không vào commit gộp PR mốc** (chủ kho 23/11 ở phiên vòng, nguyên văn «B, cho mở PR tạm vào nhánh đặt ở
+  1a887948 để lấy CI trên b427f2af»). PR #27 (`dac-ta-ux-doc-so-man`, `b0f88c44`) gộp vào nhánh chính 23/11 09:41 sau khi
+  nhánh vòng cắt từ `1a887948`, đổi `plugins/` và có một hồ sơ đã ký. Gộp nhánh chính vào nhánh rồi gắn thẻ vào commit gộp
+  PR thì thẻ mang cả #27 — không còn là bản vá (E3, E7 đỏ trên commit gộp thử). Nên: thẻ `v3.1.1` gắn vào commit mốc; E3–E7
+  đo ở commit mốc bằng `--dinh-moc`; E1, E2*, E9 vẫn đo HEAD (bộ kiểm phải xanh trên chính cây sẽ gộp). Câu CHANGELOG về
+  chỗ gắn thẻ sửa theo, trong chính commit mốc. Commit mốc phải có một lượt CI chạy xong và xanh ở job `tests` trước khi
+  nhánh chính gộp vào nhánh — lấy bằng PR tạm vào nhánh `tam/ci-release-3-1-1-nen-1a887948` đặt ở `1a887948`, vì CI của kho
+  chỉ chạy trên PR và bản gộp của PR ấy có cây trùng cây commit mốc. #27 vào mốc sau. Đề bài ghi «thẻ vào đúng commit gộp»;
+  lối này lệch chữ ấy có chủ đích, chủ kho đã chọn.
 - **Lượt chấm 2 đỏ ở P179** (23/11, sau Cổng Phạm vi): lượt 1 ghi bốn mục «Đề xuất: known-limits» vào
   `review-findings.md` mà sổ `docs/research/known-limits-ledger.tsv` chưa thêm hàng (1398 < 1402). Sửa bằng
   `node tools/so-gioi-han.mjs --slug release-3-1-1 --write`. Bước này không có trong SKILL hay GUIDE, và #26 vấp

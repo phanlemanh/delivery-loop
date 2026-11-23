@@ -5,6 +5,8 @@
 # tep-chung-khong-chan-gop) — không thêm khoá vào `_acceptance/config.yaml`. Chiều đỏ của bốn lệnh ghi ở Notes hợp đồng.
 # E1/E2h chấm MÃ THOÁT của vùng 3 — không hứa dòng P200 trong bằng chứng.
 # long_running khai từ đầu cho hai lệnh dài: vùng 2 của suite plugins, kiểm bản cài trọn.
+# Lối B (chủ kho 23/11): E3–E7 đo ở COMMIT MỐC (commit gắn thẻ v3.1.1 = commit cuối của nhánh mốc trước khi nhánh chính
+# gộp vào) qua cờ `--dinh-moc` của chay.sh — sha ở dinh-moc.txt, vắng tệp thì là HEAD. E1, E2*, E9 vẫn đo HEAD.
 evals:
   - id: E1
     criterion: AC-1
@@ -80,30 +82,30 @@ evals:
   - id: E3
     criterion: AC-3
     executor: script
-    cmd: bash _acceptance/release-3-1-1/chay.sh cua-so
+    cmd: bash _acceptance/release-3-1-1/chay.sh cua-so --dinh-moc
     expected: >
       Exit 0 và dòng «XANH: hai tập bằng nhau» — tập hồ sơ ĐƯỢC KÝ trong cửa sổ `0a93a5b9..HEAD`, suy từ kho bằng QUAN HỆ
-      (bỏ hồ sơ mốc `release-*`), BẰNG đúng một hồ sơ kể trong Context: va-chu-ky-giu-cho-lenh-gop.
+      (bỏ hồ sơ mốc `release-*`), đo ở commit mốc, BẰNG đúng một hồ sơ kể trong Context: va-chu-ky-giu-cho-lenh-gop.
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
   - id: E4
     criterion: AC-4
     executor: script
-    cmd: bash _acceptance/release-3-1-1/chay.sh dd-giu
+    cmd: bash _acceptance/release-3-1-1/chay.sh dd-giu --dinh-moc
     expected: >
       Exit 0 và dòng «XANH: diagram-design không đổi, giữ số» kèm «moc:   "version": "3.0.0", | HEAD:   "version": "3.0.0",».
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
   - id: E5
     criterion: AC-5
     executor: script
-    cmd: bash _acceptance/release-3-1-1/chay.sh goi-doi
+    cmd: bash _acceptance/release-3-1-1/chay.sh goi-doi --dinh-moc
     expected: >
       Exit 0 và dòng «XANH: hai gói chỉ đổi dòng version» — tập tệp đổi dưới `plugins/roadmap/` và `plugins/knowledge/` từ
-      `0a93a5b9` tới HEAD bằng đúng hai tệp khai, mọi dòng đổi là dòng "version".
+      `0a93a5b9` tới commit mốc bằng đúng hai tệp khai, mọi dòng đổi là dòng "version".
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
   - id: E6
     criterion: AC-6
     executor: script
-    cmd: bash _acceptance/release-3-1-1/chay.sh lop-chep
+    cmd: bash _acceptance/release-3-1-1/chay.sh lop-chep --dinh-moc
     expected: >
       Exit 0 và dòng «XANH: đúng 0 tệp đổi như ghi chú 3.1.1 kể» kèm «ghi chú 3.1.1 kể: (không chép gì)» — 39 tệp trong
       khối INIT-CI-COPY-LIST, không tệp nào đổi byte từ `0a93a5b9`; gạch «Lớp chép CI» của mục 3.1.1 nói đúng chữ «không
@@ -112,11 +114,11 @@ evals:
   - id: E7
     criterion: AC-7
     executor: script
-    cmd: bash _acceptance/release-3-1-1/chay.sh vat-va
+    cmd: bash _acceptance/release-3-1-1/chay.sh vat-va --dinh-moc
     expected: >
       Exit 0 và dòng «XANH: thẻ mang đúng bản vá #26 — 4 tệp vật + 5 tệp khai, phần còn lại trùng byte 1a887948…» — tập
-      tệp đổi dưới `plugins/` từ `0a93a5b9` tới HEAD bằng bốn tệp của #26 (signoff.md, dieu-phoi.mjs, gop.mjs, SKILL.md của
-      feature-loop) cộng năm tệp khai; ngoài năm tệp khai, `plugins/` ở HEAD trùng byte `1a887948`. Chiều đỏ ở Notes.
+      tệp đổi dưới `plugins/` từ `0a93a5b9` tới commit mốc bằng bốn tệp của #26 (signoff.md, dieu-phoi.mjs, gop.mjs, SKILL.md của
+      feature-loop) cộng năm tệp khai; ngoài năm tệp khai, `plugins/` ở commit mốc trùng byte `1a887948`. Chiều đỏ ở Notes.
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
   - id: E8
     criterion: AC-8
