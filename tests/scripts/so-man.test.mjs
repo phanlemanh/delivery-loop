@@ -197,18 +197,20 @@ function the(kho, { gc = GC, env = {}, extra = [] } = {}) {
   const r = spawnSync(process.execPath, [gc, '--root', kho.dir, '--slug', 'demo', '--gate', '1', ...extra], { encoding: 'utf8', env: { ...process.env, ...env } });
   return { code: r.status, out: r.stdout || '', err: r.stderr || '', ms: Date.now() - t0 };
 }
-let GC_GOC = null;
-// gate-card.js của cây ở gốc nhánh (merge-base với nhánh chính), lấy TRỌN thư mục plugin bằng git archive.
-function gcGoc() {
-  if (GC_GOC) return GC_GOC;
+let GOC_NHANH = null;
+// Cây ở gốc nhánh (merge-base với nhánh chính): TRỌN thư mục plugin bằng git archive. Bộ đột biến chạy tệp ca trong
+// một bản sao không phải kho git, nên nó dựng thư mục ấy trước từ kho thật và trao qua SO_MAN_GOC_NHANH.
+function gocNhanh() {
+  if (GOC_NHANH) return GOC_NHANH;
+  if (process.env.SO_MAN_GOC_NHANH) return (GOC_NHANH = process.env.SO_MAN_GOC_NHANH);
   const ref = ['main', 'origin/main'].map(b => { try { return execFileSync('git', ['-C', KIT, 'merge-base', 'HEAD', b], { encoding: 'utf8' }).trim(); } catch { return ''; } }).find(Boolean);
   if (!ref) throw new Error('không tìm được gốc nhánh (merge-base với main/origin/main)');
   const d = path.join(TAM, 'goc-nhanh');
   mkdirSync(d, { recursive: true });
   execFileSync('bash', ['-c', `git -C "${KIT}" archive ${ref} plugins/acceptance-gate | tar -x -C "${d}"`]);
-  GC_GOC = path.join(d, 'plugins/acceptance-gate/scripts/gate-card.js');
-  return GC_GOC;
+  return (GOC_NHANH = d);
 }
+const gcGoc = () => path.join(gocNhanh(), 'plugins/acceptance-gate/scripts/gate-card.js');
 
 // ── Bộ chạy ca ──────────────────────────────────────────────────────────────────────────────────────────────────────
 const LOC = (process.env.SO_MAN_CASES || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -389,7 +391,8 @@ ca('S4', () => {
 ca('S5', () => {
   const k = khoBoDi(); duong(k);
   const lech = H('ST-overdue-loading', 'don');
-  const txt = tk(khoi([...OVERDUE, ...DON.slice(1), lech]));
+  // Không có hàng overdue nào: mã của màn khác trên hàng «don» phải là sai tiền tố, không phải khai hai lần.
+  const txt = tk(khoi([...DON.slice(1), lech]));
   const r = kiemTep(k, k.ghi('docs/tk.md', txt));
   ma(r, 1); coDong(r, C.saiTienTo('ST-overdue-loading', 'don', soDong(txt, lech)));
 });
@@ -633,7 +636,7 @@ ca('D8', () => {
 ca('D9', () => {
   const k = khoBoDi({ mau: 'ma-gach-dung.json' });
   const r = dien(k, null); ma(r, 2);
-  dung(!r.out.includes('over|due') && !r.out.includes('ST-don-'), 'màn có «|» hay xuống dòng không được điền');
+  dung(!r.out.includes('over|due') && !r.dong.some(l => l.includes('| don |') || l.includes('(don) |')), 'màn có «|» hay xuống dòng không được điền');
   coDong(r, hk('donHangTitle', 'don-hang'));
   for (const m of ['over|due', 'don']) dung(r.err.split('\n').includes(C.dienTuChoi(m)), `stderr thiếu câu từ chối màn «${m}», nhận «${r.err}»`);
 });
@@ -699,8 +702,7 @@ ca('W2', () => {
 });
 ca('W3', () => {
   const rut = t => (t.match(/<!-- <<<UX-SPEC-TEMPLATE -->[\s\S]*?<!-- UX-SPEC-TEMPLATE>>> -->/) || [null])[0];
-  gcGoc();
-  const goc = readFileSync(path.join(TAM, 'goc-nhanh/plugins/acceptance-gate/skills/acceptance/references/ux-spec-template.md'), 'utf8');
+  const goc = readFileSync(path.join(gocNhanh(), 'plugins/acceptance-gate/skills/acceptance/references/ux-spec-template.md'), 'utf8');
   dung(rut(goc) && rut(readFileSync(KHUON, 'utf8')) === rut(goc), 'khối UX-SPEC-TEMPLATE phải giống bản ở gốc nhánh từng byte');
 });
 
