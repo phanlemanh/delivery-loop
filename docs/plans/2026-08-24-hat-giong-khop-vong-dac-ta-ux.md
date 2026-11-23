@@ -52,3 +52,16 @@ mới ở chỗ khác.
   ngược lại; phá một trạng thái trong bản sao thì cờ bật đúng tên; 0 cờ oan trên
   hồ sơ lành qua đủ ma trận hình dạng.
 - CHẾT: một hình dạng bất kỳ làm cả lưới câm, hoặc cờ oan trên hồ sơ lành.
+
+## Đã giao một nửa — 23/11/2026 (hồ sơ `dac-ta-ux-doc-so-man`)
+
+Nửa «bảng trạng thái khai trước ↔ sổ màn» đã có lưới, ở kho có lệnh đọc màn:
+`plugins/acceptance-gate/scripts/so-man.cjs` (`--dien` điền sẵn, `--kiem` so với sổ) và một khối thông tin trên thẻ
+Cổng Phạm vi. Năm điều kiện mở lại được đáp thế này: (0) không bộ đọc mới — `stripNonProse` · `sectionLines` ·
+`frontmatterField` · `laMatNguoiNhin` cộng một luật dòng đóng; sổ màn thì kit GỌI lệnh đọc của kho, không đọc tệp;
+(1) ranh giới đóng — mỗi dòng giữa hai marker là tiêu đề, phân cách hay hàng dữ liệu, ngoài ra đỏ có số dòng;
+(2) ma trận 64 ô viết trước mã (`tests/scripts/so-man.test.mjs`, commit trước vật); (3) mỗi cánh có nhát phá làm
+nó đỏ (`_acceptance/dac-ta-ux-doc-so-man/rang/dot-bien.mjs`); (4) mọi ghim là nguyên câu.
+
+**Còn lại — vẫn là hạt giống:** đối chiếu trạng thái đã khai với **bài kiểm đo nó** (khai mà không đo, đo mà không
+khai). Ngưỡng ở trên giữ nguyên cho nửa này.

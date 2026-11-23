@@ -1,0 +1,34 @@
+{
+  "feature_plain": "Ở kho đã có sổ màn, máy thôi khai lại màn và trạng thái bằng tay: nó điền sẵn hai bảng của mục Đặc tả UX từ sổ, và một lệnh kiểm báo đích danh màn hay trạng thái nào lệch sổ.",
+  "will_do": [
+    {"id": "AC-1", "p": "Sẽ in sẵn bảng kiểm kê màn và bảng trạng thái từ sổ màn — mỗi trạng thái một hàng mã, trạng thái bắt buộc đứng trước; cột chỉ việc này biết để trống cho người viết."},
+    {"id": "AC-2", "p": "Sẽ cho bảng vừa điền qua được lệnh kiểm ngay, và vẫn qua khi khuôn đặc tả UX đổi tên một cột (bên điền và bên kiểm đọc cùng một khuôn)."},
+    {"id": "AC-4", "p": "Sẽ chỉ nhận bảng trạng thái đặt đúng chỗ trong mục Đặc tả UX; bảng minh hoạ trong khối mã hay ở mục khác không bị nhận nhầm."},
+    {"id": "AC-5", "p": "Sẽ báo đỏ kèm số dòng cho bảng rỗng, thiếu cột, sai số ô, dòng lạ lọt giữa bảng, mã trạng thái sai khuôn hay khai hai lần."},
+    {"id": "AC-6", "p": "Sẽ báo đỏ nêu đích danh màn và trạng thái khi bảng nêu màn hay trạng thái sổ không có, hoặc thiếu trạng thái sổ bắt màn ấy phải có."},
+    {"id": "AC-7", "p": "Sẽ nói rõ «không đọc được sổ màn ở đây» khi lệnh đọc màn lỗi, treo quá 10 giây hay trả câu hỏng — không bao giờ coi đó là xanh."},
+    {"id": "AC-8", "p": "Sẽ hiện kết quả kiểm thành một khối thông tin trên thẻ Cổng Phạm vi, không thêm câu hỏi cho người và không chặn cổng, kể cả khi lệnh đọc màn lỗi."},
+    {"id": "AC-9", "p": "Sẽ thêm hai lệnh vào bước thiết kế của vòng lặp, kèm lời dặn giữ nguyên hàng của màn mới chưa vào sổ; khuôn đặc tả UX giữ nguyên từng chữ."},
+    {"id": "AC-10", "p": "Sẽ chứng mỗi phép kiểm đỏ được: từng nhát phá có chủ đích làm đỏ đúng ca, mẫu dữ liệu ghi rõ nguồn, số ca chạy thật phải đủ 64."}
+  ],
+  "wont_do": [
+    {"id": "AC-3", "p": "Sẽ KHÔNG đổi gì ở kho chưa có lệnh đọc màn: hai lệnh im, thẻ giống hệt hôm nay từng byte."},
+    {"id": "OOS-1", "p": "KHÔNG đối chiếu trạng thái đã khai với bài kiểm đo nó — nửa ấy vẫn nằm ở hạt giống."},
+    {"id": "OOS-2", "p": "KHÔNG để kit tự đọc tệp sổ màn hay chép bộ đọc của gói thiết kế."},
+    {"id": "OOS-3", "p": "KHÔNG chặn gộp, không thành phép đo mặc định của lượt chấm, khối thẻ không chặn cổng."},
+    {"id": "OOS-4", "p": "KHÔNG sửa gì ở kho gói thiết kế, không chạy lệnh đọc màn thật trong bài kiểm, chưa thử trên kho thật."},
+    {"id": "OOS-5", "p": "KHÔNG đổi cột của khuôn đặc tả UX, không đưa điều hướng hay «người làm gì tiếp» vào sổ."},
+    {"id": "OOS-6", "p": "KHÔNG ghi ở đâu rằng một kho «không có lệnh đọc màn» — mỗi lần chạy máy tự nhìn."}
+  ],
+  "scope_plain": "Những thứ người duyệt có thể chờ nhưng vòng này cố ý không làm:",
+  "coverage_plain": [
+    {"i": 0, "p": "Phủ bằng một bảng 64 hình dạng viết trước mã, sáu trục: chỗ đặt bảng (AC-4), các hàng (AC-5), so với sổ (AC-6), câu trả lời của lệnh đọc màn (AC-3, AC-7), lối vào kể cả thẻ (AC-3, AC-8), lệnh điền (AC-1, AC-2); mỗi hình dạng một ca, đếm ca chạy thật (AC-10)."}
+  ],
+  "gap_probe_plain": [
+    {"i": 0, "p": "Màn mới của chính việc chắc chắn đỏ vì sổ chưa có nó, mà lời dặn cũ bảo «sửa tới khi hết đỏ» — máy có thể xoá hàng cho xanh. Đã sửa: lời dặn giữ hàng, một ca riêng cho màn mới."},
+    {"i": 1, "p": "Thiếu ca thẻ khi lệnh đọc màn lỗi hay treo, và ca vòng không chạm màn ở kho có sổ; hạn chờ chưa có số. Đã sửa: ba ca thẻ mới, hạn 10 giây."},
+    {"i": 2, "p": "Mẫu dữ liệu biến thể viết tay, không ghi nguồn; lệnh giả trả câu cố định. Đã sửa: mỗi mẫu ghi nguồn, hình dạng nào lệnh thật sinh được thì lấy bằng lệnh thật, lệnh giả lọc theo tên màn, một ca kiểm mẫu."},
+    {"i": 3, "p": "Hai lựa chọn máy đã quyết ghi căn cứ yếu (một bỏ sót lối «cờ tắt», một trích câu không quyết). Đã sửa: ghi lại hai dòng với căn cứ đúng."},
+    {"i": 4, "p": "Dòng đếm ca in từ hằng chứ không đếm ca chạy; kiểm «PASS: K1» bị «PASS: K10» thoả nhầm. Đã sửa: đếm ca chạy thật, khớp nguyên dòng."}
+  ]
+}

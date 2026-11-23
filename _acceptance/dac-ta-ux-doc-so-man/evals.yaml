@@ -1,0 +1,115 @@
+schema_version: 1
+feature_slug: dac-ta-ux-doc-so-man
+# Một tệp ca (tests/scripts/so-man.test.mjs), tên ca = mã ô của ma trận (mục 4 bản thiết kế) hoặc mã tiêu chí; kho bỏ đi
+# và lệnh đọc giả dựng trong lượt (mktemp), lệnh đọc thật KHÔNG chạy. `rang/chay.sh AC-n` chạy đúng các ca của tiêu chí ấy
+# (bảng ô → tiêu chí ở đầu tệp ca). Chiều đỏ: commit ca đứng trước commit vật (tệp ca đỏ vì lệnh chưa có); mỗi ca âm có
+# đối chứng dương cùng kho và ghim nguyên câu; rang/dot-bien.mjs tiêm từng nhát vào bản sao trọn scripts/ + lib/.
+# Mọi «dòng "PASS: X"» trong expected là khớp NGUYÊN DÒNG (grep -x), không phải chuỗi-có-mặt: "PASS: K1" không được thoả bởi
+# dòng "PASS: K10". rang/chay.sh kiểm đúng điều đó và thoát 1 khi một ô của tiêu chí thiếu dòng PASS của nó.
+evals:
+  - id: E1
+    criterion: AC-1
+    executor: test
+    cmd: bash _acceptance/dac-ta-ux-doc-so-man/rang/chay.sh AC-1
+    paths: [plugins/acceptance-gate/scripts/so-man.cjs, plugins/acceptance-gate/skills/acceptance/references/ux-spec-template.md, tests/scripts/so-man.test.mjs, tests/scripts/fixtures/so-man/**]
+    expected: >
+      exit 0; stdout có đúng các dòng "PASS: D1", "PASS: D2", "PASS: D7", "PASS: D8" và "0 failed". Chiều đỏ: ở commit ca
+      (lệnh chưa có) tệp ca thoát 1; nhát «đổi thứ tự bắt buộc trước» của dot-bien làm D1 đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E2
+    criterion: AC-2
+    executor: test
+    cmd: bash _acceptance/dac-ta-ux-doc-so-man/rang/chay.sh AC-2
+    paths: [plugins/acceptance-gate/scripts/so-man.cjs, plugins/acceptance-gate/skills/acceptance/references/ux-spec-template.md, tests/scripts/so-man.test.mjs]
+    expected: >
+      exit 0; stdout có "PASS: D6" (khối điền → kiểm xanh, kèm bản sao khuôn đổi tên cột vẫn xanh) và "0 failed". Chiều đỏ:
+      trên bản sao lệnh chép cứng tên cột thay vì rút từ khuôn, D6 đỏ ở vế khuôn đổi tên.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E3
+    criterion: AC-3
+    executor: test
+    cmd: bash _acceptance/dac-ta-ux-doc-so-man/rang/chay.sh AC-3
+    paths: [plugins/acceptance-gate/scripts/so-man.cjs, plugins/acceptance-gate/scripts/gate-card.js, tests/scripts/so-man.test.mjs]
+    expected: >
+      exit 0; stdout có đúng các dòng "PASS: B6", "PASS: D4", "PASS: L7", "PASS: L8" và "0 failed"; L8 dựng thẻ ở kho CÓ lệnh đọc cho hồ sơ surfaces [cli] không bảng; L7 so thẻ của cây với thẻ do gate-card.js ở gốc nhánh
+      (git archive trọn scripts/ lib/) dựng trên cùng hồ sơ, bằng từng byte. Chiều đỏ: nhát «coi lệnh đọc vắng là thoát 2» làm
+      B6 và D4 đỏ; nhát «khối thẻ in cả khi kho không có lệnh đọc» làm L7 đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E4
+    criterion: AC-4
+    executor: test
+    cmd: bash _acceptance/dac-ta-ux-doc-so-man/rang/chay.sh AC-4
+    paths: [plugins/acceptance-gate/scripts/so-man.cjs, plugins/acceptance-gate/lib/context-glossary.js, plugins/acceptance-gate/lib/md-section.cjs, tests/scripts/so-man.test.mjs]
+    expected: >
+      exit 0; stdout có đúng mười một dòng "PASS: K1" … "PASS: K11", mỗi dòng khớp nguyên dòng, và "0 failed". Chiều đỏ: nhát «bỏ xoá khối mã» làm K7 và K10 đỏ;
+      nhát «nhận marker không nguyên dòng» làm K8 đỏ; nhát «bỏ đếm cặp marker» làm K4, K5, K6 đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E5
+    criterion: AC-5
+    executor: test
+    cmd: bash _acceptance/dac-ta-ux-doc-so-man/rang/chay.sh AC-5
+    paths: [plugins/acceptance-gate/scripts/so-man.cjs, tests/scripts/so-man.test.mjs]
+    expected: >
+      exit 0; stdout có đúng mười ba dòng "PASS: H1" … "PASS: H13", mỗi dòng khớp nguyên dòng, và "0 failed"; mỗi ca âm ghim nguyên câu ở mục 3.4 bản thiết
+      kế. Chiều đỏ: nhát «bỏ luật rỗng» làm H2, H3 đỏ; nhát «bỏ dòng lạ lặng lẽ» làm H7 đỏ; nhát «bỏ NFC» làm H13 đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E6
+    criterion: AC-6
+    executor: test
+    cmd: bash _acceptance/dac-ta-ux-doc-so-man/rang/chay.sh AC-6
+    paths: [plugins/acceptance-gate/scripts/so-man.cjs, tests/scripts/so-man.test.mjs, tests/scripts/fixtures/so-man/**]
+    expected: >
+      exit 0; stdout có đúng mười dòng "PASS: S1" … "PASS: S10", mỗi dòng khớp nguyên dòng, và "0 failed"; S2, S3, S4 ghim nguyên ba câu của AC-6. Chiều đỏ:
+      nhát «bỏ vế thiếu» làm S4 đỏ; nhát «bỏ vế trạng thái lạ» làm S3 đỏ; nhát «bỏ so unknown» làm S2 đỏ; nhát «tách mã theo
+      gạch nối» làm S8 đỏ; nhát đổi một chữ trong mỗi câu ghim làm ca ghim câu ấy đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E7
+    criterion: AC-7
+    executor: test
+    cmd: bash _acceptance/dac-ta-ux-doc-so-man/rang/chay.sh AC-7
+    paths: [plugins/acceptance-gate/scripts/so-man.cjs, tests/scripts/so-man.test.mjs, tests/scripts/fixtures/so-man/**]
+    expected: >
+      exit 0; stdout có đúng mười ba dòng PASS (khớp nguyên dòng) cho B1, B2, B3, B4, B5, B7, B8, B9, B10, B11, D3, D5, D9 và
+      "0 failed"; B9 dùng SO_MAN_HAN_MS=1000 và lệnh đọc giả ngủ 5 giây. Chiều đỏ: nhát «coi
+      thoát 2 như không có lệnh đọc» làm B5 đỏ (thoát 0 thay vì 2); nhát «bỏ dòng giới hạn must_have null» làm B2 đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E8
+    criterion: AC-8
+    executor: test
+    cmd: bash _acceptance/dac-ta-ux-doc-so-man/rang/chay.sh AC-8
+    paths: [plugins/acceptance-gate/scripts/so-man.cjs, plugins/acceptance-gate/scripts/gate-card.js, tests/scripts/so-man.test.mjs]
+    expected: >
+      exit 0; stdout có đúng các dòng "PASS: L1" … "PASS: L6", "PASS: L9", "PASS: L10" và "0 failed"; L9, L10 dựng thẻ khi lệnh
+      đọc thoát 2 / quá hạn và đòi gate-card.js thoát 0 trong hạn cộng một giây; L6 dựng thẻ Cổng Phạm vi thật bằng gate-card.js của cây và
+      tìm đúng các câu `--kiem` in trong khối, bản trích `--extract` không mang khối. Chiều đỏ: nhát «bỏ đọc design_doc» làm
+      L2 đỏ; nhát «thẻ bỏ khối» làm L6 đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E9
+    criterion: AC-9
+    executor: test
+    cmd: bash _acceptance/dac-ta-ux-doc-so-man/rang/chay.sh AC-9
+    paths: [plugins/feature-loop/skills/feature-loop/SKILL.md, plugins/acceptance-gate/skills/acceptance/references/ux-spec-template.md, tests/scripts/so-man.test.mjs, tests/plugins/ux-spec.test.mjs]
+    expected: >
+      exit 0; stdout có "PASS: W1" (khối UX-SO-MAN-S1 có đúng hai lệnh, nguyên câu lối ra cho màn mới, và chạy được trên kho bỏ đi), "PASS: W2" (lời đầu
+      khuôn), "PASS: W3" (khối UX-SPEC-TEMPLATE bằng từng byte bản ở gốc nhánh), rồi tệp ca UX in "0" lỗi (exit 0). Chiều đỏ:
+      bản sao SKILL gỡ khối làm W1 đỏ; bản sao khuôn đổi một ký tự trong khối làm W3 đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E10
+    criterion: AC-10
+    executor: script
+    cmd: node _acceptance/dac-ta-ux-doc-so-man/rang/dot-bien.mjs
+    paths: [plugins/acceptance-gate/scripts/so-man.cjs, plugins/acceptance-gate/scripts/gate-card.js, tests/scripts/so-man.test.mjs, _acceptance/dac-ta-ux-doc-so-man/rang/dot-bien.mjs]
+    expected: >
+      exit 0; dòng cuối "dot-bien: N/N nhát đỏ đúng ca, bản nguyên vẹn xanh, chiều im xanh". Mỗi nhát in một dòng
+      "nhát <tên> → đỏ <ca>"; một nhát tiêm không khớp đúng một lần, hay làm đỏ ca khác ca đã ghim, là thoát 1 có tên.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E11
+    criterion: AC-10
+    executor: test
+    cmd: bash _acceptance/dac-ta-ux-doc-so-man/rang/chay.sh AC-10
+    paths: [tests/scripts/so-man.test.mjs, tests/scripts/fixtures/so-man/**]
+    expected: >
+      exit 0; stdout có đúng dòng "PASS: F1" và, ở lượt chạy không lọc của cùng tệp ca, đúng dòng "số ca chạy: 64". Chiều đỏ:
+      bản sao một biến thể đổi thêm một khoá không khai làm F1 đỏ nêu tệp và khoá; gỡ một ca khỏi bảng chạy làm dòng đếm
+      thành 63 và tệp ca thoát 1.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]

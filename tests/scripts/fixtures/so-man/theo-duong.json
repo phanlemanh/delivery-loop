@@ -1,0 +1,57 @@
+{
+  "exit": 0,
+  "json": {
+    "ledger": "design/screens.yaml",
+    "states_table": "design/states.json",
+    "screens": [
+      {
+        "id": "don-hang",
+        "route": "/don-hang",
+        "title": "donHangTitle",
+        "family": null,
+        "status": "built",
+        "states": [
+          "loading",
+          "error",
+          "chi-tiet"
+        ],
+        "must_have": [
+          "loading",
+          "empty",
+          "error"
+        ],
+        "exempt": null,
+        "entry": {
+          "action": null,
+          "roles": null
+        },
+        "actions": []
+      },
+      {
+        "id": "don",
+        "route": "/don",
+        "title": "donTitle",
+        "family": null,
+        "status": "built",
+        "states": [
+          "loading",
+          "empty",
+          "error"
+        ],
+        "must_have": [
+          "loading",
+          "empty",
+          "error"
+        ],
+        "exempt": null,
+        "entry": {
+          "action": null,
+          "roles": null
+        },
+        "actions": []
+      }
+    ],
+    "unknown": [],
+    "keys_not_found": []
+  }
+}

@@ -1002,6 +1002,18 @@ nhận, cờ khi màn mẫu đổi sau khi đọc); `--nhom-moi <tên> [--gan <n
 dòng câu hỏi chỉ-người cho sổ, lên thẻ thành một Hỏi-n. Thẻ Cổng Bằng chứng gọi tên tệp và khối lệch (tối đa năm dòng)
 và cờ khi vật chạm nhóm khác nhóm đã chọn. Kho không có `design/patterns/` → mọi lệnh khuôn im.
 
+**Đặc tả UX từ sổ màn (`scripts/so-man.cjs`).** Kho có lệnh đọc màn `tools/design-assembly/screen-facts.mjs` thì kit
+GỌI lệnh ấy (không tự mở sổ màn hay bảng trạng thái bắt buộc của kho): `so-man.cjs --root . --dien [--man <mã,mã>]` in
+sẵn hàng «Kiểm kê màn» và khối «Bảng trạng thái» (mã `ST-<mã màn>-<trạng thái>`, trạng thái sổ bắt phải có đứng trước,
+cột chỉ việc biết để ô khuôn); `so-man.cjs --root . --kiem --slug <hồ sơ>` (hoặc `--tep <bản thiết kế>`) so bảng với
+sổ và nêu đích danh màn, trạng thái lệch. Thoát 0 xanh · 1 đỏ · 2 không kiểm được ở đây (lệnh đọc lỗi, quá hạn 10 giây —
+`SO_MAN_HAN_MS` đổi được —, câu trả lời hỏng). Thẻ Cổng Phạm vi của hồ sơ nháp in khối «Bảng trạng thái ↔ sổ màn»
+(thông tin, tối đa năm câu đỏ); khối không chặn cổng, không vào pre-merge, không thành eval mặc định. Ô «Màn» phải là mã
+màn hoặc đường dẫn của sổ — hồ sơ cũ viết tên riêng sẽ thấy câu đỏ trong khối: chạy `--dien` rồi chép lại các cột người
+viết. Giới hạn: lệnh kiểm so với sổ LÚC CHẠY, nên màn mới của chính việc đỏ cho tới khi sổ ghi nó (khối `UX-SO-MAN-S1`
+dặn giữ hàng); ô có `\|` không đọc được; sổ ghi tên dạng tách dấu sẽ không khớp vì kit gửi tên dạng NFC. Kho không có lệnh
+đọc → hai lệnh im, thẻ không đổi.
+
 `floor` chỉ đọc: hex thô trên tệp giao diện mà vòng chạm, độ phủ token trên trang HTML ở M2/M3, chặn theo bậc (M1 hex
 thô · M2 hex thô, độ phủ token chỉ cảnh báo · M3 cả hai). `<acceptance-gate>` là đường bản kit đang cài — ghim lại theo
 mỗi bản phát hành như `product_map`. Cuối S3, khối `DESIGN-FLOOR-S3` của feature-loop autofix và chạy `sinh_lai` rồi
