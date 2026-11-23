@@ -122,6 +122,9 @@ Source input: `git log v3.1.0..origin/main --first-parent` · nếp phát hành 
   `node tools/so-gioi-han.mjs --slug release-3-1-1 --write`. Bước này không có trong SKILL hay GUIDE, và #26 vấp
   đúng chỗ ấy ở làn ghim lại — hạt giống `docs/plans/2026-11-23-hat-giong-so-gioi-han-sau-luot-cham.md`, không làm
   trong vòng này.
+- **Lệnh gộp theo lời chặn sau chữ ký** (23/11): dòng sổ «lời gộp» thiếu khoá `loi_gop`, `dieu-phoi.mjs gop 29 --theo-loi`
+  thoát 1 «không có dòng lời gộp trong sổ». Ghi bù một dòng mang nguyên văn câu ký; lệnh ký không dạy khuôn dòng này —
+  hạt giống `docs/plans/2026-11-23-hat-giong-loi-gop-khong-co-trong-lenh-ky.md`, không làm trong vòng này.
 - Known limits — chọn ở Cổng Bằng chứng 2026-11-23:
   - Ngoài-1: Lần cài thử E9 kiểm đỉnh nhánh đã gộp #27, không kiểm commit mốc mà thẻ gắn vào; hai bản trùng nhau ở phần mã cài nên chưa ảnh hưởng ai.
   - Ngoài-2: Cờ `--dinh-moc` chỉ kiểm dòng mốc là một commit có thật; sửa tay dòng ấy thành bản khác thì E3–E7 vẫn có thể xanh dù đo nhầm bản.
