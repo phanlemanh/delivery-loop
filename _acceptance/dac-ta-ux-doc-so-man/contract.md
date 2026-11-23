@@ -6,7 +6,7 @@ owner: phanlemanh@gmail.com
 risk_tier: T2               # scripts/so-man.cjs mới, gate-card.js, khuôn đặc tả UX, SKILL feature-loop — không chạm hooks/, lib/, pre-merge
 surfaces: [cli]
 design_doc: docs/superpowers/specs/2026-11-22-dac-ta-ux-doc-so-man-design.md
-status: verified
+status: signed-off
 approved_by: Phan Le Manh
 approved_at: 2026-11-23
 ---
@@ -117,3 +117,8 @@ AC-7 · nguồn mẫu và số ca chạy → AC-10. Ô Later: đối chiếu tr�
   (mục `## Đặc tả UX`, luật ranh giới khai một chỗ) → luật dòng đóng của `so-man.cjs` (marker nguyên dòng rút từ khuôn,
   đúng một cặp, mỗi dòng giữa hai marker thuộc đúng một loại). Phần đầu hợp đồng: `lib/evidence-core.cjs#frontmatterField`;
   mặt người nhìn: `lib/lop-nhin-thay.cjs#laMatNguoiNhin`.
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-23:
+  - Ngoài-1: ở bước thiết kế, lệnh kiểm bảng trạng thái chạy trước khi hồ sơ có hợp đồng nên luôn báo «không kiểm được»; lỗi lẽ ra máy tự sửa sẽ hiện lên thẻ Cổng Phạm vi cho người thấy.
+  - Ngoài-2: ô mã trạng thái bọc trong dấu backtick bị lệnh kiểm báo nhầm là trống; bỏ backtick là hết báo.
+  - Ngoài-3: bài kiểm cho hai lệnh trong hướng dẫn chỉ đòi mã thoát 0, nên một lệnh chép sai thư mục vẫn có thể lọt xanh.
+  - Ngoài-5: dòng «số ca chạy: 64» đếm số lần chạy chứ không so tập ô, nên gỡ một ca và đăng ký trùng ca khác vẫn ra 64.

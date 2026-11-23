@@ -8,7 +8,7 @@ verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
 verified_commit: 94b4b431ab0215ccd39a696b28e80aeaa690e07b
-human_signoff:
+human_signoff: Phan Le Manh 2026-11-23
 ---
 
 # Evidence Report: dac-ta-ux-doc-so-man
