@@ -19,7 +19,9 @@
 // (`xetLoiKy`), và vẫn chỉ MỘT chỗ gọi `gh pr merge` (`bamGop`). Lệnh không cờ giữ nguyên hành vi trong đợt.
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { docJson, ghiSuKien, phienCuaCwd, timThuMucDot } from './dot.mjs';
 import { docCauHinh, docHangViec } from './hinh-dang.mjs';
 import { docPha } from './pha.mjs';
@@ -160,26 +162,54 @@ function khoaGopTheoLoi(text) {
   return false;
 }
 
-// Dòng `human_signoff` có chữ trong frontmatter của báo cáo bằng chứng (khoá ở cột 0, bỏ chú thích đuôi và cặp nháy).
-// Trả NGUYÊN dòng — nó là mũi tìm của `git log -S` ở vế «cùng commit» — hoặc null khi không có chữ ký.
-function dongChuKy(text) {
+// Bộ đọc chữ ký của LÕI (hồ sơ va-chu-ky-giu-cho-lenh-gop): vế chữ ký của lối theo lời hỏi `chuKyThat` của
+// acceptance-gate — một bảng giữ chỗ với lõi và lưới trước-gộp, không chép bảng sang gói này. Gốc lõi đến từ cờ `--loi`,
+// dòng lệnh ở SKILL S5 và lệnh ký giải bằng `resolve-plugin.mjs` (ADR 0003); thiếu cờ thì CHỈ thử bố cục nguồn
+// `plugins/acceptance-gate/` cạnh gói (kho tự host kit). Gói không tự dò bộ đệm cài, không sắp số bản. Gốc truyền vào vẫn
+// được kiểm (có tệp, xuất `chuKyThat`); không có bộ đọc dùng được → lối theo lời CHẶN, không rơi về phép hỏi-có-chữ cũ.
+const TEP_BO_DOC = path.join('lib', 'evidence-core.cjs');
+const GOC_NGUON = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'acceptance-gate');
+const LENH_GIAI = 'AG=$(node <feature-loop>/scripts/resolve-plugin.mjs --plugin acceptance-gate --require lib/evidence-core.cjs) rồi thêm --loi "$AG"';
+export function napBoDocChuKy({ cwd = process.cwd(), loi = null } = {}) {
+  const goc = loi === null ? GOC_NGUON : path.resolve(cwd, loi);
+  const tep = path.join(goc, TEP_BO_DOC);
+  let vi = null;
+  let coTep = false;
+  try {
+    coTep = fs.statSync(tep).isFile();
+    if (coTep) vi = createRequire(import.meta.url)(tep).chuKyThat;
+  } catch {
+    // tệp vắng hay nạp lỗi: chặn ở dưới, không nuốt thành «có chữ là ký»
+  }
+  if (typeof vi === 'function') return { chuKyThat: vi };
+  const viTri = loi === null ? 'bố cục nguồn cạnh gói' : 'cờ --loi';
+  const ly = coTep ? `${tep} (${viTri}) không xuất chuKyThat` : `${tep} (${viTri})`;
+  return { loi: `không tìm thấy bộ đọc chữ ký của lõi — đã thử: ${ly} · giải gốc lõi: ${LENH_GIAI}` };
+}
+
+// Vế chữ ký trên báo cáo bằng chứng: `chuKyThat` của lõi quyết ký hay chưa (kể cả giá trị giữ chỗ); ký rồi thì trả
+// NGUYÊN dòng `human_signoff` — nó là mũi tìm của `git log -S` ở vế «cùng commit». `giuCho` mang giá trị giữ chỗ để
+// thông điệp chặn gọi tên nó.
+function dongChuKy(text, chuKyThat) {
+  const ck = chuKyThat(text ?? null);
+  if (!ck.signed) return { dong: null, giuCho: ck.placeholder ? ck.value : null };
   const dong = String(text ?? '').split(/\r?\n/);
   const dau = dong.findIndex((d) => d.trim() !== '');
-  if (dau < 0 || !/^---\s*$/.test(dong[dau])) return null;
+  if (dau < 0 || !/^---\s*$/.test(dong[dau])) return { dong: null, giuCho: null };
   for (let j = dau + 1; j < dong.length && !/^---\s*$/.test(dong[j]); j++) {
     const m = /^human_signoff[ \t]*[:=](.*)$/i.exec(dong[j]);
     if (!m) continue;
     const v = m[1].replace(/^\s*#.*$/, '').replace(/\s+#.*$/, '').trim().replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1').trim();
-    return v ? dong[j].trimEnd() : null;
+    return { dong: v ? dong[j].trimEnd() : null, giuCho: null };
   }
-  return null;
+  return { dong: null, giuCho: null };
 }
 
 // Sáu vế của lời ký, đọc TRÊN ĐẦU NHÁNH của PR (`git show <sha>:…`), không đọc cây làm việc. Thiếu vế nào thì trả tên
 // vế ấy. Phần tử đầu của DA_THONG là trạng thái hồ sơ do NGƯỜI ký; hồ sơ máy đã thông không có câu người gõ nên không
 // có lời gộp (ca GL-6b giữ cả hai chiều).
 const DA_KY_NGUOI = DA_THONG[0];
-export function xetLoiKy({ io, sha, slug }) {
+export function xetLoiKy({ io, sha, slug, chuKyThat }) {
   const doc = (tep) => {
     try {
       return io.chay('git', ['show', `${sha}:${tep}`]);
@@ -192,7 +222,9 @@ export function xetLoiKy({ io, sha, slug }) {
   if (!khoaGopTheoLoi(doc('_acceptance/config.yaml'))) return khong('kho chưa bật feature_loop.gop_theo_loi_ky trên đầu nhánh');
   const st = trangThaiHopDong(doc(`${hs}/contract.md`) ?? '');
   if (st !== DA_KY_NGUOI) return khong(`hồ sơ ${slug} trên đầu PR ở «${st ?? 'không có'}» — lời gộp chỉ có ở hồ sơ đã ký`);
-  const chuKy = dongChuKy(doc(`${hs}/evidence-report.md`));
+  const ck = dongChuKy(doc(`${hs}/evidence-report.md`), chuKyThat);
+  if (ck.giuCho) return khong(`báo cáo bằng chứng trên đầu PR không có chữ ký người — «${ck.giuCho}» là chữ ký giữ chỗ`);
+  const chuKy = ck.dong;
   if (!chuKy) return khong('báo cáo bằng chứng trên đầu PR không có chữ ký người');
   const loi = docLoiGop(doc(`${hs}/decisions.jsonl`));
   if (!loi.co) return khong(loi.ly_do);
@@ -240,7 +272,7 @@ const nguDongBo = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),
 // lấy đầu nhánh MỚI, nên các vế và lệnh gộp theo đúng sha của lượt xanh; một check đỏ hẳn → chặn ngay, không hỏi lại;
 // hết giờ → lối chờ CI (mã thoát 4). `xetGop` không trả bảng check, nên lệnh nghe lại chính câu trả lời `gh pr view`.
 const dongDauLoi = (e) => String(e?.stderr ?? '').split('\n').map((x) => x.trim()).find(Boolean) ?? String(e?.message ?? e).split('\n')[0];
-function xetTheoLoi({ io, pr, slug, choCi, ngu }) {
+function xetTheoLoi({ io, pr, slug, choCi, ngu, chuKyThat }) {
   const han = Date.now() + choCi * 60_000;
   let xem = '';
   const ioNghe = {
@@ -267,7 +299,7 @@ function xetTheoLoi({ io, pr, slug, choCi, ngu }) {
       continue;
     }
     if (!GOP_DUOC.includes(kq.duong)) return kq;
-    const loi = xetLoiKy({ io, sha: kq.sha, slug });
+    const loi = xetLoiKy({ io, sha: kq.sha, slug, chuKyThat });
     return loi.duoc ? { ...kq, ly_do: `${kq.ly_do} · ${loi.ly_do}` } : { duong: 'chan', sha: kq.sha, ly_do: loi.ly_do };
   }
 }
@@ -285,12 +317,16 @@ const IO_THAT = (cwd) => ({ chay: (cmd, args) => execFileSync(cmd, args, { cwd, 
 // không đòi khoá. Mỗi lần chạy ghi một sự kiện `gop` (lệnh đếm đọc).
 // `theoLoi` (cờ `--theo-loi`): lối ngoài đợt theo lời gộp trong câu ký — không đòi đợt, khoá merge hay `tu_merge`, bắt
 // buộc `slug`, không ghi sự kiện đợt. `choCi` (cờ `--cho-ci <phút>`): lệnh tự chờ CI; `ngu(ms)` thay được trong ca.
-export function gop(cwd, pr, { slug = null, xet = false, io = IO_THAT(cwd), theoLoi = false, choCi = 0, ngu = nguDongBo } = {}) {
+// `loi` (cờ `--loi <gốc acceptance-gate>`): gốc lõi cho vế chữ ký — nạp TRƯỚC mọi lời gọi `gh`, vắng bộ đọc thì chặn ngay.
+export function gop(cwd, pr, { slug = null, xet = false, io = IO_THAT(cwd), theoLoi = false, choCi = 0, ngu = nguDongBo, loi = null } = {}) {
   if (!/^\d+$/.test(String(pr ?? ''))) throw new Error('gop: dùng `gop <số PR> [--slug <slug>] [--xet]`');
   if (theoLoi) {
     if (!slug) throw new Error('gop: --theo-loi đòi --slug <slug>');
     if (typeof choCi !== 'number' || !Number.isFinite(choCi) || choCi < 0) throw new Error('gop: --cho-ci <phút> phải là số không âm');
-    const kq = xetTheoLoi({ io, pr, slug, choCi, ngu });
+    if (loi !== null && (typeof loi !== 'string' || loi.trim() === '')) throw new Error('gop: --loi <gốc acceptance-gate> thiếu giá trị');
+    const bd = napBoDocChuKy({ cwd, loi });
+    if (bd.loi) return { duong: 'chan', sha: null, ly_do: bd.loi, da_gop: false, nha_merge: false };
+    const kq = xetTheoLoi({ io, pr, slug, choCi, ngu, chuKyThat: bd.chuKyThat });
     return { ...kq, da_gop: bamGop(io, pr, kq, xet), nha_merge: false };
   }
   const thuMuc = timThuMucDot(cwd);

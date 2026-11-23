@@ -1,0 +1,116 @@
+schema_version: 1
+feature_slug: va-chu-ky-giu-cho-lenh-gop
+# Bản vá đo bằng ca của gói điều phối (GL-6a/b/k hàng giữ chỗ, GL-6i/j đường tới lõi, GL-8a khối dòng lệnh) qua tệp lệnh
+# của hồ sơ `chu-ky-giu-cho.sh`: tệp ghim tên ca, rồi chạy phép phá thử trên bản sao cây (`git archive HEAD`) — đối chứng
+# dương bản nguyên vẹn trước, mỗi nhát tiêm thay nguyên văn và phải đổi tệp, thông điệp đỏ được ghim.
+evals:
+  - id: E1
+    criterion: AC-1
+    executor: test
+    cmd: config:executors.test.scripts_bash
+    expected: "mảnh bash của suite scripts XANH"
+    evidence_required: [run_id, exit_code, verifier, verified_at]
+  - id: E1b
+    criterion: AC-1
+    executor: test
+    cmd: config:executors.test.scripts_mjs_1
+    expected: "mảnh mjs:1/3 XANH"
+    evidence_required: [run_id, exit_code, verifier, verified_at]
+  - id: E1c
+    criterion: AC-1
+    executor: test
+    cmd: config:executors.test.scripts_mjs_2
+    expected: "mảnh mjs:2/3 XANH"
+    evidence_required: [run_id, exit_code, verifier, verified_at]
+  - id: E1d
+    criterion: AC-1
+    executor: test
+    cmd: config:executors.test.scripts_mjs_3
+    expected: "mảnh mjs:3/3 XANH"
+    evidence_required: [run_id, exit_code, verifier, verified_at]
+  - id: E1e
+    criterion: AC-1
+    executor: test
+    cmd: config:executors.test.hooks
+    expected: "suite hooks XANH"
+    evidence_required: [run_id, exit_code, verifier, verified_at]
+  - id: E1f
+    criterion: AC-1
+    executor: test
+    cmd: config:executors.test.plugins_vung_1
+    expected: "vùng 1 của suite plugins XANH"
+    evidence_required: [run_id, exit_code, verifier, verified_at]
+  - id: E1g
+    criterion: AC-1
+    executor: test
+    cmd: config:executors.test.plugins_vung_2
+    long_running: 60
+    expected: "vùng 2 của suite plugins XANH"
+    evidence_required: [run_id, exit_code, verifier, verified_at]
+  - id: E1h
+    criterion: AC-1
+    executor: test
+    cmd: config:executors.test.plugins_vung_3
+    expected: "vùng 3 của suite plugins XANH"
+    evidence_required: [run_id, exit_code, verifier, verified_at]
+  - id: E1i
+    criterion: AC-1
+    executor: test
+    cmd: config:executors.test.workflows
+    expected: "suite workflows XANH"
+    evidence_required: [run_id, exit_code, verifier, verified_at]
+  - id: E1j
+    criterion: AC-1
+    executor: test
+    cmd: config:executors.test.kiem_ban_cai_moc
+    expected: >
+      Exit 0 — vòng không đổi số trong plugins/acceptance-gate/.claude-plugin/plugin.json nên lệnh in một dòng «BỎ QUA» (kiểm
+      bản cài trọn chỉ chạy ở lượt chấm hồ sơ cắt mốc).
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E1k
+    criterion: AC-1
+    executor: script
+    cmd: config:executors.script.product_map
+    expected: "exit 0 — PRODUCT-MAP.md và LO-TRINH.html khớp hồ sơ xưởng (vẽ lại cùng commit đổi trạng thái hồ sơ)"
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E2
+    criterion: AC-2
+    executor: script
+    cmd: bash _acceptance/va-chu-ky-giu-cho-lenh-gop/chu-ky-giu-cho.sh --chan giu-cho
+    paths: ["plugins/dispatch/scripts/gop.mjs", "plugins/acceptance-gate/lib/evidence-core.cjs", "tests/dieu-phoi/loi/gop-theo-loi.test.mjs", "_acceptance/va-chu-ky-giu-cho-lenh-gop/chu-ky-giu-cho.sh"]
+    expected: >
+      Exit 0 và dòng «XANH: giu-cho» — (1) trên cây: `node --test` các ca GL-6a, GL-6b, GL-6k của
+      tests/dieu-phoi/loi/gop-theo-loi.test.mjs ra «# fail 0» và ba dòng `ok … GL-6a`, `ok … GL-6b`, `ok … GL-6k`; GL-6b có
+      hàng «chữ ký giữ chỗ pending» (0 lời gọi merge, mã 1, thông điệp «báo cáo bằng chứng trên đầu PR không có chữ ký người
+      — «pending» là chữ ký giữ chỗ»); GL-6k lặp MỌI mẫu của `CHU_KY_GIU_CHO` require từ lõi của cây (in số mẫu) và mẫu nào
+      cũng chặn. (2) Ba bản sao cây (`git archive HEAD plugins tests`), mỗi nhát tiêm thay nguyên văn và phải đổi tệp:
+      đối chứng dương bản nguyên vẹn → xanh; «phep-cu» (thân `dongChuKy` về phép cũ) → GL-6b ĐỎ, đầu ra nêu «chữ ký giữ chỗ
+      pending»; «mau-moi» (thêm mẫu `chua-ky-thu` vào bảng của lõi) → GL-6k XANH và in số mẫu tăng một; «bang-rieng» (thêm
+      mẫu ấy vào lõi VÀ cho `gop.mjs` dùng một bảng riêng chép từ bảng cũ) → GL-6k ĐỎ, đầu ra nêu «chua-ky-thu».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E3
+    criterion: AC-3
+    executor: script
+    cmd: bash _acceptance/va-chu-ky-giu-cho-lenh-gop/chu-ky-giu-cho.sh --chan duong-loi
+    paths: ["plugins/dispatch/scripts/gop.mjs", "plugins/dispatch/scripts/dieu-phoi.mjs", "plugins/feature-loop/skills/feature-loop/SKILL.md", "plugins/acceptance-gate/commands/signoff.md", "tests/dieu-phoi/loi/gop-theo-loi.test.mjs", "_acceptance/va-chu-ky-giu-cho-lenh-gop/chu-ky-giu-cho.sh"]
+    expected: >
+      Exit 0 và dòng «XANH: duong-loi» — ca GL-6i, GL-6j, GL-8a ra `ok`, «# fail 0». GL-6i chép trọn plugins/dispatch của
+      cây vào thư mục tạm, chạy lối gộp theo lời trên kho thử đủ sáu vế với: `--loi` trỏ plugins/acceptance-gate của cây →
+      đúng một lời gọi merge; không cờ, bản sao đặt ở `<tạm>/plugins/dispatch` cạnh `<tạm>/plugins/acceptance-gate` →
+      đúng một lời gọi merge; `--loi` trỏ thư mục rỗng và `--loi` trỏ một lõi giả có `lib/evidence-core.cjs` không xuất
+      `chuKyThat` → 0 lời gọi merge, mã 1, «không tìm thấy bộ đọc chữ ký của lõi» kèm đường đã thử và «resolve-plugin.mjs».
+      GL-6j (đăng ký cả ở bản sao chỉ có gói điều phối): gói một mình, không cờ → chặn với cùng thông điệp. GL-8a: khối
+      GOP-THEO-LOI-KY hai nơi bằng nhau sau khi chuẩn hoá MỌI chỗ trỏ bộ giải, kết bằng `--cho-ci 30 --loi "$AG"`, và có
+      `AG=$(node … resolve-plugin.mjs" --plugin acceptance-gate --require lib/evidence-core.cjs)`. Đỏ: thiếu một trong ba
+      dòng `ok` → «ĐỎ: duong-loi». Ca P33 (vùng 2 của suite plugins, E1g) giữ gói điều phối không mang bộ định vị thứ hai.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E4
+    criterion: AC-4
+    executor: test
+    cmd: config:executors.test.dieu_phoi
+    paths: ["plugins/dispatch/**", "tests/dieu-phoi/**"]
+    expected: >
+      Exit 0 — mọi ca của tests/dieu-phoi/**/*.test.mjs xanh, dòng `ok … DP1-03-do ca-tiem-loi` có mặt (bước CI của gói chạy
+      trên bản sao CHỈ có gói điều phối: «# pass» ≥ 84, fail/skipped/todo 0, và nhát tiêm vào một ca đỏ đúng tên ca; ở bản
+      sao ấy GL-6j chạy, các ca kỳ vọng gộp in dòng «không đăng ký»), «# fail 0».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]

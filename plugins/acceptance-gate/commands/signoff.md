@@ -347,8 +347,9 @@ AG="${AG:-${CLAUDE_PLUGIN_ROOT}}" && PMAP=scripts/product-map.mjs && { [ -f "$PM
    đợt điều phối → máy không dừng ở «bấm merge là của người»: đẩy commit chữ ký lên PR của
    vòng (chưa có PR thì mở theo quy trình kho), rồi chạy đúng dòng lệnh của khối dưới ở chế
    độ NỀN — chính lệnh chờ CI, phiên không tự hỏi lại. `<feature-loop>` giải như ở bước 7b;
-   kho tự host kit: `DP=plugins/dispatch`. Lệnh là chỗ DUY NHẤT gộp: nó đọc trên đầu nhánh
-   của PR, đòi kho bật, hồ sơ đã ký, báo cáo có chữ ký, dòng lời gộp cuối của sổ đọc lại ra
+   kho tự host kit: `DP=plugins/dispatch`, `AG=plugins/acceptance-gate`. Lệnh là chỗ DUY NHẤT gộp: nó đọc trên đầu nhánh
+   của PR, đòi kho bật, hồ sơ đã ký, báo cáo có chữ ký thật theo `chuKyThat` của lõi ở `AG` (giá trị giữ chỗ không
+   tính; không có bộ đọc dùng được thì chặn), dòng lời gộp cuối của sổ đọc lại ra
    lời gộp và sinh cùng commit với chữ ký, CI xanh trên đúng đầu nhánh — rồi gộp bằng commit
    gộp, đúng commit đã kiểm, không bật tự gộp của GitHub. Vòng chạy TRONG đợt: luật của đợt
    quyết việc gộp như cũ; lời gộp chỉ được ghi. Gói điều phối chưa cài (bộ giải thoát 1) →
@@ -357,7 +358,7 @@ AG="${AG:-${CLAUDE_PLUGIN_ROOT}}" && PMAP=scripts/product-map.mjs && { [ -f "$PM
 
 <!-- <<<GOP-THEO-LOI-KY -->
 ```
-DP=$(node "<feature-loop>/scripts/resolve-plugin.mjs" --plugin dispatch --require scripts/dieu-phoi.mjs) && node "$DP/scripts/dieu-phoi.mjs" gop <số PR> --theo-loi --slug <slug> --cho-ci 30
+DP=$(node "<feature-loop>/scripts/resolve-plugin.mjs" --plugin dispatch --require scripts/dieu-phoi.mjs) && AG=$(node "<feature-loop>/scripts/resolve-plugin.mjs" --plugin acceptance-gate --require lib/evidence-core.cjs) && node "$DP/scripts/dieu-phoi.mjs" gop <số PR> --theo-loi --slug <slug> --cho-ci 30 --loi "$AG"
 ```
 <!-- GOP-THEO-LOI-KY>>> -->
 <!-- <<<GOP-THEO-LOI-THOAT -->

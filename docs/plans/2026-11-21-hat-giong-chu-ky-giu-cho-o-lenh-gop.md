@@ -3,6 +3,9 @@
 Gốc: delivery-loop/_acceptance/loi-gop-trong-cau-ky/ — Ngoài-2 và Ngoài-4 của Cổng Bằng chứng (21/11/2026), chủ kho
 chọn «mở hợp đồng mới».
 
+**Đã làm 22/11:** hồ sơ `_acceptance/va-chu-ky-giu-cho-lenh-gop/` — vế chữ ký của lối theo lời hỏi `chuKyThat` của lõi;
+gốc lõi truyền bằng cờ `--loi`, dòng lệnh giải bằng `resolve-plugin.mjs` (ADR 0003); không có bộ đọc thì chặn.
+
 Vòng `loi-gop-trong-cau-ky` thêm lối vào `--theo-loi` cho lệnh gộp của gói điều phối
 (`plugins/dispatch/scripts/gop.mjs`). Một trong sáu vế lệnh đòi trước khi gộp là «báo cáo bằng chứng có chữ ký». Vế ấy
 đọc bằng hàm riêng `dongChuKy`: nó chỉ hỏi dòng `human_signoff` có chữ hay không. Bộ đọc chữ ký của lõi (`chuKyThat`,

@@ -7,7 +7,8 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { ciDo, DANG_LOI_GOP, docCau, docLoiGop, gop, maThoatGop } from '../../../plugins/dispatch/scripts/gop.mjs';
 
 const GOC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
@@ -279,8 +280,10 @@ test('GL-5c ma trận sổ: dòng CUỐI mang lời gộp quyết, không lùi v
 });
 
 // ── GL-6: lối vào theo lời ký trên kho thật ─────────────────────────────────────────────────────────────────────
+// Vế chữ ký đọc bằng vị từ của LÕI (`chuKyThat`, hồ sơ va-chu-ky-giu-cho-lenh-gop): mọi ca đi qua lối theo lời cần lõi
+// nên chỉ đăng ký ở cây kit (caKit). Bản sao chỉ có gói điều phối chạy GL-6j — ở đó đường đúng của vật là CHẶN.
 
-test('GL-6a đủ sáu vế trên đầu nhánh → đúng MỘT lời gọi `gh pr merge 7 --merge --match-head-commit <sha>`, không --auto, mã thoát 0, không cần đợt', () => {
+caKit('GL-6a đủ sáu vế trên đầu nhánh → đúng MỘT lời gọi `gh pr merge 7 --merge --match-head-commit <sha>`, không --auto, mã thoát 0, không cần đợt', () => {
   const a = khoLoi();
   const { kq, io } = theoLoi(a);
   assert.equal(kq.da_gop, true, kq.ly_do);
@@ -292,20 +295,21 @@ test('GL-6a đủ sáu vế trên đầu nhánh → đúng MỘT lời gọi `gh
   assert.throws(() => gop(a.k, '7', { io: ioCua(a.k, a.sha), theoLoi: true }), /--theo-loi đòi --slug/);
 });
 
-test('GL-6b ma trận sáu vế — bỏ từng vế trên đầu nhánh: 0 lời gọi merge, mã thoát 1, thông điệp gọi tên đúng vế', () => {
+caKit('GL-6b ma trận sáu vế (vế chữ ký hai hàng: rỗng, giữ chỗ) — bỏ từng vế trên đầu nhánh: 0 lời gọi merge, mã thoát 1, thông điệp gọi tên đúng vế', () => {
   const HANG = [
     ['khoá kho tắt', { khoa: 'false' }, /^kho chưa bật feature_loop\.gop_theo_loi_ky trên đầu nhánh$/],
     ['hợp đồng máy đã thông', { trangThai: MAY_THONG }, /^hồ sơ s trên đầu PR ở «machine-cleared» — lời gộp chỉ có ở hồ sơ đã ký$/],
     ['chữ ký rỗng', { chuKy: '' }, /^báo cáo bằng chứng trên đầu PR không có chữ ký người$/],
+    ['chữ ký giữ chỗ pending', { chuKy: 'pending' }, /^báo cáo bằng chứng trên đầu PR không có chữ ký người — «pending» là chữ ký giữ chỗ$/],
     ['không dòng lời gộp', { coDong: false }, /^không có dòng lời gộp trong sổ$/],
     ['câu ghi không mang lời gộp', { cau: 'Ngoài-1: nhận giới hạn; ký hay trả: Ký' }, /^câu ghi không mang lời gộp$/],
     ['dòng lời gộp ghi ở commit khác commit chữ ký', { dongRieng: true }, /^dòng lời gộp không sinh cùng commit với chữ ký hiện hành$/],
   ];
-  assert.equal(HANG.length, 6);
+  assert.equal(HANG.length, 7);
   for (const [ten, o, re] of HANG) khongGop(theoLoi(khoLoi(o)), re, ten);
 });
 
-test('GL-6c sáu cách viết khoá kho: chỉ `true` và `true` kèm chú thích đuôi là bật; vắng và mọi cách viết khác là tắt', () => {
+caKit('GL-6c sáu cách viết khoá kho: chỉ `true` và `true` kèm chú thích đuôi là bật; vắng và mọi cách viết khác là tắt', () => {
   const a = khoLoi({ khoa: null });
   // Hàng đầu là kho dựng sẵn (khoá vắng); mỗi hàng sau là một commit đổi đúng dòng khoá trên đầu nhánh.
   const VIET = [
@@ -339,7 +343,7 @@ test('GL-6c sáu cách viết khoá kho: chỉ `true` và `true` kèm chú thíc
   assert.match(gop(a.k, '7', { io: ioCua(a.k, sha), theoLoi: true, slug: 's', xet: true }).ly_do, /kho chưa bật/);
 });
 
-test('GL-6d ký HAI lần, lần hai «gộp: chưa; Ký» ghi dòng mới cùng commit chữ ký mới → 0 lời gọi merge, «không mang lời gộp»', () => {
+caKit('GL-6d ký HAI lần, lần hai «gộp: chưa; Ký» ghi dòng mới cùng commit chữ ký mới → 0 lời gọi merge, «không mang lời gộp»', () => {
   const kyLai = (cau) => (k) => {
     ghi(k, `${HS}/evidence-report.md`, baoCao('Manh Phan 2026-11-22'));
     ghi(k, `${HS}/decisions.jsonl`, so(...DONG_THUONG, dongLoiGop(CAU_DU), dongLoiGop(cau, { n: 4, luc: '2026-11-22T08:00:00Z', quyet: 'chưa gộp' })));
@@ -352,7 +356,7 @@ test('GL-6d ký HAI lần, lần hai «gộp: chưa; Ký» ghi dòng mới cùng
   assert.equal(io.merge().length, 1);
 });
 
-test('GL-6e chấm lại rồi ký lại mà lần ký mới không ghi dòng nào → 0 lời gọi merge, «không sinh cùng commit với chữ ký»', () => {
+caKit('GL-6e chấm lại rồi ký lại mà lần ký mới không ghi dòng nào → 0 lời gọi merge, «không sinh cùng commit với chữ ký»', () => {
   const chamLai = (chuKyMoi) => (k) => {
     ghi(k, `${HS}/contract.md`, hopDong('verified'));
     ghi(k, `${HS}/evidence-report.md`, baoCao(''));
@@ -370,7 +374,7 @@ test('GL-6e chấm lại rồi ký lại mà lần ký mới không ghi dòng n�
   assert.equal(io.merge().length, 1);
 });
 
-test('GL-6f --xet: in quyết định, 0 lời gọi merge — cả khi đủ vế lẫn khi thiếu vế', () => {
+caKit('GL-6f --xet: in quyết định, 0 lời gọi merge — cả khi đủ vế lẫn khi thiếu vế', () => {
   const a = khoLoi();
   const du = theoLoi(a, { xet: true });
   assert.deepEqual([du.kq.duong, du.kq.da_gop, maThoatGop(du.kq)], ['moi-nhat', false, 0], du.kq.ly_do);
@@ -381,7 +385,7 @@ test('GL-6f --xet: in quyết định, 0 lời gọi merge — cả khi đủ v�
   assert.equal(thieu.io.merge().length, 0);
 });
 
-test('GL-6g các vế đọc trên ĐẦU NHÁNH của PR, không đọc cây làm việc: cây làm việc xoá dòng lời gộp, tắt khoá, gỡ chữ ký (chưa commit) → vẫn gộp', () => {
+caKit('GL-6g các vế đọc trên ĐẦU NHÁNH của PR, không đọc cây làm việc: cây làm việc xoá dòng lời gộp, tắt khoá, gỡ chữ ký (chưa commit) → vẫn gộp', () => {
   const a = khoLoi();
   ghi(a.k, `${HS}/decisions.jsonl`, so(...DONG_THUONG));
   ghi(a.k, '_acceptance/config.yaml', cauHinh('false'));
@@ -396,7 +400,7 @@ test('GL-6g các vế đọc trên ĐẦU NHÁNH của PR, không đọc cây l�
   khongGop(theoLoi(b), /^không có dòng lời gộp trong sổ$/, 'dòng chỉ có ở cây làm việc');
 });
 
-test('GL-6h dòng lệnh thật: `gh` lỗi hay vắng → thoát 1, MỘT dòng `dieu-phoi: …`, không vết ngăn xếp; đối chứng: `gh` lành → thoát 0, một lời gọi merge', () => {
+caKit('GL-6h dòng lệnh thật: `gh` lỗi hay vắng → thoát 1, MỘT dòng `dieu-phoi: …`, không vết ngăn xếp; đối chứng: `gh` lành → thoát 0, một lời gọi merge', () => {
   const a = khoLoi();
   const chay = (gh, duongPath) => spawnSync(process.execPath, [LENH, 'gop', '7', '--theo-loi', '--slug', 's'], { cwd: a.k, encoding: 'utf8', timeout: 60_000, env: { ...ENV, PATH: duongPath, GH_GIA_DIR: gh.d } });
   const lanh = ghGia();
@@ -424,9 +428,86 @@ test('GL-6h dòng lệnh thật: `gh` lỗi hay vắng → thoát 1, MỘT dòng
   assert.match(thieu.stderr, /^dieu-phoi: gop: --theo-loi đòi --slug <slug>/);
 });
 
+const require = createRequire(import.meta.url);
+const TEP_LOI = path.join('lib', 'evidence-core.cjs');
+const LENH_GIAI = 'resolve-plugin.mjs --plugin acceptance-gate --require lib/evidence-core.cjs';
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+// Bản sao gói điều phối của cây đang kiểm ở `<tạm>/plugins/dispatch`; `coLoi` đặt thêm lõi (`lib/` của acceptance-gate)
+// cạnh nó ở bố cục nguồn. Trả gốc gói của bản sao.
+function banSaoGoi({ coLoi }) {
+  const t = tam('dp-goi-');
+  fs.cpSync(path.join(GOC, 'plugins', 'dispatch'), path.join(t, 'plugins', 'dispatch'), { recursive: true });
+  if (coLoi) fs.cpSync(path.join(GOC, 'plugins', 'acceptance-gate', 'lib'), path.join(t, 'plugins', 'acceptance-gate', 'lib'), { recursive: true });
+  return path.join(t, 'plugins', 'dispatch');
+}
+const napGop = (goi) => import(pathToFileURL(path.join(goi, 'scripts', 'gop.mjs')).href);
+const khongBoDoc = (r, tep, nhan) => {
+  khongGop(r, /^không tìm thấy bộ đọc chữ ký của lõi/, nhan);
+  assert.ok(r.kq.ly_do.includes(tep), `${nhan}: không nêu đường đã thử ${tep} — ${r.kq.ly_do}`);
+  assert.ok(r.kq.ly_do.includes(LENH_GIAI), `${nhan}: không nêu lệnh giải — ${r.kq.ly_do}`);
+  assert.equal(r.io.goiGh.length, 0, `${nhan}: đã hỏi gh trước khi chặn`);
+};
+
+caKit('GL-6k mọi mẫu của bảng giữ chỗ của lõi (rút từ CHU_KY_GIU_CHO) chặn ở vế chữ ký: 0 lời gọi merge, mã 1, thông điệp nêu giá trị giữ chỗ', () => {
+  const { CHU_KY_GIU_CHO } = require(path.join(GOC, 'plugins', 'acceptance-gate', TEP_LOI));
+  assert.ok(Array.isArray(CHU_KY_GIU_CHO) && CHU_KY_GIU_CHO.length > 0, 'bảng giữ chỗ của lõi rỗng hoặc không xuất');
+  console.log(`GL-6k: ${CHU_KY_GIU_CHO.length} mẫu`);
+  for (const { mau, tienTo } of CHU_KY_GIU_CHO) {
+    const v = tienTo ? `${mau}x` : mau;
+    khongGop(theoLoi(khoLoi({ chuKy: v })), new RegExp(`^báo cáo bằng chứng trên đầu PR không có chữ ký người — «${esc(v)}» là chữ ký giữ chỗ$`), `mẫu ${mau}`);
+  }
+});
+
+caKit('GL-6i đường tới lõi: --loi trỏ lõi thật, và bố cục nguồn cạnh lõi không cờ → gộp đúng một lần; --loi trỏ thư mục rỗng hay lõi không xuất chuKyThat → chặn trước mọi lời gọi gh, nêu đường đã thử và lệnh giải', async () => {
+  const a = khoLoi();
+  const motMinh = banSaoGoi({ coLoi: false });
+  const canhLoi = banSaoGoi({ coLoi: true });
+  const loiThat = path.join(GOC, 'plugins', 'acceptance-gate');
+  const rong = tam('dp-loi-rong-');
+  const gia = tam('dp-loi-gia-');
+  ghi(gia, TEP_LOI, 'module.exports = { khac: 1 };\n');
+  const chay = async (goi, them) => {
+    const { gop: g } = await napGop(goi);
+    const io = ioCua(a.k, a.sha);
+    return { kq: g(a.k, '7', { io, theoLoi: true, slug: 's', ...them }), io };
+  };
+  for (const [ten, goi, them] of [['--loi trỏ lõi thật', motMinh, { loi: loiThat }], ['bố cục nguồn cạnh lõi, không cờ', canhLoi, {}]]) {
+    const { kq, io } = await chay(goi, them);
+    assert.equal(kq.da_gop, true, `${ten}: ${kq.ly_do}`);
+    assert.deepEqual(io.merge(), [['pr', 'merge', '7', '--merge', '--match-head-commit', a.sha]], ten);
+  }
+  for (const [ten, loi] of [['--loi trỏ thư mục rỗng', rong], ['--loi trỏ lõi không xuất chuKyThat', gia]]) {
+    khongBoDoc(await chay(motMinh, { loi }), path.join(loi, TEP_LOI), ten);
+  }
+  // Dòng lệnh thật nhận cờ: `--loi <rỗng>` → thoát 1, 0 lời gọi gh; `--loi` không giá trị → lỗi dùng lệnh một dòng.
+  const gh = ghGia();
+  gh.dat('view-cuoi.json', xemPr(a.sha));
+  const env = { ...ENV, PATH: `${gh.bin}:${process.env.PATH}`, GH_GIA_DIR: gh.d };
+  const r = spawnSync(process.execPath, [LENH, 'gop', '7', '--theo-loi', '--slug', 's', '--loi', rong], { cwd: a.k, encoding: 'utf8', env });
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+  assert.match(r.stdout, new RegExp(`^gop #7: chan — không tìm thấy bộ đọc chữ ký của lõi.*${esc(path.join(rong, TEP_LOI))}`));
+  assert.equal(gh.goi().length, 0, gh.goi().join('\n'));
+  const thieu = spawnSync(process.execPath, [LENH, 'gop', '7', '--theo-loi', '--slug', 's', '--loi'], { cwd: a.k, encoding: 'utf8', env });
+  assert.equal(thieu.status, 1);
+  assert.match(thieu.stderr, /^dieu-phoi: gop: --loi <gốc acceptance-gate> thiếu giá trị\n$/);
+});
+
+test('GL-6j gói điều phối một mình, không cờ --loi → lối theo lời chặn trước mọi lời gọi gh (cả --xet), nêu đường bố cục nguồn đã thử và lệnh giải bằng resolve-plugin.mjs', async () => {
+  const a = khoLoi();
+  const goi = banSaoGoi({ coLoi: false });
+  const { gop: g, maThoatGop: m } = await napGop(goi);
+  const tep = path.join(path.dirname(goi), 'acceptance-gate', TEP_LOI);
+  for (const them of [{}, { xet: true }]) {
+    const io = ioCua(a.k, a.sha);
+    const kq = g(a.k, '7', { io, theoLoi: true, slug: 's', ...them });
+    assert.deepEqual([kq.duong, kq.da_gop, m(kq)], ['chan', false, 1], kq.ly_do);
+    khongBoDoc({ kq, io }, tep, `gói một mình ${JSON.stringify(them)}`);
+  }
+});
+
 // ── GL-7: lệnh không cờ giữ nguyên ──────────────────────────────────────────────────────────────────────────────
 
-test('GL-7 lệnh gop KHÔNG cờ --theo-loi ở nơi không có đợt → «không có đợt nào đang chạy» trước mọi lời gọi gh, dù đầu nhánh đủ dòng lời gộp', () => {
+caKit('GL-7 lệnh gop KHÔNG cờ --theo-loi ở nơi không có đợt → «không có đợt nào đang chạy» trước mọi lời gọi gh, dù đầu nhánh đủ dòng lời gộp', () => {
   const a = khoLoi();
   const io = ioCua(a.k, a.sha);
   assert.throws(() => gop(a.k, '7', { io, slug: 's' }), /^Error: gop: không có đợt nào đang chạy$/);
@@ -442,28 +523,32 @@ test('GL-7 lệnh gop KHÔNG cờ --theo-loi ở nơi không có đợt → «kh
 
 // ── GL-8: khối dòng lệnh ở thân lệnh ký và mục S5; lệnh tự chờ CI ───────────────────────────────────────────────
 
-caKit('GL-8a khối GOP-THEO-LOI-KY hai nơi trùng nhau sau khi chuẩn hoá chỗ trỏ gói feature-loop, mang cờ --cho-ci; khối GOP-THEO-LOI-THOAT hai nơi trùng từng ký tự, đủ ba mã', () => {
+caKit('GL-8a khối GOP-THEO-LOI-KY hai nơi trùng nhau sau khi chuẩn hoá MỌI chỗ trỏ bộ giải, mang cờ --cho-ci và --loi "$AG" giải bằng resolve-plugin.mjs; khối GOP-THEO-LOI-THOAT hai nơi trùng từng ký tự, đủ ba mã', () => {
   const [ky, vong] = [TEP_KY, TEP_VONG].map((tep) => rutKhoi(tep, 'GOP-THEO-LOI-KY'));
   assert.deepEqual([ky.length, vong.length], [1, 1], 'khối dòng lệnh phải đúng một dòng ở mỗi nơi');
   const DAU = '«bộ giải»';
-  const chuan = (s) => s.replace('"<feature-loop>/scripts/resolve-plugin.mjs"', DAU).replace('"$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs"', DAU);
-  assert.ok(chuan(ky[0]).includes(DAU) && chuan(vong[0]).includes(DAU), 'không thấy chỗ trỏ gói feature-loop để chuẩn hoá');
+  // Chuẩn hoá MỌI chỗ trỏ bộ giải (dòng lệnh giải cả gói điều phối lẫn gốc lõi), không chỉ chỗ đầu.
+  const chuan = (s) => s.split('"<feature-loop>/scripts/resolve-plugin.mjs"').join(DAU).split('"$WORKFLOWS_DIR/../scripts/resolve-plugin.mjs"').join(DAU);
+  for (const d of [ky[0], vong[0]]) assert.equal(chuan(d).split(DAU).length - 1, 2, `phải đúng hai chỗ trỏ bộ giải: ${d}`);
   assert.notEqual(ky[0], vong[0], 'tiền đề: hai bản khác nhau ở chỗ trỏ gói');
   assert.equal(chuan(ky[0]), chuan(vong[0]));
-  assert.match(vong[0], /dieu-phoi\.mjs" gop <số PR> --theo-loi --slug <slug> --cho-ci \d+$/);
+  assert.ok(chuan(vong[0]).includes(`AG=$(node ${DAU} --plugin acceptance-gate --require lib/evidence-core.cjs)`), 'thiếu lời giải gốc lõi bằng bộ giải');
+  assert.match(vong[0], /dieu-phoi\.mjs" gop <số PR> --theo-loi --slug <slug> --cho-ci \d+ --loi "\$AG"$/);
   const [thoatKy, thoatVong] = [TEP_KY, TEP_VONG].map((tep) => rutKhoi(tep, 'GOP-THEO-LOI-THOAT'));
   assert.deepEqual(thoatKy, thoatVong);
   assert.deepEqual(thoatVong.map((d) => d.slice(0, 3)), ['0 →', '4 →', '1 →']);
   assert.match(thoatVong[1], /vẫn 4/);
 });
 
-// Chạy ĐÚNG dòng lệnh rút từ khối của SKILL bằng shell, trong kho thử: gói điều phối giải về một bản «đã cài» chép từ cây
+// Chạy ĐÚNG dòng lệnh rút từ khối của SKILL bằng shell, trong kho thử: gói điều phối và lõi giải về bản «đã cài» chép từ cây
 // đang kiểm (HOME giả), `gh` giả đứng đầu PATH, nhịp hỏi lại rút còn 50 ms.
 let nhaGia = null;
 function chayKhoi(a, gh, doi = (s) => s) {
   if (!nhaGia) {
     nhaGia = tam('dp-nha-');
     fs.cpSync(path.join(GOC, 'plugins', 'dispatch'), path.join(nhaGia, '.claude', 'plugins', 'cache', 'delivery-loop', 'dispatch', '9.9.9'), { recursive: true });
+    // Lõi «đã cài» cạnh nó trong bộ đệm: dòng lệnh giải gốc lõi bằng bộ giải rồi truyền --loi (bố cục nguồn không có ở đây).
+    fs.cpSync(path.join(GOC, 'plugins', 'acceptance-gate', 'lib'), path.join(nhaGia, '.claude', 'plugins', 'cache', 'delivery-loop', 'acceptance-gate', '9.9.9', 'lib'), { recursive: true });
   }
   const [khuon] = rutKhoi(TEP_VONG, 'GOP-THEO-LOI-KY');
   const lenh = doi(khuon.replace('<số PR>', '7').replace('<slug>', 's'));
@@ -514,8 +599,8 @@ caKit('GL-8d check còn chạy tới hết giờ chờ → thoát 4, 0 lời g�
   gh.dat('view-cuoi.json', xemPr(a.sha, { rollup: DANG_CHAY }));
   // Giờ chờ của khối là 30 phút; ca rút nó còn 0,005 phút (0,3 giây) — phần còn lại của dòng lệnh giữ nguyên.
   const r = chayKhoi(a, gh, (s) => {
-    assert.match(s, / --cho-ci 30$/);
-    return s.replace(/ --cho-ci 30$/, ' --cho-ci 0.005');
+    assert.match(s, / --cho-ci 30 /);
+    return s.replace(/ --cho-ci 30 /, ' --cho-ci 0.005 ');
   });
   assert.equal(r.status, 4, r.stdout + r.stderr);
   assert.match(r.stdout, /^gop #7: cho-ci — hết 0\.005 phút chờ CI — check chưa xanh — build: IN_PROGRESS$/m);
@@ -523,7 +608,7 @@ caKit('GL-8d check còn chạy tới hết giờ chờ → thoát 4, 0 lời g�
   assert.equal(gh.merge().length, 0);
 });
 
-test('GL-8e vòng chờ trong tiến trình: nhịp ngủ, không cờ thì không chờ, đỏ hẳn thì không hỏi lại, hết giờ thì thôi; bảng check đỏ hẳn', () => {
+caKit('GL-8e vòng chờ trong tiến trình: nhịp ngủ, không cờ thì không chờ, đỏ hẳn thì không hỏi lại, hết giờ thì thôi; bảng check đỏ hẳn', () => {
   assert.deepEqual(
     ciDo([
       { name: 'a', status: 'COMPLETED', conclusion: 'SUCCESS' },
