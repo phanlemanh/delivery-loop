@@ -11,6 +11,19 @@ const git = (cwd, ...a) => {
   return r.status === 0 ? r.stdout.trim() : null;
 };
 
+// Dãy chưa đẩy nhánh (hồ sơ doi-soat-ban-giao): kho có remote, có đỉnh, và đỉnh không nằm trong nhánh theo dõi — chưa có
+// nhánh theo dõi cũng tính; đỉnh LÙI sau nhánh theo dõi thì không (commit đã ở remote). Chỉ đọc; không trường nào của
+// `mucDay` đổi. Kho không có remote nào → luôn false (không có chỗ để đẩy).
+export function chuaDay(worktree) {
+  if (!fs.existsSync(worktree)) return false;
+  if (!git(worktree, 'remote')) return false;
+  const dinh = git(worktree, 'rev-parse', 'HEAD');
+  if (!dinh) return false;
+  const u = git(worktree, 'rev-parse', '--verify', '-q', '@{u}');
+  if (!u) return true;
+  return spawnSync('git', ['merge-base', '--is-ancestor', dinh, u], { cwd: worktree }).status !== 0;
+}
+
 export function trangThaiHoSo(worktree, slug) {
   try {
     return /^status:\s*(\S+)/m.exec(fs.readFileSync(path.join(worktree, '_acceptance', slug, 'contract.md'), 'utf8'))?.[1] ?? null;

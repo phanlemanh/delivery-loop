@@ -58,6 +58,14 @@ nhận lời nhắc trong phiên, commit WIP và chạy `node <thư mục đợt
 "<mô tả>"` để lệnh commit hộ); máy dựng `ban-giao.json` từ git. Đổi tài khoản, mở một phiên trong kho, gõ
 `/dispatch:resume`. Lưới cuối: hook `StopFailure` commit WIP khi một thợ chết vì hạn mức.
 
+Lúc nối lại, `tiep-tuc` **đối soát** bản `ban-giao.json` đang mở với hiện trạng từng dãy (nhánh · đỉnh · cây làm việc ·
+hồ sơ · worktree · dãy thêm hay bớt · khoá · đơn · nhánh chính dời bao nhiêu commit) TRƯỚC khi rời bàn giao, và trả khoá
+`doi_soat`: khớp hết thì một dòng, lệch thì chỉ các dòng lệch. Bản bàn giao ghi bằng bản gói cũ thiếu trường vẫn đọc được,
+mỗi trường thiếu một dòng vàng. Dãy mà kho có remote và nhánh chưa đẩy được gọi tên «CHƯA ĐẨY» ở ba chỗ: dòng in của
+`ban-giao-xong` (lệnh vẫn cho qua), câu báo trước khi đổi tài khoản, và `doi_soat` lúc nối lại; kho không có remote không
+thấy chữ ấy. Tài khoản mới cũng quá ngưỡng báo trước (khuyên chờ, `khuyen_cho`) thì `tiep-tuc` trả kế hoạch rỗng và
+`/dispatch:resume` dừng sau một dòng báo — không mở chip nào.
+
 ## Trong đợt
 
 - Mỗi nhịp, bộ phát lịch kiểm hình dạng `dieu-phoi.config.json` và `hang-viec.json` (kiểu từng

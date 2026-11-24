@@ -1,0 +1,131 @@
+schema_version: 1
+feature_slug: doi-soat-ban-giao
+# Một tệp ca mới (tests/dieu-phoi/doi-soat-ban-giao.test.mjs), tên ca = mã tiêu chí («DS-01 …» đo AC-1). Kho thử do mã sinh
+# trong lượt: kho git thật, hai worktree liên kết thật, remote là kho bare, đợt mở bằng CLI thật, bàn giao dựng bằng nhịp bộ
+# phát lịch thật; ngày commit và danh tính ghim cứng nên sha tất định. `rang/chay.sh AC-n` chạy đúng các ca của tiêu chí ấy
+# và ĐÒI từng tên ca có dòng «ok» của nó — mẫu lọc không khớp ca nào thì thoát 1, không xanh suông. Mỗi ca «-do» chạy CHÍNH
+# hàm đo trên một bản sao trọn gói bị tiêm, sau khi bản lành xanh trên cùng kho thử, kiểm bước tiêm đã đổi tệp, và ghim
+# thông điệp của đúng lỗi được tiêm.
+evals:
+  - id: E1
+    criterion: AC-1
+    executor: test
+    cmd: bash _acceptance/doi-soat-ban-giao/rang/chay.sh AC-1
+    paths: [plugins/dispatch/scripts/doi-soat.mjs, plugins/dispatch/scripts/tiep-tuc.mjs, plugins/dispatch/scripts/ban-giao.mjs, plugins/dispatch/scripts/muc-day.mjs, plugins/dispatch/scripts/mau/ban-giao.json, tests/dieu-phoi/doi-soat-ban-giao.test.mjs, _acceptance/doi-soat-ban-giao/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "DS-01 khu-hoi" (tệp bên viết thật sinh → bên đọc thật: khop true, đúng một dòng, không
+      dòng vàng; khoá tệp thật và khoá khuôn, gốc lẫn mục dãy, bằng đúng TRUONG_DOC hợp BO_QUA), "DS-01-do doi-ten-truong"
+      và "DS-01-do truong-moi"; «# fail 0». Chiều đỏ: bản sao đổi tên dinh ở muc-day.mjs → «thiếu trường dinh»; bản sao
+      thêm thu_moi vào bên viết và khuôn → «trường thu_moi không có bên đọc».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E2
+    criterion: AC-2
+    executor: test
+    cmd: bash _acceptance/doi-soat-ban-giao/rang/chay.sh AC-2
+    paths: [plugins/dispatch/scripts/doi-soat.mjs, plugins/dispatch/scripts/tiep-tuc.mjs, plugins/dispatch/scripts/muc-day.mjs, tests/dieu-phoi/doi-soat-ban-giao.test.mjs, _acceptance/doi-soat-ban-giao/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "DS-02 ma-tran" (in mười hai dòng «(a)…(l) · đúng», số hàng đúng = 12 = số hàng ma
+      trận) và "DS-02-do bo-chieu-dinh"; «# fail 0». Chiều đỏ: trên bản sao gói bỏ chiều dinh, ma trận trả danh sách hàng
+      sai gồm đúng (a), (c) và (k).
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E3a
+    criterion: AC-3
+    executor: test
+    cmd: bash _acceptance/doi-soat-ban-giao/rang/chay.sh AC-3
+    paths: [plugins/dispatch/scripts/doi-soat.mjs, plugins/dispatch/scripts/tiep-tuc.mjs, plugins/dispatch/scripts/ban-giao.mjs, plugins/dispatch/scripts/muc-day.mjs, tests/dieu-phoi/doi-soat-ban-giao.test.mjs, _acceptance/doi-soat-ban-giao/mau-dong.md, _acceptance/doi-soat-ban-giao/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "DS-03 mau-dong" (sinh lại mau-dong.md từ năm lớp dòng — khớp, mười hai hàng lệch,
+      CHƯA ĐẨY, năm dòng vàng, không có bản trước; mỗi lớp có ít nhất một mục; tệp đã commit bằng từng byte bản sinh lại)
+      và "DS-03-do tep-cu" (tệp đã commit bị sửa một byte → ca đỏ nêu «mau-dong.md lệch bản sinh lại»); «# fail 0».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E3
+    criterion: AC-3
+    executor: judgment
+    inputs: [_acceptance/doi-soat-ban-giao/mau-dong.md, CONTEXT.md]
+    question: >
+      mau-dong.md là chữ mà lệnh nối lại của gói điều phối in cho chủ kho sau khi đổi tài khoản. Tệp do mã sinh, gồm năm
+      lớp, mỗi mục có tiêu đề nói tình huống đã tiêm: một dòng khi bàn giao khớp hiện trạng; dòng đầu cộng các dòng lệch
+      cho mười hai tình huống lệch; dòng «CHƯA ĐẨY» khi nhánh của một dãy chưa lên remote; dòng vàng khi bản bàn giao cũ
+      thiếu một trường; dòng nói không có bản bàn giao trước. CONTEXT.md là bảng từ của kit (mục «Bàn giao tài khoản» và các mục của gói Điều phối). Đọc như một chủ
+      kho chưa đọc mã: với MỖI dòng lệch, dòng ấy tự nó có nói được (1) dãy nào, hoặc khoá, đơn, nhánh chính nào; (2) chiều
+      gì lệch; (3) lúc bàn giao ra sao và nay ra sao không? Có dòng nào chỉ gồm mã trần hay tên trường máy mà không có chữ
+      giải thích không? Có đường dẫn tuyệt đối nào không? Có từ nào chỉ một kho tiêu thụ cụ thể mới hiểu, hoặc từ nằm trong
+      _Avoid_ của CONTEXT.md không? Mỗi dòng «CHƯA ĐẨY» có nói commit chỉ nằm ở máy này không, và mỗi dòng vàng có chữ
+      giải thích bên cạnh tên trường không? PASS khi mọi dòng lệch đủ ba điều, dòng CHƯA ĐẨY và dòng vàng đủ chữ giải
+      thích, và không vướng ba lỗi sau, kèm trích một dòng làm ví dụ;
+      FAIL nêu nguyên văn dòng hỏng và điều nó thiếu; UNCERTAIN khi tệp không đọc được.
+    paths: [_acceptance/doi-soat-ban-giao/mau-dong.md, plugins/dispatch/scripts/doi-soat.mjs]
+    expected: PASS kèm trích dòng ví dụ; FAIL nêu nguyên văn dòng hỏng
+    evidence_required: [run_id, verifier, verified_at, output]
+  - id: E4
+    criterion: AC-4
+    executor: test
+    cmd: bash _acceptance/doi-soat-ban-giao/rang/chay.sh AC-4
+    paths: [plugins/dispatch/scripts/doi-soat.mjs, plugins/dispatch/scripts/tiep-tuc.mjs, plugins/dispatch/scripts/ban-giao.mjs, plugins/dispatch/scripts/muc-day.mjs, plugins/dispatch/scripts/dieu-phoi.mjs, tests/dieu-phoi/doi-soat-ban-giao.test.mjs, _acceptance/doi-soat-ban-giao/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "DS-04 chua-day" (hai hàng: đỉnh sau lần đẩy cuối · nhánh chưa từng đẩy; mỗi hàng
+      ban-giao-xong thoát 0 kèm «CHƯA ĐẨY» và tên nhánh P1; tin của sự kiện ban-giao-dung nêu P1, không nêu P2;
+      doi_soat.chua_day đúng P1, lech rỗng), "DS-04 khong-remote" (đối chứng im: không chuỗi «CHƯA ĐẨY»/«chưa đẩy» ở ba
+      chỗ, tin giữ đuôi cũ), "DS-04-do bo-dieu-kien-remote" và "DS-04-do khong-upstream"; «# fail 0». Chiều đỏ: bản sao bỏ
+      điều kiện kho có remote → «CHƯA ĐẨY ở kho không remote»; bản sao coi không-nhánh-theo-dõi là đã đẩy → hàng (b) đỏ
+      nêu P1.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E5
+    criterion: AC-5
+    executor: test
+    cmd: bash _acceptance/doi-soat-ban-giao/rang/chay.sh AC-5
+    paths: [plugins/dispatch/scripts/tiep-tuc.mjs, plugins/dispatch/scripts/ban-giao.mjs, tests/dieu-phoi/doi-soat-ban-giao.test.mjs, _acceptance/doi-soat-ban-giao/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "DS-05 khuyen-cho" (B đọc 85 %: có khuyen_cho, ke_hoach rỗng, chuỗi kết quả không chứa
+      mo-chip hay ghi_danh, pha giữ cho-tiep-tuc, doi_soat có mặt; đối chứng dương cùng kho thử B đọc 30 %: P1 mo-chip kèm
+      ghi_danh) và "DS-05-do bo-chan"; «# fail 0». Chiều đỏ: bản sao bỏ nhánh chặn → «khuyen_cho mà còn mo-chip: P1».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E6
+    criterion: AC-6
+    executor: test
+    cmd: bash _acceptance/doi-soat-ban-giao/rang/chay.sh AC-6
+    paths: [plugins/dispatch/commands/resume.md, plugins/dispatch/README.md, tests/dieu-phoi/doi-soat-ban-giao.test.mjs, _acceptance/doi-soat-ban-giao/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "DS-06 than-lenh" (hàm kiểm cấu trúc trên resume.md và README thật trả 0 lỗi; bản sao
+      không sửa cũng 0 lỗi), "DS-06-do tra-cau-cu" (bản sao trả câu «đi tiếp bước 3» → lỗi nêu khuyen_cho) và "DS-06-do
+      go-doi-soat" (bản sao gỡ dòng doi_soat → lỗi nêu doi_soat); «# fail 0».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E7
+    criterion: AC-7
+    executor: test
+    cmd: bash _acceptance/doi-soat-ban-giao/rang/chay.sh AC-7
+    paths: [plugins/dispatch/scripts/doi-soat.mjs, plugins/dispatch/scripts/tiep-tuc.mjs, plugins/dispatch/scripts/ban-giao.mjs, tests/dieu-phoi/doi-soat-ban-giao.test.mjs, _acceptance/doi-soat-ban-giao/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "DS-07 hien-dien" (năm tình huống (a)–(e): bốn không có khoá doi_soat, (e) có
+      khong_ban_truoc; ở (a) kết quả bản mới bằng bản gốc vòng rút trọn thư mục gói bằng git archive, so sâu sau khi thay
+      đường dẫn kho thử bằng nhãn) và "DS-07-do doc-lich-su"; «# fail 0». Chiều đỏ: bản sao đọc bản gần nhất trong lịch sử →
+      tình huống (b) đỏ với «đối soát lại bản đã nối lại».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E8
+    criterion: AC-8
+    executor: test
+    cmd: bash _acceptance/doi-soat-ban-giao/rang/chay.sh AC-8
+    paths: [plugins/dispatch/scripts/doi-soat.mjs, plugins/dispatch/scripts/tiep-tuc.mjs, tests/dieu-phoi/doi-soat-ban-giao.test.mjs, _acceptance/doi-soat-ban-giao/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "DS-08 thieu-truong" (năm hàng gỡ sha_nhanh_chinh · khoa · don · cay_ban · nhanh trên
+      tệp bên viết thật sinh: thoát 0, co_vang nêu đúng trường, chiều của trường ấy không có trong lech dù giá trị hiện tại
+      khác rỗng, có dòng vàng kèm chữ giải thích, lệch thật ở chiều dinh vẫn hiện; số hàng đúng = 5) và "DS-08-do bo-do-truong"; «# fail
+      0». Chiều đỏ: bản sao bỏ bước dò trường vắng → hàng sha_nhanh_chinh đỏ với «không có dòng vàng».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E9
+    criterion: AC-9
+    executor: script
+    cmd: bash _acceptance/doi-soat-ban-giao/rang/chay.sh AC-9
+    expected: >
+      exit 0; stdout có dòng "vung-vat: <n> tệp đổi, 0 ngoài danh sách" (so với gốc chung với nhánh chính) và dòng
+      "vung-vat --thu: đỏ đúng — plugins/acceptance-gate/lib/x.cjs" (chiều đỏ: một đường ngoài danh sách đưa vào bằng cờ
+      thử làm bộ kiểm thoát 1 và nêu đúng đường ấy; chay.sh đảo mã ở vế này và đòi thông điệp).
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E10
+    criterion: AC-9
+    executor: test
+    cmd: config:executors.script.dieu_phoi_ci
+    expected: >
+      exit 0; bước CI thật của gói điều phối (lệnh rút từ .github/workflows/gate.yml) — «# pass» ≥ 84, «# fail 0»,
+      «# skipped 0», «# todo 0»; tệp ca mới của vòng nằm trong mẫu `tests/dieu-phoi/**/*.test.mjs` nên chạy cùng.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]

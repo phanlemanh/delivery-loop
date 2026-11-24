@@ -14,3 +14,7 @@ Gốc: _acceptance/release-3-1-1/evidence-report.md (lượt chấm 2 của mố
   known-limits mà sổ không đổi.
 
 Ưu tiên: trước vòng kế của kit có lượt chấm sinh finding ngoài hợp đồng.
+
+Lần vấp thứ ba (24/11/2026, `doi-soat-ban-giao`, PR #32): lượt chấm 1 sinh 3 mục known-limits; CI của PR đỏ ở
+«plugins vung 3» từ commit bằng chứng (`6bb60b70`) và lại đỏ ở commit chữ ký (P179: ledger 1410 dòng < corpus 1413 mục), chặn lệnh gộp theo lời ký sau 15 phút chờ CI. Sửa bằng
+`so-gioi-han.mjs --slug doi-soat-ban-giao --write` rồi đẩy lại — thêm một vòng CI vào đoạn ký→gộp.

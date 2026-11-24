@@ -7,7 +7,7 @@ import { PHUT_MS } from './cau-hinh.mjs';
 import { docJson, ghiJsonNguyenTu, ghiSuKien, phienCuaCwd, timThuMucDot } from './dot.mjs';
 import { docCauHinh, docHangViec } from './hinh-dang.mjs';
 import { MAC_DINH_HAN_MUC, lanDocHieuLuc } from './han-muc.mjs';
-import { mucDay } from './muc-day.mjs';
+import { chuaDay, mucDay } from './muc-day.mjs';
 import { datPha, docPha } from './pha.mjs';
 import { bayGio, docNhipSong } from './song.mjs';
 import { docDau, lichSuMoiNhat } from './dau.mjs';
@@ -81,14 +81,17 @@ export function banGiaoXong(cwd, { wip = null, nowMs = null } = {}) {
   for (const f of fs.existsSync(dXin) ? fs.readdirSync(dXin).filter((x) => x.startsWith(`${id}-`) && x.endsWith('.json')).sort() : []) loi.push(`còn đơn: xin/${f}`);
   if (loi.length) throw new Error(`ban-giao-xong: ${id} chưa xong — ${loi.join(' · ')}`);
   const m = mucDay(thuMuc, d, { hangViec: hv, maBanGiao: dk.ban_giao.ma });
+  const chuaDayDay = chuaDay(d.worktree);
   const phienCu = [...new Set(docNhipSong(thuMuc).filter((n) => n.worktree === d.worktree).map((n) => n.phien))].sort();
   const ghi = { day: id, ma: dk.ban_giao.ma, luc: new Date(bayGio(nowMs)).toISOString(), nhanh: m.nhanh, dinh: m.dinh, da_day: m.da_day, co_wip: m.co_wip, phien_cu: phienCu };
   ghiJsonNguyenTu(path.join(thuMuc, DIR_BAN_GIAO, 'xong', `${id}.json`), ghi);
   ghiSuKien(thuMuc, { loai: 'ban-giao-xong', phien: id, ma: ghi.ma });
-  return ghi;
+  // Hồ sơ doi-soat-ban-giao: chưa đẩy nhánh vẫn cho qua (chỉ đòi cây sạch và hết đơn) nhưng phải lộ ra; khoá chỉ đi trong
+  // kết quả trả về, không ghi vào `ban-giao/xong/<dãy>.json` — khuôn tệp ấy giữ nguyên.
+  return chuaDayDay ? { ...ghi, chua_day: true } : ghi;
 }
 
-function shaNhanhChinh(cfg) {
+export function shaNhanhChinh(cfg) {
   if (!cfg.goc_kho || !cfg.nhanh_chinh) return null;
   for (const ref of [`origin/${cfg.nhanh_chinh}`, cfg.nhanh_chinh]) {
     const r = spawnSync('git', ['rev-parse', '--verify', '-q', ref], { cwd: cfg.goc_kho, encoding: 'utf8' });
@@ -96,6 +99,23 @@ function shaNhanhChinh(cfg) {
   }
   return null;
 }
+// Khoá đang giữ và đơn đang chờ — MỘT hàm cho bên viết (`buocBanGiao`) và bên đọc (`doi-soat.mjs`).
+export function khoaHienTai(thuMuc) {
+  return ['s4', 'duong-nen', 'merge'].flatMap((tn) => {
+    const c = docJson(path.join(thuMuc, 'khoa', tn, 'chu.json'), null);
+    return c ? [{ tai_nguyen: tn, phien: c.phien }] : [];
+  });
+}
+export function donHienTai(thuMuc) {
+  const dXin = path.join(thuMuc, 'xin');
+  return fs.existsSync(dXin) ? fs.readdirSync(dXin).filter((f) => f.endsWith('.json')).sort() : [];
+}
+// Bản bàn giao đang mở (chưa nối lại) — bên đọc của đối soát; không có thì null.
+export function docBanGiaoMo(thuMuc) {
+  const bg = docJson(path.join(thuMuc, TEP_BAN_GIAO), null);
+  return bg && typeof bg === 'object' && !Array.isArray(bg) ? bg : null;
+}
+
 const XONG = new Set(['xong', 'dang-xong', 'nghi', 'worktree-mat']);
 const khongLuc = ({ luc: _bo, ...con }) => JSON.stringify(con);
 
@@ -113,7 +133,6 @@ export function buocBanGiao(thuMuc, { nowMs = null, cuongBuc = false } = {}) {
   const hanMs = (cfg.han_muc?.cho_ban_giao_phut ?? MAC_DINH_HAN_MUC.cho_ban_giao_phut) * PHUT_MS;
   const quaHan = now - Date.parse(dk.ban_giao.vao_luc) >= hanMs;
   if (!(cuongBuc || quaHan || day.every((m) => XONG.has(m.ban_giao)))) return { pha: dk.pha, dung: false };
-  const dXin = path.join(thuMuc, 'xin');
   const bg = {
     ma: dk.ban_giao.ma,
     trang_thai: 'mo',
@@ -124,11 +143,8 @@ export function buocBanGiao(thuMuc, { nowMs = null, cuongBuc = false } = {}) {
     boi: dk.ban_giao.boi,
     sha_nhanh_chinh: shaNhanhChinh(cfg),
     day,
-    khoa: ['s4', 'duong-nen', 'merge'].flatMap((tn) => {
-      const c = docJson(path.join(thuMuc, 'khoa', tn, 'chu.json'), null);
-      return c ? [{ tai_nguyen: tn, phien: c.phien }] : [];
-    }),
-    don: fs.existsSync(dXin) ? fs.readdirSync(dXin).filter((f) => f.endsWith('.json')).sort() : [],
+    khoa: khoaHienTai(thuMuc),
+    don: donHienTai(thuMuc),
   };
   const p = path.join(thuMuc, TEP_BAN_GIAO);
   const cu = docJson(p, null);
@@ -137,13 +153,16 @@ export function buocBanGiao(thuMuc, { nowMs = null, cuongBuc = false } = {}) {
     datPha(thuMuc, 'cho-tiep-tuc', { boi: cuongBuc ? 'tiep-tuc' : 'phat-lich', lyDo: 'bàn giao đã dựng', nowMs: now });
     const gio = new Date(now).toISOString().slice(11, 16);
     const cli = `node "${path.join(thuMuc, 'loi', 'dieu-phoi.mjs')}"`;
+    // Hồ sơ doi-soat-ban-giao: dãy chưa đẩy nhánh được gọi tên TRƯỚC khi chủ kho đổi tài khoản; kho không remote im.
+    const chuaDayDs = hv.day.filter((d) => chuaDay(d.worktree)).map((d) => d.id);
+    const cauChuaDay = chuaDayDs.length ? ` Dãy CHƯA ĐẨY nhánh (commit chỉ có ở máy này — đẩy trước khi đổi máy): ${chuaDayDs.join(', ')}.` : '';
     ghiSuKien(thuMuc, {
       loai: 'ban-giao-dung',
       ma: bg.ma,
       dich: 'owner',
       // Đường cưỡng bức là tiep-tuc: người đã có mặt, câu «đổi tài khoản» không phải việc chờ nữa (review M1).
       can_phan: !cuongBuc,
-      tin: `Đã bàn giao đợt ${hv.dot} lúc ${gio}Z. Đổi tài khoản, rồi mở một phiên trong kho và gõ /dispatch:resume (lệnh chưa có sau khi đổi → gọi get_usage, rồi ${cli} han-muc --nguon get-usage --phien <mã phiên này> --doc '<kết quả>', rồi ${cli} tiep-tuc --phien <mã phiên này> --json).`,
+      tin: `Đã bàn giao đợt ${hv.dot} lúc ${gio}Z. Đổi tài khoản, rồi mở một phiên trong kho và gõ /dispatch:resume (lệnh chưa có sau khi đổi → gọi get_usage, rồi ${cli} han-muc --nguon get-usage --phien <mã phiên này> --doc '<kết quả>', rồi ${cli} tiep-tuc --phien <mã phiên này> --json).${cauChuaDay}`,
     });
     return { pha: 'cho-tiep-tuc', dung: true, ban_giao: bg };
   }

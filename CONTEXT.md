@@ -581,7 +581,8 @@ _Avoid_: heartbeat, «phiên còn sống» khi chỉ có nhịp (nói «có nh�
 Dừng đợt ở ranh giới trước khi đổi tài khoản Claude: bộ phát lịch ngừng cấp lượt (pha `dang-ban-giao`), mỗi
 thợ commit WIP và báo xong (`ban-giao-xong`), máy dựng `ban-giao.json` từ git và thư mục đợt rồi chuyển sang
 `cho-tiep-tuc`; tài khoản kia nối lại bằng `/dieu-phoi:tiep-tuc`. Kích hoạt bằng lệnh `/dieu-phoi:ban-giao`
-hoặc tự động khi mức dùng chạm ngưỡng `han_muc` của đợt.
+hoặc tự động khi mức dùng chạm ngưỡng `han_muc` của đợt. Lúc nối lại, lệnh **đối soát** bản bàn giao đang mở với hiện
+trạng từng dãy và chỉ nói chỗ lệch; dãy chưa đẩy nhánh được gọi tên «CHƯA ĐẨY».
 _Avoid_: «vật tạo ra bàn giao» (sáu thứ vật tự phát ra — nghĩa khác, CLAUDE.md), «handover» khi nói về một vòng
 feature-loop, «tạm dừng» (pha khác — chữ của người).
 

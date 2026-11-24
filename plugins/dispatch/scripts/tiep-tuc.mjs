@@ -5,8 +5,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { docJson, timThuMucDot } from './dot.mjs';
 import { docHangViec } from './hinh-dang.mjs';
-import { docPha } from './pha.mjs';
-import { banGiaoGanNhat, roiBanGiao } from './ban-giao.mjs';
+import { docPha, PHA_SAO } from './pha.mjs';
+import { banGiaoGanNhat, docBanGiaoMo, roiBanGiao } from './ban-giao.mjs';
+import { doiSoatBanGiao, khongBanTruoc } from './doi-soat.mjs';
 import { mucDay } from './muc-day.mjs';
 import { docDau } from './dau.mjs';
 import { hangKeTuTiep } from './lich.mjs';
@@ -136,13 +137,25 @@ export function tiepTuc(cwd, { phien, nhe = false, nowMs = null, chay = null }) 
     ghiThucLuc(thuMuc, phien, { nowMs });
   }
   const vaiDoi = nhe ? false : nhanVaiGiamSat(thuMuc, { phien, worktree: cwd, nowMs }).doi;
+  // Hồ sơ doi-soat-ban-giao: đối soát bản bàn giao đang mở với hiện trạng TRƯỚC khi rời bàn giao (sau bước rời, bản mở
+  // đã chuyển vào lịch sử và thợ chạy tiếp). Chỉ ở dạng đầy đủ, chỉ trong hai pha ★.
+  const dkDau = docPha(thuMuc);
+  const phaDau = dkDau.pha;
+  const bgMo = PHA_SAO.includes(phaDau) ? docBanGiaoMo(thuMuc) : null;
+  const doiSoat = nhe ? null : bgMo ? doiSoatBanGiao(thuMuc, bgMo) : khongBanTruoc(dkDau.ban_giao?.ma ?? null);
   // DP4 (§4.2 bước 1, 6): rời hai pha ★ khi có lần đọc mức dùng của chính phiên này và tài khoản chưa vượt ngưỡng báo trước.
   const roi = nhe ? {} : roiBanGiao(thuMuc, { phien, nowMs });
+  const coDoiSoat = {};
+  if (doiSoat && PHA_SAO.includes(phaDau) && !roi.can_doc_han_muc) coDoiSoat.doi_soat = doiSoat;
   const pha = docPha(thuMuc).pha;
   const phatLich = pha === 'nhap' || !chay ? 'khong-chay' : chay(cwd);
   const { pha: _p, ...thongTinRoi } = roi;
   const hook = xetHookPhien(thuMuc, phien, { nowMs });
-  return { dot: thuMuc, thoi_vai: false, vai_doi: vaiDoi, pha, phat_lich: phatLich, ...thongTinRoi, ...hook, ke_hoach: keHoachDay(thuMuc, { nowMs }) };
+  let keHoach = keHoachDay(thuMuc, { nowMs });
+  // Khuyên chờ (tài khoản này cũng quá ngưỡng báo trước): không trả kế hoạch — chip chỉ mở theo kế hoạch này (bước 4 của
+  // thân lệnh nối lại), nên kế hoạch rỗng là không chip nào được mở trên tài khoản sắp hết hạn mức.
+  if (roi.khuyen_cho) keHoach = [];
+  return { dot: thuMuc, thoi_vai: false, vai_doi: vaiDoi, pha, phat_lich: phatLich, ...thongTinRoi, ...coDoiSoat, ...hook, ke_hoach: keHoach };
 }
 
 // Hook của gói có nạp trong phiên giám sát không (TC1). Lệnh chạy trong Bash của chính phiên nên `CLAUDE_CODE_SESSION_ID`

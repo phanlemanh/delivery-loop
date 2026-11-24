@@ -1,0 +1,39 @@
+{
+ "feature_plain": "Sau khi đổi tài khoản, lệnh nối lại đợt tự so bản bàn giao với hiện trạng từng dãy: khớp hết thì báo một dòng, lệch thì chỉ nói chỗ lệch; dãy chưa đẩy nhánh được gọi tên; tài khoản cũng sắp hết hạn mức thì không mở chip.",
+ "will_do": [
+  {"id": "AC-1", "p": "Sẽ báo đúng một dòng «khớp» khi không gì đổi sau bàn giao; mọi trường bản bàn giao ghi đều có bên đọc so hoặc nằm trong danh sách bỏ qua có lý do — thêm trường mới mà quên bên đọc thì ca đỏ."},
+  {"id": "AC-2", "p": "Sẽ nói đúng chỗ lệch ở mười hai tình huống phá thật (thêm, lùi, viết lại commit; đổi nhánh; cây bẩn; hồ sơ đổi; khoá, đơn đổi; nhánh chính dời; worktree mất; dãy thêm hoặc bớt) — mỗi chỗ lệch một dòng, dãy khớp không có dòng nào."},
+  {"id": "AC-4", "p": "Sẽ gọi tên dãy chưa đẩy nhánh ở ba chỗ — lúc thợ báo xong, trong câu báo trước khi đổi tài khoản, và lúc nối lại — kể cả nhánh chưa từng đẩy; kho không có remote không thấy chữ nào mới."},
+  {"id": "AC-5", "p": "Sẽ không trả kế hoạch mở chip khi tài khoản đang dùng đã quá ngưỡng báo trước; cùng kho mà tài khoản còn dư thì vẫn mở chip như cũ."},
+  {"id": "AC-6", "p": "Sẽ sửa lời dặn của lệnh nối lại: nói lại nguyên văn các dòng đối soát trước khi mở chip, và DỪNG khi bị khuyên chờ; hướng dẫn của gói nêu ba điều mới."},
+  {"id": "AC-8", "p": "Sẽ đọc được bản bàn giao ghi bằng bản gói cũ thiếu trường: mỗi trường thiếu một dòng vàng có chữ giải thích, các chiều khác vẫn so, không bắt kho nào sửa tệp cũ."},
+  {"id": "AC-9", "p": "Sẽ chỉ đổi tệp của gói điều phối, ca của gói, hồ sơ và tài liệu; toàn bộ ca của gói điều phối (≥ 84 ca) vẫn xanh."}
+ ],
+ "wont_do": [
+  {"id": "AC-7", "p": "Sẽ KHÔNG đối soát khi đợt chưa từng bàn giao, đã nối lại từ trước, ở lần thức nhẹ, hay khi phiên chưa đọc mức dùng — đợt chưa từng bàn giao thấy kết quả y như bản trước vòng."},
+  {"id": "OOS-1", "p": "Sẽ KHÔNG làm lớp 0, 1, 3 của hạt giống giám sát (giao quyền, uỷ quyền, sổ phán quyết, hàng rộng)."},
+  {"id": "OOS-2", "p": "Sẽ KHÔNG so «câu hỏi chủ kho đang mở» và «PR» — bản bàn giao chưa ghi hai thứ ấy; ghi hạt giống."},
+  {"id": "OOS-3", "p": "Sẽ KHÔNG từ chối bàn giao khi nhánh chưa đẩy — trừ khi anh chọn lối ấy ở Hỏi-3."},
+  {"id": "OOS-4", "p": "Sẽ KHÔNG lưu bảng trước/sau vào sổ lâu dài hay đưa lên khung đợt."},
+  {"id": "OOS-5", "p": "Sẽ KHÔNG đổi đầu ra của lệnh chẩn đoán đợt."},
+  {"id": "OOS-6", "p": "Sẽ KHÔNG xử lý bản bàn giao hỏng (không đọc được) — lệnh nối lại đã dừng ở ca đó từ trước."},
+  {"id": "OOS-7", "p": "Sẽ KHÔNG kéo nhánh chính từ remote, tự đẩy nhánh thay dãy, hay tự sửa chỗ lệch — máy chỉ báo."},
+  {"id": "OOS-8", "p": "Sẽ KHÔNG đổi số bản, cắt thẻ, phát hành hay cài lên kho tiêu thụ — đi cùng mốc kế."}
+ ],
+ "coverage_plain": [
+  {"i": 0, "p": "Đối chiếu với cách các công cụ so trạng thái ghi với hiện trạng (Terraform plan, git status): chỉ in chỗ lệch, một dòng khi khớp."},
+  {"i": 1, "p": "Mọi thứ bản bàn giao ghi về một dãy đều có một phép so hoặc một lý do không so (AC-1, AC-2); «đã đẩy» là cờ đo lại lúc nối lại (AC-4)."},
+  {"i": 2, "p": "Mọi lúc lệnh nối lại có thể được gọi đều có hành vi đo: rời bàn giao, khuyên chờ, chưa đọc mức dùng, thức nhẹ, chưa từng bàn giao, đã nối lại, cưỡng bức (AC-1, AC-5, AC-7)."},
+  {"i": 3, "p": "Bản bàn giao đủ trường và thiếu trường đều đọc được (AC-1, AC-8); bản hỏng để ngoài phạm vi."},
+  {"i": 4, "p": "Kho không cài gói, cài mà chưa bàn giao, có hay không có remote — mỗi loại có phép đo riêng (AC-9, AC-7, AC-4)."},
+  {"i": 5, "p": "Chữ in ra đọc được với người chưa đọc mã, ở mọi loại dòng (AC-3); lời dặn khớp máy (AC-6); mỗi phép đo mới có chiều đỏ."},
+  {"i": 6, "p": "Để sau: so câu hỏi chủ kho đang mở và PR. Không bao giờ: máy tự sửa chỗ lệch."}
+ ],
+ "gap_probe_plain": [
+  {"i": 0, "p": "Căn cứ cho «chặn mở chip ở lệnh nối lại» trích nhầm một câu không quyết được — đã thay bằng căn cứ đúng: chip chỉ mở theo kế hoạch của lệnh nối lại, lệnh chẩn đoán không mở chip; giới hạn nay đếm cả lối chẩn đoán."},
+  {"i": 1, "p": "Ba lựa chọn máy ghi «chỉ một lối» trong khi lối kia chỉ đắt hơn — bỏ đường nền nay là câu hỏi Hỏi-6 cho anh; hai lựa chọn còn lại nay trích đúng câu của hạt giống."},
+  {"i": 2, "p": "Ca khứ hồi chỉ đo một chiều — nay đo cả hai: trường bên ghi thêm mà không có bên đọc cũng đỏ; bỏ một hàng đo không sai được."},
+  {"i": 3, "p": "Tệp mẫu chữ cho hội đồng thiếu bốn loại dòng — nay sinh từ cả năm loại, so từng byte."},
+  {"i": 4, "p": "Ba ca thiết kế hứa mà chưa đo (nhánh chưa từng đẩy, commit viết lại, dãy bị gỡ) — đã thêm vào ma trận, kèm chiều đỏ."}
+ ]
+}
