@@ -455,7 +455,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === fs.realpathSync(proces
       },
       'ban-giao-xong': () => {
         const kq = banGiaoXong(cwd, { wip: typeof co.wip === 'string' ? co.wip : null });
-        return `ban-giao-xong: ${kq.day} · ${kq.ma} · đỉnh ${String(kq.dinh).slice(0, 7)}${kq.co_wip ? ' · có commit WIP' : ''}`;
+        return `ban-giao-xong: ${kq.day} · ${kq.ma} · đỉnh ${String(kq.dinh).slice(0, 7)}${kq.co_wip ? ' · có commit WIP' : ''}${kq.chua_day ? ` · CHƯA ĐẨY nhánh ${kq.nhanh} — commit chỉ có ở máy này` : ''}`;
       },
       'han-muc': () => {
         const kq = ghiLanDoc(cwd, { nguon: co.nguon, phien: typeof co.phien === 'string' ? co.phien : null, doc: typeof co.doc === 'string' ? co.doc : '' });

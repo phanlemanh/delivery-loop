@@ -25,9 +25,12 @@ Các bước, đúng thứ tự:
    vào thư mục đợt, báo đúng một dòng «phiên này đã thôi giám sát đợt <tên>» và DỪNG.
    Đợt đang bàn giao tài khoản thì kết quả có thể mang:
    - `can_doc_han_muc`: phiên này chưa có lần đọc mức dùng còn hiệu lực — làm lại bước 0 rồi bước 1, một lần.
-   - `khuyen_cho`: tài khoản hiện tại đã quá ngưỡng báo trước — báo chủ kho một dòng «tài khoản này đã dùng <pct>%
-     cửa sổ <cua_so>, đặt lại lúc <dat_lai> — chờ đặt lại, hoặc đổi tài khoản khác rồi gõ lại /dispatch:resume».
-     Không chuyển gì thêm; đi tiếp bước 3.
+   - `doi_soat`: đối soát bản bàn giao với hiện trạng từng dãy — nói lại cho chủ kho NGUYÊN VĂN từng dòng của
+     `doi_soat.dong`, đúng thứ tự, TRƯỚC mọi việc ở bước 3 và bước 4; không tóm tắt, không bỏ dòng. Một dòng là khớp hết;
+     dòng «CHƯA ĐẨY» là dãy có commit chỉ nằm ở máy cũ. Không tự sửa chỗ lệch nào: sửa là việc của dãy hoặc của người.
+   - `khuyen_cho`: tài khoản hiện tại đã quá ngưỡng báo trước — nói các dòng `doi_soat` như trên, rồi báo chủ kho một
+     dòng «tài khoản này đã dùng <pct>% cửa sổ <cua_so>, đặt lại lúc <dat_lai> — chờ đặt lại, hoặc đổi tài khoản khác rồi
+     gõ lại /dispatch:resume» và DỪNG: không làm bước 3, bước 4, bước 5; `ke_hoach` rỗng nên không có chip nào để mở.
    - `ban_giao` với `trang_thai: da-tiep-tuc`: đợt đã rời bàn giao về pha trước; nói một dòng kèm mã bàn giao.
    Kết quả có `hook_thieu: true` (cả dạng `--nhe`): phiên này mở trước khi cài hay nâng gói nên hook của gói không nạp —
    đánh thức không thấy nhịp của nó. Nói nguyên `hook_thieu_cau` một dòng cho chủ kho rồi đi tiếp; việc đúng là mở phiên

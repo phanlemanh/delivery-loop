@@ -37,7 +37,7 @@ const NGAY = '2026-10-11T08:00:00Z';
 const ENV = Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('GIT_') && k !== 'NODE_TEST_CONTEXT'));
 const ENV_GIT = { ...ENV, GIT_AUTHOR_DATE: NGAY, GIT_COMMITTER_DATE: NGAY };
 const nap = (gocGoi, tep) => import(`${path.join(gocGoi, 'scripts', tep)}?v=${Math.random()}`);
-const git = (cwd, ...a) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', ...a], { cwd, env: ENV_GIT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+const git = (cwd, ...a) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', '-c', 'commit.gpgsign=false', ...a], { cwd, env: ENV_GIT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
 function chayCli(cwd, doiSo, { gocGoi = GOI, env = {} } = {}) {
   const r = spawnSync(process.execPath, [path.join(gocGoi, 'scripts', 'dieu-phoi.mjs'), ...doiSo], { cwd, env: { ...ENV, ...env }, encoding: 'utf8' });
   return { ma: r.status, out: r.stdout, err: r.stderr };
@@ -135,6 +135,7 @@ async function dotDoiSoat({ gocGoi = GOI, remote = true, p2 = 'xong', truoc = nu
   process.env.DIEU_PHOI_MAY_DIR = tam('ds-may-');
   const k = khoLienKet({ gocGoi, remote });
   hoSoThu(k.w1, 'hang-a', 'approved');
+  git(k.w1, 'commit', '-q', '--allow-empty', '-m', 'buoc');
   hoSoThu(k.w2, 'hang-b', 'implemented');
   if (remote) {
     day(k.w1, 'p1');
@@ -470,7 +471,7 @@ test('DS-07 hien-dien', async () => {
 test('DS-07-do doc-lich-su', async () => {
   const sao = saoGoiSua('scripts/tiep-tuc.mjs', (t) => t
     .replace('const bgMo = PHA_SAO.includes(phaDau) ? docBanGiaoMo(thuMuc) : null;', 'const bgMo = banGiaoGanNhat(thuMuc);')
-    .replace('if (PHA_SAO.includes(phaDau) && !roi.can_doc_han_muc)', 'if ((bgMo || PHA_SAO.includes(phaDau)) && !roi.can_doc_han_muc)'));
+    .replace('doiSoat && PHA_SAO.includes(phaDau) && !roi.can_doc_han_muc', 'doiSoat && (bgMo || PHA_SAO.includes(phaDau)) && !roi.can_doc_han_muc'));
   const { loi } = await doHienDien(sao);
   console.log(`  bản tiêm: ${loi.join(' | ')}`);
   assert.ok(loi.includes('(b) đối soát lại bản đã nối lại'), loi.join(' | '));
