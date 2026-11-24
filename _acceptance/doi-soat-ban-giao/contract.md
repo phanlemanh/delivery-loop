@@ -5,9 +5,9 @@ slug: doi-soat-ban-giao
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: plugins/dispatch/scripts/{doi-soat,tiep-tuc,ban-giao,muc-day,dieu-phoi}.mjs, commands/resume.md, README của gói, ca của gói — KHÔNG khớp t3_paths
 surfaces: [cli]
-status: draft
-approved_by:
-approved_at:
+status: approved
+approved_by: Phan Le Manh
+approved_at: 2026-11-24
 design_doc: docs/superpowers/specs/2026-11-24-doi-soat-ban-giao-design.md
 ---
 
