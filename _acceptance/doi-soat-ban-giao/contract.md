@@ -5,7 +5,7 @@ slug: doi-soat-ban-giao
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: plugins/dispatch/scripts/{doi-soat,tiep-tuc,ban-giao,muc-day,dieu-phoi}.mjs, commands/resume.md, README của gói, ca của gói — KHÔNG khớp t3_paths
 surfaces: [cli]
-status: verified
+status: signed-off
 approved_by: Phan Le Manh
 approved_at: 2026-11-24
 design_doc: docs/superpowers/specs/2026-11-24-doi-soat-ban-giao-design.md
@@ -99,3 +99,8 @@ Thuật ngữ:
 - Phiên nạp gói `feature-loop@delivery-loop` 3.0.0 (bộ đệm cài); kho tự host kit nên lệnh của vòng chạy từ cây (`plugins/…` ở 3.1.1). Không gói `@acceptance-gate-kit` nào được nạp.
 - Lệnh riêng của hồ sơ gọi `_acceptance/doi-soat-ban-giao/rang/chay.sh` (khối `LENH-HO-SO`); vòng không thêm khoá vào `_acceptance/config.yaml`.
 - PR đang mở lúc soạn (24/11): chỉ #21 (nháp, nhánh `chuyen-nha`) — không chạm tệp nào của vòng.
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-24:
+  - Ngoài-2: tệp bàn giao có trường sai kiểu (ví dụ do sửa tay) làm lệnh nối lại báo lỗi và đợt không rời được pha bàn giao; chủ kho sửa tệp rồi chạy lại.
+  - Ngoài-4: cấu hình đợt không đọc được thì dòng đối soát báo «nhánh chính đổi khác lịch sử» thay vì nói thẳng cấu hình hỏng.
+  - Ngoài-5: ở ca DS-08, vế «không báo lệch giả» của ba hàng khoa · đơn · cây bẩn không có đối chứng dương, nên gỡ bước chống báo giả ở ba trường ấy thì ca vẫn xanh; hành vi hôm nay đúng.
+- Hạt giống ghi ở Cổng Bằng chứng 2026-11-24 (lối «mở hợp đồng mới» ghi hạt giống, không tạo ô): Ngoài-1 và Ngoài-3 → `docs/plans/2026-11-24-hat-giong-doi-soat-khi-khuyen-cho-chua-co-ban.md`; mục Out of scope thứ hai → `docs/plans/2026-11-24-hat-giong-doi-soat-cau-hoi-mo-va-pr.md`.

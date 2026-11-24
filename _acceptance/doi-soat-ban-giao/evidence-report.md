@@ -8,7 +8,7 @@ verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
 verified_commit: 2e660a5662831264f00ed67dde0b0f153f9315e6
-human_signoff:
+human_signoff: Phan Le Manh 2026-11-24
 ---
 
 # Evidence Report: doi-soat-ban-giao
