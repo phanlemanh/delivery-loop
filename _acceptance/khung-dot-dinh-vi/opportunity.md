@@ -78,3 +78,6 @@ ký theo chính sách — các bước (c)–(f) chịu luật chiều rộng (b
 **Dự báo năm dòng số (luật c):** thời gian làm-xong→gộp-được = (↓ nhẹ sau đêm: chủ kho thấy việc chờ mình sớm hơn) ·
 lượt gọi người = · vòng bị hạ tầng đốt lượt chấm = · token máy/vòng ↑ nhẹ (giám sát ghi thêm một dòng mỗi câu) ·
 phút máy/lượt chấm =. Điều kiện tin cậy: đường verdict không đổi thành phần.
+
+**Hạt giống sinh từ ranh giới trên (24/11/2026):** bước (f) cho vai giám sát, đối soát bàn giao và hàng rộng trong lộ
+trình ghi ở `docs/plans/2026-11-24-hat-giong-giam-sat-co-quyen-va-co-so.md` — sổ, chưa là ô.
