@@ -1,6 +1,6 @@
 // Ca so với BẢN GỐC VÒNG (8817a5bf) của hồ sơ bang-chung-cu-theo-dau-vao — chỉ chạy ở lượt chấm qua rang/chay.sh, không
 // vào bộ kiểm của kit (không đóng băng thông điệp của pr-san-sang trên main, không đỏ ở bản clone nông của CI).
-// Kho đo sinh trong thư mục tạm; mọi đường suy từ vị trí tệp này. Thiếu bản gốc vòng → ca ĐỎ có tên, không bỏ qua.
+// Kho đo sinh trong thư mục tạm; mọi đường suy từ vị trí tệp này. Không rút được bản gốc vòng → ca ĐỎ có tên, không bỏ qua.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -24,7 +24,7 @@ const ghi = (k, f, t) => {
 
 function banGoc() {
   const r = spawnSync('git', ['-C', KIT, 'show', `${GOC}:plugins/feature-loop/scripts/pr-san-sang.mjs`], { encoding: 'utf8' });
-  if (r.status !== 0) throw new Error(`không có bản gốc vòng ${GOC.slice(0, 8)} trong kho này — ca không đo được`);
+  if (r.status !== 0) throw new Error(`không rút được bản gốc vòng ${GOC.slice(0, 8)} trong kho này — ca không đo được`);
   const f = path.join(tam('bcg-'), 'pr-san-sang.mjs');
   fs.writeFileSync(f, r.stdout);
   return f;
