@@ -1,0 +1,95 @@
+schema_version: 1
+feature_slug: nang-repo-setup-0-10-4
+# Mọi phép đo máy đi qua `rang/chay.sh AC-n` (bash) → `rang/do.py` (Python, thư viện chuẩn). Bản sao đo do mã sinh trong
+# lượt: `git archive <cây>` vào thư mục tạm, `git init` + một commit (repo-setup đọc lịch sử git). Bản gốc vòng ghim
+# `87a392cd` (đỉnh origin/main lúc mở vòng). repo-setup 0.10.4 lấy từ REPO_SETUP_ROOT hoặc bộ đệm người dùng; vắng → thoát
+# 2 «không đọc được ở đây», không xanh. Mỗi phép đo chạy đối chứng dương trước rồi chiều đỏ trên cùng bản sao, kiểm bước
+# tiêm đã đổi tệp, và ghim thông điệp.
+evals:
+  - id: E1
+    criterion: AC-1
+    executor: script
+    cmd: bash _acceptance/nang-repo-setup-0-10-4/rang/chay.sh AC-1
+    paths: [.repo-setup.json, Makefile, mk/**, tools/**, .gitattributes, .claude/settings.json, CLAUDE.md, _acceptance/nang-repo-setup-0-10-4/rang/**]
+    expected: >
+      exit 0; in «AC-1 HEAD: created=[] merged=[] marked=[] base_unread=[]», «removed» đúng ba tệp, «conflict» có CLAUDE.md
+      và .claude/settings.json, dòng manifest «0.10.4 claude-plugin starter adopt independent» và «băm ba tệp gỡ: có»; rồi
+      «AC-1 chiều đỏ: bản gốc vòng chưa nâng (created có mk/upgrade.mk)». Chiều đỏ của chính phép đo là vế thứ hai: bản gốc
+      vòng 87a392cd phải ra created khác rỗng — không ra thì thoát 1.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E2
+    criterion: AC-2
+    executor: script
+    cmd: bash _acceptance/nang-repo-setup-0-10-4/rang/chay.sh AC-2
+    paths: [.repo-setup.json, Makefile, mk/**, tools/**, .gitattributes, .github/workflows/gate.yml, .claude/settings.json, CLAUDE.md, _acceptance/nang-repo-setup-0-10-4/rang/**]
+    expected: >
+      exit 0; in «AC-2 HEAD: điểm 100, failed=[]», «upgrade: marked=[] behind=[]», năm mục trong passed; rồi «AC-2 chiều
+      đỏ: bản gốc vòng điểm 82, failed = agent_permissions, language_policy, plugin_ci_validates, plugin_versions,
+      upgrade_wall». Bản gốc ra điểm khác 82 hay tập trượt khác → thoát 1 nêu số thấy.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E3
+    criterion: AC-3
+    executor: script
+    cmd: bash _acceptance/nang-repo-setup-0-10-4/rang/chay.sh AC-3
+    paths: [CLAUDE.md, Makefile, mk/**, .claude/skills/**, _acceptance/nang-repo-setup-0-10-4/rang/**]
+    expected: >
+      exit 0; in «AC-3 CLAUDE.md: chỉ thêm N dòng cuối, mở bằng ## Language», «AC-3 review-change: vắng», «AC-3 make -n
+      test: bằng bản gốc trừ ba dòng đã khai, đứng trước bộ chạy kiểm»; chiều đỏ trên bản sao: sửa một dòng giữa CLAUDE.md →
+      «CLAUDE.md đổi ngoài mục Language»; đổi công thức test của Makefile → «đích test của kit bị đổi»; thêm tiền điều kiện
+      lạ in một dòng lệnh cho test → «đích test của kit bị đổi». Đối chứng dương: bộ kiểm trên bản sao chưa tiêm xanh trước.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E4
+    criterion: AC-4
+    executor: script
+    cmd: bash _acceptance/nang-repo-setup-0-10-4/rang/chay.sh AC-4
+    paths: [Makefile, mk/**, tools/upgrade_markers.py, .repo-setup.json, .editorconfig, _acceptance/nang-repo-setup-0-10-4/rang/**]
+    expected: >
+      exit 0; in «AC-4 sạch: make upgrade thoát 0 — no conflict markers», «AC-4 dòng đầu make -n check: python3
+      tools/upgrade_markers.py», «AC-4 tiêm .editorconfig: make upgrade thoát <k≠0>, upgrade_markers.py thoát <k≠0>, nêu
+      .editorconfig:<n>: conflict marker from a repo-setup upgrade, không missing separator». Tiêm không đổi tệp → thoát 1.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E5
+    criterion: AC-5
+    executor: script
+    cmd: bash _acceptance/nang-repo-setup-0-10-4/rang/chay.sh AC-5
+    paths: [.github/workflows/gate.yml, tools/plugin_lint.py, tools/upgrade_markers.py, .claude-plugin/marketplace.json, plugins/*/.claude-plugin/plugin.json, .repo-setup.json, _acceptance/nang-repo-setup-0-10-4/rang/**]
+    expected: >
+      exit 0; in «AC-5 khung: không if, plugin_lint + upgrade_markers, lối vào pull_request + push», «AC-5 tests: needs có
+      khung, if cấp job có always()», «AC-5 bước gom khung: success→0 failure→1 skipped→1», «AC-5 lệnh khung trên HEAD: 0 0»;
+      chiều đỏ: «plugin_lint đỏ đúng: <tên plugin>» (gỡ source); «plugin_lint đỏ đúng: no independent versioning is
+      declared» (gỡ vars.plugin_versioning); «tests không chờ khung»; «tests bị bỏ qua khi khung đỏ»; «khung mang điều kiện».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E6
+    criterion: AC-6
+    executor: script
+    cmd: bash _acceptance/nang-repo-setup-0-10-4/rang/chay.sh AC-6
+    paths: [.claude/settings.json, _acceptance/nang-repo-setup-0-10-4/rang/**]
+    expected: >
+      exit 0; in «AC-6 deny = Read(./.env), Read(./.env.*)», «AC-6 khoá khác bằng bản gốc»; chiều đỏ: «chặn sửa workflow»
+      khi bản sao thêm Edit(./.github/workflows/**); «hooks đổi» khi bản sao gỡ PostToolUse.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E7
+    criterion: AC-7
+    executor: script
+    cmd: bash _acceptance/nang-repo-setup-0-10-4/rang/chay.sh AC-7
+    paths: ["**"]
+    expected: >
+      exit 0; in «AC-7 vùng vật: N tệp, đều trong danh sách, 0 tệp dưới plugins/»; rồi «AC-7 --thu: đỏ đúng —
+      plugins/acceptance-gate/lib/x.cjs» (cờ thử phải thoát 1 và nêu đường).
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E8
+    criterion: AC-8
+    executor: judgment
+    inputs: [CLAUDE.md, plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md]
+    question: >
+      CLAUDE.md là luật của kho kit (ba nguyên tố, định vị, các bất biến của người sửa kit); mục cuối của nó, «## Language»,
+      vừa được thêm để nói ngôn ngữ nào dùng ở đâu. human-facing-language.md là bản luật ngôn ngữ mặt người của kit. Đọc như
+      chủ kho chưa đọc mã. (1) Mục «## Language» có nói rõ chữ nào viết tiếng Việt (chữ người đọc: tài liệu, hồ sơ, thẻ cổng,
+      thông điệp script, commit, CHANGELOG, mô tả PR), thứ nào giữ nguyên như kho đang dùng (tên tệp, tên script, khoá cấu
+      hình, định danh, tiền tố commit), và ngôn ngữ trò chuyện với chủ kho không? (2) Có câu nào trong mục trái với phần còn
+      lại của CLAUDE.md hay với bản luật ngôn ngữ mặt người không? (3) Có câu nào đòi viết tiếng Anh cho commit, CHANGELOG
+      hay tên tệp không? PASS khi (1) đủ cả ba vế và (2), (3) đều không, kèm trích một câu của mục làm ví dụ; FAIL nêu nguyên
+      văn câu hỏng và điều nó thiếu hay trái; UNCERTAIN khi CLAUDE.md không có mục «## Language».
+    paths: [CLAUDE.md]
+    expected: PASS kèm trích một câu; FAIL nêu nguyên văn câu hỏng
+    evidence_required: [run_id, verifier, verified_at, output]
