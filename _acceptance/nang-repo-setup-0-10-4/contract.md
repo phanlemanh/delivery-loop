@@ -5,9 +5,9 @@ slug: nang-repo-setup-0-10-4
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: .repo-setup.json, Makefile, mk/, tools/, .gitattributes, .github/workflows/gate.yml, .claude/settings.json, CLAUDE.md — KHÔNG khớp t3_paths
 surfaces: [ci]
-status: draft
-approved_by:
-approved_at:
+status: approved
+approved_by: Phan Le Manh
+approved_at: 2026-11-26
 design_doc: docs/superpowers/specs/2026-11-26-nang-repo-setup-0-10-4-design.md
 ---
 
