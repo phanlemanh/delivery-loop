@@ -3,6 +3,9 @@
 Gốc: delivery-loop/_acceptance/release-3-1-1/ (mốc gần nhất: Cổng Bằng chứng trình 10 mục ngoài hợp đồng, người ký chọn
 theo đề xuất của máy cả 10 — 8 ghi Known limits, 2 không sửa; lượt chấm 2 đỏ vì sổ giới hạn thiếu hàng cho các mục ấy).
 **Chân VC8 (cơ học, KHÔNG phải neo):** `_acceptance/o-chi-mo-khi-co-neo-ngoai/` trích lại tệp này.
+**Thuộc gói:** DL5 của thiết kế ba kho (`migration/hat-giong-sau-goi-dl-ba-kho.md` trên nhánh `chuyen-nha`). Vế «mặc định
+định tuyến cho mục ngoài hợp đồng» của DL5 chính là «lối rẻ hơn» ở cuối tệp này; vế kèm lượt chạy chứng minh là phần DL5
+chưa có — giảm lượng chảy vào sổ giới hạn từ phía nguồn. Tệp này là số đo và hướng cho DL5, không phải một gói thứ bảy.
 
 **Trạng thái:** hạt giống (SỔ, chưa là ô). Ghi 26/11/2026 sau phiên đánh giá gói pstack của Cursor (`cursor/plugins`, bản
 0.15.48, commit `b7b93c3`) theo North Star của kit. Tệp này không mở vòng nào.

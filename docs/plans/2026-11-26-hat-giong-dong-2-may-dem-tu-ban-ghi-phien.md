@@ -3,6 +3,9 @@
 Gốc: delivery-loop/_acceptance/release-3-1-1/ (hồ sơ mốc gần nhất; mục «Năm dòng số» của mốc ghi: «0 ngoài thiết kế» nghĩa
 là «0 ghi được»: không đọc được phiên chat).
 **Chân VC8 (cơ học, KHÔNG phải neo):** `_acceptance/o-chi-mo-khi-co-neo-ngoai/` trích lại tệp này.
+**Cùng họ:** mục K5 của kế hoạch 12 mục (`migration/KE-HOACH-12-MUC-REPO-STANDARDS.md` trên nhánh `chuyen-nha`) — «không
+tách được giờ chờ người», đang đếm tay ở hồ sơ mốc, có lối «chỉ viết mã nếu đếm tay không tách được». Không thuộc gói DL
+nào: sáu gói DL sửa vòng, tệp này sửa thước đọc vòng.
 
 **Trạng thái:** hạt giống (SỔ, chưa là ô). Ghi 26/11/2026 sau phiên đánh giá gói pstack của Cursor (`cursor/plugins`, bản
 0.15.48, commit `b7b93c3`) theo North Star của kit. Tệp này không mở vòng nào.
