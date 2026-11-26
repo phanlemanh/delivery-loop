@@ -1,7 +1,7 @@
 # ADR 0030 — Phiên giám sát đọc bản uỷ quyền của kho; mỗi lần dùng quyền là một sự kiện mang tên quyền
 
-*2026-11-26 · **ĐỀ XUẤT, chưa phê** · gói DL6 · CỘNG, cần chủ kho phê đích danh (ADR 0018) · dòng phê: (chờ — ghi nguyên
-văn khi chủ kho trả lời Hỏi-1 và Hỏi-2 ở cuối).*
+*2026-11-26 · gói DL6 · CỘNG, chủ kho (Phan Le Manh) phê đích danh (ADR 0018), nguyên văn: «Phê, chọn A» — Hỏi-1: phê;
+Hỏi-2: lối A, quyền gộp vẫn đến từ ô `tu_merge` của mỗi đợt.*
 Gốc: `_acceptance/khung-dot-dinh-vi/` · hạt giống `docs/plans/2026-11-24-hat-giong-giam-sat-co-quyen-va-co-so.md` (lớp 1)
 · phanlemanh/delivery-loop#5, #4.
 
@@ -36,7 +36,7 @@ này.
    | Loại | Giám sát tự làm | Điều máy so trước/sau | Phép so hôm nay |
    |---|---|---|---|
    | `thu-tu-gop` | xếp lại thứ tự cấp khoá `merge` | tập PR được gộp không đổi; mỗi PR vẫn qua `xetGop` | có (`xepHang` + `xetGop`) |
-   | `gop` | gộp PR đã qua cổng khi mọi ô xanh | mọi ô xanh trên đúng commit được gộp | có (`xetGop`, `--match-head-commit`) — xem Hỏi-2 |
+   | `gop` | gộp PR đã qua cổng khi mọi ô xanh | mọi ô xanh trên đúng commit được gộp | có (`xetGop`, `--match-head-commit`); chỉ khi ô `tu_merge` của đợt bật (Hỏi-2, lối A) |
    | `phien` | mở phiên cho hàng sẵn sàng; dọn phiên đã gộp hoặc đã bàn giao | không commit nào mất | mở: có · dọn: CHƯA — cần phép so bàn giao (lớp 2 hạt giống) |
    | `chuyen-hang`, `mo-day` | chuyển hàng sang dãy khác, mở dãy | mỗi hàng đúng một dãy; không hai hàng trùng vùng chạy cùng lúc | phép so có (`trung-tep.mjs`), lệnh chưa có |
    | `phan-quyet-chung` | ghi một phán quyết thành luật đợt | mỗi phán quyết có một dòng sổ kèm đường đảo | có; phán quyết chạm luật sản phẩm (ADR 0024) KHÔNG so được → vẫn hỏi |
@@ -67,7 +67,7 @@ này.
    người biết (01/09); chủ kho đã viết điều ấy một lần vào tệp.
 
 **Lệnh để dùng quyền** (mức thiết kế, vòng dựng chốt chi tiết):
-- giám sát thành người gọi hợp lệ của `gop`, đi qua ĐÚNG các phép kiểm của `xetGop` (chữ ký thật, CI xanh, cửa chứng minh),
+- khi ô `tu_merge` của đợt bật, giám sát thành người gọi hợp lệ của `gop`, đi qua ĐÚNG các phép kiểm của `xetGop` (chữ ký thật, CI xanh, cửa chứng minh),
   không nới phép nào và không bao giờ `--auto`;
 - một lệnh xếp lại thứ tự gộp, một lệnh chuyển hàng, một lệnh mở dãy;
 - `phan-quyet "<câu>"` ghi cùng lúc vào sổ luật đợt và nhật ký.
@@ -75,7 +75,7 @@ này.
 **Gây bất ngờ — và vì sao không trái ADR cũ.**
 - *ADR 0027 chân 4* nói máy chỉ soạn dòng luật trao quyền sau 10 câu mù liên tiếp khớp, và khó-đảo không bao giờ trao. Ở đây
   NGƯỜI trao, không phải máy đề xuất: lời giao có nguyên văn (#5, nhắc lại 24/11). Ngưỡng của chân 4 gác lời máy đề xuất,
-  không gác chữ của chủ kho. Phần khó-đảo duy nhất là gộp, nên nó thành Hỏi-2.
+  không gác chữ của chủ kho. Phần khó-đảo duy nhất là gộp, nên nó thành Hỏi-2; chủ kho chọn lối A — quyền gộp vẫn do người gõ ở mỗi đợt.
 - *ADR 0002* giữ nguyên: không loại nào chạm chữ ký, và giám sát không gọi lệnh khoá nào.
 - *ADR 0029* giữ nguyên: gộp theo quyền dùng cùng các phép kiểm và cùng `--match-head-commit`.
 
@@ -140,7 +140,7 @@ Standards dựng khuôn tệp (RS5b) sau khi ADR được phê.
 - Hoàn lại PR của vòng.
 - **Ngưỡng thu hồi:** một lần dùng quyền không có sự kiện, hoặc một lần chạm vùng cấm → tắt bộ đọc ở mốc kế.
 
-## Câu hỏi cho chủ kho (chỉ người biết)
+## Câu hỏi cho chủ kho (chỉ người biết) — đã trả lời 26/11: «Phê, chọn A»
 
 **Hỏi-1 — Phê CỘNG cho bản uỷ quyền, sự kiện dùng quyền và các lệnh để dùng quyền?** Khuyến nghị: **phê**.
 - Căn cứ: 10 lần thợ dừng chờ phán trong 2 giờ 45 phút; lời giao phải lặp lại mỗi đợt; tính năng tắt mặc định và có đường đảo
