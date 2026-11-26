@@ -27,6 +27,10 @@
       "Bash(bash tests/workflows/run-tests.sh)",
       "Bash(node plugins/acceptance-gate/scripts/product-map.mjs --root . --check)",
       "Bash(node tests/scripts/kiem-ban-cai.ca.mjs --chi-luot-moc)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)"
     ]
   },
   "hooks": {
