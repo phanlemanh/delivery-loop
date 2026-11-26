@@ -96,3 +96,5 @@ ngoài vì cửa proof (AC-5) · ngoài vì chưa đủ điều kiện (AC-7) ·
   - Ngoài-12: Phép thử không phân biệt được PR bị chặn vì đọc luật ở nhánh chính hay vì một lý do khác, nên bằng chứng cho chốt chặn này yếu hơn vẻ ngoài.
 - Mở hợp đồng mới ở Cổng Bằng chứng 2026-11-22 (Ngoài-7): hạt giống
   `docs/plans/2026-11-22-hat-giong-chuyen-gop-moc-so-sanh.md`.
+- Hạt giống sau phép so cửa proof với bộ đọc gốc của Repo Standards (26/11/2026, chủ kho «Ghi hạt giống»):
+  `docs/plans/2026-11-26-hat-giong-cua-proof-doc-lech-luat-tu-tri.md`.
