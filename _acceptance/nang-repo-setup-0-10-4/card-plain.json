@@ -1,37 +1,115 @@
 {
   "feature_plain": "Kho kit lên bộ khung repo-setup bản mới nhất bằng chính đường nâng của nó, và bịt năm chỗ hở mà bài chấm sức khoẻ kho (doctor) đang báo — điểm dự kiến từ 82 lên 100.",
   "will_do": [
-    {"id": "AC-1", "p": "Sẽ nâng khung kho lên repo-setup 0.10.4 bằng đường nâng của chính nó; chạy lại bản nâng lần nữa không còn gì để thêm hay trộn (bằng chứng: nâng thử, nhóm việc còn lại rỗng)."},
-    {"id": "AC-2", "p": "Sẽ cho bài chấm sức khoẻ kho ra 100/100, không mục nào trượt; cùng bài chấm trên kho trước vòng ra đúng 82 với năm mục trượt."},
-    {"id": "AC-3", "p": "Sẽ giữ luật của chủ kho nguyên vẹn: tệp luật chỉ thêm đúng một mục ngôn ngữ ở cuối, skill xét duyệt đã gỡ vẫn vắng, lệnh chạy kiểm của kit không đổi ngoài ba bước nhanh bản nâng đặt trước."},
-    {"id": "AC-4", "p": "Sẽ chặn một lần nâng dở dang: tệp khung còn dấu xung đột thì bước kiểm đầu tiên đỏ và gọi tên tệp, dòng."},
-    {"id": "AC-6", "p": "Sẽ cấm phiên tác tử đọc tệp bí mật .env, mà vẫn để nó sửa quy trình CI như mọi vòng của kit."},
-    {"id": "AC-7", "p": "Sẽ không đụng gói nào giao cho kho tiêu thụ — mọi tệp đổi nằm trong danh sách khung đã khai."}
+    {
+      "id": "AC-1",
+      "p": "Sẽ nâng khung kho lên repo-setup 0.10.4 bằng đường nâng của chính nó; chạy lại bản nâng lần nữa không còn gì để thêm hay trộn (bằng chứng: nâng thử, nhóm việc còn lại rỗng)."
+    },
+    {
+      "id": "AC-2",
+      "p": "Sẽ cho bài chấm sức khoẻ kho ra 100/100, không mục nào trượt; cùng bài chấm trên kho trước vòng ra đúng 82 với năm mục trượt."
+    },
+    {
+      "id": "AC-3",
+      "p": "Sẽ giữ luật của chủ kho nguyên vẹn: tệp luật chỉ thêm đúng mục ngôn ngữ ở cuối, trùng từng chữ văn bản anh duyệt hôm nay; skill xét duyệt đã gỡ vẫn vắng; lệnh chạy kiểm của kit không đổi ngoài ba bước nhanh bản nâng đặt trước."
+    },
+    {
+      "id": "AC-4",
+      "p": "Sẽ chặn một lần nâng dở dang: tệp khung còn dấu xung đột thì bước kiểm đầu tiên đỏ và gọi tên tệp, dòng."
+    },
+    {
+      "id": "AC-6",
+      "p": "Sẽ cấm phiên tác tử đọc tệp bí mật .env, mà vẫn để nó sửa quy trình CI như mọi vòng của kit."
+    },
+    {
+      "id": "AC-7",
+      "p": "Sẽ không đụng gói nào giao cho kho tiêu thụ — mọi tệp đổi nằm trong danh sách khung đã khai."
+    }
   ],
   "wont_do": [
-    {"id": "AC-5", "p": "Chặn gộp khi tệp khai plugin hỏng hay còn dấu xung đột: một việc CI mới chạy ở mọi PR và mọi lần đẩy, và kiểm bắt buộc «tests» đỏ theo nó."},
-    {"id": "OOS-1", "p": "KHÔNG chạy bước cài đặt GitHub của repo-setup — nó ép gộp dồn, trái luật kit."},
-    {"id": "OOS-2", "p": "KHÔNG đuổi theo 0.10.5 hay bản đang dựng của repo-standards — vòng giữ 0.10.4."},
-    {"id": "OOS-3", "p": "KHÔNG dựng lại skill xét duyệt đã gỡ."},
-    {"id": "OOS-4", "p": "KHÔNG đổi bậc lên «team», không đổi loại kho, không đặt ngưỡng điểm doctor vào CI."},
-    {"id": "OOS-5", "p": "KHÔNG thêm bộ kiểm chính thức của Claude Code vào CI — nó tải qua mạng mỗi lượt; phần tệp khai đã có bộ kiểm nhẹ đo."},
-    {"id": "OOS-6", "p": "KHÔNG sửa kho repo-standards."},
-    {"id": "OOS-7", "p": "KHÔNG đổi số bản, CHANGELOG, thẻ hay phát hành."}
+    {
+      "id": "AC-5",
+      "p": "Chặn gộp khi tệp khai plugin hỏng hay còn dấu xung đột: một việc CI mới chạy ở mọi PR và mọi lần đẩy, và kiểm bắt buộc «tests» đỏ theo nó."
+    },
+    {
+      "id": "OOS-1",
+      "p": "KHÔNG chạy bước cài đặt GitHub của repo-setup — nó ép gộp dồn, trái luật kit."
+    },
+    {
+      "id": "OOS-2",
+      "p": "KHÔNG đuổi theo 0.10.5 hay bản đang dựng của repo-standards — vòng giữ 0.10.4."
+    },
+    {
+      "id": "OOS-3",
+      "p": "KHÔNG dựng lại skill xét duyệt đã gỡ."
+    },
+    {
+      "id": "OOS-4",
+      "p": "KHÔNG đổi bậc lên «team», không đổi loại kho, không đặt ngưỡng điểm doctor vào CI."
+    },
+    {
+      "id": "OOS-5",
+      "p": "KHÔNG thêm bộ kiểm chính thức của Claude Code vào CI — nó tải qua mạng mỗi lượt; phần tệp khai đã có bộ kiểm nhẹ đo."
+    },
+    {
+      "id": "OOS-6",
+      "p": "KHÔNG sửa kho repo-standards."
+    },
+    {
+      "id": "OOS-7",
+      "p": "KHÔNG đổi số bản, CHANGELOG, thẻ hay phát hành."
+    }
   ],
   "coverage_plain": [
-    {"i": 0, "p": "Độ phủ rút từ chính đầu ra của repo-setup (danh sách tệp bản nâng chạm, danh sách mục doctor chấm), không liệt kê tay."},
-    {"i": 1, "p": "Mọi tệp bản nâng chạm — tạo, trộn, gỡ, giữ, không ghi, bỏ qua — đều có kết cục được đo (AC-1 nâng trọn, AC-3 tệp của chủ kho, AC-7 không gì ngoài danh sách)."},
-    {"i": 2, "p": "Năm mục trượt đều đóng và mười bảy mục đạt vẫn đạt (AC-2 điểm 100); mục lệch số phiên bản các gói đóng theo lối khuyên ở câu hỏi riêng."},
-    {"i": 3, "p": "Hàng rào chạy ở đủ bốn chỗ: máy chủ kho (AC-4), lượt chấm (AC-1, AC-2), CI trên PR và trên nhánh chính (AC-5)."},
-    {"i": 4, "p": "Quyền tác tử: chặn đọc bí mật, không chặn sửa CI, không có gì về quản trị vì kho không có (AC-6)."},
-    {"i": 5, "p": "Chữ luật ngôn ngữ mới được một người chấm đọc như chủ kho (AC-8); mỗi phép đo mới có chiều đỏ và đối chứng xanh trên cùng bản sao."},
-    {"i": 6, "p": "Để sau: ngưỡng điểm doctor trong CI. Không bao giờ: cài đặt GitHub của repo-setup."}
+    {
+      "i": 0,
+      "p": "Độ phủ rút từ chính đầu ra của repo-setup (danh sách tệp bản nâng chạm, danh sách mục doctor chấm), không liệt kê tay."
+    },
+    {
+      "i": 1,
+      "p": "Mọi tệp bản nâng chạm — tạo, trộn, gỡ, giữ, không ghi, bỏ qua — đều có kết cục được đo (AC-1 nâng trọn, AC-3 tệp của chủ kho, AC-7 không gì ngoài danh sách)."
+    },
+    {
+      "i": 2,
+      "p": "Năm mục trượt đều đóng và mười bảy mục đạt vẫn đạt (AC-2 điểm 100); mục lệch số phiên bản các gói đóng theo lối khuyên ở câu hỏi riêng."
+    },
+    {
+      "i": 3,
+      "p": "Hàng rào chạy ở đủ bốn chỗ: máy chủ kho (AC-4), lượt chấm (AC-1, AC-2), CI trên PR và trên nhánh chính (AC-5)."
+    },
+    {
+      "i": 4,
+      "p": "Quyền tác tử: chặn đọc bí mật, không chặn sửa CI, không có gì về quản trị vì kho không có (AC-6)."
+    },
+    {
+      "i": 5,
+      "p": "Chữ luật ngôn ngữ mới: anh duyệt nguyên văn ở cổng này, máy so từng chữ sau khi viết (AC-3); mỗi phép đo mới có chiều đỏ và đối chứng xanh trên cùng bản sao."
+    },
+    {
+      "i": 6,
+      "p": "Để sau: ngưỡng điểm doctor trong CI. Không bao giờ: cài đặt GitHub của repo-setup."
+    }
   ],
   "gap_probe_plain": [
-    {"i": 0, "p": "Máy đã tự quyết khai «mỗi gói đánh số riêng» dựa trên một câu chỉ nói về một gói ở mốc trước — đó là luật đánh số của kho, phải để anh chọn. Đã sửa: thành câu hỏi riêng (Hỏi-8) và thêm phép đo gỡ khoá thì bộ kiểm đỏ."},
-    {"i": 1, "p": "Phép thử hàng rào dấu xung đột chèn dấu vào chính Makefile, nên make vỡ trước khi hàng rào kịp chạy — không phân biệt được hàng rào bắt lỗi với make đọc hỏng. Đã sửa: chèn vào một tệp khung mà make không đọc, ghim đúng câu hàng rào in ra."},
-    {"i": 2, "p": "Hợp đồng chưa đòi kiểm bắt buộc «tests» vẫn chạy khi việc mới đỏ (GitHub tính việc bị bỏ qua là đạt), và chưa đòi việc mới chạy cả ở lần đẩy nhánh chính. Đã sửa: thêm ba khẳng định và ba phép đo đỏ có thông điệp ghim."},
-    {"i": 3, "p": "Phép đo «lệnh chạy kiểm của kit không đổi» chỉ so chữ công thức, trong khi bản nâng đổi thứ chạy trước nó. Đã sửa: so thẳng chuỗi lệnh make in ra, chỉ cho phép đúng ba bước nhanh đã khai, kèm phép đo thêm-bước-lạ thì đỏ."},
-    {"i": 4, "p": "Thiết kế và tiêu chí nói khác nhau về bước nào chạy đầu tiên. Đã đo trên bản nâng thử: hàng rào dấu xung đột chạy đầu tiên; đã sửa câu trong thiết kế cho khớp."}
+    {
+      "i": 0,
+      "p": "Máy đã tự quyết khai «mỗi gói đánh số riêng» dựa trên một câu chỉ nói về một gói ở mốc trước — đó là luật đánh số của kho, phải để anh chọn. Đã sửa: thành câu hỏi riêng về cách đánh số gói, và thêm phép đo gỡ khoá thì bộ kiểm đỏ."
+    },
+    {
+      "i": 1,
+      "p": "Phép thử hàng rào dấu xung đột chèn dấu vào chính Makefile, nên make vỡ trước khi hàng rào kịp chạy — không phân biệt được hàng rào bắt lỗi với make đọc hỏng. Đã sửa: chèn vào một tệp khung mà make không đọc, ghim đúng câu hàng rào in ra."
+    },
+    {
+      "i": 2,
+      "p": "Hợp đồng chưa đòi kiểm bắt buộc «tests» vẫn chạy khi việc mới đỏ (GitHub tính việc bị bỏ qua là đạt), và chưa đòi việc mới chạy cả ở lần đẩy nhánh chính. Đã sửa: thêm ba khẳng định và ba phép đo đỏ có thông điệp ghim."
+    },
+    {
+      "i": 3,
+      "p": "Phép đo «lệnh chạy kiểm của kit không đổi» chỉ so chữ công thức, trong khi bản nâng đổi thứ chạy trước nó. Đã sửa: so thẳng chuỗi lệnh make in ra, chỉ cho phép đúng ba bước nhanh đã khai, kèm phép đo thêm-bước-lạ thì đỏ."
+    },
+    {
+      "i": 4,
+      "p": "Thiết kế và tiêu chí nói khác nhau về bước nào chạy đầu tiên. Đã đo trên bản nâng thử: hàng rào dấu xung đột chạy đầu tiên; đã sửa câu trong thiết kế cho khớp."
+    }
   ]
 }

@@ -160,16 +160,31 @@ def ac2(root: Path, tmp: Path) -> None:
 
 
 # ── AC-3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-def kiem_claude(goc: str, moi: str) -> str | None:
+def van_ban_duyet(hop_dong: str) -> list[str]:
+    """Khối văn bản mục Language ở Notes của hợp đồng — bên viết là hợp đồng chủ kho duyệt, không chép tay vào đây."""
+    dong = hop_dong.splitlines()
+    i = next((k for k, x in enumerate(dong) if "Văn bản đề xuất cho mục `## Language`" in x), None)
+    if i is None:
+        raise Do("hợp đồng không có khối văn bản đề xuất cho mục Language")
+    mo = next((k for k in range(i + 1, len(dong)) if dong[k].strip() == "```"), None)
+    dong_lai = next((k for k in range(mo + 1, len(dong)) if dong[k].strip() == "```"), None) if mo is not None else None
+    if dong_lai is None:
+        raise Do("khối văn bản mục Language trong hợp đồng không đóng")
+    lui = len(dong[mo]) - len(dong[mo].lstrip())
+    return [x[lui:] if x.strip() else "" for x in dong[mo + 1:dong_lai]]
+
+
+def kiem_claude(goc: str, moi: str, duyet: list[str]) -> str | None:
     g, m = goc.splitlines(), moi.splitlines()
     if m[: len(g)] != g:
         return "CLAUDE.md đổi ngoài mục Language"
-    them = [x for x in m[len(g):]]
-    dau = next((x for x in them if x.strip()), None)
-    if dau != "## Language":
-        return f"CLAUDE.md: dòng thêm đầu tiên là «{dau}», không phải «## Language»"
-    if sum(1 for x in them if x.startswith("## ")) != 1:
-        return "CLAUDE.md: phần thêm có hơn một tiêu đề cấp hai"
+    them = m[len(g):]
+    while them and not them[0].strip():
+        them = them[1:]
+    if not them:
+        return "CLAUDE.md không thêm mục Language"
+    if them != duyet:
+        return "mục Language khác văn bản đã duyệt"
     return None
 
 
@@ -206,10 +221,13 @@ def ac3(root: Path, tmp: Path) -> None:
     if not shutil.which("make"):
         raise Mu("không đọc được ở đây: thiếu make")
     goc_c, moi_c = doc_tai(root, BASE, "CLAUDE.md"), doc_tai(root, "HEAD", "CLAUDE.md")
-    loi = kiem_claude(goc_c, moi_c)
+    duyet = van_ban_duyet(doc_tai(root, "HEAD", f"_acceptance/{SLUG}/contract.md"))
+    if not duyet or duyet[0] != "## Language":
+        raise Do(f"khối văn bản đã duyệt không mở bằng ## Language: {duyet[:1]}")
+    loi = kiem_claude(goc_c, moi_c, duyet)
     if loi:
         raise Do(loi)
-    print(f"AC-3 CLAUDE.md: chỉ thêm {len(moi_c.splitlines()) - len(goc_c.splitlines())} dòng cuối, mở bằng ## Language")
+    print(f"AC-3 CLAUDE.md: chỉ thêm {len(moi_c.splitlines()) - len(goc_c.splitlines())} dòng cuối, bằng từng byte văn bản đã duyệt ở Notes")
     if git(root, "ls-tree", "--name-only", "HEAD", ".claude/skills/review-change/SKILL.md").strip():
         raise Do(".claude/skills/review-change/SKILL.md có mặt ở HEAD")
     print("AC-3 review-change: vắng")
@@ -223,9 +241,13 @@ def ac3(root: Path, tmp: Path) -> None:
     dong = moi_c.splitlines()
     giua = len(goc_c.splitlines()) // 2
     tiem = "\n".join(dong[:giua] + [dong[giua] + " (sửa)"] + dong[giua + 1:]) + "\n"
-    if tiem == moi_c or kiem_claude(goc_c, tiem) != "CLAUDE.md đổi ngoài mục Language":
+    if tiem == moi_c or kiem_claude(goc_c, tiem, duyet) != "CLAUDE.md đổi ngoài mục Language":
         raise Do("chiều đỏ CLAUDE.md không đỏ đúng thông điệp")
     print("AC-3 chiều đỏ: CLAUDE.md đổi ngoài mục Language")
+    tiem2 = moi_c.rstrip("\n") + " (sửa)\n"  # đổi dòng cuối — dòng ấy thuộc phần thêm
+    if tiem2 == moi_c or kiem_claude(goc_c, tiem2, duyet) != "mục Language khác văn bản đã duyệt":
+        raise Do("chiều đỏ mục Language không đỏ đúng thông điệp")
+    print("AC-3 chiều đỏ: mục Language khác văn bản đã duyệt")
     mk = dh / "Makefile"
     cu = mk.read_text()
     for ten, moi in (

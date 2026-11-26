@@ -31,11 +31,11 @@ evals:
     criterion: AC-3
     executor: script
     cmd: bash _acceptance/nang-repo-setup-0-10-4/rang/chay.sh AC-3
-    paths: [CLAUDE.md, Makefile, mk/**, .claude/skills/**, _acceptance/nang-repo-setup-0-10-4/rang/**]
+    paths: [CLAUDE.md, Makefile, mk/**, .claude/skills/**, _acceptance/nang-repo-setup-0-10-4/contract.md, _acceptance/nang-repo-setup-0-10-4/rang/**]
     expected: >
-      exit 0; in «AC-3 CLAUDE.md: chỉ thêm N dòng cuối, mở bằng ## Language», «AC-3 review-change: vắng», «AC-3 make -n
+      exit 0; in «AC-3 CLAUDE.md: chỉ thêm N dòng cuối, bằng từng byte văn bản đã duyệt ở Notes», «AC-3 review-change: vắng», «AC-3 make -n
       test: bằng bản gốc trừ ba dòng đã khai, đứng trước bộ chạy kiểm»; chiều đỏ trên bản sao: sửa một dòng giữa CLAUDE.md →
-      «CLAUDE.md đổi ngoài mục Language»; đổi công thức test của Makefile → «đích test của kit bị đổi»; thêm tiền điều kiện
+      «CLAUDE.md đổi ngoài mục Language»; đổi một chữ trong mục → «mục Language khác văn bản đã duyệt»; đổi công thức test của Makefile → «đích test của kit bị đổi»; thêm tiền điều kiện
       lạ in một dòng lệnh cho test → «đích test của kit bị đổi». Đối chứng dương: bộ kiểm trên bản sao chưa tiêm xanh trước.
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
   - id: E4
@@ -77,19 +77,3 @@ evals:
       exit 0; in «AC-7 vùng vật: N tệp, đều trong danh sách, 0 tệp dưới plugins/»; rồi «AC-7 --thu: đỏ đúng —
       plugins/acceptance-gate/lib/x.cjs» (cờ thử phải thoát 1 và nêu đường).
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
-  - id: E8
-    criterion: AC-8
-    executor: judgment
-    inputs: [CLAUDE.md, plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md]
-    question: >
-      CLAUDE.md là luật của kho kit (ba nguyên tố, định vị, các bất biến của người sửa kit); mục cuối của nó, «## Language»,
-      vừa được thêm để nói ngôn ngữ nào dùng ở đâu. human-facing-language.md là bản luật ngôn ngữ mặt người của kit. Đọc như
-      chủ kho chưa đọc mã. (1) Mục «## Language» có nói rõ chữ nào viết tiếng Việt (chữ người đọc: tài liệu, hồ sơ, thẻ cổng,
-      thông điệp script, commit, CHANGELOG, mô tả PR), thứ nào giữ nguyên như kho đang dùng (tên tệp, tên script, khoá cấu
-      hình, định danh, tiền tố commit), và ngôn ngữ trò chuyện với chủ kho không? (2) Có câu nào trong mục trái với phần còn
-      lại của CLAUDE.md hay với bản luật ngôn ngữ mặt người không? (3) Có câu nào đòi viết tiếng Anh cho commit, CHANGELOG
-      hay tên tệp không? PASS khi (1) đủ cả ba vế và (2), (3) đều không, kèm trích một câu của mục làm ví dụ; FAIL nêu nguyên
-      văn câu hỏng và điều nó thiếu hay trái; UNCERTAIN khi CLAUDE.md không có mục «## Language».
-    paths: [CLAUDE.md]
-    expected: PASS kèm trích một câu; FAIL nêu nguyên văn câu hỏng
-    evidence_required: [run_id, verifier, verified_at, output]
