@@ -14,3 +14,6 @@ LO-TRINH.html merge=tep-sinh
 package-lock.json linguist-generated=true -diff
 pnpm-lock.yaml    linguist-generated=true -diff
 uv.lock           linguist-generated=true -diff
+
+# Added by repo-setup
+wiki/log.md merge=union
