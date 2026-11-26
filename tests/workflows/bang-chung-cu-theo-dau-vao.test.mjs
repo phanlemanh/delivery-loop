@@ -272,3 +272,79 @@ test('VT-5 pin không có trong kho → không so được', async () => {
   fs.writeFileSync(f, fs.readFileSync(f, 'utf8').replace(/^verified_commit: \S+/m, `verified_commit: ${'f'.repeat(40)}`));
   assert.throws(() => prSanSang({ root: k, slug: 's', chay: ghGia(k).chay, agRoot: AG, chiXet: true, bao: () => {} }), loiMa(2, /không so được verified_commit/));
 });
+
+// ── ma trận mười ca (AC-3) — viết trước, nguyên văn bảng của hợp đồng ───────────────────────────────────────────────
+// [#, kho đo, cột pr-san-sang (MỚI/CŨ), cột làn --skip-unchanged (BỎ QUA/CHẠY)]
+const T1_TL = ['docs/**', 'LO-TRINH.html'];
+const MA_TRAN = [
+  [1, { t1: T1_TL, doi: { 'LO-TRINH.html': '2\n', 'docs/x.md': '2\n' } }, 'MỚI', 'BỎ QUA'],
+  [2, { doi: { '_acceptance/s/ghi-chu.md': 'x\n' } }, 'MỚI', 'BỎ QUA'],
+  [3, { doi: { 'pkg/a/_acceptance/s/x.md': '2\n' } }, 'MỚI', 'BỎ QUA'],
+  [4, { staleScope: 'paths', doi: { 'src/b.ts': '2\n' } }, 'MỚI', 'BỎ QUA'],
+  [5, { staleScope: 'paths', doi: { 'src/a.ts': '3\n' } }, 'CŨ', 'CHẠY'],
+  [6, { doi: { 'src/b.ts': '2\n' } }, 'CŨ', 'CHẠY'],
+  [7, { staleScope: 'paths', evalsPaths: null, doi: { 'src/b.ts': '2\n' } }, 'CŨ', 'CHẠY'],
+  [8, { staleScope: 'paths', doi: { 'src/bảng.ts': '2\n' } }, 'MỚI', 'BỎ QUA'],
+  [9, { doi: { '_acceptance/config.yaml': `${cauHinh({})}# doi sau pin\n` } }, 'MỚI', 'CHẠY'],
+  [10, { t1: ['gen/*'], doi: { 'gen/a/b.txt': '2\n' } }, 'MỚI', 'BỎ QUA'],
+];
+const dungKhoCa = (o) => khoDo({ status: 'signed-off', ...o });
+function xetPss(k, scripts = FL_SCRIPTS) {
+  const r = spawnSync(process.execPath, [path.join(scripts, 'pr-san-sang.mjs'), '--root', k, '--slug', 's', '--chi-xet', '--ag-root', AG], { encoding: 'utf8', env: ghTrenPath().env });
+  return { ket: r.status === 0 ? 'MỚI' : r.status === 2 ? 'CŨ' : `thoát ${r.status}`, r };
+}
+function xetLan(k, scripts = FL_SCRIPTS) {
+  const r = spawnSync(process.execPath, [path.join(scripts, 'repin-lane.mjs'), '--root', k, '--slug', 's', '--ag-root', AG, '--allow-dirty', '--skip-unchanged'], { encoding: 'utf8' });
+  let bo = false;
+  try {
+    bo = JSON.parse(r.stdout).skipped === true;
+  } catch {
+    bo = false;
+  }
+  return { ket: bo ? 'BỎ QUA' : r.status === 0 ? 'CHẠY' : `thoát ${r.status}`, r };
+}
+
+test('BC-3 ma trận mười ca', () => {
+  const lech = [];
+  let soPhanQuyet = 0;
+  for (const [n, o, mongPss, mongLan] of MA_TRAN) {
+    const { k } = dungKhoCa(o);
+    const p = xetPss(k);
+    const l = xetLan(k);
+    soPhanQuyet += 2;
+    if (p.ket !== mongPss) lech.push(`#${n} pr-san-sang: ${p.ket} ≠ ${mongPss} — ${p.r.stderr.trim()}`);
+    if (l.ket !== mongLan) lech.push(`#${n} làn: ${l.ket} ≠ ${mongLan} — ${l.r.stderr.trim().split('\n').slice(-3).join(' | ')}`);
+  }
+  assert.equal(soPhanQuyet, 20);
+  assert.deepEqual(lech, []);
+});
+
+test('BC-3-dot-bien bỏ vế T1 → lật cả hai bên đọc', () => {
+  const ca1 = MA_TRAN[0][1];
+  const banSao = path.join(tam('bcdb-'), 'scripts');
+  fs.cpSync(FL_SCRIPTS, banSao, { recursive: true });
+  const f = path.join(banSao, 'lib', 'vat-doi-sau-pin.mjs');
+  const dong = fs.readFileSync(f, 'utf8').split('\n');
+  const idx = dong.map((d, i) => (d.includes("'risk_tiers.t1_skip_globs'") ? i : -1)).filter((i) => i >= 0);
+  assert.equal(idx.length, 1, "phải có đúng một dòng dựng danh sách T1 ('risk_tiers.t1_skip_globs')");
+  dong[idx[0]] = '    const t1 = [];';
+  fs.writeFileSync(f, dong.join('\n'));
+  const goc = dungKhoCa(ca1);
+  assert.deepEqual([xetPss(goc.k).ket, xetLan(goc.k).ket], ['MỚI', 'BỎ QUA'], 'đối chứng: bản gốc trên ca 1');
+  const db = dungKhoCa(ca1);
+  assert.deepEqual([xetPss(db.k, banSao).ket, xetLan(db.k, banSao).ket], ['CŨ', 'CHẠY'], 'bản đột biến phải lật CẢ HAI bên đọc');
+});
+
+test('BC-3-luoi bốn ca khớp pre-merge-check.sh', () => {
+  const lech = [];
+  let soSanh = 0;
+  for (const [n, o, mongPss] of MA_TRAN.filter(([n]) => [1, 4, 5, 10].includes(n))) {
+    const { k } = dungKhoCa(o);
+    const r = spawnSync('bash', [PMC, '--base', 'main'], { cwd: k, encoding: 'utf8' });
+    const cu = /VIOLATION \[s\]: evidence is stale/.test(r.stdout + r.stderr);
+    soSanh++;
+    if (cu !== (mongPss === 'CŨ')) lech.push(`#${n}: lưới ${cu ? 'CŨ' : 'MỚI'} ≠ ${mongPss}\n${(r.stdout + r.stderr).split('\n').filter((d) => /VIOLATION|NOTE/.test(d)).join('\n')}`);
+  }
+  assert.equal(soSanh, 4);
+  assert.deepEqual(lech, []);
+});
