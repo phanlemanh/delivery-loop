@@ -5,7 +5,7 @@ slug: bang-chung-cu-theo-dau-vao
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: plugins/feature-loop/scripts/** · SKILL feature-loop · tests — KHÔNG khớp t3_paths
 surfaces: [cli]
-status: approved
+status: implemented
 approved_by: Phan Le Manh
 approved_at: 2026-11-26
 design_doc: docs/superpowers/specs/2026-11-26-bang-chung-cu-theo-dau-vao-design.md
