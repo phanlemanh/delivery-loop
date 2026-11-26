@@ -429,11 +429,14 @@ def ac5(root: Path, tmp: Path) -> None:
         return out
     needs = next(x for x in v["tests"] if re.match(r"^    needs:", x))
     if_t = next(x for x in v["tests"] if re.match(r"^    if:", x))
-    ra_khung = next(x for x in v["khung"] if re.match(r"^    runs-on:", x))
+    # Tiêm điều kiện vào ĐÚNG khối job khung: dòng «runs-on» trùng chữ ở mọi job, nên thay theo chuỗi sẽ rơi vào
+    # job đứng trước (manh) và chiều đỏ không bao giờ đỏ.
+    dau_khung = yml.index("\n  khung:\n") + len("\n  khung:\n")
+    tiem_khung = yml[:dau_khung] + "    if: github.event_name == 'pull_request'\n" + yml[dau_khung:]
     ca = [
         ("tests không chờ khung", thay(needs + "\n", re.sub(r",?\s*khung\b", "", needs).replace("[, ", "[") + "\n")),
         ("tests bị bỏ qua khi khung đỏ", thay(if_t + "\n", "")),
-        ("khung mang điều kiện", thay(ra_khung + "\n", "    if: github.event_name == 'pull_request'\n" + ra_khung + "\n")),
+        ("khung mang điều kiện", tiem_khung),
     ]
     for mong, tiem in ca:
         try:
