@@ -252,6 +252,11 @@ dưới đây là SỔ; con trỏ hai chiều giữa chúng và ô này là **ch
   thiếu lệnh và suy slug sai · cài từ chợ lệch thẻ · cây phụ không nâng · heredoc chặn nhầm; đầu vào thứ hai của mốc 05/11.
 - `docs/plans/2026-10-26-hat-giong-tc1b-sau-danh-thuc.md` — 26/10 Cổng Bằng chứng TC1: năm mục «mở hợp đồng mới» (`vai
   --giam-sat` ghi mã CLI của phiên gọi · lời dặn «mã CLI cũng nhận» · TC1-06/TC1-09 thành bất biến lúc gộp).
+- `docs/plans/2026-11-26-hat-giong-phat-hien-kem-luot-chay-chung-minh.md` — 26/11 phiên đánh giá gói pstack theo North Star:
+  471 mục ngoài hợp đồng tới Cổng Bằng chứng trong một tháng, 95,4 % người ký theo đúng đề xuất của máy, chưa mục nào qua
+  phản bác; hướng — phát hiện phải kèm lượt chạy chứng minh.
+- `docs/plans/2026-11-26-hat-giong-dong-2-may-dem-tu-ban-ghi-phien.md` — 26/11 cùng phiên: bốn mốc liên tiếp ghi «0 ngoài
+  thiết kế nghĩa là 0 ghi được»; hướng — dòng 2 do máy đếm từ bản ghi phiên, trong bộ đo vòng đã có.
 
 K7 («pin nói ra ô nó không đo») **đã xong ở kho này** — vòng `ghim-lai-noi-ra-o-khong-do`, gộp
 20/09 (PR #190). Không mở lại.
