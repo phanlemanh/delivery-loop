@@ -370,3 +370,13 @@
   vào `docs/adr/` (đủ cả 3 điều kiện mới ghi, thiếu 1 thì bỏ). Đề xuất đã
   TỪ CHỐI mà có nguy cơ quay lại → 1 file trong `.out-of-scope/` kèm mục
   "Prior requests".
+
+## Language
+
+- Chữ người đọc — tài liệu, hồ sơ `_acceptance/`, thẻ cổng, thông điệp của script, commit, `CHANGELOG.md`, mô tả PR —
+  viết tiếng Việt, theo bản luật ngôn ngữ mặt người
+  (`plugins/acceptance-gate/skills/acceptance/references/human-facing-language.md`) và đúng term của
+  [CONTEXT.md](CONTEXT.md).
+- Tên tệp, tên script, khoá cấu hình, định danh trong mã và tiền tố commit (`feat:`, `fix:`…) giữ đúng như kho đang
+  dùng — không dịch, không đổi theo mẫu của repo-setup.
+- Trò chuyện với chủ kho: tiếng Việt.

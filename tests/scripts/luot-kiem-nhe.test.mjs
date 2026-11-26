@@ -314,14 +314,15 @@ await ca('LKN-AC3', () => {
   return 'failure → đỏ · cancelled → đỏ · success → xanh';
 });
 await ca('LKN-AC3-do-always', () => {
-  const kim = "    needs: [manh]\n    if: always()\n";
+  // `tests` chờ cả job `khung` (hồ sơ nang-repo-setup-0-10-4) — kim ghim đúng dòng needs hiện có.
+  const kim = "    needs: [manh, khung]\n    if: always()\n";
   motLan(YML, kim, 'if: always() của việc gom');
-  phaiDo(kiemGom(YML.replace(kim, "    needs: [manh]\n")), 'việc gom bị bỏ qua khi mảnh đỏ — PR đỏ vẫn gộp được');
+  phaiDo(kiemGom(YML.replace(kim, "    needs: [manh, khung]\n")), 'việc gom bị bỏ qua khi mảnh đỏ — PR đỏ vẫn gộp được');
 });
 await ca('LKN-AC3-do-needs', () => {
-  const kim = "    needs: [manh]\n";
+  const kim = "    needs: [manh, khung]\n";
   motLan(YML, kim, 'needs của việc gom');
-  phaiDo(kiemGom(YML.replace(kim, '')), 'việc gom không chờ mảnh');
+  phaiDo(kiemGom(YML.replace(kim, "    needs: [khung]\n")), 'việc gom không chờ mảnh');
 });
 
 // AC-4: ma trận mười hai hàng viết trước

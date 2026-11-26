@@ -54,16 +54,37 @@ jobs:
       - name: ${{ matrix.ten }}
         run: ${{ matrix.lenh }}
 
+  # ── Khung kho (hồ sơ nang-repo-setup-0-10-4) — chạy ở MỌI sự kiện, không điều kiện ──────────────────────────
+  # Tệp khai chợ + tệp khai plugin (plugin_lint.py) và dấu xung đột còn sót của một lần nâng repo-setup
+  # (upgrade_markers.py). Chỉ thư viện chuẩn Python, không cần Node. Đứng ở job riêng, không chen vào ma trận
+  # mảnh: ca LKN-AC1 đòi ma trận khớp đúng lượt trọn. `tests` chờ job này và đỏ theo nó.
+  khung:
+    name: khung
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: tệp khai chợ và tệp khai plugin
+        run: python3 tools/plugin_lint.py
+      - name: dấu xung đột của lần nâng repo-setup
+        run: python3 tools/upgrade_markers.py
+
   # ── Kiểm bắt buộc `tests` (luật nhánh chính đòi đúng tên này) ─────────────────────────────────────────────
   # PR: GOM kết quả các mảnh. `if: always()` là bắt buộc — thiếu nó, một mảnh đỏ làm việc này bị BỎ QUA, và
   #     việc bị bỏ qua được GitHub tính là ĐẠT khi xét kiểm bắt buộc: PR đỏ vẫn gộp được.
   # Đẩy lên nhánh chính: chạy TRỌN năm bộ không chia mảnh như trước — lỗi chỉ lộ khi chạy trọn không lọt.
   tests:
     name: tests
-    needs: [manh]
+    needs: [manh, khung]
     if: always()
     runs-on: ubuntu-latest
     steps:
+      # Không điều kiện sự kiện: khung đỏ (hay bị bỏ qua) chặn cả PR lẫn lần đẩy lên nhánh chính.
+      - name: gom kết quả khung
+        env:
+          KET_QUA_KHUNG: ${{ needs.khung.result }}
+        run: |
+          echo "kết quả khung: $KET_QUA_KHUNG"
+          if [ "$KET_QUA_KHUNG" != success ]; then echo "::error::khung không xanh (kết quả: $KET_QUA_KHUNG)"; exit 1; fi
       - name: gom kết quả các mảnh (PR)
         if: github.event_name == 'pull_request'
         env:

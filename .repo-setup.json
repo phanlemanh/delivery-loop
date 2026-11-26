@@ -1,6 +1,6 @@
 {
   "tool": "repo-setup",
-  "version": "0.5.0",
+  "version": "0.10.4",
   "preset": "claude-plugin",
   "level": "starter",
   "adopt": true,
@@ -12,13 +12,33 @@
     "today": "2026-11-17",
     "project_name": "delivery-loop",
     "owner": "phanlemanh",
-    "description": "Claude Code plugin marketplace for an acceptance-gated feature loop: contracts, self-proving evidence, few real human decisions."
+    "description": "Claude Code plugin marketplace for an acceptance-gated feature loop: contracts, self-proving evidence, few real human decisions.",
+    "plugin_versioning": "independent"
   },
   "files": {
     ".claude/skills/review-change/SKILL.md": "152808a697e5689f76cef5cee48cce9bd366bc212010703e7976dbf522776a22",
     ".editorconfig": "9749819ccdab74251bb7dc07520f50a8b775765b09d23003c7190eacd1308199",
-    "Makefile": "4cf32dc0c3e48ce0253386e2401f8ec14dd7d81c78ca7976c58a53ccd0769b48",
+    "Makefile": "84935ae5ab83b8f59ec12d97644bcbc94b8421e4aa878142aae450ab796beea0",
     "tools/bump_version.py": "79b6f3921dbfe74be14e531ed93693d1f540a6197d2fa876e5bc2fa1cf011481",
-    "tools/plugin_lint.py": "383ce792c28c4f81861471d6a6a81a50e8516a4084b6fdbfc3c41237df9e79c6"
+    "tools/plugin_lint.py": "383ce792c28c4f81861471d6a6a81a50e8516a4084b6fdbfc3c41237df9e79c6",
+    "mk/derived.mk": "4c428df43ea601728672b0cca3a338224fe08f341d55ac6e781d50e2b20e3d3b",
+    "mk/upgrade.mk": "90fa16ee63242cf31774a7aa6aadcfa5ce705e7e0a1f28bd82879ac9d9d9b881",
+    "tools/ci_inputs.py": "2cfc91a6ad9d82ea7e85a66e8cf54cb19184cf39ae2453af271a994434a8ed8b",
+    "tools/ci_verdict.py": "1f545db02e38e3566528f3c37f8f9be07225801c4c160667837cb4fec09c7cb5",
+    "tools/ledgers.py": "f637fbd3c133f9e919bad8048265efd88e57051b8c3afcffc78cf6bd3ba0d76b",
+    "tools/upgrade_markers.py": "c2487b883b5a768675eb89109ce5dd71b9cd39c1034803fd973b85ac3ad67594"
+  },
+  "file_versions": {
+    ".claude/skills/review-change/SKILL.md": "0.5.0",
+    ".editorconfig": "0.10.4",
+    "Makefile": "0.10.4",
+    "tools/bump_version.py": "0.10.4",
+    "tools/plugin_lint.py": "0.10.4",
+    "mk/derived.mk": "0.10.4",
+    "mk/upgrade.mk": "0.10.4",
+    "tools/ci_inputs.py": "0.10.4",
+    "tools/ci_verdict.py": "0.10.4",
+    "tools/ledgers.py": "0.10.4",
+    "tools/upgrade_markers.py": "0.10.4"
   }
 }
