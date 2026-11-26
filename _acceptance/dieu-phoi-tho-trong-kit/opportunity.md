@@ -157,3 +157,7 @@ việc này ở quãng lặng.
 - **Việc nặng của kho (đẩy có móc toàn kho, trọn bộ test) đi qua khoá máy của kit, gọi được từ worktree
   cô lập.** Một kho tiêu thụ 23/10: kịch bản khoá riêng bị bộ canh của chế độ cô lập từ chối, một lượt gọi
   người ngoài thiết kế. Chưa mở ô — hạt giống `docs/plans/2026-10-23-hat-giong-viec-nang-qua-khoa-may-kit.md`.
+
+**Hạt giống về cửa proof của bộ phát lịch tự gộp (26/11/2026):** cửa proof của gói điều phối đọc `governance/autonomy.yaml`
+lỏng hơn bộ đọc gốc của Repo Standards ở ba chỗ — ghi ở `docs/plans/2026-11-26-hat-giong-cua-proof-doc-lech-luat-tu-tri.md`
+(sổ, chưa là ô).
