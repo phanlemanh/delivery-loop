@@ -348,3 +348,64 @@ test('BC-3-luoi bốn ca khớp pre-merge-check.sh', () => {
   assert.equal(soSanh, 4);
   assert.deepEqual(lech, []);
 });
+
+// ── bước «Staleness guard» của SKILL chạy đúng lệnh trong khối STALE-GUARD (AC-5) ───────────────────────────────────
+const SKILL = path.join(KIT, 'plugins', 'feature-loop', 'skills', 'feature-loop', 'SKILL.md');
+function rutLenhStaleGuard(skillText, { scriptPath = PR_SAN_SANG, slug = 's', agRoot = AG } = {}) {
+  const khoi = /<!-- <<<STALE-GUARD -->\n([\s\S]*?)<!-- STALE-GUARD>>> -->/.exec(skillText)?.[1];
+  if (!khoi) throw new Error('không thấy khối STALE-GUARD');
+  const lenh = khoi.split('\n').find((d) => d.startsWith('node '));
+  if (!lenh) throw new Error('khối STALE-GUARD thiếu dòng lệnh node');
+  const goc = '"$WORKFLOWS_DIR/../scripts/pr-san-sang.mjs"';
+  if (!lenh.includes(goc)) throw new Error(`dòng lệnh STALE-GUARD không trỏ ${goc}`);
+  return `${lenh.replace(goc, JSON.stringify(scriptPath)).replace('<slug>', slug)} --ag-root ${JSON.stringify(agRoot)}`;
+}
+function chayStaleGuard(k, o = {}) {
+  const gh = ghTrenPath();
+  const r = spawnSync('bash', ['-c', rutLenhStaleGuard(fs.readFileSync(SKILL, 'utf8'), o)], { cwd: k, encoding: 'utf8', env: gh.env });
+  return { ...r, ra: r.stdout + r.stderr, goi: gh.goi() };
+}
+
+test('BC-5 bằng pin → bằng chứng còn mới', () => {
+  const { k } = khoDo();
+  const r = chayStaleGuard(k);
+  assert.equal(r.status, 0, r.ra);
+  assert.match(r.stdout, /bằng chứng còn mới/);
+});
+
+test('BC-5-do đổi src/a.ts → bằng chứng cũ', () => {
+  const { k } = khoDo({ doi: { 'src/a.ts': '3\n' } });
+  const r = chayStaleGuard(k);
+  assert.equal(r.status, 2, r.ra);
+  assert.match(r.ra, /bằng chứng cũ:.*src\/a\.ts/);
+});
+
+test('BC-5-t1 chỉ T1 → thoát 0', () => {
+  const { k } = khoDo({ t1: ['docs/**'], doi: { 'docs/x.md': '2\n' } });
+  const r = chayStaleGuard(k);
+  assert.equal(r.status, 0, r.ra);
+});
+
+test('BC-5-khong-day không đẩy, gh 0 lời gọi', () => {
+  for (const o of [{}, { doi: { 'src/a.ts': '3\n' } }, { t1: ['docs/**'], doi: { 'docs/x.md': '2\n' } }]) {
+    const { k, origin } = khoDo(o);
+    const r = chayStaleGuard(k);
+    assert.equal(nhanhTrenOrigin(origin), '', `${JSON.stringify(o)}: không được đẩy`);
+    assert.deepEqual(r.goi, [], `${JSON.stringify(o)}: gh không được gọi`);
+  }
+});
+
+test('BC-5-signed-off chạy khi hợp đồng signed-off', () => {
+  const { k } = khoDo({ status: 'signed-off' });
+  const r = chayStaleGuard(k);
+  assert.equal(r.status, 0, r.ra);
+  assert.match(r.stdout, /bằng chứng còn mới/);
+});
+
+test('BC-5-thieu-khoi SKILL bỏ khối → không thấy khối STALE-GUARD', () => {
+  const t = fs.readFileSync(SKILL, 'utf8');
+  assert.doesNotThrow(() => rutLenhStaleGuard(t), 'đối chứng: SKILL của cây phải có khối');
+  const cat = t.replace(/<!-- <<<STALE-GUARD -->[\s\S]*?<!-- STALE-GUARD>>> -->/, '');
+  assert.notEqual(cat, t);
+  assert.throws(() => rutLenhStaleGuard(cat), /không thấy khối STALE-GUARD/);
+});

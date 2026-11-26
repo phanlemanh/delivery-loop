@@ -91,3 +91,20 @@ test('BC-4-doi-chung cây bằng pin → cả hai bản không thoát 2', () => 
   assert.notEqual(rGoc.status, 2, rGoc.stderr);
   assert.notEqual(rMoi.status, 2, rMoi.stderr);
 });
+
+// AC-5 chiều đỏ: lệnh rút từ khối STALE-GUARD của SKILL ở cây đang đo, chạy trên pr-san-sang của BẢN GỐC VÒNG (chưa có
+// --chi-xet) → hồ sơ signed-off bằng pin KHÔNG được thoát 0; bản gốc dừng ở luật «cần verified», không đẩy, không gọi gh.
+test('BC-5-ban-goc lệnh trên bản gốc vòng → không thoát 0', () => {
+  const goc = banGoc();
+  const khoi = /<!-- <<<STALE-GUARD -->\n([\s\S]*?)<!-- STALE-GUARD>>> -->/.exec(fs.readFileSync(SKILL, 'utf8'))?.[1];
+  assert.ok(khoi, 'không thấy khối STALE-GUARD');
+  const lenh = khoi.split('\n').find((d) => d.startsWith('node '));
+  assert.ok(lenh && lenh.includes('"$WORKFLOWS_DIR/../scripts/pr-san-sang.mjs"'), 'khối STALE-GUARD thiếu dòng lệnh');
+  const { k, origin } = kho({ status: 'signed-off' });
+  const gh = ghTrenPath();
+  const r = spawnSync('bash', ['-c', `${lenh.replace('"$WORKFLOWS_DIR/../scripts/pr-san-sang.mjs"', JSON.stringify(goc)).replace('<slug>', 's')} --ag-root ${JSON.stringify(AG)}`], { cwd: k, encoding: 'utf8', env: gh.env });
+  assert.notEqual(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stderr, /cần verified/);
+  assert.equal(nhanhTrenOrigin(origin), '');
+  assert.deepEqual(gh.goi(), []);
+});
