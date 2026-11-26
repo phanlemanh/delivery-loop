@@ -1,0 +1,91 @@
+schema_version: 1
+feature_slug: bang-chung-cu-theo-dau-vao
+# Mọi phép đo máy đi qua `rang/chay.sh AC-n`. AC-1…AC-6 chạy đúng các ca `BC-<n>` của tệp ca
+# tests/workflows/bang-chung-cu-theo-dau-vao.test.mjs bằng `node --test --test-name-pattern`, rồi ghim số ca đã viết trước
+# («# pass k», «# fail 0») và dòng ok của từng ca theo tên — phán quyết không lấy từ mã thoát. Kho đo do mã sinh trong lượt
+# (thư mục tạm; không dựng gì từ merge-base với origin/main — chạy được trên main sau gộp). Bản gốc vòng 8817a5bf rút bằng
+# `git archive`. Mỗi ca có đối chứng dương trên cùng kho trước khi phá, và ghim thông điệp.
+evals:
+  - id: E1
+    criterion: AC-1
+    executor: script
+    cmd: bash _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh AC-1
+    paths: [plugins/feature-loop/scripts/pr-san-sang.mjs, plugins/feature-loop/scripts/lib/vat-doi-sau-pin.mjs, plugins/feature-loop/scripts/carry-plan.mjs, tests/workflows/bang-chung-cu-theo-dau-vao.test.mjs, _acceptance/bang-chung-cu-theo-dau-vao/rang/**]
+    expected: >
+      exit 0; dòng ok đúng tên «BC-1 chỉ T1 đổi → mở PR», «BC-1-do tệp ngoài T1 → thoát 2», «BC-1-doi-chung không khai T1 →
+      LO-TRINH.html vẫn cũ»; «# pass 3», «# fail 0», rồi «AC-1: đạt — 3 ca». Chiều đỏ là BC-1-do (thông điệp ghim «vật đổi sau
+      lượt chấm (src/a.ts)», origin không có nhánh, gh 0 lời gọi) và BC-1-doi-chung.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E2
+    criterion: AC-2
+    executor: script
+    cmd: bash _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh AC-2
+    paths: [plugins/feature-loop/scripts/pr-san-sang.mjs, plugins/feature-loop/scripts/lib/vat-doi-sau-pin.mjs, tests/workflows/bang-chung-cu-theo-dau-vao.test.mjs, _acceptance/bang-chung-cu-theo-dau-vao/rang/**]
+    expected: >
+      exit 0; dòng ok «BC-2 ngoài paths khi bật → mở PR», «BC-2-do trong paths → thoát 2», «BC-2-khong-ap eval máy thiếu paths
+      → giữ luật cũ», «BC-2-doi-chung cây bằng pin → không thoát 2»; «# pass 4», «# fail 0», «AC-2: đạt — 4 ca». Ca BC-2 ghim dòng
+      «bỏ qua theo paths: 1 tệp — src/b.ts»; BC-2-khong-ap ghim lý do chứa «eval-may-thieu-paths:».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E3
+    criterion: AC-3
+    executor: script
+    cmd: bash _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh AC-3
+    paths: [plugins/feature-loop/scripts/pr-san-sang.mjs, plugins/feature-loop/scripts/repin-lane.mjs, plugins/feature-loop/scripts/lib/vat-doi-sau-pin.mjs, plugins/feature-loop/scripts/carry-plan.mjs, plugins/acceptance-gate/scripts/pre-merge-check.sh, plugins/acceptance-gate/lib/evidence-core.cjs, tests/workflows/bang-chung-cu-theo-dau-vao.test.mjs, _acceptance/bang-chung-cu-theo-dau-vao/rang/**]
+    expected: >
+      exit 0; dòng ok «BC-3 ma trận mười ca», «BC-3-dot-bien bỏ vế T1 → lật cả hai bên đọc», «BC-3-luoi bốn ca khớp
+      pre-merge-check.sh»; «# pass 3», «# fail 0», «AC-3: đạt — 3 ca». Ca ma trận so đúng 20 phán quyết với cột mong đợi viết trước
+      trong hợp đồng (số phán quyết đếm được khác 20 → ca đỏ).
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E4
+    criterion: AC-4
+    executor: script
+    cmd: bash _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh AC-4
+    paths: [plugins/feature-loop/scripts/pr-san-sang.mjs, plugins/feature-loop/scripts/lib/vat-doi-sau-pin.mjs, _acceptance/bang-chung-cu-theo-dau-vao/rang/**]
+    expected: >
+      exit 0; dòng ok «BC-4 kho không khai → thông điệp bằng bản gốc vòng», «BC-4-doi-chung cây bằng pin → cả hai bản không
+      thoát 2»; «# pass 2», «# fail 0», «AC-4: đạt — 2 ca». Tệp ca nằm ở rang/ của hồ sơ (không vào bộ kiểm của kit). Bản gốc vòng
+      rút bằng git archive 8817a5bf trong lượt; rút không được → ca đỏ nêu «không rút được bản gốc vòng», không xanh.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E5
+    criterion: AC-5
+    executor: script
+    cmd: bash _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh AC-5
+    paths: [plugins/feature-loop/skills/feature-loop/SKILL.md, plugins/feature-loop/scripts/pr-san-sang.mjs, plugins/feature-loop/scripts/lib/vat-doi-sau-pin.mjs, tests/workflows/bang-chung-cu-theo-dau-vao.test.mjs, _acceptance/bang-chung-cu-theo-dau-vao/rang/**]
+    expected: >
+      exit 0; sáu dòng ok ở tệp ca của kit: «BC-5 bằng pin → bằng chứng còn mới», «BC-5-do đổi src/a.ts → bằng chứng cũ»,
+      «BC-5-t1 chỉ T1 → thoát 0», «BC-5-khong-day không đẩy, gh 0 lời gọi», «BC-5-signed-off chạy khi hợp đồng signed-off»,
+      «BC-5-thieu-khoi SKILL bỏ khối → không thấy khối STALE-GUARD» («# pass 6»); và một dòng ok ở rang/ban-goc.test.mjs:
+      «BC-5-ban-goc lệnh trên bản gốc vòng → không thoát 0» («# pass 1») — ca này ghim thông điệp «cần verified» của bản gốc ở hợp
+      đồng signed-off, origin không có nhánh, gh 0 lời gọi. «AC-5: đạt — 7 ca».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E6
+    criterion: AC-6
+    executor: script
+    cmd: bash _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh AC-6
+    paths: [plugins/feature-loop/scripts/pr-san-sang.mjs, plugins/feature-loop/scripts/lib/vat-doi-sau-pin.mjs, tests/workflows/bang-chung-cu-theo-dau-vao.test.mjs, _acceptance/bang-chung-cu-theo-dau-vao/rang/**]
+    expected: >
+      exit 0; dòng ok «BC-6 không nạp được bộ máy → giữ luật cũ», «BC-6-doi-chung --ag-root đúng → không thoát 2»; «# pass 2»,
+      «# fail 0», «AC-6: đạt — 2 ca». BC-6 ghim «LO-TRINH.html» trong thông điệp thoát 2 và dòng «không nạp được bộ máy
+      acceptance-gate — giữ luật cũ».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E7
+    criterion: AC-7
+    executor: script
+    cmd: bash _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh AC-7
+    paths: ["**"]
+    expected: >
+      exit 0; in «AC-7: N tệp đổi …, tất cả trong danh sách cho phép, 0 tệp khớp t3_paths» (N tính từ commit riêng của
+      nhánh — không gộp, không có trên origin/main); rồi chiều đỏ trong cùng lượt: chạy lại với đường thử
+      plugins/acceptance-gate/scripts/pre-merge-check.sh → thoát 1 nêu đường ấy, không thì cả eval thoát 1 «chiều đỏ không đỏ».
+      Danh sách t3_paths đọc từ _acceptance/config.yaml của HEAD.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E8
+    criterion: AC-8
+    executor: script
+    cmd: bash _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh AC-8
+    paths: [plugins/acceptance-gate/scripts/pre-merge-check.sh, plugins/feature-loop/scripts/lib/vat-doi-sau-pin.mjs, tests/workflows/bang-chung-cu-theo-dau-vao.test.mjs, _acceptance/bang-chung-cu-theo-dau-vao/rang/**]
+    expected: >
+      exit 0; dòng ok «BC-8 vi phân bash↔JS: 42/42 phần tử khớp», «BC-8-do bản sao JS không qua / → nêu phần tử lệch gen/* ×
+      gen/a/b.txt», «BC-8-khong-rut bản sao đổi tên hàm bash → không rút được match_globs»; «# pass 3», «# fail 0», «AC-8: đạt —
+      3 ca». Ma trận 7 × 6 viết trước; số phần tử so được khác 42 → ca đỏ.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
