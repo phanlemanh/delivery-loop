@@ -27,6 +27,8 @@ CHO_PHEP = [
     ".repo-setup.json", "Makefile", "mk/**", "tools/upgrade_markers.py", "tools/ledgers.py", ".gitattributes",
     ".github/workflows/gate.yml", ".claude/settings.json", "CLAUDE.md", f"_acceptance/{SLUG}/**", "docs/**",
     "PRODUCT-MAP.md", "LO-TRINH.html", "tests/scripts/fixtures/routing-baseline.txt", "docs/research/known-limits-ledger.tsv",
+    # Thêm ở S3 (sổ quyết định, dòng fix về LKN-AC3): kim đột biến của ca ghim nguyên văn dòng needs của job tests.
+    "tests/scripts/luot-kiem-nhe.test.mjs",
 ]
 DENY_MONG = ["Read(./.env)", "Read(./.env.*)"]
 
