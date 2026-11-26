@@ -17,6 +17,8 @@ const FL_SCRIPTS = path.join(KIT, 'plugins', 'feature-loop', 'scripts');
 const VI_TU = path.join(FL_SCRIPTS, 'lib', 'vat-doi-sau-pin.mjs');
 const PMC = path.join(AG, 'scripts', 'pre-merge-check.sh');
 const core = createRequire(import.meta.url)(path.join(AG, 'lib', 'evidence-core.cjs'));
+// Tên trạng thái đã ký lấy từ một nguồn (lib), không viết chữ trong tệp ca — tiền lệ sua-truoc-dot-thu, luật RT13.
+const DA_KY = createRequire(import.meta.url)(path.join(AG, 'lib', 'workspace-record.cjs')).DA_THONG_CONG_2[0];
 const tam = (p = 'bc-') => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), p)));
 const napViTu = (f = VI_TU) => import(`${pathToFileURL(f).href}?v=${Math.random()}`);
 
@@ -148,7 +150,7 @@ function khoDo({ t1 = null, staleScope = null, evalsPaths = ['src/a.ts'], status
   git(k, 'commit', '-q', '-m', 'vat');
   const pin = git(k, 'rev-parse', 'HEAD');
   ghi(k, '_acceptance/s/run-log.jsonl', `${JSON.stringify({ ts: '2026-11-26T00:00:00Z', kind: 'eval', run_id: 'r1-E1', sha: pin, eval: 'E1', exit_code: 0 })}\n`);
-  ghi(k, '_acceptance/s/evidence-report.md', `---\nschema_version: 1\nfeature_slug: s\nverdict: PASS\nverified_commit: ${pin}\n${status === 'signed-off' ? 'human_signoff: t 2026-11-26\n' : ''}---\n\n## Evidence\n- eval: E1\n  run_id: r1-E1\n  exit_code: 0\n  verifier: config:executors.script.e1\n  verified_at: 2026-11-26\n`);
+  ghi(k, '_acceptance/s/evidence-report.md', `---\nschema_version: 1\nfeature_slug: s\nverdict: PASS\nverified_commit: ${pin}\n${status === DA_KY ? 'human_signoff: t 2026-11-26\n' : ''}---\n\n## Evidence\n- eval: E1\n  run_id: r1-E1\n  exit_code: 0\n  verifier: config:executors.script.e1\n  verified_at: 2026-11-26\n`);
   git(k, 'add', '-A');
   git(k, 'commit', '-q', '-m', 'goi bang chung');
   const tep = Object.entries(doi);
@@ -288,7 +290,7 @@ const MA_TRAN = [
   [9, { doi: { '_acceptance/config.yaml': `${cauHinh({})}# doi sau pin\n` } }, 'MỚI', 'CHẠY'],
   [10, { t1: ['gen/*'], doi: { 'gen/a/b.txt': '2\n' } }, 'MỚI', 'BỎ QUA'],
 ];
-const dungKhoCa = (o) => khoDo({ status: 'signed-off', ...o });
+const dungKhoCa = (o) => khoDo({ status: DA_KY, ...o });
 function xetPss(k, scripts = FL_SCRIPTS) {
   const r = spawnSync(process.execPath, [path.join(scripts, 'pr-san-sang.mjs'), '--root', k, '--slug', 's', '--chi-xet', '--ag-root', AG], { encoding: 'utf8', env: ghTrenPath().env });
   return { ket: r.status === 0 ? 'MỚI' : r.status === 2 ? 'CŨ' : `thoát ${r.status}`, r };
@@ -395,8 +397,8 @@ test('BC-5-khong-day không đẩy, gh 0 lời gọi', () => {
   }
 });
 
-test('BC-5-signed-off chạy khi hợp đồng signed-off', () => {
-  const { k } = khoDo({ status: 'signed-off' });
+test(`BC-5-${DA_KY} chạy khi hợp đồng ${DA_KY}`, () => {
+  const { k } = khoDo({ status: DA_KY });
   const r = chayStaleGuard(k);
   assert.equal(r.status, 0, r.ra);
   assert.match(r.stdout, /bằng chứng còn mới/);

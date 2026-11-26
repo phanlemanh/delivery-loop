@@ -28,7 +28,7 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { vatDoiSauPin } from './lib/vat-doi-sau-pin.mjs';
+import { vatDoiSauPin, GIT_TEN_THAT } from './lib/vat-doi-sau-pin.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const AG_CAN = ['lib/evidence-core.cjs', 'lib/eval-yaml.cjs'];
@@ -87,7 +87,7 @@ function docCauHinh(root) {
 function vatDoi({ root, slug, vc, git, core, bao }) {
   let doi;
   try {
-    doi = git('-c', 'core.quotepath=off', 'diff', '--name-only', vc, 'HEAD').split('\n').filter(Boolean);
+    doi = git(...GIT_TEN_THAT, 'diff', '--name-only', vc, 'HEAD').split('\n').filter(Boolean);
   } catch {
     throw new Loi(2, `pr-san-sang: không so được verified_commit ${vc.slice(0, 8)} với HEAD`);
   }

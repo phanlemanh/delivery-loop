@@ -9,6 +9,9 @@
 // Hàm thuần: không đọc đĩa, không gọi git — bên gọi đưa danh sách đổi (tên thật, `core.quotepath=off`), cây
 // (`core.dungCayPaths`) và văn bản cấu hình. `pre-merge-check.sh` không gọi tệp này; nó giữ bản bash của luật.
 
+// Cờ git cho danh sách đổi bằng tên thật (không bọc nháy, không thoát octal) — một nguồn cho mọi bên gọi.
+export const GIT_TEN_THAT = Object.freeze(['-c', 'core.quotepath=off']);
+
 const laHoSo = (f) => String(f).split('/').includes('_acceptance');
 
 function lopKyTu(g, i) {

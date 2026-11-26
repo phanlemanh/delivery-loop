@@ -32,7 +32,7 @@ import { execFileSync, spawnSync, spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 // vatDoiSauPin: MỘT vị từ «tệp vật nào đổi sau pin» cho mọi bên đọc JS (pr-san-sang dùng cùng hàm) — khớp T1 bằng luật
 // `case` bash của lưới trước-gộp, không bằng globToRe (hồ sơ bang-chung-cu-theo-dau-vao).
-import { vatDoiSauPin, staleScopeOf } from './lib/vat-doi-sau-pin.mjs';
+import { vatDoiSauPin, staleScopeOf, GIT_TEN_THAT } from './lib/vat-doi-sau-pin.mjs';
 // Chụp cây hồ sơ đã thông Cổng Bằng chứng trước/sau khi chạy executor — sau cổng,
 // `_acceptance/<slug>/` là sử liệu chỉ đọc (crm-onehub 16/09/2026: một spec trong
 // suite chung ghi đè evidence/ đã ký sau mỗi lượt chạy mà không làn nào đỏ).
@@ -472,7 +472,7 @@ if (flags['skip-unchanged']) {
     const dinhNghia = new Set();
     for (const [slug, vc] of Object.entries(pins)) {
       const doiSlug = [];
-      for (const f of gitRaw('-c', 'core.quotepath=off', 'diff', '--name-only', vc, '--').split('\n').filter(Boolean)) {
+      for (const f of gitRaw(...GIT_TEN_THAT, 'diff', '--name-only', vc, '--').split('\n').filter(Boolean)) {
         if (laDinhNghia(f)) dinhNghia.add(f);          // xét TRƯỚC vị từ: tệp định nghĩa nằm dưới _acceptance/
         else doiSlug.push(f);
       }
