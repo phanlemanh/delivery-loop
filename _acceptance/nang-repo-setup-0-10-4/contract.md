@@ -5,7 +5,7 @@ slug: nang-repo-setup-0-10-4
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: .repo-setup.json, Makefile, mk/, tools/, .gitattributes, .github/workflows/gate.yml, .claude/settings.json, CLAUDE.md — KHÔNG khớp t3_paths
 surfaces: [ci]
-status: verified
+status: signed-off
 approved_by: Phan Le Manh
 approved_at: 2026-11-26
 design_doc: docs/superpowers/specs/2026-11-26-nang-repo-setup-0-10-4-design.md
@@ -124,3 +124,8 @@ Thuật ngữ:
 - Lệnh riêng của hồ sơ gọi `_acceptance/nang-repo-setup-0-10-4/rang/chay.sh` (khối `LENH-HO-SO`); vòng không thêm khoá vào
   `_acceptance/config.yaml`.
 - PR đang mở lúc soạn (26/11): chỉ #21 (nháp, nhánh `chuyen-nha`) — không chạm tệp nào của vòng.
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-26:
+  - Ngoài-1: chữ trợ giúp và chú thích của `Makefile` nói CI chạy tầng kiểm nhẹ và nặng, trong khi CI của kho không gọi `make` — người đọc `make help` có thể tưởng CI giữ các bước ấy.
+  - Ngoài-2: `mk/upgrade.mk` sinh một đích `format` rỗng — `make format` chỉ chạy tường dấu xung đột rồi báo thành công mà không định dạng gì.
+  - Ngoài-3: `tools/upgrade_markers.py` báo sạch khi `.repo-setup.json` vắng hoặc hỏng, nên ở máy tường dấu xung đột im lặng; CI vẫn đỏ nhờ `plugin_lint.py`. Sửa đúng chỗ là ở kho khuôn repo-standards (tệp có băm ghim).
+  - Ngoài-4: phép đo AC-5 kiểm job `khung` có mặt hai lệnh rồi chạy hai công cụ riêng, chưa chạy thân bước của job — thêm `|| true` hay `continue-on-error` vào bước ấy thì job thôi chặn mà phép đo vẫn xanh.

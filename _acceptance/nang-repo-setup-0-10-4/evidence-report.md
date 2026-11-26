@@ -8,7 +8,7 @@ verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
 verified_commit: 7b67ec8dee171f4ad1785b6ba9c228acf078a782
-human_signoff:
+human_signoff: Phan Le Manh 2026-11-26
 ---
 
 # Evidence Report: nang-repo-setup-0-10-4
