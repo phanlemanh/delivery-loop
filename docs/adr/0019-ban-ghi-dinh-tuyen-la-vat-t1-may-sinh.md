@@ -65,3 +65,9 @@ xuyên `/`) chỉ đồng nghĩa trên danh sách T1 hiện tại; lệch chỉ 
 một tầng dạng `dir/` theo sau một dấu sao.
 
 Ngưỡng đang đếm: ≥1 lần làn bỏ qua sai vì một glob một tầng như vậy, giữa hai bản phát hành — thì mở vòng đưa hai vị từ về một nguồn.
+
+**Đóng 26/11/2026 (hồ sơ `bang-chung-cu-theo-dau-vao`, vòng DL2).** Giới hạn này đã gỡ trước khi ngưỡng chạm: làn ghim
+lại và `pr-san-sang` nay đọc qua một vị từ chung (`plugins/feature-loop/scripts/lib/vat-doi-sau-pin.mjs`) khớp T1 bằng bản
+JS của luật `case` bash — dấu sao xuyên `/` như lưới. `pre-merge-check.sh` giữ bản bash; ca BC-8 rút nguyên văn
+`match_globs` + `glob_variants` của nó và so với bản JS trên ma trận bảy glob × sáu đường mỗi lượt chạy bộ kiểm, nên hai
+bản trôi khỏi nhau là đỏ có tên chứ không im. Giới hạn «tệp chưa theo dõi» ở trên vẫn mở, ngưỡng không đổi.
