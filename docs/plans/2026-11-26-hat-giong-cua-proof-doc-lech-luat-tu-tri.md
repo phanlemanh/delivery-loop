@@ -3,6 +3,10 @@
 Gốc: _acceptance/chuyen-gop/ (hồ sơ dựng `plugins/dispatch/scripts/cua-proof.mjs`, ký 22/11/2026; bản chép khuôn của nó là
 `tests/dieu-phoi/fixtures/autonomy-repo-standards.yaml`, chép từ `c29dea4` của `phanlemanh/repo-standards`).
 
+Ô trích lại tệp này: `_acceptance/dieu-phoi-tho-trong-kit/` — ô gốc của gói điều phối, nơi bộ phát lịch tự gộp PR được
+quyết dựng. Hồ sơ `chuyen-gop` không trích lại, vì PR chạm hồ sơ đã ký thì cổng xét lại bằng chứng của nó so với nhánh
+chính hiện tại.
+
 **Trạng thái:** hạt giống (SỔ, chưa là ô). Chủ kho bảo ghi ngày 26/11/2026, nguyên văn «Ghi hạt giống», sau phép so hai bộ
 đọc dưới đây. Tệp này không mở vòng nào.
 
