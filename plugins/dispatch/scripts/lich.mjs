@@ -15,8 +15,12 @@ const mocCua = (hangViec, slug) => hangViec?.hang?.find((h) => h.slug === slug)?
 export const PHIEN_MANG_MOC = new Set(['kiem-cheo']);
 const mocDon = (d, hangViec) => (PHIEN_MANG_MOC.has(d.phien) && d.moc) || mocCua(hangViec, d.slug);
 
-export function xepHang(donXin, hangViec) {
-  const khoa = (d) => [d.loai === 'ghim-lai' && d.mo_merge ? 0 : 1, mocDon(d, hangViec), d.luc];
+// `thuTu` (hồ sơ giam-sat-doc-ban-uy-quyen, lệnh `thu-tu-gop`): danh sách dãy giám sát đã xếp cho đơn `merge` — đơn merge
+// của dãy có trong danh sách lấy vị trí làm khoá đầu; đơn ngoài danh sách và đơn loại khác đứng sau, giữ khoá cũ. Vắng
+// (null) → khoá y như trước.
+export function xepHang(donXin, hangViec, thuTu = null) {
+  const viTri = (d) => (thuTu && d.loai === 'merge' && thuTu.includes(d.phien) ? thuTu.indexOf(d.phien) : thuTu ? thuTu.length : 0);
+  const khoa = (d) => [...(thuTu ? [viTri(d)] : []), d.loai === 'ghim-lai' && d.mo_merge ? 0 : 1, mocDon(d, hangViec), d.luc];
   return [...donXin].sort((a, b) => {
     const ka = khoa(a);
     const kb = khoa(b);
@@ -28,10 +32,10 @@ export function xepHang(donXin, hangViec) {
   });
 }
 
-export function capLuot({ donXin, dangGiu, giamTai, hangViec, vua = () => ({ duoc: true }) }) {
+export function capLuot({ donXin, dangGiu, giamTai, hangViec, vua = () => ({ duoc: true }), thuTu = null }) {
   const cap = [];
   const ban = new Set(Object.entries(dangGiu).filter(([, chu]) => chu).map(([tn]) => tn));
-  for (const don of xepHang(donXin, hangViec)) {
+  for (const don of xepHang(donXin, hangViec, thuTu)) {
     const tn = TAI_NGUYEN[don.loai];
     if (!tn || ban.has(tn)) continue;
     if (giamTai && tn !== 'merge') continue;

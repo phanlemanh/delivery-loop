@@ -22,6 +22,7 @@ import { chuyenVaoCua, docCua } from './cua-tin-hieu.mjs';
 import { chupNhanhMo, docChupNhanhMo, docNhanhMo, tepTheoNhanh, xetTrungTep } from './trung-tep.mjs';
 import { themSau } from './khoa-hang-viec.mjs';
 import { soDoGop } from './do-gop.mjs';
+import { TEP_THU_TU_GOP } from './thu-tu-gop.mjs';
 
 export const CAC_TAI_NGUYEN = ['s4', 'duong-nen', 'merge'];
 // Thư mục mã của CHÍNH bộ phát lịch đang chạy (bình thường là `<thư mục đợt>/loi/`, do `chay` chép).
@@ -145,7 +146,8 @@ function capPhat(thuMuc, cfg, hangViec, dangGiu, giamTai, nowMs, pha = 'dang-cha
     return nhuCauLoai.get(loai);
   };
   const vua = (don) => (sk ? vuaLan(don.loai, sk, nhuCauCua(don.loai), cfg) : { duoc: true, ly_do: null });
-  for (const { taiNguyen, don } of capLuot({ donXin, dangGiu, giamTai, hangViec, vua })) {
+  const thuTu = docJson(path.join(thuMuc, TEP_THU_TU_GOP), null)?.thu_tu ?? null;
+  for (const { taiNguyen, don } of capLuot({ donXin, dangGiu, giamTai, hangViec, vua, thuTu })) {
     if (!choPhepTheoPha(pha, taiNguyen)) continue;
     if (choDatLai) continue;
     if (taiNguyen === 's4' && may.ap) {
