@@ -22,11 +22,13 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { docJson, ghiSuKien, phienCuaCwd, timThuMucDot } from './dot.mjs';
+import { docJson, ghiJsonNguyenTu, ghiSuKien, gocKhoChinh, phienCuaCwd, timThuMucDot } from './dot.mjs';
 import { docCauHinh, docHangViec } from './hinh-dang.mjs';
 import { docPha } from './pha.mjs';
 import { DA_THONG, trangThaiHopDong } from './phat-lich.mjs';
 import { xetCuaProof } from './cua-proof.mjs';
+import { docUyQuyen, ghiDungQuyen, tepChamVungCam } from './uy-quyen.mjs';
+import { laGiamSat } from './vai.mjs';
 
 export const GOP_DUOC = ['moi-nhat', 'khong-trung'];
 const KET_LUAN_XANH = new Set(['SUCCESS', 'NEUTRAL', 'SKIPPED']);
@@ -313,13 +315,66 @@ function bamGop(io, pr, kq, xet) {
 
 const IO_THAT = (cwd) => ({ chay: (cmd, args) => execFileSync(cmd, args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 120_000 }) });
 
+// ── Gộp theo quyền của giám sát (ADR 0030, hồ sơ giam-sat-doc-ban-uy-quyen) ─────────────────────────────────────────
+// Lối thứ ba của CHÍNH lệnh này — `gop <số PR> --slug <slug> --theo-quyen --phien <mã giám sát>`: giám sát thành người
+// gọi hợp lệ khi ô `tu_merge` của đợt bật (Hỏi-2 lối A của ADR) VÀ bản uỷ quyền ở đỉnh nhánh chính nhận `gop`. Lệnh giữ
+// khoá `merge` bằng `mkdir` (nguyên tử, cùng cách bộ phát lịch cấp) để không gộp chồng lên một dãy; `xetGop` quyết KHÔNG
+// ĐỔI; PR chạm vùng cấm thì bấm gộp là của người; dòng `dung-quyen` ghi TRƯỚC lời gọi gộp. Mọi lối sau lúc giữ khoá — chặn,
+// sổ hỏng, `gh` lỗi — nhả khoá của chính giám sát trong MỘT khối `finally`.
+const chanQuyen = (ly_do, sha = null) => ({ duong: 'chan', sha, ly_do, da_gop: false, nha_merge: false });
+const dong2 = (s) => String(s ?? '').split('\n').map((x) => x.trim()).filter(Boolean);
+function gopTheoQuyen(cwd, pr, { slug, phien, io }) {
+  if (!slug || !phien) throw new Error('gop: --theo-quyen đòi --slug <slug> và --phien <mã giám sát>');
+  const thuMuc = timThuMucDot(cwd);
+  if (!thuMuc) throw new Error('gop: --theo-quyen chỉ chạy trong một đợt đang chạy');
+  if (laGiamSat(thuMuc, phien) !== true) return chanQuyen(`phiên ${phien} không phải giám sát của đợt`);
+  if (docPha(thuMuc).tu_merge !== true) return chanQuyen('đợt không cho tự gộp (tu_merge) — quyền gop chỉ dùng khi chủ kho bật ô ấy');
+  const cfg = docCauHinh(thuMuc);
+  const nhanh = cfg.nhanh_chinh ?? 'main';
+  const uq = docUyQuyen({ gocKho: cfg.goc_kho ?? gocKhoChinh(cwd), nhanhChinh: nhanh, io });
+  if (!uq.nhan.includes('gop')) return chanQuyen(`bản uỷ quyền không nhận quyền gop — ${uq.loi ?? (uq.co ? 'tu_lam không có gop' : `kho không có governance/delegation.yaml ở origin/${nhanh}`)}`);
+  fs.mkdirSync(path.join(thuMuc, 'khoa'), { recursive: true });
+  const dKhoa = path.join(thuMuc, 'khoa', 'merge');
+  const pChu = path.join(dKhoa, 'chu.json');
+  try {
+    fs.mkdirSync(dKhoa);
+  } catch {
+    return chanQuyen(`khoá merge đang do ${docJson(pChu, null)?.phien ?? '(không rõ)'} giữ`);
+  }
+  const nowMs = Date.now();
+  ghiJsonNguyenTu(pChu, { phien, slug, loai: 'merge', worktree: fs.realpathSync(cwd), cap_luc: new Date(nowMs).toISOString(), han_thue_den: new Date(nowMs + (cfg.han_thue_phut?.merge ?? 30) * 60_000).toISOString(), theo_quyen: true });
+  const chuGiu = () => docJson(pChu, null)?.phien === phien;
+  let daGop = false;
+  try {
+    let kq = xetGop({ io, cfg, pr, slug });
+    if (GOP_DUOC.includes(kq.duong)) {
+      const mb = io.chay('git', ['merge-base', kq.sha, `origin/${nhanh}`]).trim();
+      const cham = tepChamVungCam(dong2(io.chay('git', ['diff', '--name-only', '--no-renames', mb, kq.sha])));
+      if (cham.length) kq = { duong: 'chan', sha: kq.sha, ly_do: `PR chạm vùng cấm: ${cham.join(', ')} — bấm gộp là của người` };
+    }
+    if (GOP_DUOC.includes(kq.duong)) {
+      ghiDungQuyen(thuMuc, { quyen: 'gop', viec: `gộp PR #${pr} (hồ sơ ${slug}) ở ${kq.sha.slice(0, 7)}`, duong_dao: `hoàn lại commit gộp của PR #${pr}: git revert -m 1 <commit gộp>`, sha_uy_quyen: uq.sha });
+      daGop = bamGop(io, pr, kq, false);
+    }
+    ghiSuKien(thuMuc, { loai: 'gop', pr: Number(pr), hang: slug, phien, duong: kq.duong, sha: kq.sha ?? null, da_gop: daGop, nha_merge: true, ly_do: kq.ly_do, theo_quyen: true });
+    return { ...kq, da_gop: daGop, nha_merge: true };
+  } finally {
+    if (chuGiu()) fs.rmSync(dKhoa, { recursive: true, force: true });
+  }
+}
+
 // Lệnh `gop <số PR>`: thợ giữ khoá merge, đợt cho tự gộp. `--xet` chỉ in quyết định (giám sát, người) — không gộp,
 // không đòi khoá. Mỗi lần chạy ghi một sự kiện `gop` (lệnh đếm đọc).
 // `theoLoi` (cờ `--theo-loi`): lối ngoài đợt theo lời gộp trong câu ký — không đòi đợt, khoá merge hay `tu_merge`, bắt
 // buộc `slug`, không ghi sự kiện đợt. `choCi` (cờ `--cho-ci <phút>`): lệnh tự chờ CI; `ngu(ms)` thay được trong ca.
 // `loi` (cờ `--loi <gốc acceptance-gate>`): gốc lõi cho vế chữ ký — nạp TRƯỚC mọi lời gọi `gh`, vắng bộ đọc thì chặn ngay.
-export function gop(cwd, pr, { slug = null, xet = false, io = IO_THAT(cwd), theoLoi = false, choCi = 0, ngu = nguDongBo, loi = null } = {}) {
+// `theoQuyen` (cờ `--theo-quyen`) + `phien` (cờ `--phien`): lối gộp theo quyền của giám sát — xem `gopTheoQuyen` ở trên.
+export function gop(cwd, pr, { slug = null, xet = false, io = IO_THAT(cwd), theoLoi = false, choCi = 0, ngu = nguDongBo, loi = null, theoQuyen = false, phien = null } = {}) {
   if (!/^\d+$/.test(String(pr ?? ''))) throw new Error('gop: dùng `gop <số PR> [--slug <slug>] [--xet]`');
+  if (theoQuyen) {
+    if (theoLoi || xet) throw new Error('gop: --theo-quyen không đi cùng --theo-loi hay --xet');
+    return gopTheoQuyen(cwd, pr, { slug, phien, io });
+  }
   if (theoLoi) {
     if (!slug) throw new Error('gop: --theo-loi đòi --slug <slug>');
     if (typeof choCi !== 'number' || !Number.isFinite(choCi) || choCi < 0) throw new Error('gop: --cho-ci <phút> phải là số không âm');

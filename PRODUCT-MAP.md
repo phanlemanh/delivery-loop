@@ -12,7 +12,7 @@ flowchart TD
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
   B --> CD["Chờ duyệt phạm vi<br/>chưa có"] --> GP{"Cổng Phạm vi"}
   GP --> DL["Đang làm<br/>2 việc"] --> GB{"Cổng Bằng chứng"}
-  GB --> DG["Đã giao<br/>167 việc"]
+  GB --> DG["Đã giao<br/>168 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>74 việc"] --> GG{"Cổng Giá trị"}
   GG --> NT["Đã nghiệm thu giá trị<br/>7 việc"]
 ```
@@ -169,6 +169,7 @@ flowchart TD
 - Pre-merge enforce gap-probe presence (merge-boundary, thay cho hook write-time) (`gap-probe-presence-hook`)
 - Làn ghim lại phải NÓI RA ô nó không đo — eval ngoài làn máy (ui-check/judgment), vật đo của chúng đã đổi, và AC không có chốt máy — ở dòng pin, section Re-pin, thẻ hai cổng và lint W8; không đổi hành vi chặn nào (`ghim-lai-noi-ra-o-khong-do`)
 - Giá làn ghim lại, Vòng A — chạy lại lệnh đỏ một lần, trần mỗi lượt và dọn sạch tiến trình khi dừng hay bị ngắt, tổng kết cuối lượt, suite ở môi trường giống CI (kho tự bật) (`gia-lan-ghim-lai`)
+- Phiên giám sát của gói dispatch đọc bản uỷ quyền governance/delegation.yaml của kho ở đỉnh nhánh chính — danh sách loại đóng, vùng cấm cứng, sự kiện dung-quyen ghi trước hành động; giám sát gộp theo quyền khi ô tu_merge bật và xếp lại thứ tự gộp; khối uỷ quyền trên thẻ khởi tạo và dòng đếm trong báo cáo đợt (ADR 0030, lát 1) (`giam-sat-doc-ban-uy-quyen`)
 - Bộ khớp glob của cổng hiểu `**/` là không-hoặc-nhiều thư mục — `**/*.md` bắt cả markdown ở gốc kho (`glob-hai-sao-khop-goc-kho`)
 - Mục paths viết theo thành ngữ thoát ngoặc của glob («[[]slug]» = thư mục «[slug]») được hiểu đúng ở cả làn ghim lại, bộ lọc hoá cũ và kế hoạch mang sang của S4 — không còn gắn oan «ô ngoài làn máy có vật đổi», không còn mang sang eval mà tệp của nó đã đổi (`glob-thoat-ngoac`)
 - sổ vàng in cho người được máy đo thật đầu-ra (render round-trip, ma trận đồng thuận toàn phần) + từ điển biệt ngữ lời ký để lớp giám khảo ngôn-ngữ có đường PASS sạch (`gold-output-measure`)

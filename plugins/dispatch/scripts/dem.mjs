@@ -35,7 +35,17 @@ export function demDot(thuMuc) {
       theoHang[khoa] = (theoHang[khoa] ?? 0) + 1;
     }
   }
-  return { gop_theo_ngay: gopTheoNgay, goi_chu_kho: { tong, theo_hang: theoHang }, ...demKyDenGop(suKien) };
+  return { gop_theo_ngay: gopTheoNgay, goi_chu_kho: { tong, theo_hang: theoHang }, ...demKyDenGop(suKien), ...demDungQuyen(suKien) };
+}
+
+// Dòng đếm của báo cáo đợt (ADR 0030, hồ sơ giam-sat-doc-ban-uy-quyen): số lần giám sát dùng quyền, theo từng quyền. Sổ
+// không có dòng `dung-quyen` → không khoá nào (báo cáo đợt từng byte như trước vòng).
+function demDungQuyen(suKien) {
+  const dq = suKien.filter((e) => e.loai === 'dung-quyen');
+  if (dq.length === 0) return {};
+  const theoQuyen = {};
+  for (const e of dq) theoQuyen[e.quyen ?? '(không rõ)'] = (theoQuyen[e.quyen ?? '(không rõ)'] ?? 0) + 1;
+  return { dung_quyen: { tong: dq.length, theo_quyen: theoQuyen } };
 }
 
 const trungVi = (ds) => {

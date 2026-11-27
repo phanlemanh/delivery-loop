@@ -1,0 +1,6 @@
+{
+  "feature_plain": "Phiên giám sát của đợt đọc quyền chủ kho đã viết một lần vào một tệp của kho, thay cho lời giao tay mỗi đợt; mỗi lần dùng quyền để lại một dòng sổ có tên quyền và cách hoàn lại.",
+  "decisions": [
+    {"id": "E11", "q": "Chữ «tự gộp» có từ trước vòng này có chặn chữ ký không?", "why": "Hội đồng xác nhận chỉ dẫn nói đủ năm điều; chỗ chưa chắc là cụm «tự gộp» ở luật đợt dòng 44 và README — cả hai dòng có từ trước vòng này. Máy khuyên ghi Đạt và ghi một hạt giống sửa chữ ấy ở vòng sau; sửa ngay thì phải chấm lại một lượt."}
+  ]
+}

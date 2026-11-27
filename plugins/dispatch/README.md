@@ -291,6 +291,22 @@ chưa người nào quyết lại, hồ sơ chưa có chữ ký người ở C�
 lệnh trên. `--cho-ci` cho lệnh tự chờ: xanh thì gộp, một check đỏ hẳn thì thoát 1 ngay, hết giờ thì thoát 4. Lối nhanh
 «không trùng tệp» không áp ngoài đợt. Lệnh `gop` không cờ giữ nguyên mọi điều ở đoạn trên.
 
+**Bản uỷ quyền của kho** (hồ sơ `giam-sat-doc-ban-uy-quyen`, ADR 0030): kho viết `governance/delegation.yaml`
+(`ban: 1`, `tu_lam: [<quyền>, …]`); gói đọc tệp ở ĐỈNH NHÁNH CHÍNH (`origin/<nhánh chính>`) mỗi lần dùng, không bao giờ ở
+cây làm việc hay nhánh PR — PR của giám sát không nới được quyền trước khi chủ kho gộp nó. Kho không có tệp chạy như trước,
+từng byte. Danh sách quyền ĐÓNG: bản này nhận `gop` và `thu-tu-gop`; `phien`, `chuyen-hang`, `mo-day`, `phan-quyet-chung`,
+`lo-trinh` đọc được nhưng vẫn hỏi chủ kho (thẻ in câu vì sao); `muc-ngoai-hop-dong`, `thiet-ke` bị từ chối kèm chỗ đúng;
+tên lạ, hay tên thuộc vùng cấm (`chu-ky`, `cat-ban`, `xoa-nhanh`, `day-kho-khac`, `cai-dat-github`, `workflows`,
+`governance`, `luat-san-pham`, `pham-vi-dot`, `luat-dot`, `uy-quyen`), làm cả tệp bị từ chối. Hai lệnh của quyền:
+- `dieu-phoi.mjs gop <số PR> --slug <s> --theo-quyen --phien <mã giám sát>` — chỉ khi ô `tu_merge` của đợt bật; giám sát
+  giữ khoá `merge` trong lúc gộp (khoá bận thì chặn) và nhả ở mọi lối; `xetGop` quyết không đổi; PR chạm
+  `.github/workflows/`, `governance/` hay `PRODUCT-INVARIANTS.md` → chặn, bấm gộp là của người.
+- `dieu-phoi.mjs thu-tu-gop <dãy,dãy,…> --phien <mã giám sát>` — hoán vị đúng các dãy đang có đơn `merge`; bộ phát lịch cấp
+  khoá `merge` theo thứ tự ấy từ nhịp kế (`thu-tu-gop.json`, xoá tệp là về thứ tự của máy).
+Mỗi lần dùng quyền ghi TRƯỚC một dòng `{loai: 'dung-quyen', quyen, viec, duong_dao, sha_uy_quyen, can_phan: false}`; ghi hỏng
+thì không làm. Hai bề mặt mới ở kho có tệp: khối `uy_quyen` trên thẻ khởi tạo (mục máy đi tiếp, không thành câu hỏi) và
+khoá `dung_quyen` của `dem --json`. Đường đảo: xoá tệp ở nhánh chính.
+
 ## Giao tiếp giữa các phiên (lệnh `tin`)
 
 Hồ sơ `vong-mo-co-chu-giu` (GT1). Mỗi yêu cầu giữa các phiên — giám sát với thợ trong đợt, máy với máy trên kênh issue
@@ -365,7 +381,7 @@ Thứ tự chuyển, chạy ở quãng lặng (không lượt S4 nào đang ch�
 
 `node "$GOI/scripts/dieu-phoi.mjs" dong`, sau khi owner duyệt thẻ đóng đợt. Lệnh dừng bộ phát lịch và
 gỡ symlink, nên hook im. Sau đó: xoá task lịch, lưu trữ phiên thợ, dọn worktree đã gộp (kiểm
-`git status --porcelain` trước), viết báo cáo đợt.
+`git status --porcelain` trước), viết báo cáo đợt — kèm dòng đếm lần dùng quyền khi `dem --json` có `dung_quyen`.
 
 ## Đường lùi
 

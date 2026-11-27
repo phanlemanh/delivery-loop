@@ -1,0 +1,153 @@
+schema_version: 1
+feature_slug: giam-sat-doc-ban-uy-quyen
+# Một tệp ca mới (tests/dieu-phoi/uy-quyen.test.mjs), tên ca = mã tiêu chí («UQ-01 …» đo AC-1). Kho thử do mã sinh trong
+# lượt: origin trần + bản clone, đợt mở bằng CLI thật, gh giả ghi lời gọi (tests/dieu-phoi/gh-gia.mjs); ngày commit và danh
+# tính ghim nên sha tất định. `rang/chay.sh AC-n` chạy đúng các ca của tiêu chí và ĐÒI từng tên ca có dòng «ok» — mẫu lọc
+# không khớp ca nào thì thoát 1, không xanh suông. Mỗi ca «-do» chạy CHÍNH hàm đo trên một bản sao trọn gói bị tiêm, sau khi
+# bản lành xanh trên cùng kho thử, kiểm bước tiêm đã đổi tệp, và ghim thông điệp của đúng lỗi được tiêm.
+evals:
+  - id: E1
+    criterion: AC-1
+    executor: test
+    cmd: bash _acceptance/giam-sat-doc-ban-uy-quyen/rang/chay.sh AC-1
+    paths: [plugins/dispatch/scripts/uy-quyen.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "UQ-01 nhanh-chinh" (nhan chứa gop, sha = rev-parse origin/main của kho thử),
+      "UQ-01 pr-tu-them" (cây làm việc và nhánh PR thêm lo-trinh và thu-tu-gop: kết quả bằng hệt bản nhánh chính, không tên nào
+      trong hai tên ấy xuất hiện), "UQ-01 xoa-tep" (xoá tệp trên nhánh chính → co false, nhan rỗng), "UQ-01 lay-ve-hong"
+      (origin trỏ đường chết, ref cũ có tệp → nhan rỗng, loi nêu «không lấy được nhánh chính»), "UQ-01 lay-ve-hong-khong-tep"
+      (origin trỏ đường chết, ref cũ KHÔNG có tệp → co false, loi null, vang rỗng) và "UQ-01-do doc-cay-lam-viec";
+      «# fail 0». Chiều đỏ: bản sao gói đọc tệp từ cây làm việc → ca pr-tu-them đỏ với thông điệp «bộ đọc thấy loại do PR
+      thêm: thu-tu-gop».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E2
+    criterion: AC-2
+    executor: test
+    cmd: bash _acceptance/giam-sat-doc-ban-uy-quyen/rang/chay.sh AC-2
+    paths: [plugins/dispatch/scripts/uy-quyen.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "UQ-02 ma-tran" (in một dòng «<tên> · <nhóm> · đúng» cho mỗi tên của danh sách loại kit
+      cộng một tên lạ; phien ở nhóm vẫn hỏi với câu «mở phiên: máy đã tự làm theo thẻ khởi tạo, không cần quyền — dọn phiên:
+      chưa có phép so — vẫn hỏi chủ kho»; số dòng đúng = số tên + 1, viết trước trong ca; câu in khớp nguyên văn bảng §4 design doc; tên lạ →
+      loi «loại lạ: <tên>», nhan rỗng) và "UQ-02-do bo-ten"; «# fail 0». Chiều đỏ: bản sao gói xoá mo-day khỏi danh sách →
+      ma trận đỏ nêu «mo-day · mong vẫn hỏi · nhận lỗi đọc».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E3
+    criterion: AC-3
+    executor: test
+    cmd: bash _acceptance/giam-sat-doc-ban-uy-quyen/rang/chay.sh AC-3
+    paths: [plugins/dispatch/scripts/uy-quyen.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "UQ-03 ma-tran" (mỗi tên vùng cấm đặt cạnh gop: nhan rỗng, loi chứa đúng tên mục và «vùng
+      cấm cứng»; số dòng = số tên vùng cấm, viết trước; đối chứng dương: cùng tệp bỏ tên cấm → nhan [gop]) và
+      "UQ-03-do bo-qua-muc-cam"; «# fail 0». Chiều đỏ: bản sao gói bỏ mục cấm rồi nhận phần còn lại → ca đỏ «tệp có mục cấm
+      governance mà vẫn nhận gop».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E4
+    criterion: AC-4
+    executor: test
+    cmd: bash _acceptance/giam-sat-doc-ban-uy-quyen/rang/chay.sh AC-4
+    paths: [plugins/dispatch/scripts/uy-quyen.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "UQ-04 khoan-dung" (thiếu ban → nhan đủ, vang nêu «ban»; khoá lạ → vang nêu tên khoá; ban 2,
+      tu_lam vắng, tu_lam là chuỗi, dòng ngoài khuôn → loi, nhan rỗng, dòng ngoài khuôn nêu số dòng; dạng dòng và dạng khối
+      cùng nhan) và "UQ-04-do ban-la-van-nhan"; «# fail 0». Chiều đỏ: bản sao gói bỏ kiểm ban → ca đỏ «ban 2 mà vẫn nhận gop».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E5
+    criterion: AC-5
+    executor: test
+    cmd: bash _acceptance/giam-sat-doc-ban-uy-quyen/rang/chay.sh AC-5
+    paths: [plugins/dispatch/scripts/**, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "UQ-05 chieu-im" (bản gói dựng bằng git archive origin/main plugins/dispatch — trọn thư
+      mục — và bản mới, cùng thư mục đợt không có tệp uỷ quyền: the khoi-tao --json, xem, xem --json, dem --json bằng nhau từng
+      byte), "UQ-05 khong-remote" (cùng phép so ở kho không remote), "UQ-05 lay-ve-hong" (cùng phép so ở kho có remote trỏ
+      đường chết), "UQ-05 gop-khong-co" (dãy giữ khoá merge do bộ phát lịch cấp, PR chạm .github/workflows/x.yml, lệnh gop
+      KHÔNG cờ --theo-quyen chạy bằng bản archive và bản mới: cùng mã thoát, cùng chuỗi lời gọi gh giả ghi, cùng dòng sổ) và
+      "UQ-05-do them-khoa"; «# fail 0». Chiều đỏ: bản sao luôn thêm khoá uy_quyen vào thẻ → ca đỏ nêu «the khoi-tao --json
+      lệch».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E6
+    criterion: AC-6
+    executor: test
+    cmd: bash _acceptance/giam-sat-doc-ban-uy-quyen/rang/chay.sh AC-6
+    paths: [plugins/dispatch/scripts/uy-quyen.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/thu-tu-gop.mjs, plugins/dispatch/scripts/dot.mjs, plugins/dispatch/commands/open.md, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "UQ-06 ghi-truoc" (gh giả chụp số dòng dung-quyen trong sổ lúc nhận lời gọi pr merge: 1;
+      dòng mang đủ quyen, viec, duong_dao, sha_uy_quyen, can_phan false; với thu-tu-gop dòng đứng trước lúc tệp thứ tự có mặt),
+      "UQ-06 monitor" (lệnh lọc Monitor rút nguyên văn từ cặp marker MONITOR-LOC của commands/open.md — marker vắng thì ca đỏ
+      «không tìm thấy lệnh lọc Monitor» — chạy trên sổ do lệnh thật ghi: 0 dòng dung-quyen lọt; đối chứng một dòng can_phan
+      true lọt đúng một), "UQ-06 so-hong" (sổ là thư mục → thoát khác 0, nêu «không ghi được sự kiện dung-quyen», gh giả không nhận
+      pr merge, tệp thứ tự không có) và "UQ-06-do bo-ghi"; «# fail 0». Chiều đỏ: bản sao gói bỏ lời ghi sự kiện → ca đỏ «lệnh
+      của quyền chạy mà không có dòng dung-quyen».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E7
+    criterion: AC-7
+    executor: test
+    cmd: bash _acceptance/giam-sat-doc-ban-uy-quyen/rang/chay.sh AC-7
+    paths: [plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/uy-quyen.mjs, plugins/dispatch/scripts/dieu-phoi.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "UQ-07 gop" (đủ điều kiện → gh giả nhận đúng `pr merge <n> --merge --match-head-commit
+      <sha>`, không lời gọi nào chứa --auto; khoá merge không còn sau lệnh), "UQ-07 ma-tran-thieu" (năm hàng viết trước:
+      không phải giám sát · tu_merge không true · không có gop trong tệp · khoá merge bận · xetGop chặn (hồ sơ chưa ký) — mỗi
+      hàng thoát khác 0 với thông điệp ghim của chính nó, gh giả không nhận pr merge, sổ không có dung-quyen; khoá do dãy khác
+      giữ vẫn nguyên sau lệnh; hàng xetGop chặn thêm assert thư mục khoa/merge không còn), "UQ-07 nha-khoa" (ba lối hỏng SAU
+      lúc giám sát giữ khoá — xetGop chặn, gh giả thoát 1 ở pr merge, sổ không ghi được — mỗi lối thoát khác 0 và thư mục
+      khoa/merge không còn), "UQ-07-do bo-tu-merge" và "UQ-07-do nha-khoa-ngoai-finally"; «# fail 0». Chiều đỏ: bản sao gói bỏ
+      kiểm tu_merge → hàng «tu_merge không true» đỏ; bản sao chỉ nhả khoá sau lúc gộp thành công → ca đỏ «khoá merge còn do
+      giám sát giữ sau lệnh bị chặn».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E8
+    criterion: AC-8
+    executor: test
+    cmd: bash _acceptance/giam-sat-doc-ban-uy-quyen/rang/chay.sh AC-8
+    paths: [plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/uy-quyen.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "UQ-08 vung-cam-pr" (ba PR, mỗi PR chạm một trong .github/workflows/x.yml,
+      governance/delegation.yaml, PRODUCT-INVARIANTS.md → chặn, nêu đúng tệp và «bấm gộp là của người», gh giả không nhận pr
+      merge; đối chứng: PR chỉ chạm tệp khác → gộp) và "UQ-08-do bo-vung-cam"; «# fail 0». Chiều đỏ: bản sao gói bỏ kiểm vùng
+      cấm trên tệp PR → ca đỏ «PR chạm governance/delegation.yaml mà vẫn gộp».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E9
+    criterion: AC-9
+    executor: test
+    cmd: bash _acceptance/giam-sat-doc-ban-uy-quyen/rang/chay.sh AC-9
+    paths: [plugins/dispatch/scripts/thu-tu-gop.mjs, plugins/dispatch/scripts/lich.mjs, plugins/dispatch/scripts/phat-lich.mjs, plugins/dispatch/scripts/uy-quyen.mjs, plugins/dispatch/scripts/dieu-phoi.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "UQ-09 hoan-vi" (thiếu một dãy, thừa một dãy, trùng một dãy, không có quyền thu-tu-gop,
+      phiên không phải giám sát → mỗi ca thoát khác 0 nêu dãy, quyền hay phiên, không ghi tệp thứ tự, sổ không có dung-quyen), "UQ-09 cap-theo-thu-tu" (hai dãy P1, P2 xin merge theo
+      giờ P1 trước; thu-tu-gop P2,P1 → nhịp bộ phát lịch kế cấp khoá merge cho P2; không có tệp thứ tự → cấp P1 như cũ) và
+      "UQ-09-do bo-kiem-hoan-vi"; «# fail 0». Chiều đỏ: bản sao gói bỏ kiểm hoán vị → ca đỏ «danh sách thiếu P1 mà vẫn ghi».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E10
+    criterion: AC-10
+    executor: test
+    cmd: bash _acceptance/giam-sat-doc-ban-uy-quyen/rang/chay.sh AC-10
+    paths: [plugins/dispatch/scripts/the.mjs, plugins/dispatch/scripts/dem.mjs, plugins/dispatch/scripts/uy-quyen.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "UQ-10 the" (kho có tệp: the khoi-tao --json có uy_quyen với nguon «origin/main@<sha7>»,
+      nhan, van_hoi kèm câu, vang; may_di_tiep có uy-quyen; mảng hoi bằng hệt bản không tệp; tệp mang mục cấm → uy_quyen.loi
+      nêu mục, nhan rỗng), "UQ-10 dem" (sổ SINH bằng hai lần gop --theo-quyen và một lần thu-tu-gop thật trên kho thử, không
+      dòng viết tay → dem --json có dung_quyen {tong 3, theo_quyen {gop 2, thu-tu-gop 1}}), "UQ-10 xem-co-tep" (kho CÓ tệp:
+      xem và xem --json bằng nhau từng byte giữa bản archive và bản mới) và "UQ-10-do hoi-them"; «# fail 0». Chiều đỏ: bản sao gói thêm uy-quyen vào hoi → ca đỏ
+      «khối uỷ quyền thành câu hỏi».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E11
+    criterion: AC-11
+    executor: judgment
+    inputs: [plugins/dispatch/commands/open.md, plugins/dispatch/commands/close.md, plugins/dispatch/scripts/mau/LUAT.md, plugins/dispatch/README.md, CONTEXT.md]
+    question: >
+      Bốn tệp đầu là chỉ dẫn mà phiên giám sát của gói điều phối đọc khi mở đợt, khi đóng đợt và luật đợt mà thợ đọc; tệp thứ
+      năm là bảng từ của kit. Đợt chạy ở kho có tệp governance/delegation.yaml (bản uỷ quyền chủ kho viết, kit chỉ đọc ở đỉnh
+      nhánh chính). Đọc như một phiên giám sát mới nhận vai: chỉ dẫn có nói đủ năm điều không — (1) trình khối uỷ quyền trên
+      thẻ khởi tạo như mục máy đi tiếp có cửa phản đối, KHÔNG thành câu hỏi; (2) quyền gộp chỉ dùng khi chủ kho bật quyền tự
+      merge ở thẻ khởi tạo; (3) gộp theo quyền chỉ qua `gop <số PR> --slug <slug> --theo-quyen --phien <mã>` và xếp lại thứ tự
+      gộp chỉ qua `thu-tu-gop`, không có chỗ nào bảo giám sát gộp hay xếp bằng cách khác; (4) vùng cấm cứng (chữ ký cổng, việc
+      khó đảo ngoài gộp, .github/workflows/ và governance/, luật sản phẩm, phạm vi/luật/bản uỷ quyền của chính đợt) và việc
+      loại chưa dựng (chuyển hàng, mở dãy, phán quyết chung, lộ trình, dọn phiên) vẫn hỏi chủ kho; (5) báo cáo đợt khi đóng ghi
+      dòng đếm số lần dùng quyền. Có từ nào nằm trong _Avoid_ của CONTEXT.md, hay chi tiết chỉ một kho tiêu thụ cụ thể mới hiểu
+      không? PASS khi đủ năm điều và không vướng hai lỗi sau, trích một dòng cho mỗi điều; FAIL nêu điều thiếu và tệp lẽ ra
+      phải nói; UNCERTAIN khi tệp không đọc được.
+    paths: [plugins/dispatch/commands/open.md, plugins/dispatch/commands/close.md, plugins/dispatch/scripts/mau/LUAT.md, plugins/dispatch/README.md]
+    expected: PASS kèm trích dòng cho từng điều; FAIL nêu điều thiếu
+    evidence_required: [run_id, verifier, verified_at, output]
