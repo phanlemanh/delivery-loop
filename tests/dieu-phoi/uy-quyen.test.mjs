@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { CFG_PHAT_LICH, hangViecHai } from './loi/mau-thu.mjs';
 
 const DAY = path.dirname(fileURLToPath(import.meta.url));
 const KIT = path.resolve(DAY, '..', '..');
@@ -260,3 +261,320 @@ test('UQ-04-do ban-la-van-nhan', async () => {
   console.log('  UQ-04-do: ban 2 mà vẫn nhận gop');
 });
 
+
+// ---------- Kho + đợt cho các lệnh của quyền (UQ-06 … UQ-09) ----------
+const GS = 'local_giam_sat';
+// Kho: nhánh chính mang bản uỷ quyền; nhánh `feat` đổi `prTep` + hồ sơ `s` ở trạng thái `trangThai`, đã đẩy.
+function khoGop({ uyQuyen = 'ban: 1\ntu_lam: [gop, thu-tu-gop]\n', prTep = 'apps/web/a.ts', trangThai = 'machine-cleared' } = {}) {
+  const kq = khoUyQuyen({ uyQuyen });
+  const { k } = kq;
+  git(k, 'checkout', '-q', '-b', 'feat');
+  commit(k, prTep, 'đổi\n', `pr: ${prTep}`);
+  commit(k, '_acceptance/s/contract.md', `---\nslug: s\nstatus: ${trangThai}\n---\n`, 'ho so s');
+  git(k, 'push', '-q', 'origin', 'feat');
+  return { ...kq, sha: git(k, 'rev-parse', 'HEAD') };
+}
+// Đợt dựng tay trong kho thử (khuôn dotTrong của loi/gop.test.mjs) + vai giám sát + đơn xin `xin`.
+function dotGiamSat(k, { tuMerge = true, chuKhoa = null, xin = [] } = {}) {
+  const d = path.join(k, '.acceptance-runs', 'dot-uq');
+  for (const t of ['khoa', 'xin', 'yeu-cau', 'tra-loi', 'cho-nguoi', 'tiep']) fs.mkdirSync(path.join(d, t), { recursive: true });
+  fs.symlinkSync(d, path.join(k, '.acceptance-runs', 'dieu-phoi-hien-tai'));
+  const w1 = tam('uq-w1-');
+  const w2 = tam('uq-w2-');
+  fs.writeFileSync(path.join(d, 'dieu-phoi.config.json'), JSON.stringify({ ...CFG_PHAT_LICH, nhanh_chinh: 'main', goc_kho: k }));
+  fs.writeFileSync(path.join(d, 'hang-viec.json'), JSON.stringify(hangViecHai({ dot: 'uq', w1, w2 })));
+  fs.writeFileSync(path.join(d, 'dieu-khien.json'), JSON.stringify({ pha: 'dang-chay', tu_merge: tuMerge, lich_su: [] }));
+  fs.writeFileSync(path.join(d, 'vai.json'), JSON.stringify({ giam_sat: { phien: GS }, lich_su: [], day: [] }));
+  if (chuKhoa) {
+    fs.mkdirSync(path.join(d, 'khoa', 'merge'));
+    fs.writeFileSync(path.join(d, 'khoa', 'merge', 'chu.json'), JSON.stringify({ phien: chuKhoa, slug: 'a', loai: 'merge', worktree: w1, han_thue_den: '2099-01-01T00:00:00Z' }));
+  }
+  const wCua = { P1: w1, P2: w2 };
+  for (const [phien, luc] of xin) fs.writeFileSync(path.join(d, 'xin', `${phien}-merge.json`), JSON.stringify({ phien, slug: phien === 'P1' ? 'a' : 'b', loai: 'merge', luc, worktree: wCua[phien] }));
+  return fs.realpathSync(d);
+}
+const XANH = [{ __typename: 'CheckRun', name: 'gate', status: 'COMPLETED', conclusion: 'SUCCESS' }];
+const docSo = (d) => (fs.existsSync(path.join(d, 'su-kien.jsonl')) && fs.statSync(path.join(d, 'su-kien.jsonl')).isFile() ? fs.readFileSync(path.join(d, 'su-kien.jsonl'), 'utf8').split('\n').filter(Boolean).map((x) => JSON.parse(x)) : []);
+const dungQuyen = (d) => docSo(d).filter((x) => x.loai === 'dung-quyen');
+// gh giả: trả `gh pr view` của PR 7 trên nhánh feat; lúc nhận `pr merge` chụp số dòng dung-quyen trong sổ của đợt `dot`.
+function ioCua(k, sha, { dot = null, loiMerge = false } = {}) {
+  const goiGh = [];
+  const io = {
+    goiGh,
+    dungQuyenLucGop: null,
+    chay: (cmd, args) => {
+      if (cmd !== 'gh') return execFileSync(cmd, args, { cwd: k, env: ENV_GIT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+      goiGh.push(args);
+      if (args[0] === 'pr' && args[1] === 'view') return JSON.stringify({ number: 7, state: 'OPEN', isDraft: false, mergeable: 'MERGEABLE', headRefOid: sha, headRefName: 'feat', baseRefName: 'main', statusCheckRollup: XANH });
+      if (args[0] === 'pr' && args[1] === 'merge') {
+        io.dungQuyenLucGop = dot ? dungQuyen(dot).length : null;
+        if (loiMerge) throw Object.assign(new Error('gh giả: gộp hỏng'), { stderr: 'gh giả: gộp hỏng' });
+      }
+      return args[0] === 'run' ? '[]' : '';
+    },
+  };
+  return io;
+}
+const goiGop = (io) => io.goiGh.filter((a) => a[0] === 'pr' && a[1] === 'merge');
+const coKhoaMerge = (d) => fs.existsSync(path.join(d, 'khoa', 'merge'));
+async function gopQuyen(gocGoi, k, io, { phien = GS } = {}) {
+  const { gop, maThoatGop } = await nap(gocGoi, 'gop.mjs');
+  const kq = gop(k, '7', { theoQuyen: true, slug: 's', phien, io });
+  return { kq, ma: maThoatGop(kq) };
+}
+
+// ---------- UQ-06 · AC-6 — sự kiện dung-quyen ----------
+async function kiemGhiTruoc(gocGoi) {
+  const loi = [];
+  const a = khoGop();
+  const d = dotGiamSat(a.k);
+  const io = ioCua(a.k, a.sha, { dot: d });
+  const { kq } = await gopQuyen(gocGoi, a.k, io);
+  if (!kq.da_gop) loi.push(`gộp theo quyền không gộp: ${kq.ly_do}`);
+  if (io.dungQuyenLucGop !== 1) loi.push('lệnh của quyền chạy mà không có dòng dung-quyen');
+  const dq = dungQuyen(d)[0];
+  if (dq) {
+    if (dq.quyen !== 'gop' || !String(dq.viec).includes('#7') || !String(dq.duong_dao).includes('git revert -m 1') || dq.can_phan !== false) loi.push(`dòng dung-quyen thiếu trường: ${JSON.stringify(dq)}`);
+    if (dq.sha_uy_quyen !== git(a.k, 'rev-parse', 'origin/main')) loi.push('sha_uy_quyen không phải đỉnh nhánh chính');
+  }
+  const b = khoUyQuyen({ uyQuyen: 'ban: 1\ntu_lam: [thu-tu-gop]\n' });
+  const db = dotGiamSat(b.k, { xin: [['P1', '2026-10-05T11:00:00Z'], ['P2', '2026-10-05T11:30:00Z']] });
+  const { thuTuGop } = await nap(gocGoi, 'thu-tu-gop.mjs');
+  const t = thuTuGop(b.k, 'P2,P1', { phien: GS });
+  const dqb = dungQuyen(db);
+  if (!t.duoc || dqb.length !== 1 || dqb[0].quyen !== 'thu-tu-gop' || !fs.existsSync(path.join(db, 'thu-tu-gop.json'))) loi.push(`thu-tu-gop: ${t.ly_do} · dòng dung-quyen ${dqb.length}`);
+  return loi;
+}
+
+test('UQ-06 ghi-truoc', async () => {
+  assert.deepEqual(await kiemGhiTruoc(GOI), []);
+});
+
+test('UQ-06 so-hong', async () => {
+  const a = khoGop();
+  const d = dotGiamSat(a.k);
+  fs.mkdirSync(path.join(d, 'su-kien.jsonl'));
+  const io = ioCua(a.k, a.sha, { dot: d });
+  await assert.rejects(gopQuyen(GOI, a.k, io), /không ghi được sự kiện dung-quyen — không làm/);
+  assert.deepEqual(goiGop(io), [], 'không được gọi gộp khi sổ hỏng');
+  assert.equal(coKhoaMerge(d), false, 'khoá merge phải được nhả');
+  const b = khoUyQuyen({ uyQuyen: 'ban: 1\ntu_lam: [thu-tu-gop]\n' });
+  const db = dotGiamSat(b.k, { xin: [['P1', '2026-10-05T11:00:00Z'], ['P2', '2026-10-05T11:30:00Z']] });
+  fs.mkdirSync(path.join(db, 'su-kien.jsonl'));
+  const { thuTuGop } = await nap(GOI, 'thu-tu-gop.mjs');
+  assert.throws(() => thuTuGop(b.k, 'P2,P1', { phien: GS }), /không ghi được sự kiện dung-quyen — không làm/);
+  assert.equal(fs.existsSync(path.join(db, 'thu-tu-gop.json')), false, 'tệp thứ tự không được ghi khi sổ hỏng');
+});
+
+// Lệnh lọc Monitor của giám sát, rút NGUYÊN VĂN từ cặp marker MONITOR-LOC của commands/open.md.
+function locMonitor(gocGoi) {
+  const m = /<!-- <<<MONITOR-LOC -->([\s\S]*?)<!-- MONITOR-LOC>>> -->/.exec(fs.readFileSync(path.join(gocGoi, 'commands', 'open.md'), 'utf8'));
+  const g = m && /grep --line-buffered '([^']+)'/.exec(m[1]);
+  if (!g) throw new Error('không tìm thấy lệnh lọc Monitor');
+  return g[1];
+}
+test('UQ-06 monitor', async () => {
+  const mau = locMonitor(GOI);
+  const a = khoGop();
+  const d = dotGiamSat(a.k);
+  await gopQuyen(GOI, a.k, ioCua(a.k, a.sha, { dot: d }));
+  assert.equal(dungQuyen(d).length, 1, 'sổ do lệnh thật ghi có một dòng dung-quyen');
+  const lot = (p) => spawnSync('grep', ['--line-buffered', mau, p], { encoding: 'utf8' }).stdout.split('\n').filter(Boolean);
+  assert.deepEqual(lot(path.join(d, 'su-kien.jsonl')).filter((x) => x.includes('dung-quyen')), [], 'dòng dung-quyen không được lọt Monitor');
+  fs.appendFileSync(path.join(d, 'su-kien.jsonl'), `${JSON.stringify({ luc: NGAY, loai: 'yeu-cau', can_phan: true })}\n`);
+  assert.equal(lot(path.join(d, 'su-kien.jsonl')).length, 1, 'đối chứng: một dòng can_phan true lọt đúng một');
+});
+
+test('UQ-06-do bo-ghi', async () => {
+  assert.deepEqual(await kiemGhiTruoc(GOI), [], 'đối chứng dương');
+  const sao = banSao(['scripts/gop.mjs', "ghiDungQuyen(thuMuc, { quyen: 'gop'", "({ quyen: 'gop'"]);
+  const loi = await kiemGhiTruoc(sao);
+  assert.ok(loi.includes('lệnh của quyền chạy mà không có dòng dung-quyen'), `UQ-06-do: ${loi.join(' | ')}`);
+  console.log('  UQ-06-do: lệnh của quyền chạy mà không có dòng dung-quyen');
+});
+
+// ---------- UQ-07 · AC-7 — gộp theo quyền ----------
+test('UQ-07 gop', async () => {
+  const a = khoGop();
+  const d = dotGiamSat(a.k);
+  const io = ioCua(a.k, a.sha, { dot: d });
+  const { kq, ma } = await gopQuyen(GOI, a.k, io);
+  assert.equal(ma, 0, kq.ly_do);
+  assert.equal(kq.da_gop, true);
+  assert.deepEqual(goiGop(io), [['pr', 'merge', '7', '--merge', '--match-head-commit', a.sha]]);
+  assert.equal(io.goiGh.some((x) => x.includes('--auto')), false, 'không lời gọi nào mang --auto');
+  assert.equal(coKhoaMerge(d), false, 'khoá merge đã nhả sau lệnh');
+});
+
+// Ma trận viết trước: năm hàng thiếu một điều kiện. Trả danh sách lỗi theo hàng.
+async function maTranThieu(gocGoi) {
+  const hang = [
+    ['không phải giám sát', {}, {}, { phien: 'local_khac' }, /phiên local_khac không phải giám sát của đợt/],
+    ['tu_merge không true', {}, { tuMerge: false }, {}, /đợt không cho tự gộp \(tu_merge\)/],
+    ['tệp không có gop', { uyQuyen: 'ban: 1\ntu_lam: [thu-tu-gop]\n' }, {}, {}, /bản uỷ quyền không nhận quyền gop/],
+    ['khoá merge bận', {}, { chuKhoa: 'P1' }, {}, /khoá merge đang do P1 giữ/],
+    ['xetGop chặn', { trangThai: 'verified' }, {}, {}, /chưa ký, chưa thông/],
+  ];
+  const loi = [];
+  for (const [ten, oKho, oDot, oGoi, re] of hang) {
+    const a = khoGop(oKho);
+    const d = dotGiamSat(a.k, oDot);
+    const io = ioCua(a.k, a.sha, { dot: d });
+    const { kq, ma } = await gopQuyen(gocGoi, a.k, io, oGoi);
+    const sai = [];
+    if (ma !== 1) sai.push(`mã ${ma}`);
+    if (!re.test(kq.ly_do ?? '')) sai.push(`thông điệp «${kq.ly_do}»`);
+    if (goiGop(io).length) sai.push('đã gọi gộp');
+    if (dungQuyen(d).length) sai.push('có dòng dung-quyen');
+    if (oDot.chuKhoa && JSON.parse(fs.readFileSync(path.join(d, 'khoa', 'merge', 'chu.json'), 'utf8')).phien !== 'P1') sai.push('khoá của dãy khác bị đụng');
+    if (!oDot.chuKhoa && coKhoaMerge(d)) sai.push('khoá merge còn sau lệnh');
+    if (sai.length) loi.push(`hàng «${ten}»: ${sai.join(', ')}`);
+  }
+  return { loi, so: hang.length };
+}
+
+test('UQ-07 ma-tran-thieu', async () => {
+  const { loi, so } = await maTranThieu(GOI);
+  assert.equal(so, 5);
+  assert.deepEqual(loi, []);
+});
+
+// Ba lối hỏng SAU lúc giám sát đã giữ khoá — mỗi lối phải nhả khoá.
+async function kiemNhaKhoa(gocGoi) {
+  const loi = [];
+  const lo = async (ten, oKho, oIo, truocKhi) => {
+    const a = khoGop(oKho);
+    const d = dotGiamSat(a.k);
+    if (truocKhi) truocKhi(d);
+    const io = ioCua(a.k, a.sha, { dot: d, ...oIo });
+    let ma = null;
+    try {
+      ma = (await gopQuyen(gocGoi, a.k, io)).ma;
+    } catch {
+      ma = 'ném';
+    }
+    if (ma === 0) loi.push(`${ten}: lệnh thoát 0`);
+    if (coKhoaMerge(d)) loi.push(`khoá merge còn do giám sát giữ sau lệnh bị chặn (${ten})`);
+  };
+  await lo('xetGop chặn', { trangThai: 'verified' }, {}, null);
+  await lo('gh thoát 1 ở pr merge', {}, { loiMerge: true }, null);
+  await lo('sổ không ghi được', {}, {}, (d) => fs.mkdirSync(path.join(d, 'su-kien.jsonl')));
+  return loi;
+}
+
+test('UQ-07 nha-khoa', async () => {
+  assert.deepEqual(await kiemNhaKhoa(GOI), []);
+});
+
+test('UQ-07-do bo-tu-merge', async () => {
+  assert.deepEqual((await maTranThieu(GOI)).loi, [], 'đối chứng dương');
+  const sao = banSao(['scripts/gop.mjs', 'if (docPha(thuMuc).tu_merge !== true) return chanQuyen(', 'if (false) return chanQuyen(']);
+  const { loi } = await maTranThieu(sao);
+  assert.ok(loi.some((l) => l.startsWith('hàng «tu_merge không true»')), `UQ-07-do: ${loi.join(' | ')}`);
+  console.log(`  UQ-07-do: ${loi.find((l) => l.startsWith('hàng «tu_merge'))}`);
+});
+
+test('UQ-07-do nha-khoa-ngoai-finally', async () => {
+  assert.deepEqual(await kiemNhaKhoa(GOI), [], 'đối chứng dương');
+  const sao = banSao(['scripts/gop.mjs', 'if (chuGiu()) fs.rmSync(dKhoa', 'if (daGop && chuGiu()) fs.rmSync(dKhoa']);
+  const loi = await kiemNhaKhoa(sao);
+  assert.ok(loi.includes('khoá merge còn do giám sát giữ sau lệnh bị chặn (xetGop chặn)'), `UQ-07-do: ${loi.join(' | ')}`);
+  console.log(`  UQ-07-do: ${loi[0]}`);
+});
+
+// ---------- UQ-08 · AC-8 — vùng cấm trên tệp PR ----------
+async function kiemVungCamPr(gocGoi) {
+  const loi = [];
+  for (const tep of ['.github/workflows/x.yml', 'governance/delegation.yaml', 'PRODUCT-INVARIANTS.md']) {
+    const a = khoGop({ prTep: tep });
+    const d = dotGiamSat(a.k);
+    const io = ioCua(a.k, a.sha, { dot: d });
+    const { kq, ma } = await gopQuyen(gocGoi, a.k, io);
+    if (goiGop(io).length || kq.da_gop) loi.push(`PR chạm ${tep} mà vẫn gộp`);
+    else if (ma !== 1 || !kq.ly_do.includes(`PR chạm vùng cấm: ${tep}`) || !kq.ly_do.includes('bấm gộp là của người')) loi.push(`${tep}: thông điệp «${kq.ly_do}»`);
+  }
+  const b = khoGop({ prTep: 'apps/web/khac.ts' });
+  const db = dotGiamSat(b.k);
+  const io = ioCua(b.k, b.sha, { dot: db });
+  if (!(await gopQuyen(gocGoi, b.k, io)).kq.da_gop) loi.push('đối chứng: PR không chạm vùng cấm không gộp');
+  return loi;
+}
+
+test('UQ-08 vung-cam-pr', async () => {
+  assert.deepEqual(await kiemVungCamPr(GOI), []);
+});
+
+test('UQ-08-do bo-vung-cam', async () => {
+  assert.deepEqual(await kiemVungCamPr(GOI), [], 'đối chứng dương');
+  const sao = banSao(['scripts/gop.mjs', 'const cham = tepChamVungCam(', 'const cham = [] || tepChamVungCam(']);
+  const loi = await kiemVungCamPr(sao);
+  assert.ok(loi.includes('PR chạm governance/delegation.yaml mà vẫn gộp'), `UQ-08-do: ${loi.join(' | ')}`);
+  console.log('  UQ-08-do: PR chạm governance/delegation.yaml mà vẫn gộp');
+});
+
+// ---------- UQ-09 · AC-9 — xếp lại thứ tự gộp ----------
+const HAI_DON = [['P1', '2026-10-05T11:00:00Z'], ['P2', '2026-10-05T11:30:00Z']];
+async function maTranHoanVi(gocGoi) {
+  const hang = [
+    ['danh sách thiếu P1', 'P2', {}, {}, /thiếu dãy P1/],
+    ['danh sách thừa P3', 'P1,P2,P3', {}, {}, /thừa dãy P3/],
+    ['danh sách trùng P1', 'P1,P1,P2', {}, {}, /trùng dãy P1/],
+    ['không có quyền thu-tu-gop', 'P2,P1', { uyQuyen: 'ban: 1\ntu_lam: [gop]\n' }, {}, /không nhận quyền thu-tu-gop/],
+    ['phiên không phải giám sát', 'P2,P1', {}, { phien: 'local_khac' }, /phiên local_khac không phải giám sát của đợt/],
+  ];
+  const { thuTuGop } = await nap(gocGoi, 'thu-tu-gop.mjs');
+  const loi = [];
+  for (const [ten, ds, oKho, oGoi, re] of hang) {
+    const a = khoUyQuyen({ uyQuyen: 'ban: 1\ntu_lam: [thu-tu-gop]\n', ...oKho });
+    const d = dotGiamSat(a.k, { xin: HAI_DON });
+    const kq = thuTuGop(a.k, ds, { phien: GS, ...oGoi });
+    if (kq.duoc || fs.existsSync(path.join(d, 'thu-tu-gop.json'))) loi.push(`${ten} mà vẫn ghi`);
+    else if (!re.test(kq.ly_do)) loi.push(`${ten}: thông điệp «${kq.ly_do}»`);
+    if (dungQuyen(d).length) loi.push(`${ten}: có dòng dung-quyen`);
+  }
+  const r = khoUyQuyen({ uyQuyen: 'ban: 1\ntu_lam: [thu-tu-gop]\n' });
+  dotGiamSat(r.k);
+  if (!thuTuGop(r.k, '', { phien: GS }).duoc) loi.push('không đơn nào: danh sách rỗng (hoán vị của tập rỗng) phải ghi được');
+  return { loi, so: hang.length + 1 };
+}
+
+test('UQ-09 hoan-vi', async () => {
+  const { loi, so } = await maTranHoanVi(GOI);
+  assert.equal(so, 6);
+  assert.deepEqual(loi, []);
+});
+
+const IO_MAY = (nowMs) => ({
+  nowMs: () => nowMs,
+  chay: (cmd, args) => {
+    if (cmd === 'sysctl' && args[0] === 'vm.swapusage') return 'total = 24576.00M  used = 1024.00M  free = 1.00M';
+    if (cmd === 'sysctl' && args.includes('kern.memorystatus_vm_pressure_level')) return '1';
+    if (cmd === 'sysctl') return '{ 1.00 1.00 1.00 }';
+    if (cmd === 'ps') return '102400 node\n';
+    if (cmd === 'gh') return '[]';
+    if (cmd === 'git' && args[0] === 'show') throw new Error('khong co');
+    return '';
+  },
+});
+test('UQ-09 cap-theo-thu-tu', async () => {
+  const { motNhip } = await nap(GOI, 'phat-lich.mjs');
+  const { thuTuGop } = await nap(GOI, 'thu-tu-gop.mjs');
+  const chuMerge = (d) => JSON.parse(fs.readFileSync(path.join(d, 'khoa', 'merge', 'chu.json'), 'utf8')).phien;
+  const doiChung = khoUyQuyen({ uyQuyen: 'ban: 1\ntu_lam: [thu-tu-gop]\n' });
+  const d0 = dotGiamSat(doiChung.k, { xin: HAI_DON });
+  await motNhip(d0, IO_MAY(Date.parse('2026-10-05T12:00:00Z')));
+  assert.equal(chuMerge(d0), 'P1', 'đối chứng: không có tệp thứ tự → cấp như cũ (P1)');
+  const a = khoUyQuyen({ uyQuyen: 'ban: 1\ntu_lam: [thu-tu-gop]\n' });
+  const d = dotGiamSat(a.k, { xin: HAI_DON });
+  assert.equal(thuTuGop(a.k, 'P2,P1', { phien: GS }).duoc, true);
+  await motNhip(d, IO_MAY(Date.parse('2026-10-05T12:00:00Z')));
+  assert.equal(chuMerge(d), 'P2', 'nhịp kế cấp khoá merge theo thứ tự giám sát xếp');
+});
+
+test('UQ-09-do bo-kiem-hoan-vi', async () => {
+  assert.deepEqual((await maTranHoanVi(GOI)).loi, [], 'đối chứng dương');
+  const sao = banSao(['scripts/thu-tu-gop.mjs', 'if (thieu.length) return chan(', 'if (false) return chan(']);
+  const { loi } = await maTranHoanVi(sao);
+  assert.ok(loi.includes('danh sách thiếu P1 mà vẫn ghi'), `UQ-09-do: ${loi.join(' | ')}`);
+  console.log('  UQ-09-do: danh sách thiếu P1 mà vẫn ghi');
+});
