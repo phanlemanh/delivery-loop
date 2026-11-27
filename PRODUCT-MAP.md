@@ -11,8 +11,8 @@ flowchart TD
   GD --> XL["Xếp lại sau<br/>24 việc"]
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
   B --> CD["Chờ duyệt phạm vi<br/>chưa có"] --> GP{"Cổng Phạm vi"}
-  GP --> DL["Đang làm<br/>3 việc"] --> GB{"Cổng Bằng chứng"}
-  GB --> DG["Đã giao<br/>166 việc"]
+  GP --> DL["Đang làm<br/>2 việc"] --> GB{"Cổng Bằng chứng"}
+  GB --> DG["Đã giao<br/>167 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>74 việc"] --> GG{"Cổng Giá trị"}
   GG --> NT["Đã nghiệm thu giá trị<br/>7 việc"]
 ```
@@ -44,7 +44,6 @@ flowchart TD
 
 ## Đang làm
 
-- Bằng chứng cũ — pr-san-sang và làn ghim lại đọc bằng MỘT vị từ JS khớp luật của lưới trước-gộp (loại tệp hồ sơ, tệp T1 theo đúng luật glob của lưới, và — khi kho bật — tệp ngoài paths của eval); lưới bash giữ nguyên, phép vi phân bash↔JS giữ hai bên khớp; bước resume của feature-loop chạy cùng vị từ thay luật bằng chữ (`bang-chung-cu-theo-dau-vao`)
 - Cờ qua-timebox cắt ngang cả nhóm «đã xong» — bộ quét gắn cờ cho hồ sơ park/bác, archived và đã có phán quyết giá trị (`co-qua-timebox-nhom-da-xong`)
 - Làn ghim lại gặp lớp acceptance-gate cũ phải dừng có tên (tệp · export · bản cần · lối đi tiếp --ag-root) thay vì TypeError thô đọc thành làn đỏ (`ghim-lai-tren-lop-cu`)
 
@@ -129,6 +128,7 @@ flowchart TD
 
 - Thẻ Cổng Bằng chứng và trang bằng chứng chỉ tính một ảnh khi tệp có thật dưới evidence/ của chính hồ sơ; đường ra thư mục lượt chấm, đường tuyệt đối hay tệp không có thì báo thiếu ảnh kèm nguyên nhân (`anh-co-that-trong-ho-so`)
 - Đưa bài học đo lường của tuần 08–14/08 vào engine — bốn lớp lỗi mới có ca đại diện, nguyên tắc lật-allow-list, và một bánh cóc hai chiều buộc bảng lớp lỗi trace về sổ nguồn (`bai-hoc-do-luong-vao-engine`)
+- Bằng chứng cũ — pr-san-sang và làn ghim lại đọc bằng MỘT vị từ JS khớp luật của lưới trước-gộp (loại tệp hồ sơ, tệp T1 theo đúng luật glob của lưới, và — khi kho bật — tệp ngoài paths của eval); lưới bash giữ nguyên, phép vi phân bash↔JS giữ hai bên khớp; bước resume của feature-loop chạy cùng vị từ thay luật bằng chữ (`bang-chung-cu-theo-dau-vao`)
 - Thẻ Cổng Bằng chứng in các mục ngoài hợp đồng thành một bảng có cột «Căn cứ» — mỗi mục một hàng (Mục · Người dùng gặp gì · Máy đề xuất · Căn cứ), mục cần người quyết lên đầu; căn cứ do tác tử phân loại viết và đi trọn đường tới thẻ, kể cả mục mang sang lượt sau (`bang-ngoai-n-co-can-cu`)
 - Làn đối chứng S4 (baseline:diffBase) chạy MỘT lệnh do kit sinh — có trần mỗi lệnh và trần tổng, bỏ qua eval trỏ tệp chưa có ở merge-base (ghi lý do vào báo cáo), tự dọn worktree tạm khi bị dừng/hỏng; lane không về trọn là BLOCKED hạ tầng có tên, lượt chấm vẫn ra báo cáo (`baseline-tran-bo-qua-don`)
 - Kit đọc hồ sơ thật của kho tiêu thụ không im lặng sai — evals.yaml không phải YAML chuẩn lên cờ vàng có tên (thẻ hai cổng + một lệnh kiểm kho tự bật trong CI), và chữ ký ghi ngày kiểu ngày/tháng/năm được bốn mặt đọc ra ngày qua một bộ đọc chung (`bo-doc-ho-so-khoan-dung`)

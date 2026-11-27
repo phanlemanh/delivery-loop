@@ -5,7 +5,7 @@ slug: bang-chung-cu-theo-dau-vao
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: plugins/feature-loop/scripts/** · SKILL feature-loop · tests — KHÔNG khớp t3_paths
 surfaces: [cli]
-status: verified
+status: signed-off
 approved_by: Phan Le Manh
 approved_at: 2026-11-26
 design_doc: docs/superpowers/specs/2026-11-26-bang-chung-cu-theo-dau-vao-design.md
@@ -91,3 +91,20 @@ Thuật ngữ:
 - Known limits của vòng (vấp ở bước chuẩn bị lượt chấm 1, không thuộc vật): `s4-args` lấy nhánh chính CỤC BỘ đã cũ làm gốc
   so, vùng vật phình 23 → 217 tệp; vòng lách bằng `--diff-base` bản gốc vòng. Hạt giống:
   `docs/plans/2026-11-27-hat-giong-s4-args-goc-so-nhanh-cuc-bo.md`.
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-27:
+  - Ngoài-1: một dòng sổ quyết định (d-22) mang giờ ghi tay muộn hơn commit chứa nó vài chục giây; phán quyết không đổi.
+  - Ngoài-2: lưới AC-11 xếp `pr-san-sang.mjs` là «không đọc» danh sách tệp của bài kiểm, nên tệp này thoát lớp kiểm LB1.
+  - Ngoài-3: kho dùng bộ máy acceptance-gate cũ thì lệnh mở PR dừng bằng lỗi khó hiểu thay vì lùi về luật cũ.
+  - Ngoài-4: commit đã ghim không còn trong kho (gộp squash, clone nông) thì `--chi-xet` thoát 2 như bằng chứng cũ.
+  - Ngoài-5: danh sách T1 viết một dòng thì vị từ và lưới trước-gộp kết luận ngược nhau; lưới vẫn chặn lúc gộp.
+  - Ngoài-6: đối chứng dương BC-6/BC-4 chỉ khẳng định «mã thoát khác 2», nên lệnh sập vì lý do khác cũng xanh.
+  - Ngoài-7: AC-7 đo theo `origin/main..HEAD`; máy đo chưa cập nhật nhánh chính từ xa có thể báo đỏ nhầm.
+  - Ngoài-8: khối PR-SAN-SANG của SKILL chưa có `--ag-root` cho kit tự host, khác khối STALE-GUARD.
+  - Ngoài-10: đối chứng dương BC-6/BC-4 chỉ loại trừ thoát 2, không chứng minh lệnh chạy tới cuối.
+  - Ngoài-11: cùng lớp Ngoài-6 — đối chứng không phân biệt được lệnh chạy hết với lệnh sập sớm (mã 3).
+  - Ngoài-12: bộ ghi gh giả trên PATH chưa có đối chứng dương, nên các assert «gh 0 lời gọi» qua dòng lệnh là âm-tính-một-mình.
+  - Ngoài-13: BC-3-luoi không ghim rằng lưới đã chạy tới bước xét bằng chứng cũ trước khi coi thiếu VIOLATION là «mới».
+  - Ngoài-14: các dạng glob `{a,b}`, `[!..]`, `[^..]`, `\x` chỉ có điểm-case viết tay, chưa so trực tiếp bash↔JS.
+  - Ngoài-15: chiều đỏ của AC-7 chưa tách vế `t3_paths` khỏi vế danh sách cho phép.
+- Mục tách thành việc riêng ở Cổng Bằng chứng 2026-11-27 (Ngoài-9 — `--chi-xet` không thấy tệp vật sửa mà chưa commit):
+  hạt giống `docs/plans/2026-11-27-hat-giong-chi-xet-thay-sua-chua-commit.md`.
