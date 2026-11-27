@@ -132,7 +132,8 @@ test('H-6 dòng lệnh rút từ khối PR-SAN-SANG của skill chạy đúng l�
   const t = fs.readFileSync(SKILL, 'utf8');
   const r = chayKhoi(t, k);
   assert.deepEqual([r.status, /cần verified/.test(r.stderr)], [2, true], r.stderr);
-  const sai = chayKhoi(t.replace('scripts/pr-san-sang.mjs', 'scripts/pr-san-sang-cu.mjs'), k);
+  // Thay TRONG khối PR-SAN-SANG: SKILL còn nhắc cùng tệp ở khối STALE-GUARD đứng trước (hồ sơ bang-chung-cu-theo-dau-vao).
+  const sai = chayKhoi(t.replace(/(<!-- <<<PR-SAN-SANG -->[\s\S]*?)scripts\/pr-san-sang\.mjs/, '$1scripts/pr-san-sang-cu.mjs'), k);
   assert.equal(sai.status, 1);
   assert.match(sai.stderr, /Cannot find module/);
 });

@@ -30,9 +30,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync, spawnSync, spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
-// globToRe: CÙNG hàm khớp glob mà S4 dùng cho vùng vật (feature-loop/scripts/
-// carry-plan.mjs) — hai bản khớp glob là hai khuôn sẽ trôi (đã trôi thật ở ký tự `?`).
-import { globToRe } from './carry-plan.mjs';
+// vatDoiSauPin: MỘT vị từ «tệp vật nào đổi sau pin» cho mọi bên đọc JS (pr-san-sang dùng cùng hàm) — khớp T1 bằng luật
+// `case` bash của lưới trước-gộp, không bằng globToRe (hồ sơ bang-chung-cu-theo-dau-vao).
+import { vatDoiSauPin, staleScopeOf, GIT_TEN_THAT } from './lib/vat-doi-sau-pin.mjs';
 // Chụp cây hồ sơ đã thông Cổng Bằng chứng trước/sau khi chạy executor — sau cổng,
 // `_acceptance/<slug>/` là sử liệu chỉ đọc (crm-onehub 16/09/2026: một spec trong
 // suite chung ghi đè evidence/ đã ký sau mỗi lượt chạy mà không làn nào đỏ).
@@ -178,7 +178,7 @@ const mods = { 'lib/evidence-core.cjs': loadEngine('lib/evidence-core.cjs'), 'li
 const lacks = (r) => { const v = mods[r.file] ? mods[r.file][r.name] : undefined; return r.kind === 'array' ? !Array.isArray(v) : typeof v !== 'function'; };
 // risk_tiers.stale_scope đọc THẲNG từ config.yaml (bộ máy chưa nạp ở đây) — cùng cách pre-merge-check.sh
 // đọc nó; giá trị lạ coi như vắng ở làn (lưới trước-merge là nơi gọi tên giá trị sai).
-const staleScope = String((configText.match(/^[ \t]*stale_scope:[ \t]*([^\s#]+)/m) || [])[1] || 'all').replace(/^['"]|['"]$/g, '');
+const staleScope = staleScopeOf(configText);
 // Con trỏ thay thế: đọc THÔ evals.yaml của từng slug đang ghim (bộ máy chưa nạp) — chỉ để biết có đòi
 // ba hàng `khi: 'superseded_by'` hay không; luật thật chạy trong bộ máy.
 const coConTro = slugs.some(sl => { try { return /^[ \t]+superseded_by[ \t]*:/m.test(fs.readFileSync(path.join(root, '_acceptance', sl, 'evals.yaml'), 'utf8')); } catch { return false; } });
@@ -445,20 +445,10 @@ async function runSuites(cmds) {
 // quy về đường so gốc git bằng `rev-parse --show-prefix` (gốc làn có thể là thư
 // mục con của một kho lớn hơn) — không gõ tay chuỗi đường dẫn; một nguồn định
 // nghĩa mới đọc qua biến khác thì phải thêm biến ấy vào tập.
-// Hai giới hạn còn lại khai ở ADR 0019, mỗi cái kèm ngưỡng đang đếm: tệp chưa
-// theo dõi vô hình với `git diff` · lệch glob bash/JS ở dạng `dir/*`.
-//
-// Loại trừ hồ sơ tính theo PHÂN ĐOẠN đường dẫn, KHÔNG qua globToRe: `*` của nó
-// không xuyên `/`, nên `_acceptance/<slug>/evidence-report.md` (sâu 2 — đúng tệp
-// chữ ký vừa ghi) và `packages/x/_acceptance/...` sẽ lọt, tức không lượt ký nào
-// bỏ qua được. Tiền tố giả `_acceptance-x/` KHÔNG khớp (so bằng đoạn, không bằng
-// tiền tố chuỗi).
-const laVatHoSo = (f) => f.split('/').includes('_acceptance');
-const t1Res = (() => {
-  try { const v = core.resolveConfigList(configText, 'risk_tiers.t1_skip_globs'); return (Array.isArray(v) ? v : []).map(globToRe); }
-  catch { return []; }   // repo không khai → chỉ loại vật hồ sơ, fail-CLOSED về phía CHẠY
-})();
-const ngoaiVat = (f) => laVatHoSo(f) || t1Res.some(re => re.test(f));
+// Ba vế «vật hồ sơ · T1 · paths» sống ở `lib/vat-doi-sau-pin.mjs` (hồ sơ bang-chung-cu-theo-dau-vao): hồ sơ theo
+// PHÂN ĐOẠN đường dẫn (`_acceptance-x/` không khớp), T1 bằng luật `case` bash của lưới (đóng giới hạn «lệch glob
+// bash/JS ở dạng `dir/*`» của ADR 0019; phép vi phân BC-8 giữ hai bên khớp), paths bằng `core.staleByPaths`.
+// Giới hạn còn lại của ADR 0019: tệp chưa theo dõi vô hình với `git diff`.
 if (flags['skip-unchanged']) {
   const tienToGit = gitRaw('rev-parse', '--show-prefix').trim();   // '' ở gốc kho · 'pkg/a/' khi --root là thư mục con
   const quyVeGit = (p) => tienToGit + path.relative(root, p).split(path.sep).join('/');
@@ -482,23 +472,17 @@ if (flags['skip-unchanged']) {
     const dinhNghia = new Set();
     for (const [slug, vc] of Object.entries(pins)) {
       const doiSlug = [];
-      for (const f of gitRaw('diff', '--name-only', vc, '--').split('\n').filter(Boolean)) {
-        if (laDinhNghia(f)) dinhNghia.add(f);          // xét TRƯỚC ngoaiVat: tệp định nghĩa nằm dưới _acceptance/
-        else if (!ngoaiVat(f)) doiSlug.push(f);
+      for (const f of gitRaw(...GIT_TEN_THAT, 'diff', '--name-only', vc, '--').split('\n').filter(Boolean)) {
+        if (laDinhNghia(f)) dinhNghia.add(f);          // xét TRƯỚC vị từ: tệp định nghĩa nằm dưới _acceptance/
+        else doiSlug.push(f);
       }
-      // Khoá risk_tiers.stale_scope: paths — CÙNG hàm lưới trước-merge gọi (lan-ghim-lai-theo-paths
+      // Vị từ chung; khoá risk_tiers.stale_scope: paths đi qua CÙNG hàm lưới trước-merge gọi (lan-ghim-lai-theo-paths
       // AC-7): chỉ BỚT tệp ngoài phạm vi đo; vế tệp định nghĩa ở trên không qua bộ lọc.
-      let giu = doiSlug;
-      if (staleScope === 'paths' && doiSlug.length) {
-        const s = perSlug.find(x => x.slug === slug);
-        let r;
-        try { r = core.staleByPaths(doiSlug, s ? s.evalsText : null, { prefix: tienToGit, cay: cayHead() }); } catch (e) { r = { apply: false, reason: `lib-loi:${String((e && e.message) || e).split('\n')[0]}` }; }
-        if (r.apply) {
-          giu = r.kept;
-          if (r.skipped.length) process.stderr.write(`repin-lane: --skip-unchanged theo paths: bỏ qua ${r.skipped.length} tệp ngoài phạm vi đo của ${slug}\n`);
-        } else process.stderr.write(`repin-lane: --skip-unchanged không lọc theo paths (${r.reason}) — xét theo luật cũ\n`);
-      }
-      for (const f of giu) doi.push(`${slug}: ${f}`);
+      const s = perSlug.find(x => x.slug === slug);
+      const r = vatDoiSauPin({ doi: doiSlug, configText, evalsText: s ? s.evalsText : null, prefix: tienToGit, cay: staleScope === 'paths' ? cayHead() : null, core });
+      if (r.loc && r.loc.apply && r.loc.skipped.length) process.stderr.write(`repin-lane: --skip-unchanged theo paths: bỏ qua ${r.loc.skipped.length} tệp ngoài phạm vi đo của ${slug}\n`);
+      else if (r.loc && !r.loc.apply) process.stderr.write(`repin-lane: --skip-unchanged không lọc theo paths (${r.loc.reason}) — xét theo luật cũ\n`);
+      for (const f of r.giu) doi.push(`${slug}: ${f}`);
     }
     for (const f of dinhNghia) process.stderr.write(`repin-lane: KHÔNG bỏ qua — tệp định nghĩa phép đo đổi so với pin: ${f}\n`);
     if (!doi.length && !dinhNghia.size) {

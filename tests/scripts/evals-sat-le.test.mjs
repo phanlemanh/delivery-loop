@@ -348,6 +348,9 @@ const BEN_DOC = {
   // Lệnh giữ tươi (K-A) đọc `paths` của eval đỏ để quy về PR — đi qua evalPathsOf của lib, không tự đọc danh sách.
   'plugins/feature-loop/scripts/giu-tuoi.mjs': 'danh-sach',
   'plugins/feature-loop/scripts/chup-ho-so-da-thong.mjs': 'khong-doc',
+  // Hồ sơ bang-chung-cu-theo-dau-vao: đọc nguyên văn evals.yaml rồi chuyển cho staleByPaths của lib (lib tự đọc
+  // `paths` qua evalPathsOf) — tệp này không tự lấy trường nào.
+  'plugins/feature-loop/scripts/pr-san-sang.mjs': 'khong-doc',
   'plugins/feature-loop/scripts/lib/phan-loai.mjs': 'khong-doc',
   'plugins/feature-loop/workflows/acceptance-verify.js': 'khong-doc',
   'plugins/acceptance-gate/lib/workspace-record.cjs': 'khong-doc',

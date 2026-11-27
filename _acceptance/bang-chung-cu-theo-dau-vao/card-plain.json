@@ -1,0 +1,36 @@
+{
+  "feature_plain": "Bước «PR sẵn sàng lúc trình thẻ» và làn ghim lại thôi coi bằng chứng là cũ khi chỉ tệp sinh hay tệp ngoài phạm vi đo đổi — đúng như lưới chặn gộp vẫn nói — nên CI chạy trong lúc anh đọc thẻ thay vì sau chữ ký.",
+  "will_do": [
+    {"id": "AC-3", "p": "Sẽ cho bước trước thẻ và làn ghim lại cùng một câu trả lời ở cả mười ca viết trước (20 phán quyết), khớp lưới chặn gộp ở bốn ca chạy thật."},
+    {"id": "AC-4", "p": "Sẽ giữ nguyên từng chữ lời từ chối cũ ở kho chưa khai tệp T1 và chưa bật lọc theo phạm vi đo."},
+    {"id": "AC-5", "p": "Sẽ cho bước tiếp tục vòng (resume) hỏi máy «bằng chứng cũ hay còn mới» bằng đúng lệnh ấy, không đẩy nhánh, không mở PR (cần anh phê phần thêm)."},
+    {"id": "AC-6", "p": "Sẽ quay về luật cũ, chặt hơn, và nói ra một dòng khi không nạp được bộ máy nghiệm thu."},
+    {"id": "AC-7", "p": "Sẽ chỉ đổi đúng các tệp đã liệt kê, không chạm lõi chặn gộp (lưới trước-gộp, thư viện lõi, móc)."}
+  ],
+  "wont_do": [
+    {"id": "AC-1", "p": "Sẽ KHÔNG còn từ chối mở PR khi chỉ tệp sinh đã khai T1 (như trang lộ trình) đổi sau lượt chấm; tệp vật đổi thì vẫn từ chối và nêu tên tệp."},
+    {"id": "AC-2", "p": "Sẽ KHÔNG coi bằng chứng là cũ khi kho đã bật lọc theo phạm vi đo và tệp đổi nằm ngoài phạm vi ấy; tệp trong phạm vi đổi thì vẫn cũ."},
+    {"id": "AC-8", "p": "Sẽ KHÔNG để bản JS và lưới bash hiểu khác nhau một tên tệp T1 nào trong ma trận 42 phần tử viết trước."},
+    {"id": "OOS-1", "p": "KHÔNG đổi mặc định của mọi kho sang lọc theo phạm vi đo — giữ bật theo lựa chọn."},
+    {"id": "OOS-2", "p": "KHÔNG sửa lưới chặn gộp, thư viện lõi hay móc — lưới đã đúng."},
+    {"id": "OOS-3", "p": "KHÔNG làm nửa «chữ ký không kéo thêm một vòng CI» ở vòng này nếu anh đồng ý tách (Hỏi về nửa C)."},
+    {"id": "OOS-4", "p": "KHÔNG thêm dòng gợi ý «bật lọc theo phạm vi đo» ở kho chưa bật."},
+    {"id": "OOS-5", "p": "KHÔNG bật khoá nào thay Inventory — việc của kho ấy."}
+  ],
+  "coverage_plain": [
+    {"i": 0, "p": "Lưới chống sót: liệt kê tay theo bảng bên đọc × loại tệp ở thiết kế §3, vì phạm vi do vấn đề #10 chốt từ ngoài."},
+    {"i": 1, "p": "Bốn nơi hỏi «bằng chứng cũ không?»: ba bên JS chạy thật ở AC-3, bước resume ở AC-5, lưới chặn gộp giữ nguyên ở AC-7."},
+    {"i": 2, "p": "Mọi loại tệp có thể đổi sau lượt chấm (hồ sơ, hồ sơ lồng, T1, T1 dạng thư mục, trong và ngoài phạm vi đo, tệp định nghĩa phép đo, tên có dấu) — AC-1, AC-2, AC-3."},
+    {"i": 3, "p": "Mọi dạng mẫu tên tệp T1 mà lưới bash hiểu — AC-8 so hai bên trên ma trận viết trước."},
+    {"i": 4, "p": "Kho chưa bật, đã bật lọc theo phạm vi đo, và lúc bộ lọc không áp được — AC-2, AC-3, AC-4."},
+    {"i": 5, "p": "Có hay không nạp được bộ máy nghiệm thu — AC-6."},
+    {"i": 6, "p": "Hồ sơ đang chờ ký hay đã ký khi bước resume hỏi — AC-5."}
+  ],
+  "gap_probe_plain": [
+    {"i": 0, "p": "Máy đã tự ghi bỏ một nửa đề bài (chữ ký không kéo CI) — đó là đổi ý định của anh. Đã sửa: thành một câu hỏi riêng cho anh, kèm giá của lối giữ."},
+    {"i": 1, "p": "Lời hứa «một luật cho mọi bên» chưa thật vì JS và bash hiểu khác mẫu tên tệp dạng thư mục. Đã sửa: bản JS theo đúng luật bash, thêm phép so hai bên 42 phần tử và một ca thư mục."},
+    {"i": 2, "p": "Bỏ chạy bộ kiểm nền và bỏ quét độ phủ bị ghi là «không còn lối khác» trong khi lối kia chỉ đắt hơn. Đã sửa: chạy bộ kiểm nền trên Node 24; bỏ quét độ phủ nay trích luật thật."},
+    {"i": 3, "p": "Ma trận chỉ đo hai bên đồng ý nhau, lỗi chung của cả hai vẫn xanh. Đã sửa: hợp đồng ghi trước kết luận mong đợi cho từng ca và từng bên."},
+    {"i": 4, "p": "Mấy ca dựa vào bản gốc vòng có thể làm nhánh chính đỏ sau khi gộp. Đã sửa: chuyển vào bộ đo riêng của hồ sơ, phép đo phạm vi chỉ tính commit của chính nhánh."}
+  ]
+}
