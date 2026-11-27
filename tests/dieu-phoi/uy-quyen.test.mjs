@@ -578,3 +578,143 @@ test('UQ-09-do bo-kiem-hoan-vi', async () => {
   assert.ok(loi.includes('danh sách thiếu P1 mà vẫn ghi'), `UQ-09-do: ${loi.join(' | ')}`);
   console.log('  UQ-09-do: danh sách thiếu P1 mà vẫn ghi');
 });
+
+// ---------- UQ-05 · AC-5 — chiều im ----------
+let banCu = null;
+function layBanCu() {
+  if (banCu) return banCu;
+  const d = tam('uq-cu-');
+  const tar = execFileSync('git', ['-C', KIT, 'archive', BAN_CU, 'plugins/dispatch'], { env: ENV, maxBuffer: 64 * 1024 * 1024 });
+  execFileSync('tar', ['-x', '-C', d], { input: tar });
+  banCu = path.join(d, 'plugins', 'dispatch');
+  return banCu;
+}
+const NOW_CLI = Date.parse('2026-10-05T12:00:00Z');
+const cli = (gocGoi, cwd, doiSo) => {
+  const r = spawnSync(process.execPath, [path.join(gocGoi, 'scripts', 'dieu-phoi.mjs'), ...doiSo], { cwd, env: { ...ENV, TZ: 'Asia/Ho_Chi_Minh', DIEU_PHOI_NOW_MS: String(NOW_CLI) }, encoding: 'utf8' });
+  return `${r.status}\n${r.stdout}\n${r.stderr}`;
+};
+const BON_LENH = [['the', 'khoi-tao', '--json'], ['xem'], ['xem', '--json'], ['dem', '--json']];
+// So bốn đầu ra của hai bản gói trên CÙNG thư mục đợt. Trả danh sách lệch («<lệnh> lệch»).
+async function soBonLenh(gocMoi, k, d) {
+  const { motNhip } = await nap(GOI, 'phat-lich.mjs');
+  await motNhip(d, IO_MAY(NOW_CLI));
+  const cu = layBanCu();
+  return BON_LENH.filter((l) => cli(cu, k, l) !== cli(gocMoi, k, l)).map((l) => `${l.join(' ')} lệch`);
+}
+const khoKhongRemote = () => {
+  const k = tam('uq-kr-');
+  git(k, 'init', '-q', '-b', 'main');
+  commit(k, 'README.md', 'x\n', 'goc');
+  return k;
+};
+async function chieuIm(gocMoi) {
+  const loi = [];
+  const a = khoUyQuyen({ uyQuyen: null });
+  loi.push(...(await soBonLenh(gocMoi, a.k, dotGiamSat(a.k, { xin: HAI_DON }))));
+  return loi;
+}
+
+test('UQ-05 chieu-im', async () => {
+  assert.deepEqual(await chieuIm(GOI), []);
+});
+
+test('UQ-05 khong-remote', async () => {
+  const k = khoKhongRemote();
+  assert.deepEqual(await soBonLenh(GOI, k, dotGiamSat(k, { xin: HAI_DON })), []);
+});
+
+test('UQ-05 lay-ve-hong', async () => {
+  const a = khoUyQuyen({ uyQuyen: null });
+  git(a.k, 'remote', 'set-url', 'origin', path.join(a.goc, 'khong-co.git'));
+  assert.deepEqual(await soBonLenh(GOI, a.k, dotGiamSat(a.k, { xin: HAI_DON })), []);
+});
+
+// Lệnh gop KHÔNG cờ của dãy giữ khoá: hai bản gói, hai kho giống hệt (sha tất định), cùng PR chạm .github/workflows/.
+async function gopKhongCo(gocGoi) {
+  const a = khoGop({ prTep: '.github/workflows/x.yml' });
+  const d = dotGiamSat(a.k, { chuKhoa: 'P1' });
+  const hv = JSON.parse(fs.readFileSync(path.join(d, 'hang-viec.json'), 'utf8'));
+  hv.day[0].worktree = a.k;
+  hv.hang[0].slug = 's';
+  fs.writeFileSync(path.join(d, 'hang-viec.json'), JSON.stringify(hv));
+  const io = ioCua(a.k, a.sha, { dot: d });
+  const { gop, maThoatGop } = await nap(gocGoi, 'gop.mjs');
+  let kq;
+  try {
+    kq = gop(a.k, '7', { slug: 's', io });
+  } catch (e) {
+    kq = { nem: e.message };
+  }
+  const so = docSo(d).map(({ luc: _l, ...x }) => x);
+  return JSON.stringify({ ma: kq.nem ? 'ném' : maThoatGop(kq), kq: { duong: kq.duong, ly_do: kq.ly_do, da_gop: kq.da_gop, nha_merge: kq.nha_merge, nem: kq.nem }, gh: io.goiGh, so });
+}
+test('UQ-05 gop-khong-co', async () => {
+  const cu = await gopKhongCo(layBanCu());
+  const moi = await gopKhongCo(GOI);
+  assert.equal(JSON.parse(moi).kq.da_gop, true, 'đối chứng: dãy giữ khoá gộp được PR chạm workflows như hôm nay');
+  assert.equal(moi, cu);
+});
+
+test('UQ-05-do them-khoa', async () => {
+  assert.deepEqual(await chieuIm(GOI), [], 'đối chứng dương');
+  const sao = banSao(['scripts/the.mjs', '    canh_bao: canhBao,\n  };', '    canh_bao: canhBao,\n    uy_quyen: null,\n  };']);
+  const loi = await chieuIm(sao);
+  assert.ok(loi.includes('the khoi-tao --json lệch'), `UQ-05-do: ${loi.join(' | ')}`);
+  console.log('  UQ-05-do: the khoi-tao --json lệch');
+});
+
+// ---------- UQ-10 · AC-10 — hai bề mặt ----------
+const theCua = (gocGoi, k) => JSON.parse(cli(gocGoi, k, ['the', 'khoi-tao', '--json']).split('\n')[1]);
+async function kiemThe(gocGoi) {
+  const loi = [];
+  const a = khoUyQuyen({ uyQuyen: 'ban: 1\nchu: chu-kho\ntu_lam: [gop, thu-tu-gop, lo-trinh]\n' });
+  dotGiamSat(a.k);
+  const t = theCua(gocGoi, a.k);
+  const khong = khoUyQuyen({ uyQuyen: null });
+  dotGiamSat(khong.k);
+  const t0 = theCua(gocGoi, khong.k);
+  const uq = t.uy_quyen;
+  if (!uq) loi.push('thẻ thiếu khối uy_quyen ở kho có tệp');
+  else {
+    if (uq.nguon !== `origin/main@${git(a.k, 'rev-parse', 'origin/main').slice(0, 7)}`) loi.push(`nguồn «${uq.nguon}»`);
+    if (JSON.stringify(uq.nhan) !== '["gop","thu-tu-gop"]') loi.push(`nhận ${JSON.stringify(uq.nhan)}`);
+    if (!uq.van_hoi.some((x) => x.loai === 'lo-trinh' && x.cau === 'chưa có phép so — vẫn hỏi chủ kho')) loi.push('vẫn hỏi thiếu lo-trinh kèm câu');
+    if (!uq.vang.some((v) => v.includes('«chu»'))) loi.push('cờ vàng thiếu khoá lạ');
+  }
+  if (!t.may_di_tiep.includes('uy-quyen')) loi.push('may_di_tiep thiếu uy-quyen');
+  if (JSON.stringify(t.hoi) !== JSON.stringify(t0.hoi)) loi.push('khối uỷ quyền thành câu hỏi');
+  const c = khoUyQuyen({ uyQuyen: 'ban: 1\ntu_lam: [gop, governance]\n' });
+  dotGiamSat(c.k);
+  const tc = theCua(gocGoi, c.k).uy_quyen;
+  if (!tc || tc.nhan.length || !(tc.loi ?? '').includes('«governance»')) loi.push(`tệp có mục cấm: khối ${JSON.stringify(tc)}`);
+  return loi;
+}
+test('UQ-10 the', async () => {
+  assert.deepEqual(await kiemThe(GOI), []);
+});
+
+test('UQ-10 dem', async () => {
+  const a = khoGop();
+  const d = dotGiamSat(a.k, { xin: HAI_DON });
+  for (let i = 0; i < 2; i++) assert.equal((await gopQuyen(GOI, a.k, ioCua(a.k, a.sha, { dot: d }))).kq.da_gop, true);
+  const { thuTuGop } = await nap(GOI, 'thu-tu-gop.mjs');
+  assert.equal(thuTuGop(a.k, 'P2,P1', { phien: GS }).duoc, true);
+  const dem = JSON.parse(cli(GOI, a.k, ['dem', '--json']).split('\n')[1]);
+  assert.deepEqual(dem.dung_quyen, { tong: 3, theo_quyen: { gop: 2, 'thu-tu-gop': 1 } });
+});
+
+test('UQ-10 xem-co-tep', async () => {
+  const a = khoUyQuyen({ uyQuyen: 'ban: 1\ntu_lam: [gop, thu-tu-gop]\n' });
+  const d = dotGiamSat(a.k, { xin: HAI_DON });
+  const lech = (await soBonLenh(GOI, a.k, d)).filter((l) => l.startsWith('xem'));
+  assert.deepEqual(lech, []);
+});
+
+test('UQ-10-do hoi-them', async () => {
+  assert.deepEqual(await kiemThe(GOI), [], 'đối chứng dương');
+  const sao = banSao(['scripts/the.mjs', "may_di_tiep: [...may, 'uy-quyen']", "may_di_tiep: [...may, 'uy-quyen'], hoi: [...hoi, 'uy-quyen']"]);
+  const loi = await kiemThe(sao);
+  assert.ok(loi.includes('khối uỷ quyền thành câu hỏi'), `UQ-10-do: ${loi.join(' | ')}`);
+  console.log('  UQ-10-do: khối uỷ quyền thành câu hỏi');
+});
