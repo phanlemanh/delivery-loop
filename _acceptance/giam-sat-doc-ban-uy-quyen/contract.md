@@ -5,7 +5,7 @@ slug: giam-sat-doc-ban-uy-quyen
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: plugins/dispatch/** · tests/dieu-phoi/** — KHÔNG khớp t3_paths (Hỏi-3)
 surfaces: [cli]
-status: verified
+status: signed-off
 design_doc: docs/superpowers/specs/2026-11-27-giam-sat-doc-ban-uy-quyen-design.md
 approved_by: Phan Le Manh
 approved_at: 2026-11-27
@@ -66,3 +66,13 @@ Ca đo: `tests/dieu-phoi/uy-quyen.test.mjs` (UQ-…), `rang/chay.sh AC-n` đòi 
 
 Giới hạn khai: việc mở chip của giám sát không để lại dòng `dung-quyen` (công cụ của app, CLI không thấy) — nên `phien`
 chưa được nhận ở lát này. Ngưỡng mở lại: ≥ 1 đợt ở kho có tệp mà chủ kho phải trả lời một câu về mở phiên.
+
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-27:
+  - Ngoài-1: Hiếm khi ổ đĩa đầy hay không ghi được, lệnh gộp theo quyền có thể để lại một khoá gộp trống; trong khoảng một phút các dãy khác chưa được cấp lượt gộp, rồi bộ phát lịch tự thu hồi.
+  - Ngoài-3: Thứ tự gộp giám sát đã xếp vẫn áp cho cả đợt, kể cả sau khi chủ kho thu quyền và với đơn gộp xin sau; gỡ bằng cách xoá tay tệp thứ tự trong thư mục đợt.
+  - Ngoài-4: Khi lệnh gộp theo quyền chạy quá hạn thuê và khoá bị thu hồi giữa chừng, sổ vẫn ghi «đã nhả khoá merge» dù lệnh không nhả gì.
+  - Ngoài-5: Các ca đo gọi thẳng hàm của hai lệnh quyền, chưa chạy qua đúng câu lệnh CLI mà giám sát gõ; phần nối cờ dòng lệnh hỏng thì bộ đo vẫn xanh.
+  - Ngoài-6: Hai lối «gh lỗi» và «sổ hỏng» của ca nhả khoá chưa ghim thông điệp lỗi và chưa kiểm khoá đã thật sự được giữ trước khi lối hỏng xảy ra.
+  - Ngoài-7: Đợt và khoá merge của các ca đo dựng tay đúng khuôn bên đọc, trong khi evals khai là do CLI thật và bộ phát lịch sinh.
+- E11 Đạt ở Cổng Bằng chứng 2026-11-27; cụm chữ «tự gộp» có từ trước vòng trong lời dặn của gói điều phối ghi thành hạt giống
+  `docs/plans/2026-11-27-hat-giong-chu-tu-gop-trong-loi-dan-dieu-phoi.md`.

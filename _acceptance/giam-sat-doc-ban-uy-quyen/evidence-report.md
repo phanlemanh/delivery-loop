@@ -1,14 +1,14 @@
 ---
 schema_version: 2
 feature_slug: giam-sat-doc-ban-uy-quyen
-verdict: PENDING-JUDGMENT
+verdict: PASS
 failed_evals: []
 reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
 verified_commit: 44a970af9c5a30eb267ff5bfe84f4f7cd33ab12d
-human_signoff:
+human_signoff: Phan Le Manh 2026-11-27
 ---
 
 # Evidence Report: giam-sat-doc-ban-uy-quyen
@@ -192,7 +192,7 @@ human_signoff:
     - Sửa LUAT.md dòng 44 («Gộp (khi đợt cho tự gộp)») thành chữ đúng term, ví dụ «khi chủ kho bật quyền tự merge ở thẻ khởi tạo»; Grep «tự gộp» trên plugins/dispatch/scripts/mau/LUAT.md phải ra 0.
     - Sửa plugins/dispatch/README.md dòng 266, 283 và 285 sang chữ «gộp» hay «quyền tự merge»; Grep «tự gộp» trên README.md phải ra 0.
     - Hoặc chủ kho ghi tại CONTEXT.md quanh dòng 275-282 rằng _Avoid_ «tự gộp» chỉ áp cho thuật ngữ Lời gộp (và sửa dòng _Avoid_ theo nếu cho phép dùng ở khoá `tu_merge`).
-  human_override:  # chi nguoi ghi
+  human_override: Phan Le Manh 2026-11-27 — Đạt
 
 ## Known limits
 
