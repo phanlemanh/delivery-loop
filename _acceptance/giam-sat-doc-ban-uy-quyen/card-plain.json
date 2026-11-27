@@ -1,0 +1,37 @@
+{
+  "feature_plain": "Phiên giám sát của đợt đọc quyền chủ kho đã viết một lần vào một tệp của kho, thay cho lời giao tay mỗi đợt; mỗi lần dùng quyền để lại một dòng sổ có tên quyền và cách hoàn lại.",
+  "will_do": [
+    {"id": "AC-1", "p": "Sẽ chỉ tin bản uỷ quyền đang nằm ở nhánh chính — một PR của chính giám sát sửa tệp ấy không nới được quyền trước khi chủ kho gộp nó; xoá tệp là quyền mất ngay lần đọc kế."},
+    {"id": "AC-2", "p": "Sẽ nhận đúng hai quyền ở bản này (gộp, xếp thứ tự gộp); các quyền khác trong danh sách in rõ «vẫn hỏi chủ kho» kèm lý do; tên quyền lạ làm cả tệp bị từ chối."},
+    {"id": "AC-4", "p": "Sẽ đọc được tệp đời cũ thiếu số bản (kèm cờ vàng), và từ chối tệp viết sai khuôn, nói rõ dòng sai."},
+    {"id": "AC-5", "p": "Sẽ để kho không có tệp chạy y như hôm nay, từng byte — kể cả khi máy mất mạng; lệnh gộp quen thuộc của dãy không đổi."},
+    {"id": "AC-6", "p": "Sẽ ghi một dòng «đã dùng quyền» (tên quyền, việc gì, cách hoàn lại) TRƯỚC mỗi lần giám sát hành động; ghi không được thì không làm, và dòng ấy không đánh thức chính giám sát."},
+    {"id": "AC-7", "p": "Sẽ cho giám sát gộp một PR đã ký khi anh đã bật quyền tự gộp của đợt, qua đúng các phép kiểm hiện có (chữ ký, CI xanh trên đúng commit); khoá gộp luôn được nhả, kể cả khi bị chặn."},
+    {"id": "AC-9", "p": "Sẽ cho giám sát xếp lại thứ tự gộp giữa các dãy đang chờ — chỉ đổi thứ tự, không thêm bớt dãy nào."},
+    {"id": "AC-10", "p": "Sẽ in bản uỷ quyền trên thẻ mở đợt như một mục máy đi tiếp có cửa phản đối (không thành câu hỏi), và báo cáo cuối đợt đếm số lần dùng từng quyền."},
+    {"id": "AC-11", "p": "Sẽ viết chỉ dẫn cho giám sát: chỉ gộp và xếp thứ tự bằng hai lệnh của quyền, vùng cấm, quyền nào vẫn phải hỏi anh."}
+  ],
+  "wont_do": [
+    {"id": "AC-3", "p": "Chặn cả tệp nếu nó trao một việc thuộc vùng cấm (chữ ký cổng, cắt bản, xoá nhánh, sửa quy trình CI hay chính bản uỷ quyền, luật sản phẩm…)."},
+    {"id": "AC-8", "p": "Sẽ KHÔNG gộp theo quyền một PR sửa quy trình CI, thư mục quản trị hay luật sản phẩm — PR ấy luôn chờ người bấm gộp."},
+    {"id": "OOS-1", "p": "Chuyển hàng, mở dãy, ghi phán quyết chung và hai chỗ đọc sổ còn lại để vòng sau (đã ghi hạt giống)."},
+    {"id": "OOS-2", "p": "Dọn phiên vẫn hỏi anh: đo thật cho thấy phép so hiện có báo sai cả hai chiều."},
+    {"id": "OOS-3", "p": "Quyền «phiên» chưa được nhận ở bản này — mở phiên máy đã tự làm, chưa ghi được dòng sổ cho nó."},
+    {"id": "OOS-4", "p": "Không mở chuyến gộp nhiều PR cho giám sát, không nới phép kiểm gộp nào, không viết tệp uỷ quyền vào kho nào."}
+  ],
+  "scope_plain": "Bản này dựng phần lõi của ADR 0030 cho hai quyền có sẵn phép so và lệnh; phần còn lại có hạt giống riêng.",
+  "coverage_plain": [
+    {"i": 0, "p": "Nguồn tệp: vắng, đúng chỗ, chỉ ở PR, bị xoá, mất mạng, kho không remote — mỗi ca một phép đo (AC-1 nguồn đọc, AC-5 chiều im)."},
+    {"i": 1, "p": "Nội dung tệp: mọi tên quyền của danh sách, tên lạ, mục cấm, tệp đời cũ, sai khuôn — đo bằng ma trận viết trước, đủ từng tên (AC-2, AC-3, AC-4)."},
+    {"i": 2, "p": "Điều kiện để giám sát hành động: thiếu từng điều thì chặn với lời riêng của điều ấy (AC-6 sổ, AC-7 gộp, AC-8 vùng cấm, AC-9 thứ tự)."},
+    {"i": 3, "p": "Chỗ hiện cho người: thẻ mở đợt, báo cáo cuối đợt, chỉ dẫn; màn trạng thái đợt và lệnh gộp quen thuộc không đổi (AC-5, AC-10, AC-11)."},
+    {"i": 4, "p": "Để sau: chuyển hàng, mở dãy, phán quyết chung, dọn phiên. Không bao giờ: đọc tệp từ cây làm việc, gộp tự động kiểu hẹn giờ."}
+  ],
+  "gap_probe_plain": [
+    {"i": 0, "p": "Thiếu phép đo khoá gộp được nhả khi giám sát bị chặn giữa chừng — nếu kẹt, cả đợt không ai gộp được. Đã thêm ba ca và một bản thử cố tình làm sai."},
+    {"i": 1, "p": "Nhận quyền «phiên» mà không ghi dòng sổ là trái ngưỡng thu hồi của chính ADR. Đã chuyển nó sang «vẫn hỏi chủ kho» và ghi giới hạn."},
+    {"i": 2, "p": "Thiếu ca kho không có tệp mà mất mạng — có thể làm kho thường hiện cờ lạ. Đã thêm vào tiêu chí và phép đo."},
+    {"i": 3, "p": "Lời hứa «lệnh gộp quen thuộc không đổi» chưa có phép đo. Đã thêm phép so bản cũ với bản mới."},
+    {"i": 4, "p": "Báo cáo đếm và bộ lọc đánh thức có thể đo trên dữ liệu viết tay. Đã đổi sang dữ liệu do lệnh thật sinh, bộ lọc rút từ chỉ dẫn."}
+  ]
+}
