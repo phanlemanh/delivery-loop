@@ -5,7 +5,7 @@ slug: bang-chung-cu-theo-dau-vao
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: plugins/feature-loop/scripts/** · SKILL feature-loop · tests — KHÔNG khớp t3_paths
 surfaces: [cli]
-status: implemented
+status: verified
 approved_by: Phan Le Manh
 approved_at: 2026-11-26
 design_doc: docs/superpowers/specs/2026-11-26-bang-chung-cu-theo-dau-vao-design.md
@@ -88,3 +88,6 @@ Thuật ngữ:
 - Đóng giới hạn thứ hai của ADR 0019 («lệch glob bash/JS ở dạng `dir/*`») cho cả làn ghim lại: vị từ JS khớp luật bash của
   lưới, AC-8 giữ hai bên khớp.
 - Hạt giống tách ra ở vòng này (nếu chủ kho chọn tách nửa C): `docs/plans/2026-11-26-hat-giong-chu-ky-khong-keo-vong-ci.md`.
+- Known limits của vòng (vấp ở bước chuẩn bị lượt chấm 1, không thuộc vật): `s4-args` lấy nhánh chính CỤC BỘ đã cũ làm gốc
+  so, vùng vật phình 23 → 217 tệp; vòng lách bằng `--diff-base` bản gốc vòng. Hạt giống:
+  `docs/plans/2026-11-27-hat-giong-s4-args-goc-so-nhanh-cuc-bo.md`.
