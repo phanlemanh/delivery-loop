@@ -326,7 +326,7 @@ const dong2 = (s) => String(s ?? '').split('\n').map((x) => x.trim()).filter(Boo
 function gopTheoQuyen(cwd, pr, { slug, phien, io }) {
   if (!slug || !phien) throw new Error('gop: --theo-quyen đòi --slug <slug> và --phien <mã giám sát>');
   const thuMuc = timThuMucDot(cwd);
-  if (!thuMuc) throw new Error('gop: không có đợt nào đang chạy');
+  if (!thuMuc) throw new Error('gop: --theo-quyen chỉ chạy trong một đợt đang chạy');
   if (laGiamSat(thuMuc, phien) !== true) return chanQuyen(`phiên ${phien} không phải giám sát của đợt`);
   if (docPha(thuMuc).tu_merge !== true) return chanQuyen('đợt không cho tự gộp (tu_merge) — quyền gop chỉ dùng khi chủ kho bật ô ấy');
   const cfg = docCauHinh(thuMuc);

@@ -34,7 +34,11 @@ Các bước, đúng thứ tự:
    bằng tiếng sản phẩm: bảng dãy và hàng; mục máy đi tiếp có cửa phản đối (ưu tiên khi tranh chấp, làn V);
    mục cảnh báo (hàng có ô đã quyết khác `build` — không vào đợt). Thẻ có `han_muc` → in một dòng thông tin
    «ngưỡng hạn mức: báo trước <bao_truoc_pct>% · bàn giao <ban_giao_pct>%», kèm chỗ sửa (`dieu-phoi.config.json`
-   của gói đợt), không thành câu hỏi. Câu hỏi cho người CHỈ gồm `hoi`:
+   của gói đợt), không thành câu hỏi. Thẻ có `uy_quyen` (kho có `governance/delegation.yaml` ở đỉnh nhánh chính — bản
+   uỷ quyền chủ kho viết một lần, ADR 0030) → trình nó như MỤC MÁY ĐI TIẾP có cửa phản đối, KHÔNG thành câu hỏi: quyền
+   máy nhận (`nhan`), quyền vẫn hỏi chủ kho kèm câu của từng quyền (`van_hoi`), cờ vàng, và lỗi đọc nếu có (có lỗi thì
+   không quyền nào được nhận); kèm đúng một dòng «quyền gộp chỉ dùng khi anh bật quyền tự merge ở thẻ này». Chủ kho
+   phản đối thì sửa tệp ở nhánh chính của kho — không có câu trả lời nào ghi quyền ở đây. Câu hỏi cho người CHỈ gồm `hoi`:
    quyền tự merge, và mỗi hàng `build:<slug>` chờ Cổng Đáng. Với mỗi hàng chờ, mở ô `stage: discovery`
    trước bằng bộ ghi lộ trình của acceptance-gate: giải đường gói bằng `resolve-plugin.mjs` của feature-loop
    (`--plugin acceptance-gate --require scripts/lo-trinh.mjs`, như bước 1 của
@@ -47,7 +51,10 @@ Các bước, đúng thứ tự:
    rồi `node "${CLAUDE_PLUGIN_ROOT}/scripts/dieu-phoi.mjs" chay`. Người không nói gì về quyền tự merge thì
    bỏ cờ `--tu-merge`: phiên thợ đọc là không tự merge (bấm merge là của người).
 6. **Việc của app.** Giăng Monitor (timeout 30′):
-   `tail -n0 -F <thư mục đợt>/su-kien.jsonl | grep --line-buffered '"can_phan":true'`. Tạo lịch 30′ theo
+<!-- <<<MONITOR-LOC -->
+   `tail -n0 -F <thư mục đợt>/su-kien.jsonl | grep --line-buffered '"can_phan":true'`.
+<!-- MONITOR-LOC>>> -->
+   Tạo lịch 30′ theo
    khuôn dưới — cùng khuôn với `/dispatch:resume`, nên đợt mở bằng lệnh này cũng bàn giao chủ động khi gần
    hết hạn mức.
 <!-- <<<LICH-30 -->

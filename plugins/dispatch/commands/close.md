@@ -25,4 +25,6 @@ Các bước, đúng thứ tự:
    s4 cấp máy nếu đợt đang giữ, gỡ symlink; hook im.
 5. **Dọn.** Xoá lịch 30′ của đợt; lưu trữ phiên thợ; với mỗi worktree đã gộp, kiểm
    `git status --porcelain` trước rồi mới dọn; viết báo cáo đợt (số đếm:
-   `node "${CLAUDE_PLUGIN_ROOT}/scripts/dieu-phoi.mjs" dem --json`).
+   `node "${CLAUDE_PLUGIN_ROOT}/scripts/dieu-phoi.mjs" dem --json`). Kết quả có `dung_quyen` (giám sát đã dùng quyền của
+   bản uỷ quyền) → báo cáo ghi một dòng đếm: tổng số lần và số lần theo từng quyền (`dung_quyen.theo_quyen`). Dọn
+   worktree hay lưu trữ phiên KHÔNG phải quyền của bản uỷ quyền ở bản này — vẫn theo chữ duyệt của chủ kho ở thẻ đóng đợt.
