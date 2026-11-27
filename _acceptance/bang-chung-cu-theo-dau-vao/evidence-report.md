@@ -29,7 +29,7 @@ human_signoff:
   run_id: minted-bang-chung-cu-theo-dau-vao-E1-r2
   exit_code: 0
   baseline: n-a
-  verifier: script
+  verifier: _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh
   verified_at: 2026-11-26T17:14:48Z
   carried_from_round: 2
   output: |
@@ -39,7 +39,7 @@ human_signoff:
   run_id: minted-bang-chung-cu-theo-dau-vao-E2-r2
   exit_code: 0
   baseline: n-a
-  verifier: script
+  verifier: _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh
   verified_at: 2026-11-26T17:14:48Z
   carried_from_round: 2
   output: |
@@ -49,7 +49,7 @@ human_signoff:
   run_id: minted-bang-chung-cu-theo-dau-vao-E3-r2
   exit_code: 0
   baseline: n-a
-  verifier: script
+  verifier: _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh
   verified_at: 2026-11-26T17:14:48Z
   carried_from_round: 2
   output: |
@@ -59,7 +59,7 @@ human_signoff:
   run_id: minted-bang-chung-cu-theo-dau-vao-E4-r2
   exit_code: 0
   baseline: n-a
-  verifier: script
+  verifier: _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh
   verified_at: 2026-11-26T17:14:48Z
   carried_from_round: 2
   output: |
@@ -69,7 +69,7 @@ human_signoff:
   run_id: minted-bang-chung-cu-theo-dau-vao-E5-r2
   exit_code: 0
   baseline: n-a
-  verifier: script
+  verifier: _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh
   verified_at: 2026-11-26T17:14:48Z
   carried_from_round: 2
   output: |
@@ -79,7 +79,7 @@ human_signoff:
   run_id: minted-bang-chung-cu-theo-dau-vao-E6-r2
   exit_code: 0
   baseline: n-a
-  verifier: script
+  verifier: _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh
   verified_at: 2026-11-26T17:14:48Z
   carried_from_round: 2
   output: |
@@ -89,7 +89,7 @@ human_signoff:
   run_id: minted-bang-chung-cu-theo-dau-vao-E7-r3
   exit_code: 0
   baseline: n-a
-  verifier: script
+  verifier: _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh
   verified_at: 2026-11-27T02:34:37Z
   output: |
     AC-7: chiều đỏ đỏ đúng
@@ -98,7 +98,7 @@ human_signoff:
   run_id: minted-bang-chung-cu-theo-dau-vao-E8-r2
   exit_code: 0
   baseline: n-a
-  verifier: script
+  verifier: _acceptance/bang-chung-cu-theo-dau-vao/rang/chay.sh
   verified_at: 2026-11-26T17:14:48Z
   carried_from_round: 2
   output: |
