@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { gocKhoChinh, timThuMucDot } from './dot.mjs';
 import { docCauHinh, docHangViec } from './hinh-dang.mjs';
+import { docUyQuyen } from './uy-quyen.mjs';
 
 // Một trường frontmatter, đọc theo ĐÚNG nghĩa `frontmatterField` của kit (lib/evidence-core.cjs): trong
 // một dòng (`[ \t]*`, không `\s*` — khoá để trống không được nuốt dòng kế), bỏ chú thích `#`, bóc nháy
@@ -70,12 +71,15 @@ export function theKhoiTao(cwd) {
     else if (q.tt === 'khong-build') canhBao.push({ slug: h.slug, ma: h.ma, decision: q.decision, ly_do: `ô đã quyết «${q.decision}», không vào đợt` });
   }
   let hanMuc = null;
+  let cfg = null;
   try {
-    hanMuc = docCauHinh(thuMuc).han_muc ?? null;
+    cfg = docCauHinh(thuMuc);
+    hanMuc = cfg.han_muc ?? null;
   } catch {
     hanMuc = null;
   }
-  return {
+  const may = ['uu-tien', 'lan-v'];
+  const ketQua = {
     dot: hv.dot,
     day: hv.day.map((d) => ({ id: d.id, worktree: d.worktree, hang: hv.hang.filter((h) => h.day === d.id).map((h) => h.slug) })),
     hang: hv.hang.map((h) => ({ ma: h.ma ?? null, slug: h.slug, day: h.day, uu_tien: h.uu_tien ?? null })),
@@ -85,10 +89,17 @@ export function theKhoiTao(cwd) {
     // như thông tin, sửa ở `dieu-phoi.config.json` của gói đợt.
     hoi: ['quyen-tu-merge', ...choCongDang.map((s) => `build:${s}`)],
     han_muc: hanMuc,
-    may_di_tiep: ['uu-tien', 'lan-v'],
+    may_di_tiep: may,
     cho_cong_dang: choCongDang,
     canh_bao: canhBao,
   };
+  // Bản uỷ quyền (ADR 0030 Quyết định 5, hồ sơ giam-sat-doc-ban-uy-quyen): kho có `governance/delegation.yaml` ở đỉnh nhánh
+  // chính → khối `uy_quyen` là MỤC MÁY ĐI TIẾP có cửa phản đối, không bao giờ vào `hoi`. Kho không có tệp → thẻ từng byte
+  // như trước vòng.
+  const nhanh = cfg?.nhanh_chinh ?? 'main';
+  const uq = docUyQuyen({ gocKho: cfg?.goc_kho ?? gocKho, nhanhChinh: nhanh });
+  if (!uq.co) return ketQua;
+  return { ...ketQua, may_di_tiep: [...may, 'uy-quyen'], uy_quyen: { nguon: `origin/${uq.nhanh}@${uq.sha.slice(0, 7)}`, nhan: uq.nhan, van_hoi: uq.van_hoi, vang: uq.vang, loi: uq.loi } };
 }
 
 const suKienDot = (thuMuc) => {
