@@ -1,6 +1,6 @@
 # Đề xuất — lộ trình kit sau DL6: đổi tên bản uỷ quyền, sổ khoá và lệnh cấu hình, DL3–DL5
 
-**Ngày:** 2026-11-28 · **Trạng thái:** CHỜ CHỦ KHO PHÊ · **Người soạn:** phiên giữ đợt (Mac Studio).
+**Ngày:** 2026-11-28 · **Trạng thái:** ĐÃ PHÊ 28/11 — chủ kho: «Phê cả bốn» (cả bốn khuyến nghị ở mục 6) · **Người soạn:** phiên giữ đợt (Mac Studio).
 Tệp này là SỔ, không phải ô: không mở vòng nào, không tạo hồ sơ `_acceptance/` nào. Mỗi vòng dưới đây chỉ mở khi chủ kho
 gọi tên, và lời duyệt cổng của từng vòng do chủ kho gõ ở chính phiên của vòng ấy.
 
@@ -144,7 +144,10 @@ nhánh chính qua PR.
 - **Đợt chuyển nhà** (hạn 19/12, II.1 vế 3 không sớm hơn 02/12, rồi II.4) chạy độc lập với lộ trình này. Khi đợt đóng,
   tệp này dời sang `docs/plans/` cùng các hạt giống khác; các việc chưa xong thành hàng ở lộ trình của kit.
 
-## 6. Điều cần anh xác nhận
+## 6. Điều cần anh xác nhận — ĐÃ PHÊ 28/11 theo cả bốn khuyến nghị
+
+Chủ kho phê ở phiên giữ đợt: ngoại lệ luật (b) cho các vòng có tên · DL4 đo trước · DL5 không cần ADR riêng · ba mốc.
+Lời phê này là quyết định xếp việc; lời duyệt cổng của từng vòng vẫn gõ ở phiên của vòng ấy.
 
 | # | Câu hỏi | Khuyến nghị |
 |---|---|---|
