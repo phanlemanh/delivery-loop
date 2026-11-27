@@ -95,7 +95,7 @@ Ba điều rút ra từ cả bảng:
 | K5 → mã đo | đếm tay ở mốc 3.1 không tách được | đo |
 | K6 → thư viện thước | ngưỡng luật (a) đủ 2 (đang 1), hoặc cảnh báo cùng luật ở kho thứ hai | CỘNG |
 | K9 → làn nhẹ | sau 0.6 mà một vòng nâng công cụ vẫn đi trọn hạng nặng | CỘNG |
-| K11 → DL4, DL6 | Repo Standards có bản đồ phạm vi dùng thật; mỗi gói một ADR | CỘNG |
+| K11 → DL4, DL6 | DL4: ≥ 1 ca phụ thuộc gián tiếp lọt lịch biết tệp (viết lại 28/11 — RS4 đã đóng, xem `hat-giong-sau-goi-dl-ba-kho.md` mục «Điều kiện DL4»). DL6: XONG 27/11 (ADR 0030, PR #38) | CỘNG |
 
 ## 4. Bảng chiếu (nguồn của hình) — bản sau khi đổi thứ tự 21/11
 
@@ -116,7 +116,7 @@ Ba điều rút ra từ cả bảng:
 | Chờ ngưỡng | K4, K7 → DL3 | chờ tầng CI của Repo Standards |
 | Chờ ngưỡng | K5 → mã đo | nếu đếm tay không tách được |
 | Chờ ngưỡng | K6, K9 phần kit | thư viện thước · làn nhẹ |
-| Chờ ngưỡng | K11 → DL4, DL6 | mỗi gói một ADR |
+| Chờ ngưỡng | K11 → DL4 (DL6 xong 27/11) | DL4 chờ ngưỡng đang đếm, hôm nay 0 ca |
 
 ## 5. Hai câu trả lời đề xuất cho K11
 

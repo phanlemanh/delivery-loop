@@ -30,9 +30,29 @@ tệp sinh từ 2.36.0 (vòng `tep-sinh-khong-chan-gop`); tài liệu nguồn t�
 | DL1 | PR không ghi tệp tổng hợp; bản đồ sản phẩm và lộ trình vẽ lại trên nhánh chính; lệnh kiểm về hồ sơ từng vòng | Vòng `tep-sinh-khong-chan-gop` (2.36.0) · `docs/plans/2026-10-16-hat-giong-tep-sinh-xung-dot-moi-lan-goi.md` · `docs/plans/2026-10-30-hat-giong-tep-sinh-mot-hang-mot-dong.md` · `KE-HOACH.md` 5.1 | TRỪ, nhưng đổi hành vi một chốt kiểm đang có (`product-map --check`) · T2–T3 | chủ kho gọi tên; đo lại có bộ gộp |
 | DL2 | Bằng chứng chỉ hoá cũ khi đầu vào của hàng đổi; commit chữ ký không kéo một vòng CI | `docs/findings/2026-10-02-dieu-tra-lan-ghim-lai-va-du-bao.md` (gốc: `stale_files` so mọi tệp, không so theo `paths` của eval) · ADR 0010 | đổi đường phán quyết · T3 | răng cả hai chiều (đỏ và im) theo điều kiện tin cậy của luật (c) |
 | DL3 | Máy thôi chạy trọn bộ mỗi lượt chấm; bằng chứng hồi quy đọc từ GitHub; ô bằng chứng mang tên khác `gate` | chưa thấy hạt giống (dò từ khoá) | CỘNG · T3 | Repo Standards dựng tầng CI (RS3) |
-| DL4 | Điều phối đọc bản đồ phạm vi để xếp vòng nối tiếp hay song song | chưa thấy hạt giống (dò từ khoá) | CỘNG · T2 | Repo Standards dựng bản đồ phạm vi (RS4) |
+| DL4 | Điều phối đọc bản đồ phạm vi để xếp vòng nối tiếp hay song song | **Phần chính đã giao dưới dạng «vùng»** (sửa 28/11): `plugins/dispatch/scripts/trung-tep.mjs` (hồ sơ `ky-den-gop`) chỉ giao hàng khi `ranh_gioi` không trùng tệp của PR đang mở và `ranh_gioi` của hàng đang dở ở dãy khác; `cat-luot` ghi `vung`, hàng nhận làm `ranh_gioi` (hồ sơ `vung-giao-viec-tu-cat-luot`); lệnh `hang vung`. Phần dư: phụ thuộc GIÁN TIẾP (hàng A sửa mô-đun, hàng B sửa màn import nó — hai vùng không trùng) | CỘNG · T2 | **Ngưỡng đang đếm** (thay điều kiện RS4 cũ, xem mục «Điều kiện DL4» dưới bảng) |
 | DL5 | Sổ giới hạn có ngưỡng theo lớp, có hạn, đo sự quay lại; mặc định định tuyến cho mục ngoài hợp đồng | `docs/plans/2026-10-18-hat-giong-so-known-limits-thieu-hang-p179.md` (ngưỡng đã ĐỦ từ 26/10) | phần P179: sửa lỗi · T2. Phần còn lại: CỘNG | chủ kho gọi tên |
 | DL6 | Phiên giám sát đọc bản uỷ quyền thay lời dặn; mỗi quyết định ghi sự kiện kèm tên quyền | ADR 0027 · `docs/findings/2026-10-08-baseline-cho-hop-xin-quyen.md` (liên quan, không trùng) | CỘNG, chạm khoá cổng người (ADR 0002) | một ADR riêng trước khi mở vòng |
+
+### Điều kiện DL4 (viết lại 28/11, chủ kho: «Viết lại ngưỡng»)
+
+**Vì sao bỏ điều kiện RS4.** Cột «Chờ gì» cũ chép quan hệ viết–đọc trong thiết kế ba kho của Repo Standards (mục 8, đợt 4:
+«RS4, rồi DL2–DL4 — cần bản đồ trước rồi bên đọc mới dùng được»), không phải nhu cầu của kit. Ngày 21/11 kit trả lời K11
+rằng kit không đọc `architecture/modules.yaml` vì đã xếp vòng bằng `ranh_gioi`/`vung` của chính nó
+(`KE-HOACH-12-MUC-REPO-STANDARDS.md` mục 5), và Repo Standards đóng RS4 «không dựng» theo câu ấy. Giữ điều kiện RS4 thì DL4
+không bao giờ mở được — vòng tròn khoá chết.
+
+**Ngưỡng mở:** ≥ 1 ca đo được ở một kho tiêu thụ — hai hàng chạy song song có `ranh_gioi` KHÔNG trùng (lịch biết tệp đã cho
+qua), mà vẫn phải gộp nhánh chính vào nhánh có xung đột, hoặc phải ghim lại bằng chứng sau chữ ký, vì tệp hàng kia đổi nằm
+ngoài vùng của hàng này nhưng là phụ thuộc của nó. Ca phải có con trỏ lần được (số PR, commit gộp, sự kiện trong nhật ký
+đợt). Ca do hàng KHÔNG khai `ranh_gioi` (sự kiện `ranh-gioi-vang` của bộ phát lịch) không tính: sửa đúng tầng là kho khai
+vùng, không phải DL4.
+
+**Đếm ở đâu:** phiên giữ đợt đếm khi đọc báo cáo đóng đợt và khi đo hồ sơ mốc; hôm nay **0 ca**, chưa đo tỉ lệ hàng khai
+`ranh_gioi` ở các kho.
+
+**Khi ngưỡng đạt:** DL4 thành ô với `Gốc:` trỏ hồ sơ có ca ấy; kit ĐỌC thẳng `architecture/modules.yaml` của kho nếu kho có
+(không giữ bản sao, theo câu trả lời K11), kho không có tệp thì chạy như hôm nay. Vẫn là CỘNG, chủ kho phê ở Cổng Phạm vi.
 
 Cách dò: `git grep` theo từ khoá trên `docs/plans`, `docs/findings`, `docs/adr`, `.out-of-scope` của nhánh chính kho mới
 tại `c16d25db` (217 hạt giống, 106 finding). Chưa vét cạn — «chưa thấy» nghĩa là không khớp từ khoá.
@@ -64,7 +84,7 @@ người. Số hàng sổ và số mục là lời phiên B3, phiên giữ đợ
 | 0 | Inventory cài 3.0 (vòng `nang-kit-3-0`, T3, đã mở 18/11 theo lời chủ kho trong phiên B3) | — |
 | 1 | DL1 + bản vá hẹp P179, mốc 3.1 | một vòng thật ở Inventory gộp được trên 3.0 (vế 1); đo lại số xung đột có bộ gộp |
 | 2 | DL2, mốc kế | Inventory đã cài mốc 3.1 |
-| 3 | DL3, DL4 | Repo Standards có RS3, RS4 dùng thật |
+| 3 | DL3; DL4 phần dư | DL3: Repo Standards có RS3 dùng thật (đạt ở Inventory, tra soát 26/11). DL4: ngưỡng ở mục «Điều kiện DL4» |
 | 4 | DL6, phần còn lại của DL5 | mỗi cái một ADR |
 
 DL2 không cần chờ bản đồ phạm vi của Repo Standards: finding 02/10 cho thấy đầu vào của từng eval đã khai ở `paths`.
