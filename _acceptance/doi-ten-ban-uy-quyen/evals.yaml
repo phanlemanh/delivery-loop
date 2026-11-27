@@ -1,0 +1,116 @@
+schema_version: 1
+feature_slug: doi-ten-ban-uy-quyen
+# Ca của hồ sơ này: «TA-0n …» (= AC-n) ở cuối tests/dieu-phoi/uy-quyen.test.mjs. Ca hồi quy: các ca «UQ-…» của hồ sơ đã ký
+# giam-sat-doc-ban-uy-quyen, tên ca giữ nguyên, nội dung đổi sang tên mới. `rang/chay.sh AC-n` (hồ sơ này) chạy ca TA của
+# tiêu chí và gọi lại `_acceptance/giam-sat-doc-ban-uy-quyen/rang/chay.sh AC-m` cho ca hồi quy; mỗi lệnh con ĐÒI từng tên ca
+# có dòng «ok» — mẫu lọc không khớp ca nào thì thoát 1. Mỗi ca «-do» chạy CHÍNH hàm đo trên bản sao trọn plugins/dispatch bị
+# tiêm, sau khi bản lành xanh, và ghim thông điệp của đúng lỗi được tiêm.
+evals:
+  - id: E1
+    criterion: AC-1
+    executor: test
+    cmd: bash _acceptance/doi-ten-ban-uy-quyen/rang/chay.sh AC-1
+    paths: [plugins/dispatch/scripts/uy-quyen.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/doi-ten-ban-uy-quyen/rang/**, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "TA-01 bang-ten" (ma trận viết trước trong ca = bảng design doc §3: tập khoá của LOAI bằng
+      đúng chín tên quyền mới, tập khoá của VUNG_CAM bằng đúng mười một tên vùng cấm mới/giữ, mỗi tên quyền mới cho đúng nhóm
+      và câu ghi trong ma trận; khoá `version` và `delegated` dạng dòng và dạng khối cho cùng nhan ["merge","merge-order"]),
+      "TA-01 vi-phan-truoc-vong" (bộ đọc ở a9b7cbe6 lấy bằng git archive trọn plugins/dispatch, chạy trên tệp
+      `ban: 1\ntu_lam: [<cũ>]` cho mỗi loại cũ của chính LOAI bản cũ; bộ đọc mới chạy trên tệp `version: 1\ndelegated:
+      [<mới>]` với <mới> lấy từ TEN_CU của bản mới — fixture do code sinh; mỗi loại cùng nhóm và cùng câu, mỗi mục vùng cấm
+      cùng điều chạm (giá trị VUNG_CAM); số dòng so = số loại cũ + số mục vùng cấm cũ), "TA-01-do them-ten" và
+      "TA-01-do lech-cau"; rồi DL6 AC-2 ("UQ-02 ma-tran", "UQ-02-do bo-ten") và AC-4 ("UQ-04 khoan-dung", "UQ-04-do
+      ban-la-van-nhan") đạt trên tệp thử tên mới; «# fail 0». Chiều đỏ: bản sao gói thêm một loại `extra` vào LOAI → ca đỏ
+      nêu «LOAI lệch bảng: thừa extra»; bản sao đổi một chữ trong câu của session → ca vi phân đỏ nêu «session · câu lệch bộ
+      đọc trước vòng».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E2
+    criterion: AC-2
+    executor: test
+    cmd: bash _acceptance/doi-ten-ban-uy-quyen/rang/chay.sh AC-2
+    paths: [plugins/dispatch/scripts/uy-quyen.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/doi-ten-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "TA-02 ma-tran-ten-cu" (ma trận viết trước: 2 khoá + 18 tên (9 quyền, 9 vùng cấm) × 2
+      dạng danh sách (dòng, khối) = 38 dòng, mỗi dòng in «<cũ> (<dạng>) → <mới> · đúng»; số mục khác nhau = số mục
+      TEN_CU; mỗi tệp chỉ lệch đúng một tên cũ: nhan rỗng, hai tên tách từ câu lỗi theo hai cặp ngoặc «» BẰNG NHAU tuyệt
+      đối với cặp (cũ, mới) của dòng, câu có «cả tệp bị từ chối», tên cũ của vùng cấm thêm «vùng cấm cứng»; đối chứng
+      dương cùng tệp thay tên mới: loi không chứa «tên cũ»), "TA-02 kho-dl6" (kho thử có remote, nhánh chính mang `ban: 1\ntu_lam: [gop]\n`: docUyQuyen cho co
+      true, nhan rỗng, loi chứa «ban» và «version») "TA-02-do bo-bang-ten-cu" và "TA-02-do doi-cheo"; «# fail 0». Chiều đỏ: bản
+      sao gói làm bảng TEN_CU rỗng → ma trận đỏ nêu «gop · thiếu tên mới merge»; bản sao đổi chéo đích của gop và
+      thu-tu-gop → đỏ nêu «gop · mong merge · nhận merge-order».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E3
+    criterion: AC-3
+    executor: test
+    cmd: bash _acceptance/doi-ten-ban-uy-quyen/rang/chay.sh AC-3
+    paths: [plugins/dispatch/scripts/uy-quyen.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/doi-ten-ban-uy-quyen/rang/**, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; DL6 AC-3 ("UQ-03 ma-tran" trên mọi tên vùng cấm mới đặt cạnh merge: nhan rỗng, loi nêu đúng tên và «vùng cấm
+      cứng»; đối chứng dương bỏ tên cấm → nhan [merge]; "UQ-03-do bo-qua-muc-cam") và DL6 AC-2 ("UQ-02 ma-tran" có dòng tên
+      lạ → loi «loại lạ: <tên>»; "UQ-02-do bo-ten" xoá open-lane → đỏ nêu «open-lane · mong vẫn hỏi · nhận lỗi đọc») đều
+      «chay.sh … đạt»; «# fail 0».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E4
+    criterion: AC-4
+    executor: test
+    cmd: bash _acceptance/doi-ten-ban-uy-quyen/rang/chay.sh AC-4
+    paths: [plugins/dispatch/scripts/**, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/doi-ten-ban-uy-quyen/rang/**, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "TA-04 truoc-vong" (gốc so a9b7cbe6 — ca in gốc so: ba kho không tệp (có remote, không
+      remote, lấy về hỏng) cho the khoi-tao --json, xem, xem --json, dem --json bằng nhau từng byte, và lệnh gop không cờ
+      cho cùng mã thoát, cùng lời gọi gh giả, cùng dòng sổ) và "TA-04-do them-khoa"; rồi DL6 AC-5 (gốc so 2956dae2: "UQ-05
+      chieu-im", "UQ-05 khong-remote", "UQ-05 lay-ve-hong", "UQ-05 gop-khong-co", "UQ-05-do them-khoa") đạt; «# fail 0».
+      Chiều đỏ: bản sao thêm khoá uy_quyen vào thẻ khi không có tệp → «the khoi-tao --json lệch» với cả hai gốc so.
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E5
+    criterion: AC-5
+    executor: test
+    cmd: bash _acceptance/doi-ten-ban-uy-quyen/rang/chay.sh AC-5
+    paths: [plugins/dispatch/scripts/uy-quyen.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/doi-ten-ban-uy-quyen/rang/**, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; DL6 AC-1 đạt trên tệp thử tên mới: "UQ-01 nhanh-chinh" (nhan chứa merge), "UQ-01 pr-tu-them" (PR thêm roadmap
+      và merge-order không đổi kết quả), "UQ-01 xoa-tep", "UQ-01 lay-ve-hong", "UQ-01 lay-ve-hong-khong-tep",
+      "UQ-01-do doc-cay-lam-viec" (bản sao đọc cây làm việc → đỏ «bộ đọc thấy loại do PR thêm: merge-order»); «# fail 0».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E6
+    criterion: AC-6
+    executor: test
+    cmd: bash _acceptance/doi-ten-ban-uy-quyen/rang/chay.sh AC-6
+    paths: [plugins/dispatch/scripts/uy-quyen.mjs, plugins/dispatch/scripts/gop.mjs, plugins/dispatch/scripts/thu-tu-gop.mjs, plugins/dispatch/scripts/dem.mjs, plugins/dispatch/scripts/the.mjs, plugins/dispatch/scripts/lich.mjs, plugins/dispatch/scripts/phat-lich.mjs, plugins/dispatch/scripts/dieu-phoi.mjs, plugins/dispatch/commands/open.md, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/doi-ten-ban-uy-quyen/rang/**, _acceptance/giam-sat-doc-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; DL6 AC-6, AC-7, AC-8, AC-9, AC-10 đều «chay.sh … đạt» trên tệp thử tên mới: dòng dung-quyen mang quyen "merge"
+      / "merge-order" ghi trước hành động; hàng «tệp không có merge» của "UQ-07 ma-tran-thieu" chặn với thông điệp «bản uỷ
+      quyền không nhận quyền merge»; hàng thiếu quyền của "UQ-09 hoan-vi" nêu «không nhận quyền merge-order»; "UQ-10 dem" cho
+      dung_quyen.theo_quyen {merge 2, merge-order 1}; mọi ca «-do» của năm tiêu chí ấy đỏ đúng thông điệp ghim; «# fail 0».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E7
+    criterion: AC-7
+    executor: test
+    cmd: bash _acceptance/doi-ten-ban-uy-quyen/rang/chay.sh AC-7
+    paths: [plugins/dispatch/scripts/uy-quyen.mjs, plugins/dispatch/scripts/the.mjs, plugins/dispatch/scripts/dem.mjs, tests/dieu-phoi/uy-quyen.test.mjs, _acceptance/doi-ten-ban-uy-quyen/rang/**]
+    expected: >
+      exit 0; TAP có dòng «ok» cho "TA-07 the-nghia" (ma trận viết trước chín loại; kho có tệp liệt cả chín: the khoi-tao
+      --json có uy_quyen.nghia với tập khoá bằng đúng chín tên (nhan + van_hoi gồm nhóm vẫn hỏi và sai chỗ); mỗi giá trị khớp
+      /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i và không chứa tên tiếng Anh của chính nó; mảng hoi bằng hệt bản
+      kho không tệp), "TA-07 dem-nghia" (sổ sinh bằng một lần gop --theo-quyen và một lần thu-tu-gop thật: dem --json có
+      dung_quyen.nghia với đúng hai khoá merge, merge-order, cùng luật chữ) và "TA-07-do bo-nghia"; «# fail 0». Chiều đỏ: bản
+      sao xoá nghĩa của riêng session trong LOAI → ca đỏ nêu «thẻ thiếu nghĩa tiếng Việt: session».
+    evidence_required: [run_id, exit_code, verifier, verified_at, output]
+  - id: E8
+    criterion: AC-8
+    executor: judgment
+    inputs: [plugins/dispatch/commands/open.md, plugins/dispatch/commands/close.md, plugins/dispatch/scripts/mau/LUAT.md, plugins/dispatch/README.md, docs/adr/0030-giam-sat-doc-ban-uy-quyen-cua-kho.md, docs/superpowers/specs/2026-11-28-doi-ten-ban-uy-quyen-design.md, CONTEXT.md]
+    question: >
+      Bốn tệp đầu là chỉ dẫn mà phiên giám sát của gói điều phối đọc (mở đợt, đóng đợt, luật đợt, README); tệp thứ năm là ADR
+      của bản uỷ quyền; tệp thứ sáu là thiết kế của vòng đổi tên (bảng tên §3); tệp thứ bảy là bảng từ của kit. Đọc như một
+      phiên giám sát mới: (1) mọi chỗ bốn chỉ dẫn nhắc khoá hay tên quyền của bản uỷ quyền có dùng đúng tên mới của bảng §3
+      không, và có chỗ nào còn khoá `ban`/`tu_lam` hay tên quyền cũ dùng như tên hiện hành không (tên lệnh `gop`, `thu-tu-gop`,
+      tên sự kiện `dung-quyen` và loại yêu cầu `chuyen-hang` của luật đợt là tên lệnh/sự kiện, KHÔNG phải tên quyền — giữ là
+      đúng); (2) chỉ dẫn mở đợt và đóng đợt có bảo trình mỗi quyền bằng nghĩa tiếng Việt (khoá `nghia`), tên tiếng Anh trong
+      ngoặc, không để tên tiếng Anh thay lời giải thích; (3) ADR có mục «Sửa 28/11» mang bảng tên mới và câu về tệp tên cũ bị
+      từ chối, trong khi các Quyết định 1–5 không bị viết lại; (4) có từ nào trong _Avoid_ của CONTEXT.md, hay chi tiết chỉ một
+      kho tiêu thụ cụ thể mới hiểu không? PASS khi (1)–(3) đạt và (4) không vướng, trích một dòng cho mỗi điều; FAIL nêu điều
+      thiếu và tệp lẽ ra phải nói; UNCERTAIN khi tệp không đọc được.
+    paths: [plugins/dispatch/commands/open.md, plugins/dispatch/commands/close.md, plugins/dispatch/scripts/mau/LUAT.md, plugins/dispatch/README.md, docs/adr/0030-giam-sat-doc-ban-uy-quyen-cua-kho.md]
+    expected: PASS kèm trích dòng cho từng điều; FAIL nêu điều thiếu
+    evidence_required: [run_id, verifier, verified_at, output]

@@ -10,7 +10,7 @@ flowchart TD
   GD --> B["Sắp mở vòng<br/>4 việc"]
   GD --> XL["Xếp lại sau<br/>24 việc"]
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
-  B --> CD["Chờ duyệt phạm vi<br/>chưa có"] --> GP{"Cổng Phạm vi"}
+  B --> CD["Chờ duyệt phạm vi<br/>1 việc"] --> GP{"Cổng Phạm vi"}
   GP --> DL["Đang làm<br/>2 việc"] --> GB{"Cổng Bằng chứng"}
   GB --> DG["Đã giao<br/>168 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>74 việc"] --> GG{"Cổng Giá trị"}
@@ -41,6 +41,10 @@ flowchart TD
 - «Một kho bất kỳ bật được mô hình Điều phối – Thợ của kit; mở đợt bằng một lệnh, nối lại bằng một lệnh sau khi phiên khởi động lại, và sang tài khoản khác khi hết hạn mức mà không mất việc» (`dieu-phoi-tho-trong-kit`)
 - Lớp vendored tự xưng — tệp khai phiên bản kit kèm băm từng tệp, danh sách chép rút từ một nguồn và gồm bộ đọc bản đồ, một lệnh kiểm chạy trong CI kho, một trang nghi thức nhận bản mới (`lop-vendored-tu-xung`)
 - Ba phép đo của vòng thuoc-co-cua tuyên đo từng ô mà ô không độc lập hoặc giá trị mẫu trùng — làm lại để chiều đỏ của từng ô là của chính ô ấy (`phep-do-o-doc-lap-thuoc-co-cua`)
+
+## Chờ duyệt phạm vi
+
+- V1 — khoá và tên quyền của bản uỷ quyền governance/delegation.yaml đổi sang tiếng Anh trước mốc đầu tiên mang bộ đọc; tệp mang tên cũ bị từ chối cả tệp kèm câu gọi đúng tên mới; kho không có tệp chạy từng byte như trước vòng (`doi-ten-ban-uy-quyen`)
 
 ## Đang làm
 
