@@ -713,7 +713,7 @@ test('UQ-10 xem-co-tep', async () => {
 
 test('UQ-10-do hoi-them', async () => {
   assert.deepEqual(await kiemThe(GOI), [], 'đối chứng dương');
-  const sao = banSao(['scripts/the.mjs', "may_di_tiep: [...may, 'uy-quyen']", "may_di_tiep: [...may, 'uy-quyen'], hoi: [...hoi, 'uy-quyen']"]);
+  const sao = banSao(['scripts/the.mjs', "may_di_tiep: [...may, 'uy-quyen']", "may_di_tiep: [...may, 'uy-quyen'], hoi: [...ketQua.hoi, 'uy-quyen']"]);
   const loi = await kiemThe(sao);
   assert.ok(loi.includes('khối uỷ quyền thành câu hỏi'), `UQ-10-do: ${loi.join(' | ')}`);
   console.log('  UQ-10-do: khối uỷ quyền thành câu hỏi');
