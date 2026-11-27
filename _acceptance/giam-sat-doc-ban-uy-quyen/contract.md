@@ -5,7 +5,7 @@ slug: giam-sat-doc-ban-uy-quyen
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: plugins/dispatch/** · tests/dieu-phoi/** — KHÔNG khớp t3_paths (Hỏi-3)
 surfaces: [cli]
-status: approved
+status: implemented
 design_doc: docs/superpowers/specs/2026-11-27-giam-sat-doc-ban-uy-quyen-design.md
 approved_by: Phan Le Manh
 approved_at: 2026-11-27
