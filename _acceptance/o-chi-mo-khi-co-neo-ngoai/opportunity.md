@@ -257,6 +257,8 @@ dưới đây là SỔ; con trỏ hai chiều giữa chúng và ô này là **ch
   phản bác; hướng — phát hiện phải kèm lượt chạy chứng minh.
 - `docs/plans/2026-11-26-hat-giong-dong-2-may-dem-tu-ban-ghi-phien.md` — 26/11 cùng phiên: bốn mốc liên tiếp ghi «0 ngoài
   thiết kế nghĩa là 0 ghi được»; hướng — dòng 2 do máy đếm từ bản ghi phiên, trong bộ đo vòng đã có.
+- `docs/plans/2026-11-28-hat-giong-do-vong-dem-sai-phien-va-cua-so.md` — 28/11 vòng V1: dòng `gio-may` cộng cả phiên chỉ
+  nhắc tên vòng, mở cửa sổ ở commit đầu (bỏ S0–S1) và đo trước khi gộp; tính chung, sổ chỉ ghi khoảng một nửa chi phí máy thật.
 
 K7 («pin nói ra ô nó không đo») **đã xong ở kho này** — vòng `ghim-lai-noi-ra-o-khong-do`, gộp
 20/09 (PR #190). Không mở lại.
