@@ -7,7 +7,7 @@ reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
-verified_commit: 4625ed4dc7cf99dd0b1951f0922e0303de7e4697
+verified_commit: 8c3b871f2a52ad413abc896372f1034827a0b8f7
 human_signoff: Phan Le Manh 2026-11-23
 ---
 
@@ -218,3 +218,7 @@ Round 1: mọi eval và lệnh suite đều xanh; không có eval hỏng, không
 ### Re-pin lần 1 — 2026-11-23, do hoá cũ do gộp origin/main sau chữ ký (PR #26)
 run_id: repin-20261123T012837Z-34560
 sha: 4625ed4dc7cf99dd0b1951f0922e0303de7e4697 · suites: 11 lệnh exit 0 · evals: 11/11 eval máy đạt kỳ vọng
+
+### Re-pin lần 2 — 2026-11-28, do chiến dịch ghim lại của mốc 3.2.0 (GUIDE mục 7.1) — năm hồ sơ của cửa sổ, sau commit nâng số
+run_id: repin-20261128T071601Z-73825
+sha: 8c3b871f2a52ad413abc896372f1034827a0b8f7 · suites: 11 lệnh exit 0 · evals: 11/11 eval máy đạt kỳ vọng

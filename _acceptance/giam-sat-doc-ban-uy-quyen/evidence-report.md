@@ -7,7 +7,7 @@ reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
-verified_commit: 44a970af9c5a30eb267ff5bfe84f4f7cd33ab12d
+verified_commit: 8c3b871f2a52ad413abc896372f1034827a0b8f7
 human_signoff: Phan Le Manh 2026-11-27
 ---
 
@@ -222,3 +222,7 @@ none — every multi-run eval is uniform
 ## Iterations
 
 Round 1: E1–E10 xanh; E11 (judgment) UNCERTAIN — cụm «tự gộp» ở LUAT.md và README.md có thể vướng _Avoid_ của CONTEXT.md dòng 281. Chờ người quyết ở Cổng Bằng chứng.
+
+### Re-pin lần 1 — 2026-11-28, do chiến dịch ghim lại của mốc 3.2.0 (GUIDE mục 7.1) — năm hồ sơ của cửa sổ, sau commit nâng số
+run_id: repin-20261128T071601Z-73825
+sha: 8c3b871f2a52ad413abc896372f1034827a0b8f7 · suites: 11 lệnh exit 0 · evals: 10/10 eval máy đạt kỳ vọng · ngoài làn máy: E11 · diff chạm vật đo ngoài làn máy: E11 — chưa chứng lại, đi vòng S4 delta · AC không có chốt máy: AC-11

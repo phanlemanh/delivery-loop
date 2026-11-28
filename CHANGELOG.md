@@ -11,6 +11,235 @@
 > `_acceptance/release-<x-y-0>/contract.md` và `evidence-report.md`. Mục đầu
 > tiên dưới đây là phần CHƯA phát hành.
 
+## 3.2.0 — 28/11/2026
+
+Mốc A của lộ trình sau DL6 (chủ kho 28/11: «Mở Mốc A»): mang tới kho tiêu thụ mọi thứ đã gộp vào nhánh chính sau thẻ
+`v3.1.1`. Có **sáu hồ sơ được ký** trong cửa sổ — tập đối chiếu bằng `_acceptance/release-3-2-0/chay.sh cua-so` (AC-3 của hồ
+sơ mốc): `dac-ta-ux-doc-so-man` (#27), `doi-soat-ban-giao` (#32), `nang-repo-setup-0-10-4` (#34),
+`bang-chung-cu-theo-dau-vao` (#37), `giam-sat-doc-ban-uy-quyen` (#38), `doi-ten-ban-uy-quyen` (#39). Bảy PR khác gộp trong
+cửa sổ không mang hồ sơ được ký mới: #29 (phần còn lại của nhánh mốc 3.1.1 sau commit thẻ), #30, #31, #33, #35, #36, #41 (tài
+liệu, ADR 0030 và hạt giống; #41 gộp giữa vòng mốc). Năm gói `acceptance-gate`, `feature-loop`, `dispatch`, `roadmap`, `knowledge` cùng lên `3.2.0`
+(`acceptance-gate`, `feature-loop`, `dispatch` đổi vật; `roadmap`, `knowledge` chỉ đổi số — AC-5); `diagram-design` giữ
+`3.0.0` vì thư mục của nó không đổi từ thẻ trước (AC-4). Thẻ `v3.2.0` gắn vào commit gộp của PR mốc, như các mốc tới 3.1.0.
+
+**Vì sao 3.2.0** (minor): theo nếp «minor cho bề mặt mới», cửa sổ thêm bề mặt mới ở ba gói — tệp
+`governance/delegation.yaml` cùng lối gộp theo quyền và lệnh xếp thứ tự gộp của gói `dispatch`, khối đối soát lúc nối lại
+đợt, cờ `--chi-xet` của `pr-san-sang`, lệnh đọc sổ màn `so-man.cjs`. Không khoá cấu hình mới nào trong
+`_acceptance/config.yaml`; không đổi khuôn hồ sơ. Hai đổi hành vi chạm kho đang dùng mà không qua khoá, khai thẳng ở «Ai bị
+ảnh hưởng»: lệnh nối lại đợt thôi trả kế hoạch mở chip khi tài khoản quá ngưỡng báo trước, và `pr-san-sang` thôi coi tệp
+T1 đổi sau lượt chấm là bằng chứng cũ.
+
+### Đặc tả UX đọc sổ màn (hồ sơ `dac-ta-ux-doc-so-man`, T2)
+
+Gốc: `_acceptance/dac-ta-ux-vat-hoa-cau-truc/` — hồ sơ cắt phần kiểm bảng trạng thái sau năm lượt chấm hỏng và ghi điều
+kiện mở lại ở `docs/plans/2026-08-24-hat-giong-khop-vong-dac-ta-ux.md`.
+
+- **Vật:** Đặc tả UX đọc sổ màn — điền sẵn kiểm kê màn và bảng trạng thái từ lệnh đọc màn của kho, và một lệnh kiểm bảng
+  trạng thái so với sổ
+- **Ai thấy:** kho có lệnh đọc màn `tools/design-assembly/screen-facts.mjs` — bước thiết kế của vòng chạm giao diện gọi
+  `so-man.cjs` để điền sẵn và kiểm bảng. Kho không có lệnh đọc làm như trước.
+- **Giới hạn đã khai:** nhóm giới hạn khai trước chép từ bản thiết kế (ở Notes hợp đồng) và 5 mục chọn ở Cổng Bằng chứng
+  23/11, 4 ghi ở Notes hợp đồng — đáng nhớ nhất: Ngoài-2 «ô mã trạng thái bọc trong dấu backtick bị lệnh kiểm báo nhầm là
+  trống; bỏ backtick là hết báo.»
+
+### Đối soát bàn giao (hồ sơ `doi-soat-ban-giao`, T2)
+
+Gốc: `delivery-loop/_acceptance/khung-dot-dinh-vi/` — hồ sơ ấy dựng khung đợt cho vai giám sát; ranh giới của nó sinh hạt
+giống `docs/plans/2026-11-24-hat-giong-giam-sat-co-quyen-va-co-so.md` (bốn lớp). Vòng này là LỚP 2 của hạt giống.
+
+- **Vật:** Đối soát bàn giao — lúc nối lại đợt sau khi đổi tài khoản, lệnh nối lại so bản bàn giao với trạng thái hiện tại
+  của từng dãy và chỉ nói ra chỗ lệch; nhánh chưa đẩy lộ ra; tài khoản quá ngưỡng thì không mở chip
+- **Giới hạn đã khai:** 3 giới hạn khai trước (nhánh chính đọc từ ref cục bộ, không fetch; bảng trước/sau chỉ sống trong
+  kết quả của lần nối lại ấy; `chan-doan` gọi riêng trong lúc khuyên chờ vẫn xếp `mo-chip`) và 5 mục chọn ở Cổng Bằng chứng
+  24/11, 3 ghi ở Notes hợp đồng — đáng nhớ nhất: Ngoài-2 «tệp bàn giao có trường sai kiểu (ví dụ do sửa tay) làm lệnh nối
+  lại báo lỗi và đợt không rời được pha bàn giao; chủ kho sửa tệp rồi chạy lại.» Ngoài-1 và Ngoài-3 thành hạt giống
+  `docs/plans/2026-11-24-hat-giong-doi-soat-khi-khuyen-cho-chua-co-ban.md`.
+
+### Nâng repo-setup của kho kit (hồ sơ `nang-repo-setup-0-10-4`, T2)
+
+Gốc: `origin/chuyen-nha:migration/de-bai-nang-repo-setup-kit.md` — chủ kho gọi tên 26/11/2026, nguyên văn «Mở phiên Thực
+hiện hạng mục kit 4 nâng repo standards».
+
+- **Vật:** Nâng repo-setup của kho kit từ 0.5.0 lên 0.10.4 bằng đường nâng cấp của chính repo-setup, và đóng năm mục doctor
+  đang trượt (agent_permissions, plugin_ci_validates, language_policy, upgrade_wall, plugin_versions)
+- **Ai thấy:** chỉ kho kit. Không tệp nào dưới `plugins/` đổi, nên gói giao cho kho tiêu thụ giữ nguyên từng byte.
+- **Giới hạn đã khai:** 2 giới hạn khai trước (AC-1 và AC-2 cần repo-setup 0.10.4 trên máy, nên chỉ chạy ở lượt chấm,
+  không ở CI; `tools/ledgers.py` vào kho mà không có sổ nào để vẽ) và 4 mục chọn ở Cổng Bằng chứng 26/11, cả 4 ghi ở Notes hợp đồng — đáng nhớ nhất: Ngoài-3
+  «`tools/upgrade_markers.py` báo sạch khi `.repo-setup.json` vắng hoặc hỏng, nên ở máy tường dấu xung đột im lặng; CI vẫn
+  đỏ nhờ `plugin_lint.py`. Sửa đúng chỗ là ở kho khuôn repo-standards (tệp có băm ghim).»
+
+### Bằng chứng cũ theo đầu vào (hồ sơ `bang-chung-cu-theo-dau-vao`, T2 — DL2)
+
+Gốc: `origin/chuyen-nha:migration/de-bai-dl2.md` — chủ kho mở vòng DL2 ngày 26/11/2026 («Mở DL2, ngoại lệ (b)») · vấn đề
+#10 của kho kit (onehub-invest, kit 2.36) · số đo K3 26/11 ở design doc §1.
+
+- **Vật:** Bằng chứng cũ — pr-san-sang và làn ghim lại đọc bằng MỘT vị từ JS khớp luật của lưới trước-gộp (loại tệp hồ sơ,
+  tệp T1 theo đúng luật glob của lưới, và — khi kho bật — tệp ngoài paths của eval); lưới bash giữ nguyên, phép vi phân
+  bash↔JS giữ hai bên khớp; bước resume của feature-loop chạy cùng vị từ thay luật bằng chữ
+- **Cờ mới:** `pr-san-sang.mjs --chi-xet` — chỉ xét bằng chứng còn mới hay đã cũ; không đẩy, không gọi gh, chạy được ở mọi
+  trạng thái hồ sơ. Bước resume của SKILL feature-loop gọi nó (khối `STALE-GUARD`).
+- **Giới hạn đã khai:** 1 giới hạn của vòng (`s4-args` lấy nhánh chính CỤC BỘ đã cũ làm gốc so — hạt giống
+  `docs/plans/2026-11-27-hat-giong-s4-args-goc-so-nhanh-cuc-bo.md`) và 15 mục chọn ở Cổng Bằng chứng 27/11, 14 ghi ở Notes
+  hợp đồng — đáng nhớ nhất: Ngoài-3 «kho dùng bộ máy acceptance-gate cũ thì lệnh mở PR dừng bằng lỗi khó hiểu thay vì lùi
+  về luật cũ.» Ngoài-9 thành hạt giống `docs/plans/2026-11-27-hat-giong-chi-xet-thay-sua-chua-commit.md`.
+
+### Giám sát đọc bản uỷ quyền của kho (hồ sơ `giam-sat-doc-ban-uy-quyen`, T2 — DL6, lát 1 của ADR 0030)
+
+Gốc: `docs/adr/0030-giam-sat-doc-ban-uy-quyen-cua-kho.md` (lời phê CỘNG, chủ kho 26/11: «Phê, chọn A») · ô
+`_acceptance/khung-dot-dinh-vi/` · hạt giống `docs/plans/2026-11-24-hat-giong-giam-sat-co-quyen-va-co-so.md` (lớp 1).
+
+- **Vật:** Phiên giám sát của gói dispatch đọc bản uỷ quyền governance/delegation.yaml của kho ở đỉnh nhánh chính — danh
+  sách loại đóng, vùng cấm cứng, sự kiện dung-quyen ghi trước hành động; giám sát gộp theo quyền khi ô tu_merge bật và xếp
+  lại thứ tự gộp; khối uỷ quyền trên thẻ khởi tạo và dòng đếm trong báo cáo đợt (ADR 0030, lát 1)
+- **Tệp của kho:** `governance/delegation.yaml` với khoá `version: 1` và `delegated: [<quyền>, …]`; gói đọc tệp ở đỉnh
+  `origin/<nhánh chính>` mỗi lần dùng, không bao giờ ở cây làm việc hay nhánh PR. Bản này NHẬN hai quyền: `merge` (gộp PR
+  theo quyền) và `merge-order` (xếp lại thứ tự gộp). `session`, `reassign-row`, `open-lane`, `shared-ruling`, `roadmap` đọc
+  được nhưng vẫn hỏi chủ kho; `out-of-contract`, `design` bị từ chối kèm chỗ đúng; tên lạ hay tên thuộc vùng cấm cứng
+  (`gate-signoff`, `release`, `delete-branch`, `push-other-repo`, `github-settings`, `workflows`, `governance`,
+  `product-invariants`, `dispatch-scope`, `dispatch-rules`, `delegation`) làm cả tệp bị từ chối.
+- **Hai lệnh của quyền** (tên lệnh giữ nguyên): `dieu-phoi.mjs gop <số PR> --slug <slug> --theo-quyen --phien <mã giám sát>`
+  — chỉ gộp khi ô `tu_merge` của đợt bật, bản uỷ quyền nhận `merge`, và mọi phép kiểm sẵn có của lệnh gộp đạt; PR chạm
+  `.github/workflows/`, `governance/` hay `PRODUCT-INVARIANTS.md` thì chặn, bấm gộp là của người. `dieu-phoi.mjs thu-tu-gop
+  <dãy,…> --phien <mã giám sát>` — xếp lại thứ tự cấp khoá `merge` khi bản uỷ quyền nhận `merge-order`. Mỗi lần dùng quyền
+  ghi một dòng `dung-quyen` vào sổ sự kiện TRƯỚC hành động.
+- **Giới hạn đã khai:** 1 giới hạn khai trước (việc mở chip của giám sát không để lại dòng `dung-quyen`, nên quyền
+  `session` chưa được nhận ở lát này) và 7 mục chọn ở Cổng Bằng chứng 27/11, 6 ghi ở Notes hợp đồng — đáng nhớ nhất:
+  Ngoài-3 «Thứ tự gộp giám sát đã xếp vẫn áp cho cả đợt, kể cả sau khi chủ kho thu quyền và với đơn gộp xin sau; gỡ bằng
+  cách xoá tay tệp thứ tự trong thư mục đợt.» Lệnh chuyển hàng, mở dãy và phán quyết chung để lát 2 — hạt giống
+  `docs/plans/2026-11-27-hat-giong-uy-quyen-lat-2.md`.
+
+### Bản uỷ quyền dùng khoá và tên quyền tiếng Anh (hồ sơ `doi-ten-ban-uy-quyen`, T2 — V1)
+
+Gốc: `_acceptance/giam-sat-doc-ban-uy-quyen/` (hồ sơ đã ký của bộ đọc, ADR 0030) · quyết định của chủ kho 28/11 «Đôi trước
+mốc» và «Phê cả bốn» cho đề xuất lộ trình sau DL6 (việc đầu tiên: V1) · luật chủ kho đặt cho cả kit 28/11: máy đọc tiếng
+Anh, người đọc tiếng Việt.
+
+- **Vật:** V1 — khoá và tên quyền của bản uỷ quyền governance/delegation.yaml đổi sang tiếng Anh trước mốc đầu tiên mang bộ
+  đọc; tệp mang tên cũ bị từ chối cả tệp kèm câu gọi đúng tên mới; kho không có tệp chạy từng byte như trước vòng
+- **Hệ quả cho người viết tệp:** mốc này là mốc ĐẦU TIÊN mang bộ đọc tới kho tiêu thụ, và nó chỉ đọc bộ tên tiếng Anh kể ở
+  mục trên. Tệp còn tên cũ bị từ chối cả tệp — không quyền nào được nhận, kể cả tên mới viết cùng tệp; câu lỗi gọi đúng tên
+  mới phải dùng. Không có đường đọc tên cũ. Bảng tên đủ ở mục «Sửa 28/11» của ADR 0030.
+- **Nghĩa tiếng Việt cho người:** mỗi quyền mang `nghia`; thẻ khởi tạo và báo cáo đợt trình quyền bằng nghĩa ấy, tên tiếng
+  Anh trong ngoặc.
+- **Giới hạn đã khai:** 2 mục chọn ở Cổng Bằng chứng 28/11, 1 ghi ở Notes hợp đồng — Ngoài-1 «phần mô tả kết quả mong đợi
+  của E1, E2, E3 trong `evals.yaml` nói khác điều ca kiểm thật sự in ra (E2 ghi 38 hàng trong khi ca đòi 40 hàng và chỉ in
+  một dòng tổng; E3 ghi «xoá open-lane» trong khi ca đổi tên nó) — ca và hành vi đúng, chỉ lời mô tả lệch.»
+
+**Ai bị ảnh hưởng:**
+
+- **Kho KHÔNG có `governance/delegation.yaml`** (mọi kho hôm nay): gói `dispatch` chạy như 3.1.1 từng byte — thẻ khởi tạo,
+  `xem`, `xem --json`, `dem --json` và lệnh `gop` không cờ `--theo-quyen` cho cùng đầu ra, cùng mã thoát, cùng chuỗi lời gọi
+  `gh`. Hồ sơ DL6 đo ba ca chiều im: kho có remote, kho không remote, kho có remote mà lấy về hỏng; hồ sơ V1 đo lại cả ba
+  với bản trước khi có bộ đọc.
+- **Kho viết `governance/delegation.yaml`:** thẻ khởi tạo đợt mang khối `uy_quyen` (quyền nhận, quyền vẫn hỏi kèm câu vì
+  sao, lỗi đọc), báo cáo đợt đếm số lần dùng theo từng quyền. Quyền gộp chỉ dùng được khi ô `tu_merge` của đợt bật. Tệp lỗi,
+  hay tệp còn tên cũ, thì không quyền nào được nhận.
+- **Kho không cài gói `dispatch`:** không nhận đổi hành vi nào của ba hồ sơ `doi-soat-ban-giao`,
+  `giam-sat-doc-ban-uy-quyen`, `doi-ten-ban-uy-quyen` — cả ba chỉ chạm gói ấy.
+- **Kho cài gói `dispatch` và có đợt bàn giao tài khoản:** lệnh nối lại trả thêm khoá `doi_soat` (so bản bàn giao với
+  trạng thái hiện tại từng dãy, chỉ nói chỗ lệch); bàn giao mà nhánh chưa đẩy thì có chữ «CHƯA ĐẨY» ở dòng in của
+  `ban-giao-xong`, ở sự kiện dừng bàn giao và ở đối soát. **Đổi hành vi mặc định:** nối lại trên tài khoản quá ngưỡng báo
+  trước thì kế hoạch trả về rỗng và thân lệnh dừng — trước đây vẫn trả kế hoạch mở chip. Kho cài gói mà chưa từng bàn giao:
+  lệnh nối lại như cũ từng trường; tệp bàn giao ghi bằng bản cũ thiếu trường vẫn đọc được, mỗi trường vắng một dòng vàng.
+- **Phần của DL2 ở kho chưa bật khoá nào:** không có khoá mới để bật. `pr-san-sang` nay bỏ qua tệp T1 (theo
+  `risk_tiers.t1_skip_globs` của kho) khi xét vật đổi sau lượt chấm — trước đây chỉ bỏ qua `_acceptance/`, nên một tệp máy
+  sinh như `LO-TRINH.html` đổi là lệnh từ chối mở PR; nay PR sẵn sàng mở được lúc trình thẻ. Làn ghim lại khớp tệp T1 theo
+  đúng luật glob của lưới trước-gộp. Lưới trước-gộp (`pre-merge-check.sh`) không đổi. Kho đã khai `risk_tiers.stale_scope:
+  paths` thì `pr-san-sang` và bước resume cũng bỏ qua tệp ngoài `paths` của mọi eval, như lưới và làn ghim lại vốn làm.
+- **Kho có lệnh đọc màn** (`tools/design-assembly/screen-facts.mjs`): bước thiết kế của vòng chạm giao diện điền sẵn kiểm
+  kê màn và bảng trạng thái, và kiểm bảng so với sổ; câu đỏ lên thẻ Cổng Phạm vi. Kho không có lệnh đọc: như 3.1.1.
+- **Lớp chép CI:** không chép gì — không tệp nào của khối INIT-CI-COPY-LIST đổi từ `v3.1.1`.
+
+**Đường đọc-cũ:** không khoá cấu hình mới; hồ sơ đã có giữ nguyên. Tệp bàn giao ghi bằng bản cũ đọc được kèm dòng vàng.
+Riêng `governance/delegation.yaml` KHÔNG có đường đọc tên cũ — có chủ đích: chưa kho nào có tệp lúc đổi tên (đo 28/11 ở hồ
+sơ V1), nên không bản nào phải đọc mãi.
+
+**Kho tiêu thụ làm gì khi nhận:** đổi ghim kit sang thẻ `v3.2.0` (khuôn GUIDE §5.3; kho có biến `KIT_TAG` thì đổi nó), cài
+sáu gói theo ĐÚNG THẺ `v3.2.0` rồi `node <gốc gói acceptance-gate>/scripts/kiem-ban-cai.mjs --may --ref v3.2.0 --root <bản
+clone kit đã git fetch --tags>` — `TỔNG KẾT: ĐẠT …`. Mở phiên MỚI. Lớp chép CI giữ nguyên như `v3.1.1`; kho đang ghim bản cũ
+hơn 3.1.1 thì làm thêm phần «Lớp chép CI» của từng mục nó nhảy qua. Viết `governance/delegation.yaml` hay không là quyết
+của kho, không phải bước nâng cấp; kho viết thì dùng đúng `version: 1` và `delegated: […]` với tên quyền tiếng Anh ở trên.
+
+**Người cắt mốc kit:** sau khi gắn thẻ chạy `node plugins/acceptance-gate/scripts/kiem-ban-cai.mjs --ref v3.2.0` (KC1).
+Đối chiếu tập hồ sơ của mốc sau bằng `_acceptance/release-2-39-0/cua-so.sh <mốc-trước> <slug…>`.
+
+**onehub-inventory**: kho nhận của mốc. Mốc chỉ tính là «được kho nhận» khi có một commit ở nhánh chính kho ấy kéo kit ở
+thẻ `v3.2.0`.
+
+**Kho kit bật máy tự định tuyến mục ngoài hợp đồng** (chủ kho, Cổng Phạm vi của mốc, 28/11): `_acceptance/config.yaml`
+của chính kho kit có thêm `feature_loop.ngoai_n_tu_dinh_tuyen: true` (AC-10 của hồ sơ mốc). Đây là cấu hình của kho kit —
+KHÔNG đi theo thẻ, kho tiêu thụ không đổi gì. Số đo lúc bật: 14 hồ sơ ký từ thẻ `v3.0.0` có 117 mục ngoài hợp đồng, chủ kho
+chọn trùng đề xuất của máy 117/117; 106 mục thuộc loại máy được tự ghi, 11 mục «mở hợp đồng mới» vẫn của người. Đảo: xoá
+dòng ấy.
+
+**Chiến dịch ghim lại của mốc** (GUIDE §7.1): một làn máy tại commit đã nâng số `8c3b871f`
+(`repin-20261128T071601Z-73825`, 70,8 phút, 57 lệnh, mười một lệnh suite thoát 0) chạy cho năm hồ sơ của cửa sổ và ghim lại
+được **ba**: `dac-ta-ux-doc-so-man`, `doi-ten-ban-uy-quyen`, `giam-sat-doc-ban-uy-quyen` (AC-7 của hồ sơ mốc). Hồ sơ không
+ghim lại, kèm lý do:
+- `bang-chung-cu-theo-dau-vao`, `doi-soat-ban-giao`: mỗi hồ sơ có một tiêu chí «vùng vật» so tệp đổi của HEAD với nhánh
+  chính; ở nhánh chính nó xanh, trên nhánh mốc nó đỏ theo định nghĩa. Ghim được bằng một làn chạy trên chính nhánh chính sau
+  khi PR mốc gộp — việc để lại.
+- `nang-repo-setup-0-10-4`: tiêu chí AC-7 của nó so với một gốc ghi cứng, nhánh chính tiến thì đỏ ở mọi nhánh.
+- Hồ sơ hoá cũ từ trước cửa sổ: năm hồ sơ của cửa sổ 3.1.0–3.1.1, ba hồ sơ mốc và 236 hồ sơ ghim trước thẻ `v3.0.0`.
+- Hạt giống: `docs/plans/2026-11-28-hat-giong-eval-vung-vat-chan-ghim-lai.md` (tiêu chí vùng vật chặn ghim lại; dấu lượt đỏ
+  của làn kéo hồ sơ vào diff của PR và lưới trước-gộp chặn PR chạy làn).
+
+**Năm dòng số của luật (c)**: sáu vòng trong cửa sổ (giờ VN). Định nghĩa giữ như mốc 3.1.1: làm-xong = commit đầu đưa hợp
+đồng sang `implemented` · ký = commit đầu đưa `status:` sang trạng thái đã ký · gộp = commit gộp sớm nhất trên lối cha-đầu
+của nhánh chính có commit ký là tổ tiên — đo bằng `_acceptance/release-3-1-1/do-dong-1.sh` cho từng hồ sơ (bảng ở
+`_acceptance/release-3-2-0/do-dong-1.md`). Bộ đo `do-gop.mjs` của kit (`dieu-phoi.mjs dem`, khoá `ky_den_gop`) trả số cho
+đúng một vòng — `doi-ten-ban-uy-quyen`: 9 phút — và trả rỗng cho năm vòng có commit sau chữ ký (hạt giống
+`docs/plans/2026-11-23-hat-giong-do-gop-cha-thu-hai.md`). Dòng 2 đếm từ sổ quyết định. Dòng 4–5 lấy từ bảng vai trò của
+`usage-report.md`: vật = baseline + machine + judge · tìm-lỗi = review + refute · tổng hợp = triage + capture + synthesize.
+Sáu hồ sơ T2 (trần 3).
+
+| Hồ sơ | 1 · làm-xong→ký · ký→gộp · lượt chấm | 2 · gọi người trong / ngoài (trần) | 3 · lượt bị hạ tầng đốt | 4 · out-token S4 · vật / tìm-lỗi / tổng hợp % | 5 · phút máy / lượt |
+|---|---|---|---|---|---|
+| `dac-ta-ux-doc-so-man` (#27, T2) | 1 g 11 · 1 g 16 · 1 (PASS) | 2 / 0 (3): Phạm vi, Bằng chứng | 0 | 94 852 · 40,8 / 46,9 / 12,4 | 63 |
+| `doi-soat-ban-giao` (#32, T2) | 1 g 29 · 0 g 10 · 1 (PASS) | 2 / 0 (3): Phạm vi, Bằng chứng | 0 | 85 236 · 47,2 / 38,1 / 14,7 | 62 |
+| `nang-repo-setup-0-10-4` (#34, T2) | 2 g 09 · 0 g 15 · 1 (PASS) | 2 / 0 (3): Phạm vi, Bằng chứng | 0 | 68 504 · 47,4 / 39,7 / 13,0 | 68 |
+| `bang-chung-cu-theo-dau-vao` (#37, T2) | 13 g 09 · 0 g 16 · 3 (lượt 1 REJECT: năm ca hồi quy đỏ do tệp vòng viết — mục trong hợp đồng; lượt 2 REJECT chỉ vì ca P179, sổ giới hạn thiếu hàng; lượt 3 PASS) | 2 / 0 ghi ở sổ (3): Phạm vi, Bằng chứng — ghi chú của phiên vòng báo thêm 2 lượt ngoài thiết kế không vào sổ (lời cho chạy lượt hai và lượt ba) | 1 (P179 ở lượt 2) | 179 501 · 44,8 / 38,7 / 16,5 | 61 · 59 · 61 = 181 |
+| `giam-sat-doc-ban-uy-quyen` (#38, T2) | 1 g 26 · 0 g 15 · 1 (PENDING-JUDGMENT: một tiêu chí chờ người chấm, chủ kho chấm Đạt ở Cổng Bằng chứng) | 2 / 0 (3): Phạm vi, Bằng chứng | 0 | 99 362 · 47,8 / 38,2 / 14,0 | 58 |
+| `doi-ten-ban-uy-quyen` (#39, T2) | 2 g 41 · 0 g 08 · 1 (PASS) | 2 / 0 (3): Phạm vi, Bằng chứng | 0 | 69 608 · 58,9 / 29,3 / 11,9 | 63 |
+
+- Lời giao mở vòng không đếm, như các mốc trước. «0 ngoài thiết kế» nghĩa là «0 ghi được»: không đọc được phiên chat.
+- Sau chữ ký (commit trên nhánh PR giữa ký và gộp, theo `do-dong-1.md`): `dac-ta-ux-doc-so-man` gộp nhánh chính vào nhánh
+  1 lần, thêm một commit sổ giới hạn (P179) và một làn ghim lại 64,5 phút (xanh) — phần lớn của 1 g 16 ký → gộp;
+  `doi-soat-ban-giao` thêm hai commit tài liệu (sổ giới hạn, một hạt giống); `nang-repo-setup-0-10-4` thêm một commit sổ
+  giới hạn; `bang-chung-cu-theo-dau-vao` gộp nhánh chính vào nhánh 1 lần; `giam-sat-doc-ban-uy-quyen` thêm một commit sổ
+  giới hạn (P179); `doi-ten-ban-uy-quyen` không có commit nào.
+- **Gộp sáu vòng:** 597 063 out-token S4, vật 46,9 / tìm-lỗi 38,8 / tổng hợp 14,2 %; 495 phút S4 qua 8 lượt chạy. Trung vị
+  làm-xong → ký **1 g 49**; ký → gộp **0 g 15**. Gọi người: 12 trong thiết kế ghi ở sổ cho 6 kết quả đã gộp, cộng 2 lượt
+  ngoài thiết kế mà phiên vòng DL2 báo. Hạ tầng đốt **1 / 8** lượt chạy. **Ký chưa gộp: 0.**
+- **Giới hạn của dòng 4–5:** số token và phút ở bảng là của các lượt chấm S4, đọc từ bản ghi của chính lượt. Chi phí máy
+  ngoài lượt chấm (thiết kế, thi công, chờ CI, gộp) KHÔNG nằm trong bảng. Dòng `gio-may` của lệnh đo vòng lẽ ra phủ phần
+  ấy nhưng đang đếm sai theo ba hướng — cộng cả phiên chỉ nhắc tên vòng, mở cửa sổ ở commit đầu của hồ sơ nên bỏ đoạn mở
+  vòng và thiết kế, và đo trước khi gộp — nên mốc này không dùng nó làm số. Sáu vòng đều không có ô cơ hội nên đều mắc lỗi
+  mở cửa sổ muộn. Hạt giống: `docs/plans/2026-11-28-hat-giong-do-vong-dem-sai-phien-va-cua-so.md` (phiên vòng V1 viết, gộp ở PR #41).
+
+**Đọc số:**
+- **Ký → gộp về lại mức 0 g 15** (trung vị 1 g 14 ở cửa sổ 3.1.1 → 0 g 15): năm trong sáu vòng gộp trong 8–16 phút sau chữ
+  ký bằng lời gộp trong câu ký. Vòng duy nhất dài (1 g 16) là vòng phải gộp nhánh chính vào và ghim lại một làn sau chữ ký.
+- **Sổ giới hạn thiếu hàng (ca P179) chạm năm trong sáu vòng:** một lần đốt một lượt chấm (DL2), bốn lần là commit thêm
+  hàng sổ sau chữ ký (#27, #32, #34, #38); chỉ V1 không có commit nào sau chữ ký. Hạt giống đã có:
+  `docs/plans/2026-11-23-hat-giong-so-gioi-han-sau-luot-cham.md`.
+- **Làm-xong → ký của DL2 dài gấp năm lần vòng kế** (13 g 09): ba lượt chấm, hai lượt đầu REJECT.
+
+**Điều kiện tin cậy:**
+- **(i)** Đường phán quyết (tìm lỗi → phản bác trong hợp đồng → REJECT) không đổi thành phần — `git diff --stat v3.1.1 HEAD --
+  plugins/feature-loop/workflows/ plugins/feature-loop/agents/` rỗng.
+- **(ii)** Lượt chấm sai do phép-đo-tự-dối giữa hai mốc: **0** ghi được.
+
+**Dự báo năm dòng cho thay đổi của mốc này** (chép từ bảng dự báo của hồ sơ có bảng — `doi-soat-ban-giao`,
+`nang-repo-setup-0-10-4`, `giam-sat-doc-ban-uy-quyen`; ba hồ sơ còn lại không ghi bảng dự báo): dòng 1 ↓ làm-xong →
+gộp-được ở đợt của kho có bản uỷ quyền và ô `tu_merge` bật, = ở kho không có tệp · dòng 2 trong thiết kế =, ngoài thiết kế
+↓ (phần gộp và thứ tự gộp ở kho có bản uỷ quyền; đợt có đổi tài khoản) · dòng 3 = · dòng 4 = · dòng 5 ↑ nhẹ (thêm tệp ca
+vào bước CI của gói `dispatch`).
+
+**Dòng hiệu chuẩn (ADR 0020):** `ĐẠT đã ký → prod đỏ: 0 / 1`, đọc bằng `node plugins/acceptance-gate/scripts/hieu-chuan-moc.mjs
+--root .` (28/11). N = 1 từ mốc 2.36.0 và không tăng ở cửa sổ này — dòng vô hiệu, cấm đọc thành «0 sự cố». Các mục
+3.0.0–3.1.1 ghi «0 / 0»; mục này chép đúng số lệnh in.
+
 ## 3.1.1 — 23/11/2026
 
 Bản vá của 3.1.0: thẻ `v3.1.0` (`0a93a5b9`, PR #24) được cắt TRƯỚC khi bản vá chữ ký giữ chỗ gộp, nên kho cài 3.1.0 vẫn để
