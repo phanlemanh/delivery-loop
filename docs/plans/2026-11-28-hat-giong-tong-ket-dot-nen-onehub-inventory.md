@@ -3,7 +3,9 @@
 Gốc: onehub-inventory/_acceptance/nhap-excel/ (hàng 11, PR #130) và onehub-inventory/_acceptance/khung-luoi-va-ngan-chi-tiet/
 (VP10 lát 1, PR #131) — hai hàng được đo từng chặng ngày 28/11. Sổ đợt: `onehub-inventory/.acceptance-runs/dieu-phoi-nen/LUAT.md`
 (phán quyết G-2811-1 … G-2811-59) và `su-kien.jsonl`; trang đo `kit-theo-north-star-2026-11-28.html`,
-`do-thoi-gian-11-vp10-2026-11-28.html` cùng thư mục.
+`do-thoi-gian-11-vp10-2026-11-28.html` cùng thư mục. Bản tổng kết gốc của giám sát:
+`onehub-inventory/.acceptance-runs/dieu-phoi-nen/tong-ket-cho-kit-2026-11-28.md` — tệp này phủ tới **mục 8 (bổ sung 28/11
+12:15)**; mục giám sát thêm sau giờ ấy chưa có ở đây.
 **Chân VC8 (cơ học, KHÔNG phải neo):** `_acceptance/o-chi-mo-khi-co-neo-ngoai/` trích lại tệp này.
 
 **Trạng thái:** hạt giống (SỔ, chưa là ô). Ghi 28/11/2026 theo lời chủ kho ở phiên đo cùng ngày: «Gửi bản tổng kết thông tin
