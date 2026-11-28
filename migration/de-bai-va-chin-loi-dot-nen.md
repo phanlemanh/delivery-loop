@@ -1,8 +1,9 @@
-# Đề bài vòng «vá lỗi đợt nen» — bảy chỗ sửa hẹp trong chín lỗi C1–C9 (CHỜ thẻ Mốc A)
+# Đề bài vòng «vá lỗi đợt nen» — bảy chỗ sửa hẹp trong chín lỗi C1–C9 (thẻ Mốc A đã có — ĐÃ MỞ 28/11)
 
 Viết 28/11/2026, phiên giữ đợt (Mac Studio). Chủ kho bảo 28/11 ở phiên giữ đợt: «Mở sau Mốc A» — trả lời câu «Mở một vòng
-vá các lỗi này sau thẻ Mốc A, trước V2a?». **Trạng thái: CHỜ.** Phiên của vòng chỉ mở sau khi thẻ của Mốc A (dự kiến
-`v3.2.0`) đã gắn; gốc nhánh là `origin/main` lúc ấy.
+vá các lỗi này sau thẻ Mốc A, trước V2a?». **Trạng thái: ĐÃ MỞ 28/11.** Thẻ `v3.2.0` gắn 28/11 19:30 (+07) vào commit gộp
+`c3ecef50` của PR mốc #42, cũng là đỉnh `origin/main` lúc mở; gốc nhánh của vòng là commit ấy. PR mốc không đổi tệp mã nào
+bảng dưới trỏ dòng (đo `git diff 36d29fed c3ecef50` trên các tệp ấy: rỗng).
 
 Nguồn: đề xuất `migration/de-xuat-sua-chin-loi-dot-nen.md` (đọc bằng `git fetch origin chuyen-nha` rồi
 `git show origin/chuyen-nha:<tệp>`) và hạt giống tổng kết đợt `nen` của `onehub-inventory` (PR #40 của kho kit; nếu chưa
