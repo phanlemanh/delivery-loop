@@ -5,7 +5,7 @@ slug: doi-ten-ban-uy-quyen
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: plugins/dispatch/** · tests/dieu-phoi/** · docs/adr/0030 — KHÔNG khớp t3_paths
 surfaces: [cli]
-status: verified
+status: signed-off
 approved_by: Phan Le Manh
 approved_at: 2026-11-28
 design_doc: docs/superpowers/specs/2026-11-28-doi-ten-ban-uy-quyen-design.md
@@ -63,3 +63,6 @@ phát hành — không cần lớp tương thích ngược khi chưa có ngườ
 Ca đo: nội dung ca `UQ-…` của `tests/dieu-phoi/uy-quyen.test.mjs` đổi sang tên mới, tên ca giữ nguyên; ca mới `TA-0n …`
 (= AC-n của hồ sơ này) cuối cùng tệp; hàm so chiều im của `UQ-05` nhận gốc so làm tham số để ca `TA-04` so với `a9b7cbe6`.
 `rang/chay.sh AC-n` của hồ sơ này chạy ca `TA-…` và gọi lại `rang/chay.sh` của DL6.
+
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-28:
+  - Ngoài-1: phần mô tả kết quả mong đợi của E1, E2, E3 trong `evals.yaml` nói khác điều ca kiểm thật sự in ra (E2 ghi 38 hàng trong khi ca đòi 40 hàng và chỉ in một dòng tổng; E3 ghi «xoá open-lane» trong khi ca đổi tên nó) — ca và hành vi đúng, chỉ lời mô tả lệch.
