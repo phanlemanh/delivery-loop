@@ -4,8 +4,13 @@
 // nên PR của chính giám sát không nới được quyền trước khi chủ kho gộp nó. Kho không có tệp → `{ co: false }`, mọi bên dùng
 // chạy như trước vòng, từng byte.
 //
+// Mỗi loại mang `nghia` — cụm tiếng Việt cho người đọc thẻ khởi tạo và báo cáo đợt; tên tiếng Anh chỉ cho máy.
+//
 // Danh sách loại ĐÓNG, kit định nghĩa: một loại chỉ được nhận khi kit có phép so trước/sau VÀ lệnh dùng nó (ADR 0030, Quyết
 // định 2). Tên ngoài danh sách là lỗi đọc. Vùng cấm cứng không cấu hình được: tệp liệt một mục cấm thì cả tệp bị từ chối.
+//
+// Khoá và tên là tiếng Anh (luật chủ kho 28/11: máy đọc tiếng Anh, người đọc tiếng Việt — hồ sơ doi-ten-ban-uy-quyen, ADR
+// 0030 mục «Sửa 28/11»). Tên tiếng Việt đời 27/11 sống ở `TEN_CU` CHỈ để gọi tên: tệp mang một tên cũ bị từ chối cả tệp.
 import { execFileSync } from 'node:child_process';
 import { ghiSuKien } from './dot.mjs';
 
@@ -15,32 +20,58 @@ const CHUA_LENH = 'chưa có lệnh ở bản này — vẫn hỏi chủ kho';
 const CHUA_PHEP_SO = 'chưa có phép so — vẫn hỏi chủ kho';
 // <<<UY-QUYEN-LOAI
 export const LOAI = {
-  'thu-tu-gop': { nhom: 'nhan', cau: null },
-  gop: { nhom: 'nhan', cau: null },
-  phien: { nhom: 'van-hoi', cau: 'mở phiên: máy đã tự làm theo thẻ khởi tạo, không cần quyền — dọn phiên: chưa có phép so — vẫn hỏi chủ kho' },
-  'chuyen-hang': { nhom: 'van-hoi', cau: CHUA_LENH },
-  'mo-day': { nhom: 'van-hoi', cau: CHUA_LENH },
-  'phan-quyet-chung': { nhom: 'van-hoi', cau: CHUA_LENH },
-  'lo-trinh': { nhom: 'van-hoi', cau: CHUA_PHEP_SO },
-  'muc-ngoai-hop-dong': { nhom: 'sai-cho', cau: 'không thuộc giám sát đợt — sống ở chính sách Cổng Đáng' },
-  'thiet-ke': { nhom: 'sai-cho', cau: 'không thuộc giám sát đợt — sống ở sổ thiết kế của design-assembly' },
+  'merge-order': { nhom: 'nhan', cau: null, nghia: 'xếp lại thứ tự gộp' },
+  merge: { nhom: 'nhan', cau: null, nghia: 'gộp PR theo quyền' },
+  session: { nhom: 'van-hoi', cau: 'mở phiên: máy đã tự làm theo thẻ khởi tạo, không cần quyền — dọn phiên: chưa có phép so — vẫn hỏi chủ kho', nghia: 'mở và dọn phiên' },
+  'reassign-row': { nhom: 'van-hoi', cau: CHUA_LENH, nghia: 'chuyển hàng sang dãy khác' },
+  'open-lane': { nhom: 'van-hoi', cau: CHUA_LENH, nghia: 'mở thêm dãy' },
+  'shared-ruling': { nhom: 'van-hoi', cau: CHUA_LENH, nghia: 'phán quyết dùng chung cho các dãy' },
+  roadmap: { nhom: 'van-hoi', cau: CHUA_PHEP_SO, nghia: 'sửa lộ trình' },
+  'out-of-contract': { nhom: 'sai-cho', cau: 'không thuộc giám sát đợt — sống ở chính sách Cổng Đáng', nghia: 'quyết mục ngoài hợp đồng' },
+  design: { nhom: 'sai-cho', cau: 'không thuộc giám sát đợt — sống ở sổ thiết kế của design-assembly', nghia: 'quyết thiết kế' },
 };
 // UY-QUYEN-LOAI>>>
 
 // Vùng cấm cứng (ADR 0030, Quyết định 3) — tên → điều nó chạm.
 export const VUNG_CAM = {
-  'chu-ky': 'chữ ký ở mọi cổng',
-  'cat-ban': 'cắt bản',
-  'xoa-nhanh': 'xoá nhánh còn commit chưa gộp',
-  'day-kho-khac': 'đẩy lên kho khác',
-  'cai-dat-github': 'đổi cài đặt GitHub',
+  'gate-signoff': 'chữ ký ở mọi cổng',
+  release: 'cắt bản',
+  'delete-branch': 'xoá nhánh còn commit chưa gộp',
+  'push-other-repo': 'đẩy lên kho khác',
+  'github-settings': 'đổi cài đặt GitHub',
   workflows: '.github/workflows/',
   governance: 'governance/',
-  'luat-san-pham': 'luật sản phẩm của kho',
-  'pham-vi-dot': 'phạm vi của chính đợt',
-  'luat-dot': 'luật của chính đợt',
-  'uy-quyen': 'bản uỷ quyền của chính đợt',
+  'product-invariants': 'luật sản phẩm của kho',
+  'dispatch-scope': 'phạm vi của chính đợt',
+  'dispatch-rules': 'luật của chính đợt',
+  delegation: 'bản uỷ quyền của chính đợt',
 };
+
+// Tên đời 27/11 → tên hiện hành. CHỈ để gọi tên trong câu lỗi — không đường nào nhận tên cũ (ADR 0030, «Sửa 28/11»).
+export const TEN_CU = {
+  ban: 'version',
+  tu_lam: 'delegated',
+  gop: 'merge',
+  'thu-tu-gop': 'merge-order',
+  phien: 'session',
+  'chuyen-hang': 'reassign-row',
+  'mo-day': 'open-lane',
+  'phan-quyet-chung': 'shared-ruling',
+  'lo-trinh': 'roadmap',
+  'muc-ngoai-hop-dong': 'out-of-contract',
+  'thiet-ke': 'design',
+  'chu-ky': 'gate-signoff',
+  'cat-ban': 'release',
+  'xoa-nhanh': 'delete-branch',
+  'day-kho-khac': 'push-other-repo',
+  'cai-dat-github': 'github-settings',
+  'luat-san-pham': 'product-invariants',
+  'pham-vi-dot': 'dispatch-scope',
+  'luat-dot': 'dispatch-rules',
+  'uy-quyen': 'delegation',
+};
+const KHOA_CU = new Set(['ban', 'tu_lam']);
+const cauTenCu = (cu) => `tên cũ «${cu}» — bản uỷ quyền nay dùng «${TEN_CU[cu]}»${Object.hasOwn(VUNG_CAM, TEN_CU[cu]) ? ' (vùng cấm cứng, không cấu hình được)' : ''}; cả tệp bị từ chối`;
 
 // Tệp mà gộp theo quyền không được chạm (răng thứ hai của vùng cấm, trên chính PR).
 export const VUNG_CAM_TEP = ['.github/workflows/', 'governance/', 'PRODUCT-INVARIANTS.md'];
@@ -49,8 +80,9 @@ export const tepChamVungCam = (tep) => tep.filter((t) => VUNG_CAM_TEP.some((v) =
 const go = (s) => String(s ?? '').trim().replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1').trim();
 const boChuThich = (d) => (/^\s*#/.test(d) ? '' : d.replace(/\s+#.*$/, ''));
 
-// Khuôn đọc (gói không nạp bộ đọc YAML — cùng lệ với gop.mjs, cua-proof.mjs): khoá cột 0 `ban: <số>` và `tu_lam:` với
-// danh sách dạng dòng `[a, b]` hoặc dạng khối `- a`; khoá cột 0 khác → cờ vàng; dòng ngoài khuôn → lỗi đọc nêu số dòng.
+// Khuôn đọc (gói không nạp bộ đọc YAML — cùng lệ với gop.mjs, cua-proof.mjs): khoá cột 0 `version: <số>` và `delegated:`
+// với danh sách dạng dòng `[a, b]` hoặc dạng khối `- a`; khoá cũ `ban`/`tu_lam` → lỗi đọc gọi tên mới; khoá cột 0 khác → cờ
+// vàng; dòng ngoài khuôn → lỗi đọc nêu số dòng.
 export function phanTichUyQuyen(text) {
   const vang = [];
   let ban;
@@ -72,31 +104,35 @@ export function phanTichUyQuyen(text) {
     const k = /^([A-Za-z_][\w-]*):(?:[ \t]+(.*?))?\s*$/.exec(d);
     if (!k) return loi(`dòng ${i + 1} ngoài khuôn: «${dong[i].trim()}»`);
     const [, khoa, gt = ''] = k;
-    if (khoa === 'ban') {
-      if (!/^\d+$/.test(gt)) return loi(`ban phải là một số, nhận «${gt}»`);
+    if (KHOA_CU.has(khoa)) return loi(cauTenCu(khoa));
+    if (khoa === 'version') {
+      if (!/^\d+$/.test(gt)) return loi(`version phải là một số, nhận «${gt}»`);
       ban = Number(gt);
-    } else if (khoa === 'tu_lam') {
+    } else if (khoa === 'delegated') {
       if (gt === '') {
         tuLam = [];
         trongKhoi = true;
       } else {
         const f = /^\[(.*)\]$/.exec(gt);
-        if (!f) return loi(`tu_lam phải là một danh sách, nhận «${gt}»`);
+        if (!f) return loi(`delegated phải là một danh sách, nhận «${gt}»`);
         tuLam = f[1].split(',').map(go).filter(Boolean);
       }
     } else vang.push(`khoá lạ «${khoa}» — bộ đọc bỏ qua`);
   }
-  if (tuLam === undefined) return loi('thiếu tu_lam — không biết quyền nào được giao');
-  if (ban === undefined) vang.push('tệp đời cũ thiếu trường ban — đọc như bản 1');
+  if (tuLam === undefined) return loi('thiếu delegated — không biết quyền nào được giao');
+  if (ban === undefined) vang.push('tệp đời cũ thiếu trường version — đọc như bản 1');
   else if (ban !== 1) return loi(`bản ${ban} mới hơn bộ đọc (bộ đọc hiểu bản 1)`);
   return { ban: ban ?? 1, tu_lam: tuLam, vang, loi: null };
 }
 
-// Xếp một kết quả phân tích theo danh sách đóng. Có lỗi → không loại nào được nhận.
+// Xếp một kết quả phân tích theo danh sách đóng. Có lỗi → không loại nào được nhận. Thứ tự kiểm: tên cũ → vùng cấm → danh
+// sách đóng; phần tử đầu gặp lỗi quyết câu lỗi.
 export function xepUyQuyen(pt) {
   const rong = { nhan: [], van_hoi: [], vang: pt.vang ?? [] };
   if (pt.loi) return { ...rong, loi: pt.loi };
   const tuLam = pt.tu_lam;
+  const cu = tuLam.find((t) => Object.hasOwn(TEN_CU, t) && !KHOA_CU.has(t));
+  if (cu) return { ...rong, loi: cauTenCu(cu) };
   const cam = tuLam.find((t) => Object.hasOwn(VUNG_CAM, t));
   if (cam) return { ...rong, loi: `«${cam}» thuộc vùng cấm cứng (${VUNG_CAM[cam]}) — không cấu hình được; cả tệp bị từ chối` };
   const nhan = [];
@@ -108,6 +144,9 @@ export function xepUyQuyen(pt) {
   }
   return { nhan, van_hoi: vanHoi, vang: rong.vang, loi: null };
 }
+
+// Nghĩa tiếng Việt của mọi tên trong `ten` mà kit biết — tên lạ (vd dòng sổ đời cũ) bị bỏ qua, không ném.
+export const nghiaCua = (ten) => Object.fromEntries(ten.filter((t) => Object.hasOwn(LOAI, t)).map((t) => [t, LOAI[t].nghia]));
 
 const IO_THAT = { chay: (cmd, args) => execFileSync(cmd, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 120_000 }) };
 const dongDau = (e) => String(e?.stderr ?? '').split('\n').map((x) => x.trim()).find(Boolean) ?? String(e?.message ?? e).split('\n')[0];

@@ -37,7 +37,9 @@ Các bước, đúng thứ tự:
    của gói đợt), không thành câu hỏi. Thẻ có `uy_quyen` (kho có `governance/delegation.yaml` ở đỉnh nhánh chính — bản
    uỷ quyền chủ kho viết một lần, ADR 0030) → trình nó như MỤC MÁY ĐI TIẾP có cửa phản đối, KHÔNG thành câu hỏi: quyền
    máy nhận (`nhan`), quyền vẫn hỏi chủ kho kèm câu của từng quyền (`van_hoi`), cờ vàng, và lỗi đọc nếu có (có lỗi thì
-   không quyền nào được nhận); kèm đúng một dòng «quyền gộp chỉ dùng khi anh bật quyền tự merge ở thẻ này». Chủ kho
+   không quyền nào được nhận). Mỗi quyền trình bằng nghĩa tiếng Việt ở `uy_quyen.nghia`, tên tiếng Anh trong ngoặc — vd
+   «gộp PR theo quyền (`merge`)»; không đọc trơn tên tiếng Anh cho chủ kho. Kèm đúng một dòng «quyền gộp chỉ dùng khi anh
+   bật quyền tự merge ở thẻ này». Chủ kho
    phản đối thì sửa tệp ở nhánh chính của kho — không có câu trả lời nào ghi quyền ở đây. Câu hỏi cho người CHỈ gồm `hoi`:
    quyền tự merge, và mỗi hàng `build:<slug>` chờ Cổng Đáng. Với mỗi hàng chờ, mở ô `stage: discovery`
    trước bằng bộ ghi lộ trình của acceptance-gate: giải đường gói bằng `resolve-plugin.mjs` của feature-loop

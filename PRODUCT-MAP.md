@@ -12,7 +12,7 @@ flowchart TD
   GD --> DB["Đã bác từ khám phá<br/>11 việc"]
   B --> CD["Chờ duyệt phạm vi<br/>chưa có"] --> GP{"Cổng Phạm vi"}
   GP --> DL["Đang làm<br/>2 việc"] --> GB{"Cổng Bằng chứng"}
-  GB --> DG["Đã giao<br/>168 việc"]
+  GB --> DG["Đã giao<br/>169 việc"]
   GB --> CN["Chờ phiên nghiệm thu<br/>74 việc"] --> GG{"Cổng Giá trị"}
   GG --> NT["Đã nghiệm thu giá trị<br/>7 việc"]
 ```
@@ -163,6 +163,7 @@ flowchart TD
 - Bước chấm khuôn đọc đúng thuộc tính thẻ có hàm mũi tên, và lượt chấm dừng khi tệp bản đồ khuôn hỏng làm mất nhóm (`doc-jsx-va-ban-do-hong`)
 - Ba lượt đổi hành vi ở cổng người — khối 👉 thôi làm luật mỗi-tin, quét độ phủ thôi phỏng vấn, khởi tạo một-lần-gạch; lời hứa hành vi chấm bằng hội đồng bắt buộc (hạng mục T1 đã thu phạm vi 14/08) (`doi-hanh-vi-cong-nguoi`) — đã giao — đã nghỉ, giữ sử liệu
 - Đối soát bàn giao — lúc nối lại đợt sau khi đổi tài khoản, lệnh nối lại so bản bàn giao với trạng thái hiện tại của từng dãy và chỉ nói ra chỗ lệch; nhánh chưa đẩy lộ ra; tài khoản quá ngưỡng thì không mở chip (`doi-soat-ban-giao`)
+- V1 — khoá và tên quyền của bản uỷ quyền governance/delegation.yaml đổi sang tiếng Anh trước mốc đầu tiên mang bộ đọc; tệp mang tên cũ bị từ chối cả tệp kèm câu gọi đúng tên mới; kho không có tệp chạy từng byte như trước vòng (`doi-ten-ban-uy-quyen`)
 - Đường đo nằm trong định-nghĩa-xong — contract có ô «Đường đo» khi hồ sơ có ngưỡng; thẻ Cổng Phạm vi cờ vàng khi thiếu, cửa bỏ có tên; gap-probe cross-check ngưỡng↔đường đo (`duong-do-trong-dinh-nghia-xong`) — đã giao — không đo, khai ở Cổng Đáng
 - Đường lùi phải sống — làn máy-đi-trước có đường lùi thật ở hai cửa: người veto bằng một chữ và ô kết máy-đã-thông có đường ghi; máy không coi «không đo được» là sạch, làn V vẫn bị kiểm hoá cũ, lệnh ký chạy làn máy trước chữ ký (`duong-lui-phai-song`) — đã giao — đã nghỉ, giữ sử liệu
 - Eval máy khai mã thoát mong đợi (expected_exit) — một giới hạn đã khai không còn bị năm bộ đọc coi là thất bại (`eval-khai-ma-thoat-mong-doi`) — đã giao — đã nghỉ, giữ sử liệu

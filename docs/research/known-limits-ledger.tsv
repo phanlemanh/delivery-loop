@@ -1436,3 +1436,4 @@ giam-sat-doc-ban-uy-quyen#may-3	giam-sat-doc-ban-uy-quyen	low	khac	song			Lối 
 giam-sat-doc-ban-uy-quyen#may-4	giam-sat-doc-ban-uy-quyen	medium	khac	song			Hình dạng 1 (đo chỗ khác với vật được giao): ca đo gọi thẳng hàm module, không chạy lệnh CLI mà chỉ dẫn bảo giám sát dùng [máy sinh từ review-findings.md]
 giam-sat-doc-ban-uy-quyen#may-5	giam-sat-doc-ban-uy-quyen	medium	khac	song			Hình dạng 4 (assertion âm tính một mình): kiemNhaKhoa nuốt mọi lỗi ném ra mà không ghim thông điệp, cũng không kiểm khoá đã thật sự được giữ [máy sinh từ review-findings.md]
 giam-sat-doc-ban-uy-quyen#may-6	giam-sat-doc-ban-uy-quyen	low	khac	song			Hình dạng 2 (fixture viết tay đúng khuôn bên đọc): đợt và khoá merge dựng tay, trong khi evals khai là do CLI thật và bộ phát lịch sinh [máy sinh từ review-findings.md]
+doi-ten-ban-uy-quyen#may-1	doi-ten-ban-uy-quyen	medium	khac	song			Phần expected của evals E2/E1/E3 mô tả đầu ra mà ca test không in ra [máy sinh từ review-findings.md]
