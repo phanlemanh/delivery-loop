@@ -7,7 +7,7 @@ reason:
 verified_by: fresh-context verification subagent
 enforcement_mode: strict
 bypass_used: false
-verified_commit: b28b8f4ebaa086a6536886167e39405b0fa69ab7
+verified_commit: 8c3b871f2a52ad413abc896372f1034827a0b8f7
 human_signoff: Phan Le Manh 2026-11-28
 ---
 
@@ -182,3 +182,7 @@ none — every multi-run eval is uniform
 ## Iterations
 
 Round 1: E1–E7 passed, E8 judged PASS by all three lenses. No failed eval.
+
+### Re-pin lần 1 — 2026-11-28, do chiến dịch ghim lại của mốc 3.2.0 (GUIDE mục 7.1) — năm hồ sơ của cửa sổ, sau commit nâng số
+run_id: repin-20261128T071601Z-73825
+sha: 8c3b871f2a52ad413abc896372f1034827a0b8f7 · suites: 11 lệnh exit 0 · evals: 7/7 eval máy đạt kỳ vọng · ngoài làn máy: E8 · AC không có chốt máy: AC-8
