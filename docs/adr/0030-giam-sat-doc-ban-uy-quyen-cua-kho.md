@@ -157,3 +157,27 @@ nhiều đợt.
 - **(B)** Loại `gop` trong tệp mang quyền gộp cho mọi đợt; ô `tu_merge` đọc mặc định từ tệp.
   - Bớt một chữ mỗi đợt.
   - Đổi lại, một quyền khó đảo sống qua nhiều đợt mà không ai gõ lại.
+
+## Sửa 28/11 — khoá và tên quyền sang tiếng Anh (hồ sơ `doi-ten-ban-uy-quyen`)
+
+Luật chủ kho đặt cho cả kit 28/11: **máy đọc tiếng Anh, người đọc tiếng Việt**. Trước mốc đầu tiên mang bộ đọc tới kho tiêu
+thụ (đo 28/11: chưa kho nào có tệp), khoá và tên trong bản uỷ quyền đổi như bảng dưới; chủ kho duyệt bảng ở Cổng Phạm vi của
+hồ sơ trên. Thân ADR ở trên giữ tên đời 26/11 như đã quyết — mục này không viết lại Quyết định 1–5, chỉ đổi tên.
+
+| Tên đời 26/11 | Tên hiện hành | Nhóm |
+|---|---|---|
+| khoá `ban` · `tu_lam` | `version` · `delegated` | khoá |
+| `gop` · `thu-tu-gop` | `merge` · `merge-order` | nhận |
+| `phien` · `chuyen-hang` · `mo-day` · `phan-quyet-chung` · `lo-trinh` | `session` · `reassign-row` · `open-lane` · `shared-ruling` · `roadmap` | vẫn hỏi |
+| `muc-ngoai-hop-dong` · `thiet-ke` | `out-of-contract` · `design` | sai chỗ |
+| `chu-ky` · `cat-ban` · `xoa-nhanh` · `day-kho-khac` · `cai-dat-github` | `gate-signoff` · `release` · `delete-branch` · `push-other-repo` · `github-settings` | vùng cấm |
+| `workflows` · `governance` | giữ nguyên | vùng cấm |
+| `luat-san-pham` · `pham-vi-dot` · `luat-dot` · `uy-quyen` | `product-invariants` · `dispatch-scope` · `dispatch-rules` · `delegation` | vùng cấm |
+
+- **Tệp mang tên cũ bị từ chối cả tệp** — không quyền nào được nhận, kể cả tên mới cùng tệp. Câu lỗi gọi đúng tên mới
+  (`tên cũ «tu_lam» — bản uỷ quyền nay dùng «delegated»; cả tệp bị từ chối`); tên cũ của vùng cấm kèm «vùng cấm cứng,
+  không cấu hình được». Không có đường đọc tên cũ: bảng tên cũ trong bộ đọc chỉ để gọi tên. `version` vẫn chỉ nhận bản 1.
+- **Nghĩa tiếng Việt cho người:** mỗi quyền mang `nghia`; thẻ khởi tạo (`uy_quyen.nghia`) và báo cáo đợt
+  (`dung_quyen.nghia`) trình quyền bằng nghĩa ấy, tên tiếng Anh trong ngoặc.
+- Không đổi: tên lệnh `gop`, `thu-tu-gop`, tệp `thu-tu-gop.json`, sự kiện `dung-quyen`, khoá `tu_merge` của thẻ mở đợt (vòng
+  sổ khoá sau, có đường đọc tên cũ). Hồ sơ đã ký `giam-sat-doc-ban-uy-quyen` giữ nguyên tới chiến dịch ghim lại của mốc kế.

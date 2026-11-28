@@ -292,12 +292,15 @@ lệnh trên. `--cho-ci` cho lệnh tự chờ: xanh thì gộp, một check đ�
 «không trùng tệp» không áp ngoài đợt. Lệnh `gop` không cờ giữ nguyên mọi điều ở đoạn trên.
 
 **Bản uỷ quyền của kho** (hồ sơ `giam-sat-doc-ban-uy-quyen`, ADR 0030): kho viết `governance/delegation.yaml`
-(`ban: 1`, `tu_lam: [<quyền>, …]`); gói đọc tệp ở ĐỈNH NHÁNH CHÍNH (`origin/<nhánh chính>`) mỗi lần dùng, không bao giờ ở
+(`version: 1`, `delegated: [<quyền>, …]` — khoá và tên quyền tiếng Anh, hồ sơ `doi-ten-ban-uy-quyen`); gói đọc tệp ở ĐỈNH NHÁNH CHÍNH (`origin/<nhánh chính>`) mỗi lần dùng, không bao giờ ở
 cây làm việc hay nhánh PR — PR của giám sát không nới được quyền trước khi chủ kho gộp nó. Kho không có tệp chạy như trước,
-từng byte. Danh sách quyền ĐÓNG: bản này nhận `gop` và `thu-tu-gop`; `phien`, `chuyen-hang`, `mo-day`, `phan-quyet-chung`,
-`lo-trinh` đọc được nhưng vẫn hỏi chủ kho (thẻ in câu vì sao); `muc-ngoai-hop-dong`, `thiet-ke` bị từ chối kèm chỗ đúng;
-tên lạ, hay tên thuộc vùng cấm (`chu-ky`, `cat-ban`, `xoa-nhanh`, `day-kho-khac`, `cai-dat-github`, `workflows`,
-`governance`, `luat-san-pham`, `pham-vi-dot`, `luat-dot`, `uy-quyen`), làm cả tệp bị từ chối. Hai lệnh của quyền:
+từng byte. Danh sách quyền ĐÓNG: bản này nhận `merge` (gộp PR theo quyền) và `merge-order` (xếp lại thứ tự gộp);
+`session`, `reassign-row`, `open-lane`, `shared-ruling`, `roadmap` đọc được nhưng vẫn hỏi chủ kho (thẻ in câu vì sao);
+`out-of-contract`, `design` bị từ chối kèm chỗ đúng; tên lạ, hay tên thuộc vùng cấm (`gate-signoff`, `release`,
+`delete-branch`, `push-other-repo`, `github-settings`, `workflows`, `governance`, `product-invariants`, `dispatch-scope`,
+`dispatch-rules`, `delegation`), làm cả tệp bị từ chối. Tệp còn mang tên đời 27/11 (`ban`, `tu_lam`, `gop`, `chu-ky`…) bị
+từ chối cả tệp, câu lỗi gọi đúng tên mới — không có đường đọc tên cũ. Mỗi quyền mang nghĩa tiếng Việt (`nghia`) để thẻ và
+báo cáo nói tiếng người. Hai lệnh của quyền (tên lệnh không đổi):
 - `dieu-phoi.mjs gop <số PR> --slug <s> --theo-quyen --phien <mã giám sát>` — chỉ khi ô `tu_merge` của đợt bật; giám sát
   giữ khoá `merge` trong lúc gộp (khoá bận thì chặn) và nhả ở mọi lối; `xetGop` quyết không đổi; PR chạm
   `.github/workflows/`, `governance/` hay `PRODUCT-INVARIANTS.md` → chặn, bấm gộp là của người.
@@ -305,7 +308,7 @@ tên lạ, hay tên thuộc vùng cấm (`chu-ky`, `cat-ban`, `xoa-nhanh`, `day-
   khoá `merge` theo thứ tự ấy từ nhịp kế (`thu-tu-gop.json`, xoá tệp là về thứ tự của máy).
 Mỗi lần dùng quyền ghi TRƯỚC một dòng `{loai: 'dung-quyen', quyen, viec, duong_dao, sha_uy_quyen, can_phan: false}`; ghi hỏng
 thì không làm. Hai bề mặt mới ở kho có tệp: khối `uy_quyen` trên thẻ khởi tạo (mục máy đi tiếp, không thành câu hỏi) và
-khoá `dung_quyen` của `dem --json`. Đường đảo: xoá tệp ở nhánh chính.
+khoá `dung_quyen` của `dem --json`, cả hai kèm `nghia`. Đường đảo: xoá tệp ở nhánh chính.
 
 ## Giao tiếp giữa các phiên (lệnh `tin`)
 

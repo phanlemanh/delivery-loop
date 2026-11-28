@@ -26,5 +26,7 @@ Các bước, đúng thứ tự:
 5. **Dọn.** Xoá lịch 30′ của đợt; lưu trữ phiên thợ; với mỗi worktree đã gộp, kiểm
    `git status --porcelain` trước rồi mới dọn; viết báo cáo đợt (số đếm:
    `node "${CLAUDE_PLUGIN_ROOT}/scripts/dieu-phoi.mjs" dem --json`). Kết quả có `dung_quyen` (giám sát đã dùng quyền của
-   bản uỷ quyền) → báo cáo ghi một dòng đếm: tổng số lần và số lần theo từng quyền (`dung_quyen.theo_quyen`). Dọn
+   bản uỷ quyền) → báo cáo ghi một dòng đếm: tổng số lần và số lần theo từng quyền (`dung_quyen.theo_quyen`), mỗi quyền
+   gọi bằng nghĩa tiếng Việt ở `dung_quyen.nghia` với tên tiếng Anh trong ngoặc (quyền không có nghĩa — dòng sổ đời cũ —
+   ghi tên như sổ ghi). Dọn
    worktree hay lưu trữ phiên KHÔNG phải quyền của bản uỷ quyền ở bản này — vẫn theo chữ duyệt của chủ kho ở thẻ đóng đợt.

@@ -114,15 +114,17 @@ mình, chọn giữa hai cách đều đảo được. Tự quyết và ghi sổ
 
 Kho có `governance/delegation.yaml` ở nhánh chính thì giám sát làm một số việc không hỏi chủ kho — bản uỷ quyền chủ kho
 viết một lần; máy đọc nó ở đỉnh nhánh chính mỗi lần dùng, không đọc cây làm việc hay nhánh PR. Mỗi lần dùng quyền máy ghi
-TRƯỚC một dòng `dung-quyen` (tên quyền, việc, đường đảo) vào sổ sự kiện của đợt.
-- Gộp (quyền `gop`, chỉ khi chủ kho bật quyền tự merge ở thẻ khởi tạo):
+TRƯỚC một dòng `dung-quyen` (tên quyền, việc, đường đảo) vào sổ sự kiện của đợt. Tên quyền trong tệp và trong sổ là tiếng
+Anh (`delegated: [merge, merge-order]`); nói với chủ kho bằng nghĩa tiếng Việt, tên trong ngoặc.
+- Gộp PR theo quyền (`merge`, chỉ khi chủ kho bật quyền tự merge ở thẻ khởi tạo):
   `node <thư mục đợt>/loi/dieu-phoi.mjs gop <số PR> --slug <slug> --theo-quyen --phien <mã giám sát>` — qua đúng các phép
   kiểm gộp của dãy (chữ ký, CI xanh trên đúng commit); PR chạm `.github/workflows/`, `governance/` hay luật sản phẩm thì
   bấm gộp là của người.
-- Xếp lại thứ tự gộp (quyền `thu-tu-gop`): `node <thư mục đợt>/loi/dieu-phoi.mjs thu-tu-gop <dãy,dãy,…> --phien <mã giám
+- Xếp lại thứ tự gộp (`merge-order`): `node <thư mục đợt>/loi/dieu-phoi.mjs thu-tu-gop <dãy,dãy,…> --phien <mã giám
   sát>` — danh sách phải gồm đúng các dãy đang chờ gộp.
 - Giám sát không gộp hay xếp thứ tự bằng cách nào khác hai lệnh trên.
-- Vẫn hỏi chủ kho: chuyển hàng, mở dãy, phán quyết chung, lộ trình, dọn phiên. Không bao giờ thuộc quyền nào (vùng cấm):
+- Vẫn hỏi chủ kho: chuyển hàng (`reassign-row`), mở dãy (`open-lane`), phán quyết chung (`shared-ruling`), lộ trình
+  (`roadmap`), dọn phiên (`session`). Không bao giờ thuộc quyền nào (vùng cấm):
   chữ ký ở cổng, cắt bản, xoá nhánh còn commit chưa gộp, đẩy lên kho khác, đổi cài đặt GitHub, `.github/workflows/`,
   `governance/`, luật sản phẩm, phạm vi, luật và bản uỷ quyền của chính đợt.
 
