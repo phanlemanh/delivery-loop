@@ -4,6 +4,8 @@
 // nên PR của chính giám sát không nới được quyền trước khi chủ kho gộp nó. Kho không có tệp → `{ co: false }`, mọi bên dùng
 // chạy như trước vòng, từng byte.
 //
+// Mỗi loại mang `nghia` — cụm tiếng Việt cho người đọc thẻ khởi tạo và báo cáo đợt; tên tiếng Anh chỉ cho máy.
+//
 // Danh sách loại ĐÓNG, kit định nghĩa: một loại chỉ được nhận khi kit có phép so trước/sau VÀ lệnh dùng nó (ADR 0030, Quyết
 // định 2). Tên ngoài danh sách là lỗi đọc. Vùng cấm cứng không cấu hình được: tệp liệt một mục cấm thì cả tệp bị từ chối.
 //
@@ -18,15 +20,15 @@ const CHUA_LENH = 'chưa có lệnh ở bản này — vẫn hỏi chủ kho';
 const CHUA_PHEP_SO = 'chưa có phép so — vẫn hỏi chủ kho';
 // <<<UY-QUYEN-LOAI
 export const LOAI = {
-  'merge-order': { nhom: 'nhan', cau: null },
-  merge: { nhom: 'nhan', cau: null },
-  session: { nhom: 'van-hoi', cau: 'mở phiên: máy đã tự làm theo thẻ khởi tạo, không cần quyền — dọn phiên: chưa có phép so — vẫn hỏi chủ kho' },
-  'reassign-row': { nhom: 'van-hoi', cau: CHUA_LENH },
-  'open-lane': { nhom: 'van-hoi', cau: CHUA_LENH },
-  'shared-ruling': { nhom: 'van-hoi', cau: CHUA_LENH },
-  roadmap: { nhom: 'van-hoi', cau: CHUA_PHEP_SO },
-  'out-of-contract': { nhom: 'sai-cho', cau: 'không thuộc giám sát đợt — sống ở chính sách Cổng Đáng' },
-  design: { nhom: 'sai-cho', cau: 'không thuộc giám sát đợt — sống ở sổ thiết kế của design-assembly' },
+  'merge-order': { nhom: 'nhan', cau: null, nghia: 'xếp lại thứ tự gộp' },
+  merge: { nhom: 'nhan', cau: null, nghia: 'gộp PR theo quyền' },
+  session: { nhom: 'van-hoi', cau: 'mở phiên: máy đã tự làm theo thẻ khởi tạo, không cần quyền — dọn phiên: chưa có phép so — vẫn hỏi chủ kho', nghia: 'mở và dọn phiên' },
+  'reassign-row': { nhom: 'van-hoi', cau: CHUA_LENH, nghia: 'chuyển hàng sang dãy khác' },
+  'open-lane': { nhom: 'van-hoi', cau: CHUA_LENH, nghia: 'mở thêm dãy' },
+  'shared-ruling': { nhom: 'van-hoi', cau: CHUA_LENH, nghia: 'phán quyết dùng chung cho các dãy' },
+  roadmap: { nhom: 'van-hoi', cau: CHUA_PHEP_SO, nghia: 'sửa lộ trình' },
+  'out-of-contract': { nhom: 'sai-cho', cau: 'không thuộc giám sát đợt — sống ở chính sách Cổng Đáng', nghia: 'quyết mục ngoài hợp đồng' },
+  design: { nhom: 'sai-cho', cau: 'không thuộc giám sát đợt — sống ở sổ thiết kế của design-assembly', nghia: 'quyết thiết kế' },
 };
 // UY-QUYEN-LOAI>>>
 
@@ -142,6 +144,9 @@ export function xepUyQuyen(pt) {
   }
   return { nhan, van_hoi: vanHoi, vang: rong.vang, loi: null };
 }
+
+// Nghĩa tiếng Việt của mọi tên trong `ten` mà kit biết — tên lạ (vd dòng sổ đời cũ) bị bỏ qua, không ném.
+export const nghiaCua = (ten) => Object.fromEntries(ten.filter((t) => Object.hasOwn(LOAI, t)).map((t) => [t, LOAI[t].nghia]));
 
 const IO_THAT = { chay: (cmd, args) => execFileSync(cmd, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 120_000 }) };
 const dongDau = (e) => String(e?.stderr ?? '').split('\n').map((x) => x.trim()).find(Boolean) ?? String(e?.message ?? e).split('\n')[0];

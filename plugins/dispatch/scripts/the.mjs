@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { gocKhoChinh, timThuMucDot } from './dot.mjs';
 import { docCauHinh, docHangViec } from './hinh-dang.mjs';
-import { docUyQuyen } from './uy-quyen.mjs';
+import { docUyQuyen, nghiaCua } from './uy-quyen.mjs';
 
 // Một trường frontmatter, đọc theo ĐÚNG nghĩa `frontmatterField` của kit (lib/evidence-core.cjs): trong
 // một dòng (`[ \t]*`, không `\s*` — khoá để trống không được nuốt dòng kế), bỏ chú thích `#`, bóc nháy
@@ -99,7 +99,7 @@ export function theKhoiTao(cwd) {
   const nhanh = cfg?.nhanh_chinh ?? 'main';
   const uq = docUyQuyen({ gocKho: cfg?.goc_kho ?? gocKho, nhanhChinh: nhanh });
   if (!uq.co) return ketQua;
-  return { ...ketQua, may_di_tiep: [...may, 'uy-quyen'], uy_quyen: { nguon: `origin/${uq.nhanh}@${uq.sha.slice(0, 7)}`, nhan: uq.nhan, van_hoi: uq.van_hoi, vang: uq.vang, loi: uq.loi } };
+  return { ...ketQua, may_di_tiep: [...may, 'uy-quyen'], uy_quyen: { nguon: `origin/${uq.nhanh}@${uq.sha.slice(0, 7)}`, nhan: uq.nhan, van_hoi: uq.van_hoi, nghia: nghiaCua([...uq.nhan, ...uq.van_hoi.map((x) => x.loai)]), vang: uq.vang, loi: uq.loi } };
 }
 
 const suKienDot = (thuMuc) => {

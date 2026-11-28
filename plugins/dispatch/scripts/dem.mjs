@@ -7,6 +7,7 @@
 // không đọc được giờ ký (gộp squash, sự kiện của bản cũ) vào `chua_do` — không vào mẫu số.
 import fs from 'node:fs';
 import path from 'node:path';
+import { nghiaCua } from './uy-quyen.mjs';
 
 export const LOAI_GOP = 'hang-gop';
 export const LOAI_GOI = ['cho-nguoi'];
@@ -39,13 +40,14 @@ export function demDot(thuMuc) {
 }
 
 // Dòng đếm của báo cáo đợt (ADR 0030, hồ sơ giam-sat-doc-ban-uy-quyen): số lần giám sát dùng quyền, theo từng quyền. Sổ
-// không có dòng `dung-quyen` → không khoá nào (báo cáo đợt từng byte như trước vòng).
+// không có dòng `dung-quyen` → không khoá nào (báo cáo đợt từng byte như trước vòng). `nghia` = nghĩa tiếng Việt của các
+// quyền kit biết, để báo cáo nói tiếng người (hồ sơ doi-ten-ban-uy-quyen).
 function demDungQuyen(suKien) {
   const dq = suKien.filter((e) => e.loai === 'dung-quyen');
   if (dq.length === 0) return {};
   const theoQuyen = {};
   for (const e of dq) theoQuyen[e.quyen ?? '(không rõ)'] = (theoQuyen[e.quyen ?? '(không rõ)'] ?? 0) + 1;
-  return { dung_quyen: { tong: dq.length, theo_quyen: theoQuyen } };
+  return { dung_quyen: { tong: dq.length, theo_quyen: theoQuyen, nghia: nghiaCua(Object.keys(theoQuyen)) } };
 }
 
 const trungVi = (ds) => {

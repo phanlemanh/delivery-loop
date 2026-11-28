@@ -914,3 +914,54 @@ test('TA-04-do them-khoa', async () => {
   assert.ok(loi.includes('the khoi-tao --json lệch'), `TA-04-do: ${loi.join(' | ')}`);
   console.log('  TA-04-do: the khoi-tao --json lệch');
 });
+
+// ---------- TA-07 · AC-7 — nghĩa tiếng Việt trên thẻ và báo cáo đợt ----------
+const CO_DAU = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+const lechNghia = (nghia, mong) => {
+  const sai = [];
+  const co = Object.keys(nghia ?? {});
+  for (const t of mong) if (!co.includes(t)) sai.push(`thẻ thiếu nghĩa tiếng Việt: ${t}`);
+  for (const t of co) if (!mong.includes(t)) sai.push(`thẻ thừa nghĩa: ${t}`);
+  for (const t of co) {
+    if (!CO_DAU.test(nghia[t] ?? '')) sai.push(`${t} · nghĩa không có chữ tiếng Việt có dấu`);
+    if (String(nghia[t]).toLowerCase().includes(t)) sai.push(`${t} · nghĩa chứa tên tiếng Anh`);
+  }
+  return sai;
+};
+async function kiemNghia(gocGoi) {
+  const a = khoUyQuyen({ uyQuyen: `version: 1\ndelegated: [${LOAI_MONG.join(', ')}]\n` });
+  dotGiamSat(a.k);
+  const t = theCua(gocGoi, a.k);
+  const khong = khoUyQuyen({ uyQuyen: null });
+  dotGiamSat(khong.k);
+  const sai = t.uy_quyen ? lechNghia(t.uy_quyen.nghia, LOAI_MONG) : ['thẻ thiếu khối uy_quyen'];
+  if (JSON.stringify(t.hoi) !== JSON.stringify(theCua(gocGoi, khong.k).hoi)) sai.push('nghĩa làm đổi mảng hoi');
+  return sai;
+}
+
+test('TA-07 the-nghia', async () => {
+  assert.deepEqual(await kiemNghia(GOI), []);
+  console.log(`  TA-07: ${LOAI_MONG.length} loại · mỗi loại có nghĩa tiếng Việt trên thẻ`);
+});
+
+test('TA-07 dem-nghia', async () => {
+  const a = khoGop();
+  const d = dotGiamSat(a.k, { xin: HAI_DON });
+  for (let i = 0; i < 2; i++) assert.equal((await gopQuyen(GOI, a.k, ioCua(a.k, a.sha, { dot: d }))).kq.da_gop, true);
+  const { thuTuGop } = await nap(GOI, 'thu-tu-gop.mjs');
+  assert.equal(thuTuGop(a.k, 'P2,P1', { phien: GS }).duoc, true);
+  // Đợt chạy qua lần nâng gói: một dòng dung-quyen đời cũ mang tên `gop` — đếm được, không có nghĩa, không ném.
+  fs.appendFileSync(path.join(d, 'su-kien.jsonl'), `${JSON.stringify({ luc: NGAY, loai: 'dung-quyen', quyen: 'gop', can_phan: false })}\n`);
+  const dem = JSON.parse(cli(GOI, a.k, ['dem', '--json']).split('\n')[1]);
+  assert.equal(dem.dung_quyen.tong, 4);
+  assert.deepEqual(dem.dung_quyen.theo_quyen, { merge: 2, 'merge-order': 1, gop: 1 });
+  assert.deepEqual(lechNghia(dem.dung_quyen.nghia, ['merge', 'merge-order']), []);
+});
+
+test('TA-07-do bo-nghia', async () => {
+  assert.deepEqual(await kiemNghia(GOI), [], 'đối chứng dương');
+  const sao = banSao(['scripts/uy-quyen.mjs', ", nghia: 'mở và dọn phiên' }", ' }']);
+  const sai = await kiemNghia(sao);
+  assert.ok(sai.includes('thẻ thiếu nghĩa tiếng Việt: session'), `TA-07-do: ${sai.join(' | ')}`);
+  console.log('  TA-07-do: thẻ thiếu nghĩa tiếng Việt: session');
+});
