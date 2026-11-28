@@ -886,3 +886,31 @@ test('TA-02-do doi-cheo', async () => {
   assert.ok(sai.includes('gop · mong merge · nhận merge-order'), `TA-02-do: ${sai.join(' | ')}`);
   console.log('  TA-02-do: gop · mong merge · nhận merge-order');
 });
+
+// ---------- TA-04 · AC-4 — chiều im so với đỉnh trước vòng ----------
+// Cùng hàm so của UQ-05, gốc so là bộ đọc tên cũ ở a9b7cbe6: kho không có tệp chạy từng byte như trước vòng.
+async function chieuImTruocVong(gocMoi) {
+  const loi = [...(await chieuIm(gocMoi, BAN_TRUOC_VONG))];
+  const k = khoKhongRemote();
+  loi.push(...(await soBonLenh(gocMoi, k, dotGiamSat(k, { xin: HAI_DON }), BAN_TRUOC_VONG)).map((x) => `không remote: ${x}`));
+  const h = khoUyQuyen({ uyQuyen: null });
+  git(h.k, 'remote', 'set-url', 'origin', path.join(h.goc, 'khong-co.git'));
+  loi.push(...(await soBonLenh(gocMoi, h.k, dotGiamSat(h.k, { xin: HAI_DON }), BAN_TRUOC_VONG)).map((x) => `lấy về hỏng: ${x}`));
+  return loi;
+}
+
+test('TA-04 truoc-vong', async () => {
+  assert.deepEqual(await chieuImTruocVong(GOI), []);
+  const cu = await gopKhongCo(layBan(BAN_TRUOC_VONG));
+  const moi = await gopKhongCo(GOI);
+  assert.equal(JSON.parse(moi).kq.da_gop, true, 'đối chứng: dãy giữ khoá gộp được PR chạm workflows như trước vòng');
+  assert.equal(moi, cu);
+});
+
+test('TA-04-do them-khoa', async () => {
+  assert.deepEqual(await chieuIm(GOI, BAN_TRUOC_VONG), [], 'đối chứng dương');
+  const sao = banSao(['scripts/the.mjs', '    canh_bao: canhBao,\n  };', '    canh_bao: canhBao,\n    uy_quyen: null,\n  };']);
+  const loi = await chieuIm(sao, BAN_TRUOC_VONG);
+  assert.ok(loi.includes('the khoi-tao --json lệch'), `TA-04-do: ${loi.join(' | ')}`);
+  console.log('  TA-04-do: the khoi-tao --json lệch');
+});
