@@ -48,8 +48,36 @@ ngoài vùng của hàng này nhưng là phụ thuộc của nó. Ca phải có 
 đợt). Ca do hàng KHÔNG khai `ranh_gioi` (sự kiện `ranh-gioi-vang` của bộ phát lịch) không tính: sửa đúng tầng là kho khai
 vùng, không phải DL4.
 
-**Đếm ở đâu:** phiên giữ đợt đếm khi đọc báo cáo đóng đợt và khi đo hồ sơ mốc; hôm nay **0 ca**, chưa đo tỉ lệ hàng khai
-`ranh_gioi` ở các kho.
+**Đếm ở đâu:** phiên giữ đợt đếm khi đọc báo cáo đóng đợt và khi đo hồ sơ mốc.
+
+**Lần đo đầu, 28/11 (phiên đo chỉ đọc `do-dl4`; phiên giữ đợt kiểm lại ba chỗ dựa): 0 ca → DL4 ở lại hạt giống.**
+
+| | Inventory | crm | Quỹ hàng |
+|---|---|---|---|
+| Cửa sổ PR đã đo | 114 PR, từ 01/10 | 66 PR, từ 25/10 | 242 PR, từ 01/10 |
+| Ca gián tiếp (tính) | 0 | 0 | 0 |
+| Cặp đúng HÌNH DẠNG nhưng phụ thuộc không phải nguyên nhân | 17 | — | 31 |
+| Cặp không khai vùng (không tính) | 332 | 230 + 1 ứng viên bị loại | 644 |
+| Trùng tệp trực tiếp, lịch đáng lẽ đã chặn (báo riêng) | 0 | 2 | 2 |
+| Hàng tự sửa tệp ngoài vùng nó khai (vùng khai thiếu) | 27 | 26 | 137 |
+
+- *Vì sao 17 và 31 không tính:* cấu hình của Inventory và Quỹ hàng không có `risk_tiers.stale_scope`, nên luật mặc định
+  áp: tệp nào đổi sau `verified_commit` cũng làm bằng chứng cũ. Mọi lần gộp nhánh chính sau chữ ký đều buộc ghim lại, tệp
+  kia có là phụ thuộc hay không; lịch biết phụ thuộc không xoá được lần ghim nào. Chỉ crm bật `stale_scope: paths`, nên
+  chỉ ở crm phụ thuộc mới có thể là nguyên nhân.
+- *Ứng viên duy nhất ở crm* (PR #583 ← #569, ghim lại `d211bdd87` ngày 30/10 sau chữ ký) bị loại: nhật ký đợt có sự kiện
+  `ranh-gioi-vang` cho chính hàng ấy lúc 2026-10-28T12:36:20Z — hàng được giao khi chưa khai vùng.
+- *Vế xung đột khi gộp ngược ra 0 theo cấu trúc:* xung đột chỉ có khi hàng này cũng sửa tệp đó, tức nó sửa ngoài vùng của
+  chính mình, không phải phụ thuộc gián tiếp. Ngưỡng vì vậy chỉ đạt được qua vế ghim lại.
+- *Đối chứng dương:* ba kho giả của phiên đo — có import ra 1 ca, bỏ import ra 0 (phiên giữ đợt chạy lại, ra đúng thế).
+- *Chưa đo:* crm trước 25/10 (lịch biết tệp chưa chạy nên không ca nào tính được) · vùng LÚC GIAO của Inventory và Quỹ
+  hàng (không có nhật ký đợt trên máy đo; vùng lấy từ gói đợt trong git) · hai cặp trùng tệp trực tiếp ở crm chưa biết
+  lúc giao lịch có được hỏi so tệp không. Đường import mới đoán theo tên tệp.
+- *Điều lần đo này báo trước:* trong số cặp đúng hình dạng có 9 (Inventory) và 24 (Quỹ hàng) cặp mà tệp kia khớp `paths`
+  của eval. Kho nào bật `stale_scope: paths` thì các cặp kiểu ấy thành lần ghim do phụ thuộc gây ra, và bộ đếm này mới
+  có thể khác 0. Đo lại sau khi một kho ngoài crm chạy đủ một đợt với `stale_scope: paths`.
+- Số của Quỹ hàng chỉ ghi ở dạng đếm tổng hợp. Script và kết quả trung gian nằm ở thư mục tạm của phiên đo, ngoài mọi
+  kho; khởi động lại máy có thể xoá — bảng này là bản ghi bền.
 
 **Khi ngưỡng đạt:** DL4 thành ô với `Gốc:` trỏ hồ sơ có ca ấy; kit ĐỌC thẳng `architecture/modules.yaml` của kho nếu kho có
 (không giữ bản sao, theo câu trả lời K11), kho không có tệp thì chạy như hôm nay. Vẫn là CỘNG, chủ kho phê ở Cổng Phạm vi.

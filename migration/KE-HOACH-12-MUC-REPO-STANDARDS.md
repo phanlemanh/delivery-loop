@@ -116,7 +116,7 @@ Ba điều rút ra từ cả bảng:
 | Chờ ngưỡng | K4, K7 → DL3 | chờ tầng CI của Repo Standards |
 | Chờ ngưỡng | K5 → mã đo | nếu đếm tay không tách được |
 | Chờ ngưỡng | K6, K9 phần kit | thư viện thước · làn nhẹ |
-| Chờ ngưỡng | K11 → DL4 (DL6 xong 27/11) | DL4 chờ ngưỡng đang đếm, hôm nay 0 ca |
+| Chờ ngưỡng | K11 → DL4 (DL6 xong 27/11) | DL4 chờ ngưỡng đang đếm; lần đo đầu 28/11 trên ba kho: 0 ca (bảng ở `hat-giong-sau-goi-dl-ba-kho.md` mục «Điều kiện DL4») |
 
 ## 5. Hai câu trả lời đề xuất cho K11
 
