@@ -63,8 +63,8 @@ hiện hạng mục kit 4 nâng repo standards».
 - **Vật:** Nâng repo-setup của kho kit từ 0.5.0 lên 0.10.4 bằng đường nâng cấp của chính repo-setup, và đóng năm mục doctor
   đang trượt (agent_permissions, plugin_ci_validates, language_policy, upgrade_wall, plugin_versions)
 - **Ai thấy:** chỉ kho kit. Không tệp nào dưới `plugins/` đổi, nên gói giao cho kho tiêu thụ giữ nguyên từng byte.
-- **Giới hạn đã khai:** 1 giới hạn khai trước (AC-1 và AC-2 cần repo-setup 0.10.4 trên máy, nên chỉ chạy ở lượt chấm,
-  không ở CI) và 4 mục chọn ở Cổng Bằng chứng 26/11, cả 4 ghi ở Notes hợp đồng — đáng nhớ nhất: Ngoài-3
+- **Giới hạn đã khai:** 2 giới hạn khai trước (AC-1 và AC-2 cần repo-setup 0.10.4 trên máy, nên chỉ chạy ở lượt chấm,
+  không ở CI; `tools/ledgers.py` vào kho mà không có sổ nào để vẽ) và 4 mục chọn ở Cổng Bằng chứng 26/11, cả 4 ghi ở Notes hợp đồng — đáng nhớ nhất: Ngoài-3
   «`tools/upgrade_markers.py` báo sạch khi `.repo-setup.json` vắng hoặc hỏng, nên ở máy tường dấu xung đột im lặng; CI vẫn
   đỏ nhờ `plugin_lint.py`. Sửa đúng chỗ là ở kho khuôn repo-standards (tệp có băm ghim).»
 
