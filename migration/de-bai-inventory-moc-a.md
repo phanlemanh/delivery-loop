@@ -47,11 +47,15 @@ Chủ kho quyết 28/11 ở phiên giữ đợt: «Chỉ Inventory» — Mốc A
 
 | Khoá | Số đo từ lịch sử của kho | Được gì · mất gì | Cách đảo |
 |---|---|---|---|
-| `feature_loop.repin_parallel_suites` | 110 làn ghim lại từ 14/11, trung vị 16,0 phút, tổng 35,9 giờ máy | Các lệnh suite của làn chạy cùng lúc, làn ngắn lại. Kit dặn: kho có suite cùng ghi một tài nguyên (cơ sở dữ liệu kiểm) thì chưa nên bật; phải chạy làn hai cách trên cùng một cây và so mã thoát trước | Xoá dòng |
+| `feature_loop.repin_parallel_suites` | 110 làn ghim lại từ 14/11, trung vị 16,0 phút, tổng 35,9 giờ máy. Bản tổng kết đợt `nen` (PR #40 của kho kit, mục 4) ghi khoá này «còn tắt có chủ ý» — hỏi lại lý do còn đứng không, đừng trình như khoá bị quên | Các lệnh suite của làn chạy cùng lúc, làn ngắn lại. Kit dặn: kho có suite cùng ghi một tài nguyên (cơ sở dữ liệu kiểm) thì chưa nên bật; phải chạy làn hai cách trên cùng một cây và so mã thoát trước | Xoá dòng |
 | `lo_trinh.chan` | 95 hồ sơ mới từ 09/11 (ngày kho có tệp lộ trình); 33 hồ sơ không thuộc hàng nào — phần lớn là nâng kit, nâng công cụ thiết kế, sửa hạ tầng | Mọi hồ sơ mới phải thuộc một hàng; mở vòng từ câu mô tả thì máy tự thêm hàng. Giới hạn kit đã khai: hai phiên cùng thêm hàng một lúc có thể mất một hàng — kho đang chạy đợt nhiều dãy nên giới hạn này có thật | `chan: false` hoặc xoá dòng |
 | `ban_do.ngoai_git` | 49/69 PR gộp từ 14/11 chạm `PRODUCT-MAP.md` hoặc `LO-TRINH.html`; các nhánh ấy có 94 commit gộp nhánh chính vào nhánh. CHƯA đo bao nhiêu lần trong số đó là xung đột do hai tệp này | Hai tệp rời git, PR thôi xung đột ở chúng, lối gộp không-trùng-tệp của gói điều phối dùng được. Kho có bên đọc hai tệp qua git hay GitHub thì phải khai nhánh view trong cùng PR. Kho đã có hồ sơ `roadmap-merge-driver` — nêu nó đã bớt được bao nhiêu phần gỡ tay | Ba bước ngược lại trong một PR (`GUIDE.md` của kit, khối BAN-DO-NGOAI-GIT) |
 | Bản uỷ quyền `governance/delegation.yaml` — MỚI ở mốc này | Kho chưa có tệp (chỉ có `governance/autonomy.yaml`). Bản tổng kết đợt `nen` ghi 104 câu hỏi tới chủ kho qua giám sát trên 54 lần gộp — số của phiên khác, chưa kiểm lại | Giám sát được tự làm đúng các quyền chủ kho ghi trong tệp, đọc ở đỉnh nhánh chính; tên lạ hay tên thuộc vùng cấm làm cả tệp bị từ chối. Khoá và tên quyền là tiếng Anh (`version`, `delegated`; `merge`, `merge-order`, `session`, `reassign-row`, `open-lane`, `shared-ruling`, `roadmap`). Viết tệp là quyết định của người; vòng nâng kit KHÔNG tự viết | Xoá tệp: kho không có tệp chạy như trước |
 | `tu_merge` — ô trên thẻ mở đợt, đặt theo từng đợt | Bản tổng kết đợt `nen`: ký → gộp trung vị 22 phút, chỉ đo được trên 11/54 lần gộp — số của phiên khác, chưa kiểm lại | Giám sát được gộp theo quyền trong đợt; chỉ có nghĩa khi bản uỷ quyền nhận `merge` | Tắt ô ở đợt kế |
+
+Ngoài chín khoá: bản tổng kết đợt `nen` ghi kho còn tắt có chủ ý `gop_khong_chay_lai_ci` và chuyến gộp, đã bật
+`repin_retry: 1` (28/11), và gói đợt `docs/plan/dot-nen/dieu-phoi.config.json` còn mang hai khoá sức khoẻ cũ (`swap_gb`,
+`rss_gb`) kit đã bỏ qua — nêu kèm, không tính vào bảng.
 
 Phiên giữ đợt không khuyến nghị bật khoá nào trong năm khoá trên thay chủ kho: mỗi khoá là khẩu vị rủi ro của kho. Vòng
 nâng kit nêu một khuyến nghị cho từng dòng sau khi đo lại, kèm hệ quả từng lối.
