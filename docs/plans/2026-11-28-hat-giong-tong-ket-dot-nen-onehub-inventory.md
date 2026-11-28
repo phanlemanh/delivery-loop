@@ -5,7 +5,8 @@ Gốc: onehub-inventory/_acceptance/nhap-excel/ (hàng 11, PR #130) và onehub-i
 (phán quyết G-2811-1 … G-2811-59) và `su-kien.jsonl`; trang đo `kit-theo-north-star-2026-11-28.html`,
 `do-thoi-gian-11-vp10-2026-11-28.html` cùng thư mục. Bản tổng kết gốc của giám sát:
 `onehub-inventory/.acceptance-runs/dieu-phoi-nen/tong-ket-cho-kit-2026-11-28.md` — tệp này phủ tới **mục 8 (bổ sung 28/11
-12:15)**; mục giám sát thêm sau giờ ấy chưa có ở đây.
+12:15)**; mục 9–12 (bổ sung tới 28/11 18:20) và trang đo hàng 11 ghi thành issue #43–#55, không chép lại vào đây; mục 11
+(design-assembly) không thuộc kit này, không ghi.
 **Chân VC8 (cơ học, KHÔNG phải neo):** `_acceptance/o-chi-mo-khi-co-neo-ngoai/` trích lại tệp này.
 
 **Trạng thái:** hạt giống (SỔ, chưa là ô). Ghi 28/11/2026 theo lời chủ kho ở phiên đo cùng ngày: «Gửi bản tổng kết thông tin
