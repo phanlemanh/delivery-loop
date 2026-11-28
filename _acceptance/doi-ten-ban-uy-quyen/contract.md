@@ -5,7 +5,7 @@ slug: doi-ten-ban-uy-quyen
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: plugins/dispatch/** · tests/dieu-phoi/** · docs/adr/0030 — KHÔNG khớp t3_paths
 surfaces: [cli]
-status: implemented
+status: verified
 approved_by: Phan Le Manh
 approved_at: 2026-11-28
 design_doc: docs/superpowers/specs/2026-11-28-doi-ten-ban-uy-quyen-design.md
