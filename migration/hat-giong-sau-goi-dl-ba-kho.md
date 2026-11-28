@@ -76,6 +76,8 @@ vùng, không phải DL4.
 - *Điều lần đo này báo trước:* trong số cặp đúng hình dạng có 9 (Inventory) và 24 (Quỹ hàng) cặp mà tệp kia khớp `paths`
   của eval. Kho nào bật `stale_scope: paths` thì các cặp kiểu ấy thành lần ghim do phụ thuộc gây ra, và bộ đếm này mới
   có thể khác 0. Đo lại sau khi một kho ngoài crm chạy đủ một đợt với `stale_scope: paths`.
+  **Đồng hồ đã chạy:** Inventory bật `stale_scope: paths` ngày 28/11 10:50 (+07), PR #138 của kho, commit gộp
+  `2df6f190` — SAU phép đo trên. Đo lại khi Inventory chạy xong một đợt điều phối kể từ commit ấy.
 - Số của Quỹ hàng chỉ ghi ở dạng đếm tổng hợp. Script và kết quả trung gian nằm ở thư mục tạm của phiên đo, ngoài mọi
   kho; khởi động lại máy có thể xoá — bảng này là bản ghi bền.
 
