@@ -1,4 +1,4 @@
-// Xếp lại thứ tự cấp khoá `merge` (ADR 0030, loại `thu-tu-gop`; hồ sơ giam-sat-doc-ban-uy-quyen). Lệnh của quyền:
+// Xếp lại thứ tự cấp khoá `merge` (ADR 0030, quyền `merge-order` của bản uỷ quyền; hồ sơ giam-sat-doc-ban-uy-quyen). Lệnh của quyền:
 // `thu-tu-gop <dãy,dãy,…> --phien <mã giám sát>`. Phép so trước/sau là «tập PR được gộp không đổi»: danh sách phải là HOÁN
 // VỊ đúng tập dãy đang có đơn `merge` — thiếu, thừa hay trùng thì chặn. Hợp lệ → ghi `dung-quyen` TRƯỚC, rồi ghi tệp thứ tự
 // mà bộ phát lịch đọc mỗi nhịp (`xepHang`). Mỗi PR vẫn qua `xetGop` lúc gộp — thứ tự không mở phép kiểm nào.
@@ -31,7 +31,7 @@ export function thuTuGop(cwd, danhSach, { phien = null, io } = {}) {
   const cfg = docCauHinh(thuMuc);
   const nhanh = cfg.nhanh_chinh ?? 'main';
   const uq = docUyQuyen({ gocKho: cfg.goc_kho ?? gocKhoChinh(cwd), nhanhChinh: nhanh, ...(io ? { io } : {}) });
-  if (!uq.nhan.includes('thu-tu-gop')) return chan(`bản uỷ quyền không nhận quyền thu-tu-gop — ${uq.loi ?? (uq.co ? 'tu_lam không có thu-tu-gop' : `kho không có governance/delegation.yaml ở origin/${nhanh}`)}`);
+  if (!uq.nhan.includes('merge-order')) return chan(`bản uỷ quyền không nhận quyền merge-order — ${uq.loi ?? (uq.co ? 'delegated không có merge-order' : `kho không có governance/delegation.yaml ở origin/${nhanh}`)}`);
   const moi = danhSach.split(',').map((x) => x.trim()).filter(Boolean);
   const dang = dayCoDonMerge(thuMuc);
   const trung = moi.filter((x, i) => moi.indexOf(x) !== i);
@@ -42,7 +42,7 @@ export function thuTuGop(cwd, danhSach, { phien = null, io } = {}) {
   if (thua.length) return chan(`thừa dãy ${thua.join(', ')} — dãy ấy không có đơn merge nào đang chờ`);
   const p = path.join(thuMuc, TEP_THU_TU_GOP);
   const cu = docJson(p, null)?.thu_tu ?? null;
-  ghiDungQuyen(thuMuc, { quyen: 'thu-tu-gop', viec: `xếp lại thứ tự gộp: ${moi.join(' → ') || '(rỗng)'}`, duong_dao: `xoá ${p} (thứ tự trước: ${cu ? cu.join(' → ') : 'theo máy'})`, sha_uy_quyen: uq.sha });
+  ghiDungQuyen(thuMuc, { quyen: 'merge-order', viec: `xếp lại thứ tự gộp: ${moi.join(' → ') || '(rỗng)'}`, duong_dao: `xoá ${p} (thứ tự trước: ${cu ? cu.join(' → ') : 'theo máy'})`, sha_uy_quyen: uq.sha });
   ghiJsonNguyenTu(p, { thu_tu: moi, luc: new Date().toISOString(), boi: phien });
   return { duoc: true, thu_tu: moi, cu, ly_do: `thứ tự gộp: ${moi.join(' → ') || '(rỗng)'}` };
 }
