@@ -1350,6 +1350,12 @@ feature_loop:
   # bằng `node plugins/dispatch/scripts/dieu-phoi.mjs gop <số PR> --theo-loi --slug <slug> --cho-ci 30`. Gỡ dòng dưới
   # (hay đổi thành false) là tắt: thẻ và hành vi về như trước từng byte.
   gop_theo_loi_ky: true
+  # Máy tự định tuyến mục ngoài hợp đồng (hồ sơ ngoai-n-tu-dinh-tuyen, GUIDE «Máy tự định tuyến mục ngoài hợp đồng»): chủ kho
+  # bật cho CHÍNH kho kit ở Cổng Phạm vi của mốc 3.2.0, 28/11 (Hỏi-2). Đo trên 14 hồ sơ ký từ thẻ v3.0.0: 117 mục ngoài hợp
+  # đồng, chủ kho chọn trùng đề xuất của máy 117/117. Ở hồ sơ T2 · PASS · 0 UNCERTAIN máy tự ghi dòng sổ cho mục nó đề xuất
+  # ghi-giới-hạn hay chấp-nhận; mục «mở hợp đồng mới» vẫn của người. Khoá này là cấu hình của kho kit, không đi theo thẻ tới
+  # kho tiêu thụ. Gỡ dòng dưới (hay đổi thành false) là tắt: hành vi về như trước từng byte.
+  ngoai_n_tu_dinh_tuyen: true
 # Ổ cắm lộ trình của chính kit (hồ sơ trang-lo-trinh-doc-mot-phut; bật ở chiến dịch ghim lại 2.25.0 —
 # hẹn với owner 08/10). Khối chan_troi trong tệp là trường tự do, trang không hiện.
 lo_trinh:

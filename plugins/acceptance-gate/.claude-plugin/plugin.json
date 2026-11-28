@@ -1,7 +1,7 @@
 {
   "name": "acceptance-gate",
-  "version": "3.1.1",
-  "description": "Acceptance gate for AI-generated features: turns a request into an acceptance contract with Given/When/Then criteria, generates evals across four executor types, verifies them with fresh-context subagents and enforces evidence-backed verdicts with deterministic hooks, so a human decides only at a few real gates. v3.1.1 — release notes, and the full history of earlier versions that used to live here, are in CHANGELOG.md.",
+  "version": "3.2.0",
+  "description": "Acceptance gate for AI-generated features: turns a request into an acceptance contract with Given/When/Then criteria, generates evals across four executor types, verifies them with fresh-context subagents and enforces evidence-backed verdicts with deterministic hooks, so a human decides only at a few real gates. v3.2.0 — release notes, and the full history of earlier versions that used to live here, are in CHANGELOG.md.",
   "author": {
     "name": "Manh Phan",
     "email": "phanlemanh@gmail.com"
