@@ -5,7 +5,7 @@ slug: release-3-2-0
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: 5 tệp khai + câu khớp-phiên-bản của GUIDE + CHANGELOG + một dòng cấu hình kho kit + hồ sơ mốc + bản đồ — KHÔNG dính t3_paths
 surfaces: [cli]
-status: verified
+status: signed-off
 approved_by: Phan Le Manh
 approved_at: 2026-11-28
 ---
@@ -171,3 +171,7 @@ Mọi lệnh `chay.sh <nhóm>` đo ở HEAD: thẻ `v3.2.0` gắn vào commit g�
   năm hồ sơ — sau chiến dịch danh sách là ba hồ sơ đã ghim, và `GHIM_LAI=bang-chung-cu-theo-dau-vao chay.sh ghim-lai` vẫn
   thoát 1); `chay.sh khoa-bat` thoát 1 «ĐỎ: khoá
   feature_loop.ngoai_n_tu_dinh_tuyen đang tắt».
+- Known limits — chọn ở Cổng Bằng chứng 2026-11-28:
+  - Ngoài-1: Tiêu chí AC-7 được thu từ năm về ba hồ sơ sau Cổng Phạm vi; `bang-chung-cu-theo-dau-vao` và `doi-soat-ban-giao` không ghim được trên nhánh mốc và còn cũ sau mốc này — chủ kho phê việc thu ở Cổng Bằng chứng.
+  - Ngoài-2: Nhóm `ghim-lai` báo ba hồ sơ «còn mới», nhưng tiêu chí chấm-bằng-đọc E11 của `giam-sat-doc-ban-uy-quyen` có vật đổi chữ sau V1 mà làn máy không chứng lại; hồ sơ ấy chờ một vòng chấm bù.
+  - Ngoài-3: Phép đo E1 chỉ bảo đảm năm gói lõi mang cùng một số, không ghim số ấy là 3.2.0; người gắn thẻ tự đối chiếu số.
