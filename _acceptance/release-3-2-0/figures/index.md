@@ -9,6 +9,10 @@
 
 1 điểm vượt ngưỡng.
 
+Giới hạn của hình (tác tử vẽ báo 28/11): hình có 13 hình khối và 16 đường nối, vượt trần 9 nút / 12 mũi tên của
+`docs/reference/DIAGRAM-RULE.md` — giữ một hình vì đề bài đòi chín bước nối tiếp cộng hai nhánh rẽ đọc trong một lần nhìn.
+Bản PNG chỉ chứa hình; tên hình nằm ở tiêu đề của bản HTML. PNG xuất bằng Chrome headless (máy không có Playwright).
+
 ## Đề bài hình `duong-di-moc` (flowchart, đọc trái → phải hoặc trên → dưới, một trang)
 
 Tên hình: «Đường đi của mốc 3.2.0 — từ Cổng Phạm vi tới bản phát hành».
