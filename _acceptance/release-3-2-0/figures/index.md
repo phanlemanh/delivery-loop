@@ -40,3 +40,7 @@ Chú thích nhỏ dưới hình: «Hai lượt gọi người trong thiết kế
 xanh.»
 
 AC liên quan: AC-7 (nút 3), AC-1…AC-10 (nút 4), AC-9 (kiểm bản cài trên HEAD ở nút 4; kiểm theo thẻ ở nút 9).
+
+Sau Cổng Phạm vi (28/11): hình là bản trình ở Cổng Phạm vi và không vẽ lại. Hai chỗ thực tế đi khác hình: làn ghim lại ở nút 3
+chạy cho năm hồ sơ và ghim được ba (hai hồ sơ đỏ ở tiêu chí «vùng vật» của chính chúng — Notes hợp đồng); nhánh rẽ «PR chỉ
+tài liệu gộp giữa vòng» xảy ra với PR #41, không phải PR #40.

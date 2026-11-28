@@ -23,7 +23,7 @@
     },
     {
       "id": "AC-7",
-      "p": "Sẽ chạy một làn máy đo lại năm hồ sơ của cửa sổ trên bản đã nâng số (chiến dịch ghim lại), rồi kiểm bằng máy rằng bằng chứng của cả năm còn mới trước khi cắt thẻ."
+      "p": "Sẽ kiểm bằng máy, trước khi cắt thẻ, rằng bằng chứng của ba hồ sơ mà làn ghim lại của mốc đã ghim vẫn còn mới (hai hồ sơ làn không ghim được nêu tên trong hồ sơ)."
     },
     {
       "id": "AC-8",
@@ -61,7 +61,7 @@
     },
     {
       "id": "OOS-5",
-      "p": "KHÔNG ghim lại hồ sơ đã cũ từ trước cửa sổ này, và không ghim được hồ sơ nâng repo-setup (một phép đo của nó so với gốc cũ nên đỏ khi nhánh chính tiến) — nêu tên và lý do trong hồ sơ."
+      "p": "KHÔNG ghim lại hồ sơ đã cũ từ trước cửa sổ này, và không ghim được ba hồ sơ của cửa sổ trên nhánh mốc (mỗi hồ sơ có một phép đo so với nhánh chính hay một gốc cũ) — nêu tên và lý do trong hồ sơ."
     }
   ],
   "scope_plain": "Năm việc để ngoài mốc này:",

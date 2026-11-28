@@ -16,9 +16,9 @@
 Mốc A của lộ trình sau DL6 (chủ kho 28/11: «Mở Mốc A»): mang tới kho tiêu thụ mọi thứ đã gộp vào nhánh chính sau thẻ
 `v3.1.1`. Có **sáu hồ sơ được ký** trong cửa sổ — tập đối chiếu bằng `_acceptance/release-3-2-0/chay.sh cua-so` (AC-3 của hồ
 sơ mốc): `dac-ta-ux-doc-so-man` (#27), `doi-soat-ban-giao` (#32), `nang-repo-setup-0-10-4` (#34),
-`bang-chung-cu-theo-dau-vao` (#37), `giam-sat-doc-ban-uy-quyen` (#38), `doi-ten-ban-uy-quyen` (#39). Sáu PR khác gộp trong
-cửa sổ không mang hồ sơ được ký mới: #29 (phần còn lại của nhánh mốc 3.1.1 sau commit thẻ), #30, #31, #33, #35, #36 (tài
-liệu, ADR 0030 và hạt giống). Năm gói `acceptance-gate`, `feature-loop`, `dispatch`, `roadmap`, `knowledge` cùng lên `3.2.0`
+`bang-chung-cu-theo-dau-vao` (#37), `giam-sat-doc-ban-uy-quyen` (#38), `doi-ten-ban-uy-quyen` (#39). Bảy PR khác gộp trong
+cửa sổ không mang hồ sơ được ký mới: #29 (phần còn lại của nhánh mốc 3.1.1 sau commit thẻ), #30, #31, #33, #35, #36, #41 (tài
+liệu, ADR 0030 và hạt giống; #41 gộp giữa vòng mốc). Năm gói `acceptance-gate`, `feature-loop`, `dispatch`, `roadmap`, `knowledge` cùng lên `3.2.0`
 (`acceptance-gate`, `feature-loop`, `dispatch` đổi vật; `roadmap`, `knowledge` chỉ đổi số — AC-5); `diagram-design` giữ
 `3.0.0` vì thư mục của nó không đổi từ thẻ trước (AC-4). Thẻ `v3.2.0` gắn vào commit gộp của PR mốc, như các mốc tới 3.1.0.
 
@@ -172,7 +172,17 @@ KHÔNG đi theo thẻ, kho tiêu thụ không đổi gì. Số đo lúc bật: 1
 chọn trùng đề xuất của máy 117/117; 106 mục thuộc loại máy được tự ghi, 11 mục «mở hợp đồng mới» vẫn của người. Đảo: xoá
 dòng ấy.
 
-**Chiến dịch ghim lại của mốc** (GUIDE §7.1): xem dòng kết quả ở cuối mục này.
+**Chiến dịch ghim lại của mốc** (GUIDE §7.1): một làn máy tại commit đã nâng số `8c3b871f`
+(`repin-20261128T071601Z-73825`, 70,8 phút, 57 lệnh, mười một lệnh suite thoát 0) chạy cho năm hồ sơ của cửa sổ và ghim lại
+được **ba**: `dac-ta-ux-doc-so-man`, `doi-ten-ban-uy-quyen`, `giam-sat-doc-ban-uy-quyen` (AC-7 của hồ sơ mốc). Hồ sơ không
+ghim lại, kèm lý do:
+- `bang-chung-cu-theo-dau-vao`, `doi-soat-ban-giao`: mỗi hồ sơ có một tiêu chí «vùng vật» so tệp đổi của HEAD với nhánh
+  chính; ở nhánh chính nó xanh, trên nhánh mốc nó đỏ theo định nghĩa. Ghim được bằng một làn chạy trên chính nhánh chính sau
+  khi PR mốc gộp — việc để lại.
+- `nang-repo-setup-0-10-4`: tiêu chí AC-7 của nó so với một gốc ghi cứng, nhánh chính tiến thì đỏ ở mọi nhánh.
+- Hồ sơ hoá cũ từ trước cửa sổ: năm hồ sơ của cửa sổ 3.1.0–3.1.1, ba hồ sơ mốc và 236 hồ sơ ghim trước thẻ `v3.0.0`.
+- Hạt giống: `docs/plans/2026-11-28-hat-giong-eval-vung-vat-chan-ghim-lai.md` (tiêu chí vùng vật chặn ghim lại; dấu lượt đỏ
+  của làn kéo hồ sơ vào diff của PR và lưới trước-gộp chặn PR chạy làn).
 
 **Năm dòng số của luật (c)**: sáu vòng trong cửa sổ (giờ VN). Định nghĩa giữ như mốc 3.1.1: làm-xong = commit đầu đưa hợp
 đồng sang `implemented` · ký = commit đầu đưa `status:` sang trạng thái đã ký · gộp = commit gộp sớm nhất trên lối cha-đầu
@@ -205,7 +215,7 @@ Sáu hồ sơ T2 (trần 3).
   ngoài lượt chấm (thiết kế, thi công, chờ CI, gộp) KHÔNG nằm trong bảng. Dòng `gio-may` của lệnh đo vòng lẽ ra phủ phần
   ấy nhưng đang đếm sai theo ba hướng — cộng cả phiên chỉ nhắc tên vòng, mở cửa sổ ở commit đầu của hồ sơ nên bỏ đoạn mở
   vòng và thiết kế, và đo trước khi gộp — nên mốc này không dùng nó làm số. Sáu vòng đều không có ô cơ hội nên đều mắc lỗi
-  mở cửa sổ muộn. Hạt giống: `docs/plans/2026-11-28-hat-giong-do-vong-dem-sai-phien-va-cua-so.md` (PR #41).
+  mở cửa sổ muộn. Hạt giống: `docs/plans/2026-11-28-hat-giong-do-vong-dem-sai-phien-va-cua-so.md` (phiên vòng V1 viết, gộp ở PR #41).
 
 **Đọc số:**
 - **Ký → gộp về lại mức 0 g 15** (trung vị 1 g 14 ở cửa sổ 3.1.1 → 0 g 15): năm trong sáu vòng gộp trong 8–16 phút sau chữ

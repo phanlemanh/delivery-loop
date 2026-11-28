@@ -1,7 +1,7 @@
 # evals — release-3-2-0 (khuôn release-3-1-1 và release-3-1-0; mốc v3.1.1 = 1193bc22)
 # Không có bộ răng riêng (nếp từ 2.2.0 → 3.1.1, luật «mốc phát hành KHÔNG dựng răng»): thứ cần canh ở mọi lần cắt số là ca
 # vĩnh viễn P200 (vùng 3 của suite plugins), các bộ kiểm chung, cửa sổ hồ sơ, cổng kiểm bản cài và hội đồng đọc mục
-# CHANGELOG cạnh nguồn nó chép; thêm E7 «chiến dịch ghim lại» (gọi vị từ bằng chứng-còn-mới sẵn có của kit) và E10 «khoá kho
+# CHANGELOG cạnh nguồn nó chép; thêm E7 «chiến dịch ghim lại», ba hồ sơ làn đã ghim (gọi vị từ bằng chứng-còn-mới sẵn có của kit) và E10 «khoá kho
 # kit bật» (gọi hàm đọc khoá của chính bên ghi). Sáu lệnh riêng của hồ sơ đi qua `_acceptance/release-3-2-0/chay.sh` (luật
 # lệnh hồ sơ, tep-chung-khong-chan-gop) — không thêm khoá vào `_acceptance/config.yaml`. Chiều đỏ của sáu lệnh ghi ở Notes
 # hợp đồng. E1/E2h chấm MÃ THOÁT của vùng 3 — không hứa dòng P200 trong bằng chứng.
@@ -119,9 +119,9 @@ evals:
     executor: script
     cmd: bash _acceptance/release-3-2-0/chay.sh ghim-lai
     expected: >
-      Exit 0, năm dòng «còn mới: <hồ sơ>» và dòng «XANH: 5/5 hồ sơ của chiến dịch ghim lại còn mới ở HEAD» — vị từ
-      `pr-san-sang.mjs --chi-xet` của kit trả 0 cho bang-chung-cu-theo-dau-vao, dac-ta-ux-doc-so-man, doi-soat-ban-giao,
-      doi-ten-ban-uy-quyen, giam-sat-doc-ban-uy-quyen. Chiều đỏ ở Notes (đo 28/11 trước chiến dịch: bốn dòng «ĐỎ: bằng
+      Exit 0, ba dòng «còn mới: <hồ sơ>» và dòng «XANH: 3/3 hồ sơ của chiến dịch ghim lại còn mới ở HEAD» — vị từ
+      `pr-san-sang.mjs --chi-xet` của kit trả 0 cho dac-ta-ux-doc-so-man, doi-ten-ban-uy-quyen, giam-sat-doc-ban-uy-quyen
+      (ba hồ sơ làn ghim lại của mốc đã ghim; hai hồ sơ làn không ghim được nêu ở Notes hợp đồng). Chiều đỏ ở Notes (đo 28/11 trước chiến dịch: bốn dòng «ĐỎ: bằng
       chứng của <hồ sơ> không còn mới ở HEAD (mã 2)», thoát 1; đối chứng dương cùng ngày với một hồ sơ còn mới thoát 0).
     evidence_required: [run_id, exit_code, verifier, verified_at, output]
   - id: E8

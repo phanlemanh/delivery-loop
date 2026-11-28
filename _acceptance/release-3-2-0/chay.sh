@@ -11,9 +11,10 @@ cd "$(dirname "$0")/../.." || exit 2
 NHOM="$1"; MOC="${2:-1193bc2203a47f7a5664999bd9b1259595baa1e3}"
 # Sáu hồ sơ được ký trong cửa sổ v3.1.1..HEAD (Context của hợp đồng).
 CUA_SO="bang-chung-cu-theo-dau-vao dac-ta-ux-doc-so-man doi-soat-ban-giao doi-ten-ban-uy-quyen giam-sat-doc-ban-uy-quyen nang-repo-setup-0-10-4"
-# Năm hồ sơ của chiến dịch ghim lại. nang-repo-setup-0-10-4 KHÔNG ở đây: tiêu chí AC-7 của nó đo phạm vi diff của PR #34 so
-# với một gốc ghi cứng, nhánh chính tiến thì đỏ theo định nghĩa — Notes của hợp đồng mốc nêu tên và lý do.
-GHIM="${GHIM_LAI:-bang-chung-cu-theo-dau-vao dac-ta-ux-doc-so-man doi-soat-ban-giao doi-ten-ban-uy-quyen giam-sat-doc-ban-uy-quyen}"
+# Ba hồ sơ mà làn ghim lại của mốc (repin-20261128T071601Z-73825) đã ghim. Ba hồ sơ còn lại của cửa sổ KHÔNG ở đây — Notes
+# của hợp đồng mốc nêu tên và lý do: nang-repo-setup-0-10-4 (tiêu chí AC-7 của nó so với một gốc ghi cứng), và
+# bang-chung-cu-theo-dau-vao, doi-soat-ban-giao (tiêu chí «vùng vật» của chúng so HEAD với nhánh chính nên đỏ trên nhánh mốc).
+GHIM="${GHIM_LAI:-dac-ta-ux-doc-so-man doi-ten-ban-uy-quyen giam-sat-doc-ban-uy-quyen}"
 case "$NHOM" in
   cua-so)  GIT_GLOB_PATHSPECS=1 bash _acceptance/release-2-39-0/cua-so.sh "$MOC" $CUA_SO ;;
   dd-giu)

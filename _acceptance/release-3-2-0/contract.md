@@ -5,7 +5,7 @@ slug: release-3-2-0
 owner: phanlemanh@gmail.com
 risk_tier: T2               # vật chạm: 5 tệp khai + câu khớp-phiên-bản của GUIDE + CHANGELOG + một dòng cấu hình kho kit + hồ sơ mốc + bản đồ — KHÔNG dính t3_paths
 surfaces: [cli]
-status: approved
+status: implemented
 approved_by: Phan Le Manh
 approved_at: 2026-11-28
 ---
@@ -32,8 +32,8 @@ kho do phiên giữ đợt viết sau khi thẻ có.
 | `giam-sat-doc-ban-uy-quyen` (DL6) | #38 · `a9b7cbe6` | `dispatch` |
 | `doi-ten-ban-uy-quyen` (V1) | #39 · `36d29fed` | `dispatch` |
 
-Sáu PR khác gộp vào nhánh chính trong cửa sổ không mang hồ sơ được ký mới: #29 (phần còn lại của nhánh mốc 3.1.1 sau commit
-thẻ), #30, #31, #33, #35, #36 (tài liệu, ADR 0030 và hạt giống). So thẻ `v3.1.1` với gốc vòng `36d29fed`: `acceptance-gate`
+Bảy PR khác gộp vào nhánh chính trong cửa sổ không mang hồ sơ được ký mới: #29 (phần còn lại của nhánh mốc 3.1.1 sau commit
+thẻ), #30, #31, #33, #35, #36 (tài liệu, ADR 0030 và hạt giống) và #41 (hạt giống `gio-may`, gộp giữa vòng mốc 28/11). So thẻ `v3.1.1` với gốc vòng `36d29fed`: `acceptance-gate`
 đổi 3 tệp, `dispatch` 17, `feature-loop` 4; `roadmap`, `knowledge`, `diagram-design` không đổi.
 
 **Vật của mốc** (trên nền `36d29fed`):
@@ -45,16 +45,18 @@ thẻ), #30, #31, #33, #35, #36 (tài liệu, ADR 0030 và hạt giống). So th
 2. Mục `3.2.0` của `CHANGELOG.md`: đổi gì, ai bị ảnh hưởng, kho tiêu thụ làm gì khi nhận, lớp chép CI, năm dòng số, dự báo,
    điều kiện tin cậy, dòng hiệu chuẩn — một nguồn, hồ sơ không chép lại. Tên khoá của bản uỷ quyền trong mọi chữ của mốc là
    bộ tên tiếng Anh sau V1; tên cũ chỉ được nhắc ở câu «tệp còn tên cũ bị từ chối cả tệp».
-3. **Chiến dịch ghim lại của mốc** (GUIDE mục 7.1): một làn máy ghim lại năm hồ sơ của cửa sổ tại commit đã nâng số —
-   `bang-chung-cu-theo-dau-vao`, `dac-ta-ux-doc-so-man`, `doi-soat-ban-giao`, `doi-ten-ban-uy-quyen`,
-   `giam-sat-doc-ban-uy-quyen` (AC-7). Hồ sơ không ghim lại: nêu tên và lý do ở Notes.
+3. **Chiến dịch ghim lại của mốc** (GUIDE mục 7.1): một làn máy chạy cho năm hồ sơ của cửa sổ tại commit đã nâng số
+   `8c3b871f` và ghim lại được ba — `dac-ta-ux-doc-so-man`, `doi-ten-ban-uy-quyen`, `giam-sat-doc-ban-uy-quyen` (AC-7). Hai
+   hồ sơ làn không ghim được (`bang-chung-cu-theo-dau-vao`, `doi-soat-ban-giao`) và hồ sơ không đưa vào làn: nêu tên và lý
+   do ở Notes «Hồ sơ không ghim lại».
 4. Kho kit bật `feature_loop.ngoai_n_tu_dinh_tuyen: true` trong `_acceptance/config.yaml` của chính nó (AC-10) — cấu hình
    của kho kit, KHÔNG đi theo thẻ tới kho tiêu thụ. Mục này theo câu trả lời Hỏi-2 ở Cổng Phạm vi; chủ kho chọn lối khác
    thì gỡ khỏi hợp đồng trước khi duyệt.
 5. Hồ sơ này với `chay.sh` gọi lại `cua-so.sh` (release-2-39-0), `goi-chi-doi-so.sh` và `lop-chep-doi.sh` (release-3-1-0)
    với mốc `v3.1.1`, thêm nhóm `ghim-lai` (gọi vị từ «bằng chứng còn mới» sẵn có của kit) và `khoa-bat`; dòng 1 của luật (c)
    đo bằng `do-dong-1.sh` của hồ sơ release-3-1-1 cho từng hồ sơ (kết quả `do-dong-1.md`); rà bộ kiểm trên commit gộp thử
-   bằng `gop-thu.sh` của hồ sơ release-3-1-1; một hạt giống về dòng `gio-may`; vẽ lại bản đồ và trang lộ trình.
+   bằng `gop-thu.sh` của hồ sơ release-3-1-1; một hạt giống về dòng `gio-may` (phiên vòng V1
+   viết, vào nhánh chính bằng PR #41 giữa vòng này); vẽ lại bản đồ và trang lộ trình.
 
 Số là **3.2.0** (minor): cửa sổ có bề mặt mới — bộ đọc `governance/delegation.yaml` và lối gộp theo quyền của gói `dispatch`
 (DL6, V1), cờ `--chi-xet` của `pr-san-sang` và vị từ bằng chứng cũ dùng chung (DL2), lệnh đọc sổ màn `so-man.cjs` (#27), đối
@@ -73,7 +75,7 @@ Mọi lệnh `chay.sh <nhóm>` đo ở HEAD: thẻ `v3.2.0` gắn vào commit g�
 - AC-4: Given mốc `1193bc22` (thẻ `v3.1.1`), When so thư mục `plugins/diagram-design/` và số của nó với HEAD (`chay.sh dd-giu`), Then thư mục KHÔNG có dòng đổi VÀ số bằng số ở mốc — `diagram-design` giữ `3.0.0` là đúng.
 - AC-5: Given mốc `1193bc22`, When liệt tệp đổi dưới `plugins/roadmap/` và `plugins/knowledge/` tới HEAD (`chay.sh goi-doi`), Then tập tệp đổi BẰNG đúng hai tệp khai VÀ mọi dòng đổi là dòng `"version"`.
 - AC-6: Given khối INIT-CI-COPY-LIST của `acceptance-init`, gạch «Lớp chép CI» của mục `3.2.0` trong CHANGELOG và mốc `1193bc22`, When so tệp nào của lớp chép đổi byte tới HEAD (`chay.sh lop-chep`), Then tập tệp đổi BẰNG tập ghi chú kể — ở mốc này cả hai rỗng và gạch nói đúng chữ «không chép gì».
-- AC-7: Given năm hồ sơ của chiến dịch ghim lại kể trong Context, When hỏi vị từ «bằng chứng còn mới» của kit cho từng hồ sơ ở HEAD (`chay.sh ghim-lai`), Then cả năm trả «còn mới» và lệnh thoát 0 với «XANH: 5/5 hồ sơ của chiến dịch ghim lại còn mới ở HEAD».
+- AC-7: Given ba hồ sơ mà chiến dịch ghim lại đã ghim, kể trong Context, When hỏi vị từ «bằng chứng còn mới» của kit cho từng hồ sơ ở HEAD (`chay.sh ghim-lai`), Then cả ba trả «còn mới» và lệnh thoát 0 với «XANH: 3/3 hồ sơ của chiến dịch ghim lại còn mới ở HEAD».
 - AC-8: Given mục `3.2.0` của `CHANGELOG.md` cùng nguồn nó chép, When đọc từng phần, Then (i) mỗi mục con của sáu hồ sơ (dòng «Gốc:», gạch «Vật:», giới hạn trích) là chữ của hợp đồng hồ sơ ấy, không nói rộng hơn, và số giới hạn khớp Notes và sổ quyết định của hồ sơ; (ii) năm dòng số khớp nguồn đếm (sổ chạy, `usage-report.md`, sổ quyết định, `do-dong-1.md`); (iii) đoạn «Vì sao 3.2.0», «Ai bị ảnh hưởng» và «Kho tiêu thụ làm gì khi nhận» nói thẳng đổi hành vi chạm kho đang dùng và nêu đủ bốn ca: kho KHÔNG có `governance/delegation.yaml`, kho không cài gói `dispatch`, kho chưa bật khoá nào của DL2, và lớp chép CI; (iv) mọi tên khoá và tên quyền của bản uỷ quyền trong mục là bộ tên tiếng Anh sau V1 — tên cũ chỉ xuất hiện ở câu nói tệp còn tên cũ bị từ chối cả tệp. (judgment)
 - AC-9: Given số trong tệp khai `acceptance-gate` ở HEAD khác gốc vòng, When chạy khoá `kiem_ban_cai_moc`, Then lệnh chạy TRỌN kiểm bản cài trên HEAD và thoát 0 với «TỔNG KẾT: ĐẠT … — HEAD (<sha>) cài đúng tag»; đỏ thì KHÔNG cắt mốc.
 - AC-10: Given `_acceptance/config.yaml` của kho kit, When bên ghi của máy tự định tuyến đọc khoá `feature_loop.ngoai_n_tu_dinh_tuyen` (`chay.sh khoa-bat`), Then khoá đọc ra là bật: lệnh thoát 0 với «XANH: khoá feature_loop.ngoai_n_tu_dinh_tuyen bật».
@@ -84,7 +86,7 @@ Mọi lệnh `chay.sh <nhóm>` đo ở HEAD: thẻ `v3.2.0` gắn vào commit g�
   khớp-phiên-bản | mô tả người-dùng-nhận-gì | phạm vi diff | gói đổi/không đổi | lớp chép CI | bản cài khớp thẻ) `[thước
   CE: ba mươi chín mốc trước đã dùng thật]` · Trục B · hành trình hồ sơ (bằng chứng | biên merge | chiến dịch ghim lại)
   `[thước CE: xanh_sach_check + ADR 0012 + GUIDE mục 7.1]`. Ô Core → AC-1 · AC-2 · AC-3; gói giữ số → AC-4; gói chỉ đổi số →
-  AC-5; lớp chép CI khớp ghi chú → AC-6; chiến dịch ghim lại → AC-7 (ô của mốc này: hồ sơ cửa sổ còn mới ở commit sẽ gắn
+  AC-5; lớp chép CI khớp ghi chú → AC-6; chiến dịch ghim lại → AC-7 (ô của mốc này: hồ sơ làn đã ghim còn mới ở commit sẽ gắn
   thẻ); ghi chú nhận chép đúng chữ nguồn và cân trên mọi kho → AC-8 (judgment); bản cài khớp thẻ → AC-9 (khoá KC1); cấu hình
   kho kit → AC-10. Biên merge (bộ kiểm xanh trên commit gộp thử) rà riêng bằng `gop-thu.sh` ngoài lượt chấm — xem Notes.
 
@@ -103,7 +105,8 @@ Mọi lệnh `chay.sh <nhóm>` đo ở HEAD: thẻ `v3.2.0` gắn vào commit g�
   `docs/plans/2026-11-28-hat-giong-do-vong-dem-sai-phien-va-cua-so.md`, vòng riêng; số token và phút máy của mốc này nêu
   kèm giới hạn ấy.
 - Ghim lại hồ sơ hoá cũ từ TRƯỚC cửa sổ (năm hồ sơ của cửa sổ 3.1.0–3.1.1, ba hồ sơ mốc, 236 hồ sơ ghim trước thẻ
-  `v3.0.0`) và hồ sơ `nang-repo-setup-0-10-4` — xem Notes «Hồ sơ không ghim lại».
+  `v3.0.0`) và ba hồ sơ của cửa sổ mà làn không ghim được trên nhánh mốc (`nang-repo-setup-0-10-4`,
+  `bang-chung-cu-theo-dau-vao`, `doi-soat-ban-giao`) — xem Notes «Hồ sơ không ghim lại».
 
 > Out of scope = scope-truth (Gate 1 duyệt mục này). Rationale/trade-off từng mục → 1 entry `descope` trong `decisions.jsonl`.
 
@@ -115,10 +118,26 @@ Mọi lệnh `chay.sh <nhóm>` đo ở HEAD: thẻ `v3.2.0` gắn vào commit g�
   mọi mốc tới 3.1.0. Lối B của 3.1.1 (thẻ vào commit cuối nhánh mốc) chỉ dùng khi một PR đổi `plugins/` hoặc mang hồ sơ
   được ký gộp vào nhánh chính giữa vòng; PR #40 đang mở chỉ có tài liệu nên gộp giữa vòng cũng không đổi cửa sổ — khi đó
   gộp nhánh chính vào nhánh, không ghim lại (tệp `docs/**` và `_acceptance/**` không làm bằng chứng cũ đi).
+- **Kết quả chiến dịch ghim lại** (28/11, sau Cổng Phạm vi): một làn máy `repin-20261128T071601Z-73825` tại `8c3b871f`
+  với cờ `--tung-ho-so` — mười một lệnh suite thoát 0, 57 lệnh, 70,8 phút. Ghim: `dac-ta-ux-doc-so-man`,
+  `doi-ten-ban-uy-quyen`, `giam-sat-doc-ban-uy-quyen` (hồ sơ DL6 mà chủ kho hẹn ghim ở mốc này). Không ghim:
+  `bang-chung-cu-theo-dau-vao` (E7 thoát 1 «AC-7: 16 tệp ngoài danh sách cho phép: …») và `doi-soat-ban-giao` (E9 thoát 1
+  «vung-vat: 19 tệp đổi so với 36d29fed, 16 ngoài danh sách»). AC-7 của hợp đồng này thu từ năm về ba hồ sơ theo kết quả ấy
+  (dòng sổ ghi sau Cổng Phạm vi, chờ chủ kho phê ở Cổng Bằng chứng). Sau đó nhánh chính tiến bởi PR #41 (chỉ tài liệu, gộp
+  15:00 giờ VN); gộp nhánh chính vào nhánh mốc rồi ĐO lại: `pr-san-sang.mjs --chi-xet` trả «còn mới — 0 tệp vật đổi so
+  verified_commit 8c3b871» cho cả ba hồ sơ đã ghim — không phải ghim lại lần hai.
 - **Hồ sơ không ghim lại** (đo 28/11 bằng `pr-san-sang.mjs --chi-xet` trên `36d29fed`: 250 hồ sơ đã ký, 1 còn mới, 249 cũ):
+  - `bang-chung-cu-theo-dau-vao` và `doi-soat-ban-giao` (trong cửa sổ, đã đưa vào làn): mỗi hồ sơ có một tiêu chí «vùng
+    vật» so tệp đổi của HEAD với nhánh chính (`origin/main..HEAD`) và đòi mọi tệp nằm trong danh sách của vòng ấy. Ở nhánh
+    chính lệnh xanh (đo 28/11 trên `36d29fed`: 8/8 và 9/9 eval máy xanh); trên nhánh mốc — hay nhánh của bất kỳ vòng nào khác
+    — nó đỏ theo định nghĩa, vì nhánh ấy đổi tệp ngoài danh sách. Làn để lại dấu lượt đỏ ở sổ chạy của hai hồ sơ; hai sổ
+    ấy được trả về đúng bản ở nhánh chính trong PR mốc, vì lưới trước-gộp chấm mọi hồ sơ có tệp trong diff của PR và sẽ
+    chặn PR mốc vì hai hồ sơ còn cũ (đo 28/11: 2 VIOLATION «evidence is stale»). Dấu vết của lượt đỏ còn ở commit `2eb9c77f`
+    và ở đây. Hai hồ sơ ghim được bằng một làn chạy trên chính nhánh chính sau khi PR mốc gộp — việc để lại, không thuộc
+    mốc. Hạt giống: `docs/plans/2026-11-28-hat-giong-eval-vung-vat-chan-ghim-lai.md`.
   - `nang-repo-setup-0-10-4` (trong cửa sổ): tiêu chí AC-7 của nó đo «tệp vòng đổi so với bản gốc vòng» với gốc ghi cứng
     `87a392cd`; nhánh chính tiến thì lệnh đỏ theo định nghĩa (đo 28/11: thoát 1 «ngoài danh sách: …»), nên làn ghim lại
-    không ghim được. Sáu eval còn lại của nó xanh ở HEAD. Lối «cho hồ sơ nghỉ» (GUIDE) là của người; mốc không dùng vì hồ sơ
+    không ghim được, kể cả trên nhánh chính; không đưa vào làn. Sáu eval còn lại của nó xanh ở HEAD. Lối «cho hồ sơ nghỉ» (GUIDE) là của người; mốc không dùng vì hồ sơ
     không chặn gì — lưới trước-gộp chỉ xét hồ sơ trong diff của PR.
   - Năm hồ sơ của cửa sổ 3.1.0–3.1.1 (`loi-gop-trong-cau-ky`, `tep-chung-khong-chan-gop`, `mac-ky-co-phu-quyet`,
     `chuyen-gop`, `va-chu-ky-giu-cho-lenh-gop`) và ba hồ sơ mốc (`release-3-0-0`, `release-3-1-0`, `release-3-1-1`): hoá cũ
@@ -148,5 +167,7 @@ Mọi lệnh `chay.sh <nhóm>` đo ở HEAD: thẻ `v3.2.0` gắn vào commit g�
   `chay.sh lop-chep` thoát 2 «mục «## 3.2.0» của CHANGELOG không có gạch «- **Lớp chép CI:…»»; `chay.sh ghim-lai` thoát 1
   với bốn dòng «ĐỎ: bằng chứng của <hồ sơ> không còn mới ở HEAD (mã 2)» cho `bang-chung-cu-theo-dau-vao`,
   `dac-ta-ux-doc-so-man`, `doi-soat-ban-giao`, `giam-sat-doc-ban-uy-quyen` và một dòng «còn mới: doi-ten-ban-uy-quyen» (đối
-  chứng dương: `GHIM_LAI=doi-ten-ban-uy-quyen chay.sh ghim-lai` thoát 0 «XANH: 1/1 …»); `chay.sh khoa-bat` thoát 1 «ĐỎ: khoá
+  chứng dương: `GHIM_LAI=doi-ten-ban-uy-quyen chay.sh ghim-lai` thoát 0 «XANH: 1/1 …»; lúc ấy danh sách mặc định còn là
+  năm hồ sơ — sau chiến dịch danh sách là ba hồ sơ đã ghim, và `GHIM_LAI=bang-chung-cu-theo-dau-vao chay.sh ghim-lai` vẫn
+  thoát 1); `chay.sh khoa-bat` thoát 1 «ĐỎ: khoá
   feature_loop.ngoai_n_tu_dinh_tuyen đang tắt».
