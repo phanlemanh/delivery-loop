@@ -1,0 +1,74 @@
+{
+  "feature_plain": "Cắt bản kit 3.2.0 (Mốc A) để kho tiêu thụ nhận sáu việc đã ký sau bản 3.1.1 — trong đó có giám sát đọc bản uỷ quyền của kho, bằng chứng cũ xét theo đầu vào, và tên tiếng Anh của bản uỷ quyền.",
+  "will_do": [
+    {
+      "id": "AC-1",
+      "p": "Sẽ đưa năm gói lõi lên cùng số 3.2.0, mô tả gói và câu «Khớp phiên bản» trong GUIDE nói đúng số ấy (ca kiểm P200)."
+    },
+    {
+      "id": "AC-2",
+      "p": "Sẽ để mọi bộ kiểm của lượt chấm và bản đồ sản phẩm chạy xanh trên cây đã sửa."
+    },
+    {
+      "id": "AC-3",
+      "p": "Sẽ đối chiếu bằng máy rằng sau thẻ v3.1.1 có đúng sáu hồ sơ được ký, không thừa không thiếu."
+    },
+    {
+      "id": "AC-5",
+      "p": "Sẽ chỉ đổi dòng số phiên bản ở hai gói roadmap và knowledge — không đổi gì khác."
+    },
+    {
+      "id": "AC-6",
+      "p": "Sẽ ghi rõ kho chép lớp CI không phải chép lại tệp nào, và máy kiểm điều đó đúng."
+    },
+    {
+      "id": "AC-7",
+      "p": "Sẽ chạy một làn máy đo lại năm hồ sơ của cửa sổ trên bản đã nâng số (chiến dịch ghim lại), rồi kiểm bằng máy rằng bằng chứng của cả năm còn mới trước khi cắt thẻ."
+    },
+    {
+      "id": "AC-8",
+      "p": "Sẽ viết mục 3.2.0 trong CHANGELOG chép đúng chữ sáu hồ sơ, năm dòng số khớp nguồn đếm, nói thẳng từng loại kho bị đổi gì khi nhận, và chỉ dùng tên tiếng Anh của bản uỷ quyền — một hội đồng máy đọc đối chiếu."
+    },
+    {
+      "id": "AC-9",
+      "p": "Sẽ cài thử kit từ chính cây này như kho tiêu thụ sẽ cài và đòi kết quả ĐẠT trước khi cắt thẻ."
+    },
+    {
+      "id": "AC-10",
+      "p": "Sẽ bật ở chính kho kit việc máy tự ghi các mục ngoài hợp đồng mà nó đề xuất ghi-giới-hạn hay chấp-nhận (theo Hỏi-2; anh chọn lối khác thì mục này gỡ khỏi hợp đồng)."
+    }
+  ],
+  "wont_do": [
+    {
+      "id": "AC-4",
+      "p": "Sẽ KHÔNG đổi gói diagram-design — giữ số 3.0.0 vì thư mục của nó không đổi từ thẻ trước."
+    },
+    {
+      "id": "OOS-1",
+      "p": "KHÔNG đổi mã cổng hay mã gói nào — mốc chỉ đổi số, tài liệu và một dòng cấu hình của kho kit; thấy lỗi ở mã thì dừng và báo."
+    },
+    {
+      "id": "OOS-2",
+      "p": "KHÔNG cài lên kho tiêu thụ nào và không soạn đề bài nâng kit của từng kho — việc của phiên giữ đợt sau khi có thẻ."
+    },
+    {
+      "id": "OOS-3",
+      "p": "KHÔNG sửa các mục CHANGELOG cũ từ 3.1.1 trở về trước."
+    },
+    {
+      "id": "OOS-4",
+      "p": "KHÔNG sửa lệnh đo giờ máy của vòng dù nó đếm sai — ghi thành hạt giống cho vòng riêng; số token và phút máy của mốc nêu kèm giới hạn ấy."
+    },
+    {
+      "id": "OOS-5",
+      "p": "KHÔNG ghim lại hồ sơ đã cũ từ trước cửa sổ này, và không ghim được hồ sơ nâng repo-setup (một phép đo của nó so với gốc cũ nên đỏ khi nhánh chính tiến) — nêu tên và lý do trong hồ sơ."
+    }
+  ],
+  "scope_plain": "Năm việc để ngoài mốc này:",
+  "coverage_plain": [
+    {
+      "i": 0,
+      "p": "Phủ mọi phần của một lần cắt số như ba mươi chín mốc trước — số trong tệp khai, câu khớp phiên bản, mô tả gói, gói đổi hay giữ số, lớp chép CI, bản cài khớp thẻ (AC-1 tới AC-6, AC-9) — thêm hai ô của mốc này: chiến dịch ghim lại (AC-7) và dòng cấu hình của kho kit (AC-10). Bộ kiểm trên commit gộp thử chạy riêng ngoài lượt chấm."
+    }
+  ]
+}
